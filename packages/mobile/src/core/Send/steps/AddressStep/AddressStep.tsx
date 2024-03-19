@@ -304,6 +304,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
           {suggestedAddresses.length > 0 ? (
             <FormItem title={suggestsLabel}>
               <AddressSuggests
+                cellsDisabled={!!recipient}
                 scrollY={scrollY}
                 addresses={suggestedAddresses}
                 onPressSuggest={handlePressSuggest}

@@ -57,6 +57,7 @@ export type AppConfigVars = {
   disable_tonstakers: boolean;
   disable_holders_cards: boolean;
   exclude_jetton_chart_periods: boolean;
+  devmode_enabled: boolean;
 };
 
 const defaultConfig: Partial<AppConfigVars> = {
@@ -89,6 +90,7 @@ const defaultConfig: Partial<AppConfigVars> = {
   disable_tonstakers: false,
   disable_holders_cards: true,
   exclude_jetton_chart_periods: true,
+  devmode_enabled: false,
 };
 
 export const config = new AppConfig<AppConfigVars>({
