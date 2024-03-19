@@ -11,6 +11,8 @@ import {
 import { LayoutAnimation, Animated } from 'react-native';
 import { useNavigation } from '@tonkeeper/router';
 import { MainStackRouteNames } from '$navigation';
+import { useHoldersEnroll } from '../../../screens/HoldersWebView/hooks/useHoldersEnroll';
+import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
 
 const closeButtonHitSlop = {
   top: 8,
@@ -26,25 +28,23 @@ export interface OnboardBannerProps {
 export const OnboardBanner = memo<OnboardBannerProps>((props) => {
   const containerStyle = Steezy.useStyle(styles.container);
   const nav = useNavigation();
+  const unlockVault = useUnlockVault();
+  const enroll = useHoldersEnroll(unlockVault);
 
   const handleCloseBanner = useCallback(() => {
     props.onDismissBanner();
     LayoutAnimation.easeInEaseOut();
-  }, [props.onDismissBanner]);
+  }, [props]);
 
   const openWebView = useCallback(() => {
-    nav.push(MainStackRouteNames.HoldersWebView);
-  }, []);
+    enroll(() => nav.push(MainStackRouteNames.HoldersWebView, { path: '/create' }));
+  }, [enroll, nav]);
 
   return (
     <Animated.View style={containerStyle}>
       <View style={styles.rowContainer}>
-        <Icon
-          style={styles.cardsIcon.static}
-          color={'iconSecondary'}
-          name={'ic-cards-stack-44'}
-        />
-        <View style={{ flex: 1 }}>
+        <Icon style={styles.cardsIcon.static} colorless name={'ic-cards-stack-44'} />
+        <View style={styles.flex}>
           <Text type="label1">Bank Card</Text>
           <Text color="textSecondary" type="body2">
             Pay in TON, convert to USD without commission.
@@ -54,7 +54,7 @@ export const OnboardBanner = memo<OnboardBannerProps>((props) => {
             onPress={openWebView}
             size="small"
             color="tertiary"
-            title="More details"
+            title="More Details"
           />
         </View>
         <TouchableOpacity onPress={handleCloseBanner} hitSlop={closeButtonHitSlop}>
@@ -79,5 +79,8 @@ const styles = Steezy.create(({ corners, colors }) => ({
   },
   cardsIcon: {
     marginTop: 10,
+  },
+  flex: {
+    flex: 1,
   },
 }));

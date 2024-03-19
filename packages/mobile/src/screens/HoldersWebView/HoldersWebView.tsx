@@ -40,6 +40,7 @@ import { Address } from '@tonkeeper/core';
 import { RouteProp } from '@react-navigation/native';
 import { MainStackRouteNames } from '$navigation';
 import { MainStackParamList } from '$navigation/MainStack';
+import DeviceInfo from 'react-native-device-info';
 
 export interface HoldersWebViewProps {
   path?: string;
@@ -87,74 +88,72 @@ export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
     config.get('holdersAppEndpoint', false),
   );
 
-  const handleWebViewMessage = useCallback((event: WebViewMessageEvent) => {
-    const nativeEvent = event.nativeEvent;
+  const handleWebViewMessage = useCallback(
+    (event: WebViewMessageEvent) => {
+      const nativeEvent = event.nativeEvent;
 
-    // Resolve parameters
-    let data: any;
-    console.log(nativeEvent.data);
-    let id: number;
-    let processed = false;
-    try {
-      let parsed = JSON.parse(nativeEvent.data);
-
-      if (!parsed.data) {
-        onMessage(event);
-        return;
-      }
-
-      let processed = processMainButtonMessage(
-        parsed,
-        dispatchMainButton,
-        dispatchMainButtonResponse,
-        ref,
-      );
-
-      if (processed) {
-        return;
-      }
-
-      processed = processStatusBarMessage(
-        parsed,
-        StatusBar.setBarStyle,
-        StatusBar.setBackgroundColor,
-      );
-
-      if (processed) {
-        return;
-      }
-
-      id = parsed.id;
-      data = parsed.data;
-    } catch (e) {
-      console.warn(e);
-      return;
-    }
-
-    if (data.name === 'closeApp') {
-      navigation.goBack();
-      return;
-    }
-
-    // Execute
-    (async () => {
-      let res = { type: 'error', message: 'Unknown error' };
+      // Resolve parameters
+      let data: any;
+      let id: number;
+      let processed = false;
       try {
-        res = await injectionEngine.execute(data);
+        let parsed = JSON.parse(nativeEvent.data);
+
+        if (!parsed.data) {
+          onMessage(event);
+          return;
+        }
+
+        let processed = processMainButtonMessage(
+          parsed,
+          dispatchMainButton,
+          dispatchMainButtonResponse,
+          ref,
+        );
+
+        if (processed) {
+          return;
+        }
+
+        processed = processStatusBarMessage(
+          parsed,
+          StatusBar.setBarStyle,
+          StatusBar.setBackgroundColor,
+        );
+
+        if (processed) {
+          return;
+        }
+
+        id = parsed.id;
+        data = parsed.data;
       } catch (e) {
         console.warn(e);
+        return;
       }
-      dispatchResponse(ref, { id, data: res });
-    })();
-  }, []);
 
-  const handleError = useCallback((err: any) => {
-    console.log(err);
-  }, []);
+      if (data.name === 'closeApp') {
+        navigation.goBack();
+        return;
+      }
+
+      // Execute
+      (async () => {
+        let res = { type: 'error', message: 'Unknown error' };
+        try {
+          res = await injectionEngine.execute(data);
+        } catch (e) {
+          console.warn(e);
+        }
+        dispatchResponse(ref, { id, data: res });
+      })();
+    },
+    [injectionEngine, navigation, onMessage, ref],
+  );
 
   const onCloseApp = useCallback(() => {
     navigation.goBack();
-  }, []);
+  }, [navigation]);
 
   const onNavigation = useCallback(
     (url: string) => {
@@ -201,7 +200,22 @@ export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
   }, [onHardwareBackPress]);
 
   const injectSource = useMemo(() => {
+    const initialState = {
+      user: {
+        token: tk.wallet.cards.state.data.token,
+        status: {
+          state: {},
+          kycStatus: null,
+          suspended: false,
+        },
+      },
+      accountsList: tk.wallet.cards.state.data.accounts,
+    };
+
     return createInjectSource({
+      tonkeeper: {
+        version: DeviceInfo.getVersion(),
+      },
       config: {
         version: 1,
         platform: Platform.OS,
@@ -217,8 +231,10 @@ export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
       additionalInjections: injectedJavaScriptBeforeContentLoaded,
       useMainButtonAPI: true,
       useStatusBarAPI: true,
+      initialInjectState: initialState,
     });
   }, [injectedJavaScriptBeforeContentLoaded, safeAreaInsets]);
+
   return (
     <Animated.View style={styles.container.static} entering={FadeIn}>
       <WebView
@@ -232,8 +248,6 @@ export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
           // Searching for supported query
           onNavigation(event.url);
         }}
-        onError={handleError}
-        onHttpError={handleError}
         injectedJavaScriptBeforeContentLoaded={injectSource}
         originWhitelist={['*']}
         decelerationRate="normal"
@@ -251,20 +265,16 @@ export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
         mediaPlaybackRequiresUserAction={false}
         contentInset={{ top: 0, bottom: 0 }}
         style={styles.webView.static}
+        webviewDebuggingEnabled
       />
       {mainButton && mainButton.isVisible && (
         <KeyboardAvoidingView
-          style={{
-            position: 'absolute',
-            bottom: safeAreaInsets.bottom,
-            left: 0,
-            right: 0,
-          }}
+          style={[
+            styles.keyboardAvoidingView.static,
+            { bottom: Math.max(safeAreaInsets.bottom, 16) },
+          ]}
           behavior={Platform.OS === 'ios' ? 'position' : undefined}
-          contentContainerStyle={{
-            marginHorizontal: 16,
-            marginBottom: 16,
-          }}
+          contentContainerStyle={styles.keyboardAvoidingViewContainer.static}
         >
           <Animated.View
             style={Platform.select({
@@ -290,5 +300,14 @@ const styles = Steezy.create({
   },
   webView: {
     flex: 1,
+  },
+  keyboardAvoidingView: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+  },
+  keyboardAvoidingViewContainer: {
+    marginHorizontal: 16,
+    marginBottom: 16,
   },
 });

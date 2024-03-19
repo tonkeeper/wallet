@@ -149,11 +149,13 @@ type InjectionConfig = {
 };
 
 type InjectSourceProps = {
+  tonkeeper: { version: string };
   config: InjectionConfig;
   safeArea: EdgeInsets;
   additionalInjections?: string;
   useMainButtonAPI?: boolean;
   useStatusBarAPI?: boolean;
+  initialInjectState?: object;
 };
 
 export function createInjectSource(sourceProps: InjectSourceProps) {
@@ -161,6 +163,16 @@ export function createInjectSource(sourceProps: InjectSourceProps) {
     ${sourceProps.additionalInjections || ''}
     ${sourceProps.useMainButtonAPI ? mainButtonAPI : ''}
     ${sourceProps.useStatusBarAPI ? statusBarAPI(sourceProps.safeArea) : ''}
+    ${
+      sourceProps.initialInjectState
+        ? `window['initialState'] = ${JSON.stringify(sourceProps.initialInjectState)};`
+        : ''
+    }
+    window['tonkeeper'] = (() => {
+        const obj = { version: "${sourceProps.tonkeeper.version}" };
+        Object.freeze(obj);
+        return obj;
+    })();
     window['ton-x'] = (() => {
         let requestId = 0;
         let callbacks = {};

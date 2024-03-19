@@ -36,6 +36,7 @@ export interface ListItemProps {
   children?: React.ReactNode;
   rightContent?: React.ReactNode;
   valueMultiline?: boolean;
+  disabled?: boolean;
   onPress?: () => void;
 }
 
@@ -46,6 +47,7 @@ function isString<T>(str: T) {
 export const ListItem = memo<ListItemProps>((props) => {
   const {
     onPress,
+    disabled,
     navigate,
     chevronColor = 'iconTertiary',
     pictureCorner = 'full',
@@ -88,7 +90,7 @@ export const ListItem = memo<ListItemProps>((props) => {
   return (
     <TouchableComponent
       underlayColor={theme.backgroundContentTint}
-      disabled={!onPress && !navigate}
+      disabled={disabled || (!onPress && !navigate)}
       onPressOut={onPressOut}
       onPressIn={onPressIn}
       onPress={handlePress}

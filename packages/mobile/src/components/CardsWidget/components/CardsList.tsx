@@ -1,14 +1,17 @@
 import React, { memo, useCallback } from 'react';
-import { AccountState, CardKind } from '$wallet/managers/CardsManager';
-import { Icon, List, Steezy, View } from '@tonkeeper/uikit';
+import { AccountState } from '$wallet/managers/CardsManager';
+import { List, Steezy, TonIcon, View } from '@tonkeeper/uikit';
 import { formatter } from '@tonkeeper/shared/formatter';
 import { MainStackRouteNames } from '$navigation';
 import { useNavigation } from '@tonkeeper/router';
-import { Platform, Text } from 'react-native';
+import { Image, Platform, Text } from 'react-native';
 import { DarkTheme } from '@tonkeeper/uikit/src/styles/themes/dark';
 import { CryptoCurrencies } from '$shared/constants';
 import { useGetTokenPrice } from '$hooks/useTokenPrice';
-import { capitalizeFirstLetter } from '@tonkeeper/shared/utils/date';
+import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
+import { useHoldersEnroll } from '../../../screens/HoldersWebView/hooks/useHoldersEnroll';
+
+const MC_LOGO_IMAGE = require('../../../../../uikit/assets/mc-logo.png');
 
 export interface CardsListProps {
   accounts: AccountState[];
@@ -40,11 +43,17 @@ const fontFamily = Platform.select({
 export const CardsList = memo<CardsListProps>((props) => {
   const cardNumberStyle = Steezy.useStyle(styles.cardNumber);
   const nav = useNavigation();
-  const openWebView = useCallback(() => {
-    nav.push(MainStackRouteNames.HoldersWebView);
-  }, [nav]);
+  const unlockVault = useUnlockVault();
+  const enroll = useHoldersEnroll(unlockVault);
+  const openWebView = useCallback(
+    (accountId) => () => {
+      enroll(() =>
+        nav.push(MainStackRouteNames.HoldersWebView, { path: `/account/${accountId}` }),
+      );
+    },
+    [enroll, nav],
+  );
   const getTokenPrice = useGetTokenPrice();
-
   const getPrice = useCallback(
     (amount) => {
       return getTokenPrice(CryptoCurrencies.Ton, amount);
@@ -52,54 +61,71 @@ export const CardsList = memo<CardsListProps>((props) => {
     [getTokenPrice],
   );
 
+  console.log(props.accounts);
+
   return (
     <List indent={false}>
-      {props.accounts.map((account) =>
-        account.cards.map((card) => (
-          <List.Item
-            leftContent={
+      {props.accounts.map((account) => (
+        <List.Item
+          disabled={account.state !== 'ACTIVE'}
+          leftContent={<TonIcon showDiamond />}
+          onPress={openWebView(account.id)}
+          value={`${formatter.fromNano(account.balance)} TON`}
+          subvalue={getPrice(formatter.fromNano(account.balance)).formatted.totalFiat}
+          subtitle={'Basic account'}
+          title={account.name}
+        >
+          <View style={styles.cardsContainer}>
+            {account.cards.map((card) => (
               <View
+                key={card.lastFourDigits}
                 style={[
                   styles.cardIcon,
                   { backgroundColor: getColorByFourDigits(card.lastFourDigits) },
                 ]}
               >
                 <Text style={cardNumberStyle}>{card.lastFourDigits}</Text>
-                {card.kind === CardKind.VIRTUAL && (
-                  <Icon style={styles.cloudIcon.static} name={'ic-cloud-12'} />
-                )}
+                <View style={styles.mastercardLogoContainer}>
+                  <Image source={MC_LOGO_IMAGE} style={styles.mastercardLogo.static} />
+                </View>
               </View>
-            }
-            onPress={openWebView}
-            value={`${formatter.fromNano(account.balance)} TON`}
-            subvalue={getPrice(formatter.fromNano(account.balance)).formatted.totalFiat}
-            subtitle={capitalizeFirstLetter(card.kind)}
-            title={`Card *${card.lastFourDigits}`}
-          />
-        )),
-      )}
+            ))}
+          </View>
+        </List.Item>
+      ))}
     </List>
   );
 });
 
 export const styles = Steezy.create(({ colors }) => ({
   cardIcon: {
-    height: 44,
-    width: 30,
+    height: 30,
+    width: 44,
     borderRadius: 4,
-    paddingTop: 3,
-    paddingBottom: 2,
   },
   cardNumber: {
+    position: 'absolute',
+    bottom: 3,
+    fontWeight: 'bold',
+    left: 4,
     fontFamily,
-    textAlign: 'center',
     fontSize: 8.5,
     lineHeight: 10,
     color: colors.constantWhite,
   },
-  cloudIcon: {
+  mastercardLogoContainer: {
     position: 'absolute',
-    bottom: 2,
-    right: 4,
+    bottom: 0,
+    right: 0,
+    padding: 5,
+  },
+  mastercardLogo: {
+    height: 6,
+    width: 10,
+  },
+  cardsContainer: {
+    marginTop: 8,
+    flexDirection: 'row',
+    gap: 4,
   },
 }));

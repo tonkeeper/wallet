@@ -30,7 +30,27 @@ export interface AccountState {
 export interface CardsState {
   onboardBannerDismissed: boolean;
   accounts: AccountState[];
+  token?: string;
   accountsLoading: boolean;
+}
+
+export interface AccountKeyParam {
+  kind: 'tonconnect-v2';
+  wallet: 'tonkeeper';
+  config: {
+    address: string;
+    proof: {
+      timestamp: number;
+      domain: {
+        lengthBytes: number;
+        value: string;
+      };
+      signature: string;
+      payload: string;
+      publicKey: string;
+      walletStateInit: string;
+    };
+  };
 }
 
 export class CardsManager {
@@ -48,9 +68,10 @@ export class CardsManager {
     private storage: Storage,
   ) {
     this.state.persist({
-      partialize: ({ onboardBannerDismissed, accounts }) => ({
+      partialize: ({ onboardBannerDismissed, accounts, token }) => ({
         onboardBannerDismissed,
         accounts,
+        token,
       }),
       storage: this.storage,
       key: `${this.persistPath}/cards`,
@@ -80,6 +101,31 @@ export class CardsManager {
       this.state.set({ accountsLoading: false, accounts: data.accounts });
     } catch {
       this.state.set({ accountsLoading: false });
+    }
+  }
+
+  public async fetchToken(key: AccountKeyParam) {
+    try {
+      const requestParams = {
+        stack: 'ton',
+        network: this.isTestnet ? 'ton-testnet' : 'ton-mainnet',
+        key,
+      };
+      const resp = await fetch(`${config.get('holdersService')}/v2/user/wallet/connect`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestParams),
+      });
+      const data = await resp.json();
+      if (!data.ok) {
+        return null;
+      }
+      this.state.set({ token: data.token });
+      return data.token;
+    } catch {
+      return null;
     }
   }
 
