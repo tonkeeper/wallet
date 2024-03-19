@@ -151,7 +151,8 @@ export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
     [injectionEngine, navigation, onMessage, ref],
   );
 
-  const onCloseApp = useCallback(() => {
+  const onCloseApp = useCallback(async () => {
+    await tk.wallet.cards.fetchAccount();
     navigation.goBack();
   }, [navigation]);
 

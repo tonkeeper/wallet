@@ -5,7 +5,6 @@ import { formatter } from '@tonkeeper/shared/formatter';
 import { MainStackRouteNames } from '$navigation';
 import { useNavigation } from '@tonkeeper/router';
 import { Image, Platform, Text } from 'react-native';
-import { DarkTheme } from '@tonkeeper/uikit/src/styles/themes/dark';
 import { CryptoCurrencies } from '$shared/constants';
 import { useGetTokenPrice } from '$hooks/useTokenPrice';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
@@ -13,26 +12,12 @@ import { useHoldersEnroll } from '../../../screens/HoldersWebView/hooks/useHolde
 
 const MC_LOGO_IMAGE = require('../../../../../uikit/assets/mc-logo.png');
 
+const CARD_DESIGN_1 = require('../../../../../uikit/assets/cardDesigns/design-1.png');
+const CARD_DESIGN_2 = require('../../../../../uikit/assets/cardDesigns/design-2.png');
+const CARD_DESIGN_3 = require('../../../../../uikit/assets/cardDesigns/design-3.png');
+
 export interface CardsListProps {
   accounts: AccountState[];
-}
-
-const colorsForCardIconBackground = [
-  DarkTheme.accentGreen,
-  DarkTheme.accentOrange,
-  DarkTheme.accentBlue,
-  DarkTheme.accentRed,
-  DarkTheme.accentPurple,
-];
-
-function getColorByFourDigits(fourDigits: string | null | undefined) {
-  const sumOfDigits =
-    fourDigits
-      ?.split('')
-      .map(Number)
-      .reduce((acc, val) => acc + val, 0) ?? 0;
-
-  return colorsForCardIconBackground[sumOfDigits % colorsForCardIconBackground.length];
 }
 
 const fontFamily = Platform.select({
@@ -75,13 +60,8 @@ export const CardsList = memo<CardsListProps>((props) => {
         >
           <View style={styles.cardsContainer}>
             {account.cards.map((card) => (
-              <View
-                key={card.lastFourDigits}
-                style={[
-                  styles.cardIcon,
-                  { backgroundColor: getColorByFourDigits(card.lastFourDigits) },
-                ]}
-              >
+              <View key={card.lastFourDigits} style={[styles.cardIcon]}>
+                <Image source={CARD_DESIGN_3} style={styles.cardCover.static} />
                 <Text style={cardNumberStyle}>{card.lastFourDigits}</Text>
                 <View style={styles.mastercardLogoContainer}>
                   <Image source={MC_LOGO_IMAGE} style={styles.mastercardLogo.static} />
@@ -125,5 +105,13 @@ export const styles = Steezy.create(({ colors }) => ({
     marginTop: 8,
     flexDirection: 'row',
     gap: 4,
+  },
+  cardCover: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: 44,
+    height: 30,
+    borderRadius: 4,
   },
 }));
