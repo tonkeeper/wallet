@@ -13,7 +13,7 @@ export const CardsWidget = memo(() => {
       {!state.accounts.length && !state.onboardBannerDismissed ? (
         <OnboardBanner onDismissBanner={() => tk.wallet.cards.dismissOnboardBanner()} />
       ) : null}
-      {state.accounts.length ? (
+      {state.accounts.filter((account) => account.state === 'ACTIVE').length ? (
         <>
           <CardsList accounts={state.accounts} />
           <Spacer y={16} />

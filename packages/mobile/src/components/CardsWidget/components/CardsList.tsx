@@ -61,8 +61,6 @@ export const CardsList = memo<CardsListProps>((props) => {
     [getTokenPrice],
   );
 
-  console.log(props.accounts);
-
   return (
     <List indent={false}>
       {props.accounts.map((account) => (
