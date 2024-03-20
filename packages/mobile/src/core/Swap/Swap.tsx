@@ -153,7 +153,7 @@ export const Swap: FC<Props> = (props) => {
         source={webViewSource}
         onLoadEnd={handleLoadEnd}
         startInLoadingState={true}
-        originWhitelist={[`https://${getDomainFromURL(baseUrl)}`, 'ton://']}
+        originWhitelist={[`https://${getDomainFromURL(baseUrl)}`, 'ton://*']}
         decelerationRate="normal"
         javaScriptCanOpenWindowsAutomatically
         mixedContentMode="always"
