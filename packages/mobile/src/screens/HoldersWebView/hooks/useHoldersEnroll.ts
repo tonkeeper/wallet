@@ -2,11 +2,11 @@ import { tk } from '$wallet';
 import { config } from '$config';
 import { ConnectReplyBuilder, DAppManifest } from '$tonconnect';
 import { beginCell } from '@ton/core';
-import { storeStateInit, WalletContractV4 } from '@ton/ton';
+import { storeStateInit } from '@ton/ton';
 import { ConnectItemReply, TonProofItemReplySuccess } from '@tonconnect/protocol';
 import { saveAppConnection, TonConnectBridgeType } from '$store';
 import axios from 'axios';
-import { Address } from '@tonkeeper/core';
+import { Address, ContractService, contractVersionsMap } from '@tonkeeper/core';
 import { UnlockedVault } from '$blockchain';
 
 export enum HoldersEnrollErrorType {
@@ -51,10 +51,11 @@ export function useHoldersEnroll(unlockVault: () => Promise<UnlockedVault>) {
             return { type: 'error', error: HoldersEnrollErrorType.ManifestFailed };
           }
 
-          const contract = WalletContractV4.create({
-            workchain: 0,
-            publicKey: Buffer.from(tk.wallet.config.pubkey, 'hex'),
-          });
+          const contract = ContractService.getWalletContract(
+            contractVersionsMap[tk.wallet.config.version],
+            Buffer.from(tk.wallet.config.pubkey, 'hex'),
+            0,
+          );
 
           //
           // Sign

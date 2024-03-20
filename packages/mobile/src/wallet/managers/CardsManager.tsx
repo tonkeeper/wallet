@@ -27,13 +27,6 @@ export interface AccountState {
   network: 'ton-mainnet' | 'ton-testnet';
 }
 
-export interface CardsState {
-  onboardBannerDismissed: boolean;
-  accounts: AccountState[];
-  token?: string;
-  accountsLoading: boolean;
-}
-
 export interface AccountKeyParam {
   kind: 'tonconnect-v2';
   wallet: 'tonkeeper';
@@ -53,11 +46,58 @@ export interface AccountKeyParam {
   };
 }
 
+export enum HoldersAccountState {
+  NeedEnrollment = 'need-enrollment',
+  NeedPhone = 'need-phone',
+  NoRef = 'no-ref',
+  NeedKyc = 'need-kyc',
+  NeedEmail = 'need-email',
+  Ok = 'ok',
+}
+
+export type IAccountState =
+  | {
+      state: HoldersAccountState.NeedPhone | HoldersAccountState.NoRef;
+      suspended?: boolean;
+    }
+  | {
+      state: HoldersAccountState.NeedKyc;
+      kycStatus: any;
+      notificationSettings: {
+        enabled: boolean;
+      };
+      suspended: boolean;
+    }
+  | {
+      state:
+        | HoldersAccountState.Ok
+        | HoldersAccountState.NeedEmail
+        | HoldersAccountState.NeedPhone;
+      notificationSettings: {
+        enabled: boolean;
+      };
+      suspended: boolean;
+    };
+
+export interface CardsState {
+  onboardBannerDismissed: boolean;
+  accounts: AccountState[];
+  token?: string;
+  accountsLoading: boolean;
+  accountState?: IAccountState;
+  accountStateLoading: boolean;
+  accountsPrivate: any;
+  accountsPrivateLoading: boolean;
+}
+
 export class CardsManager {
   static readonly INITIAL_STATE: CardsState = {
     onboardBannerDismissed: false,
     accounts: [],
     accountsLoading: false,
+    accountStateLoading: false,
+    accountsPrivate: null,
+    accountsPrivateLoading: false,
   };
   public state = new State<CardsState>(CardsManager.INITIAL_STATE);
 
@@ -68,10 +108,18 @@ export class CardsManager {
     private storage: Storage,
   ) {
     this.state.persist({
-      partialize: ({ onboardBannerDismissed, accounts, token }) => ({
+      partialize: ({
+        onboardBannerDismissed,
+        accounts,
+        accountState,
+        accountsPrivate,
+        token,
+      }) => ({
         onboardBannerDismissed,
         accounts,
         token,
+        accountState,
+        accountsPrivate,
       }),
       storage: this.storage,
       key: `${this.persistPath}/cards`,
@@ -104,6 +152,30 @@ export class CardsManager {
     }
   }
 
+  public async fetchAccountState() {
+    try {
+      if (!this.state.data.token) {
+        return null;
+      }
+
+      this.state.set({ accountStateLoading: true });
+      const resp = await fetch(`${config.get('holdersService')}/account/state`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          token: this.state.data.token,
+        }),
+      });
+
+      const data = await resp.json();
+      this.state.set({ accountStateLoading: false, accountState: data.state });
+    } catch {
+      this.state.set({ accountsLoading: false });
+    }
+  }
+
   public async fetchToken(key: AccountKeyParam) {
     try {
       const requestParams = {
@@ -126,6 +198,33 @@ export class CardsManager {
       return data.token;
     } catch {
       return null;
+    }
+  }
+
+  public async fetchAccountsPrivate() {
+    try {
+      if (!this.state.data.token) {
+        return null;
+      }
+      this.state.set({ accountsPrivateLoading: true });
+      const resp = await fetch(`${config.get('holdersService')}/v2/account/list`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          token: this.state.data.token,
+        }),
+      });
+      const data = await resp.json();
+
+      if (!data.ok) {
+        this.state.set({ accountsPrivateLoading: false, accountsPrivate: undefined });
+        return null;
+      }
+      this.state.set({ accountsPrivateLoading: false, accountsPrivate: data.list });
+    } catch {
+      this.state.set({ accountsPrivateLoading: false });
     }
   }
 

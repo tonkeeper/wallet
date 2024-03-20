@@ -1,13 +1,19 @@
-import { useRef } from 'react';
+import { DependencyList, useRef } from 'react';
 import { State } from '@tonkeeper/core';
 import { useWallet } from '@tonkeeper/shared/hooks';
-import { useExternalState } from '@tonkeeper/shared/hooks/useExternalState';
+import {
+  ExternalStateSelector,
+  useExternalState,
+} from '@tonkeeper/shared/hooks/useExternalState';
 import { CardsManager, CardsState } from '$wallet/managers/CardsManager';
 
-export const useCardsState = () => {
+export function useCardsState<T = CardsState>(
+  selector?: ExternalStateSelector<CardsState, T>,
+  deps?: DependencyList,
+): T {
   const wallet = useWallet();
 
   const initialState = useRef(new State(CardsManager.INITIAL_STATE)).current;
 
-  return useExternalState<CardsState>(wallet?.cards.state ?? initialState);
-};
+  return useExternalState(wallet?.cards.state ?? initialState, selector, deps);
+}

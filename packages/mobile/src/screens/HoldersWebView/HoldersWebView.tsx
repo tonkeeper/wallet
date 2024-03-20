@@ -41,6 +41,9 @@ import { RouteProp } from '@react-navigation/native';
 import { MainStackRouteNames } from '$navigation';
 import { MainStackParamList } from '$navigation/MainStack';
 import DeviceInfo from 'react-native-device-info';
+import { useCardsState } from '$wallet/hooks';
+import { useHoldersAccountState } from '$wallet/hooks/useHoldersAccountState';
+import { useHoldersAccountsPrivate } from '$wallet/hooks/useHoldersAccountsPrivate';
 
 export interface HoldersWebViewProps {
   path?: string;
@@ -60,6 +63,10 @@ export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
     isProgressVisible: false,
     onPress: undefined,
   });
+  const { isLoading: isAccountStateLoading, data: accountState } =
+    useHoldersAccountState();
+  const { isLoading: isAccountsPrivateLoading, data: accountsPrivate } =
+    useHoldersAccountsPrivate();
   const currency = useWalletCurrency();
   const endpoint = config.get('holdersAppEndpoint', tk.wallet.isTestnet);
 
@@ -205,12 +212,12 @@ export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
       user: {
         token: tk.wallet.cards.state.data.token,
         status: {
-          state: {},
-          kycStatus: null,
-          suspended: false,
+          state: accountState?.state,
+          kycStatus: accountState?.state === 'need-kyc' ? accountState.kycStatus : null,
+          suspended: accountState?.suspended || false,
         },
       },
-      accountsList: tk.wallet.cards.state.data.accounts,
+      ...(accountsPrivate?.length ? { accountsList: accountsPrivate } : {}),
     };
 
     return createInjectSource({
@@ -234,7 +241,18 @@ export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
       useStatusBarAPI: true,
       initialInjectState: initialState,
     });
-  }, [injectedJavaScriptBeforeContentLoaded, safeAreaInsets]);
+  }, [
+    accountState?.kycStatus,
+    accountState?.state,
+    accountState?.suspended,
+    accountsPrivate,
+    injectedJavaScriptBeforeContentLoaded,
+    safeAreaInsets,
+  ]);
+
+  if (isAccountStateLoading || isAccountsPrivateLoading) {
+    return null;
+  }
 
   return (
     <Animated.View style={styles.container.static} entering={FadeIn}>
