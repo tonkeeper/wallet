@@ -56,10 +56,14 @@ import { mapNewNftToOldNftData } from '$utils/mapNewNftToOldNftData';
 import { WalletListItem } from '@tonkeeper/shared/components';
 import { useSubscriptions } from '@tonkeeper/shared/hooks/useSubscriptions';
 import { nativeLocaleNames } from '@tonkeeper/shared/i18n/translations';
+import { useHoldersEnroll } from '../../screens/HoldersWebView/hooks/useHoldersEnroll';
+import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
 
 export const Settings: FC = () => {
   const animationRef = useRef<AnimatedLottieView>(null);
   const devMenuHandlerRef = useRef(null);
+  const unlockVault = useUnlockVault();
+  const enroll = useHoldersEnroll(unlockVault);
 
   const flags = useFlags([
     'disable_apperance',
@@ -260,6 +264,10 @@ export const Settings: FC = () => {
     return hasDiamods && !flags.disable_apperance;
   }, [hasDiamods, flags.disable_apperance]);
 
+  const handleOpenHolders = useCallback(() => {
+    enroll(() => nav.push(MainStackRouteNames.HoldersWebView));
+  }, [enroll, nav]);
+
   return (
     <S.Wrap>
       <ScrollHandler navBarTitle={t('settings_title')}>
@@ -382,7 +390,7 @@ export const Settings: FC = () => {
                   />
                 }
                 title={t('settings_bank_card')}
-                onPress={() => nav.navigate(MainStackRouteNames.HoldersWebView)}
+                onPress={handleOpenHolders}
               />
             )}
           </List>
