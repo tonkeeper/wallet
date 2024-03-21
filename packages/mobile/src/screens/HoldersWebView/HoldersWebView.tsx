@@ -25,7 +25,7 @@ import {
   WebViewNavigation,
 } from 'react-native-webview/lib/WebViewTypes';
 import { getDomainFromURL } from '$utils';
-import Animated, { FadeInDown, FadeOutDown, FadeIn } from 'react-native-reanimated';
+import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 import { useNavigation } from '@tonkeeper/router';
 import { useInjectEngine } from './hooks/useInjectEngine';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -43,6 +43,7 @@ import { MainStackParamList } from '$navigation/MainStack';
 import DeviceInfo from 'react-native-device-info';
 import { useHoldersAccountState } from '$wallet/hooks/useHoldersAccountState';
 import { useHoldersAccountsPrivate } from '$wallet/hooks/useHoldersAccountsPrivate';
+import { Loader } from './components/Loader';
 
 export interface HoldersWebViewProps {
   path?: string;
@@ -254,7 +255,7 @@ export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
   }
 
   return (
-    <Animated.View style={styles.container.static} entering={FadeIn}>
+    <Animated.View style={styles.container.static}>
       <WebView
         ref={ref}
         startInLoadingState
@@ -266,6 +267,7 @@ export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
           // Searching for supported query
           onNavigation(event.url);
         }}
+        renderLoading={() => <Loader />}
         injectedJavaScriptBeforeContentLoaded={injectSource}
         originWhitelist={['*']}
         decelerationRate="normal"
