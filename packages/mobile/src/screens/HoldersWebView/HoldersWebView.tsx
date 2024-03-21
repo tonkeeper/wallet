@@ -234,7 +234,7 @@ export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
         }),
         publicKey: Buffer.from(tk.wallet.pubkey, 'hex').toString('base64'),
       },
-      safeArea: safeAreaInsets,
+      safeArea: { ...safeAreaInsets, bottom: Math.max(safeAreaInsets.bottom, 16) },
       additionalInjections: injectedJavaScriptBeforeContentLoaded,
       useMainButtonAPI: true,
       useStatusBarAPI: true,
