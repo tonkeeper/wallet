@@ -113,6 +113,8 @@ export class WalletContent extends WalletBase {
       tonRawAddress,
       this.isTestnet,
       this.storage,
+      this.config.version,
+      this.isWatchOnly,
     );
     this.notifications = new NotificationsManager(
       this.persistPath,

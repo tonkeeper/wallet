@@ -41,7 +41,6 @@ import { RouteProp } from '@react-navigation/native';
 import { MainStackRouteNames } from '$navigation';
 import { MainStackParamList } from '$navigation/MainStack';
 import DeviceInfo from 'react-native-device-info';
-import { useCardsState } from '$wallet/hooks';
 import { useHoldersAccountState } from '$wallet/hooks/useHoldersAccountState';
 import { useHoldersAccountsPrivate } from '$wallet/hooks/useHoldersAccountsPrivate';
 

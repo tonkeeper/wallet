@@ -1,6 +1,6 @@
-import { Storage, State, Address } from '@tonkeeper/core';
+import { Address, State, Storage } from '@tonkeeper/core';
 import { config } from '$config';
-import { TonRawAddress } from '$wallet/WalletTypes';
+import { TonRawAddress, WalletContractVersion } from '$wallet/WalletTypes';
 
 export enum CardKind {
   VIRTUAL = 'virtual',
@@ -90,6 +90,8 @@ export interface CardsState {
   accountsPrivateLoading: boolean;
 }
 
+const supportedWalletVersions = [WalletContractVersion.v3R2, WalletContractVersion.v4R2];
+
 export class CardsManager {
   static readonly INITIAL_STATE: CardsState = {
     onboardBannerDismissed: false,
@@ -106,6 +108,8 @@ export class CardsManager {
     private tonRawAddress: TonRawAddress,
     private isTestnet: boolean,
     private storage: Storage,
+    private version: WalletContractVersion,
+    private isWatchOnly: boolean,
   ) {
     this.state.persist({
       partialize: ({
@@ -124,6 +128,14 @@ export class CardsManager {
       storage: this.storage,
       key: `${this.persistPath}/cards`,
     });
+  }
+
+  public get isEnabled() {
+    return (
+      !this.isWatchOnly &&
+      !config.get('disable_holders_cards') &&
+      supportedWalletVersions.includes(this.version)
+    );
   }
 
   public async fetchAccount() {
@@ -229,6 +241,9 @@ export class CardsManager {
   }
 
   public async load() {
+    if (!this.isEnabled) {
+      return;
+    }
     return await this.fetchAccount();
   }
 

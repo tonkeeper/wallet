@@ -380,7 +380,7 @@ export const Settings: FC = () => {
                 onPress={handleBattery}
               />
             )}
-            {!config.get('disable_holders_cards') && !!wallet && !wallet.isWatchOnly && (
+            {!!wallet && wallet.cards.isEnabled && (
               <List.Item
                 value={
                   <NewIcon

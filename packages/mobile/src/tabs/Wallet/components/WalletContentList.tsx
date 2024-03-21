@@ -288,7 +288,7 @@ export const WalletContentList = memo<BalancesListProps>(
         bottom: 32,
       });
 
-      if (!config.get('disable_holders_cards') && !isWatchOnly) {
+      if (wallet && wallet.cards.isEnabled) {
         content.push({
           key: 'cards',
           type: ContentType.Cards,
