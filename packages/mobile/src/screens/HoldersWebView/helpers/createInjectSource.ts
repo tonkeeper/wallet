@@ -167,11 +167,6 @@ export function createInjectSource(sourceProps: InjectSourceProps) {
         ? `window['initialState'] = ${JSON.stringify(sourceProps.initialInjectState)};`
         : ''
     }
-    window['tonkeeper'] = (() => {
-        const obj = { version: "${sourceProps.tonkeeper.version}" };
-        Object.freeze(obj);
-        return obj;
-    })();
     window['ton-x'] = (() => {
         let requestId = 0;
         let callbacks = {};

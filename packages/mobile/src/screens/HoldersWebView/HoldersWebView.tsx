@@ -82,7 +82,7 @@ export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
   const [holdersParams, setHoldersParams] = useState({
     backPolicy: 'back',
     showKeyboardAccessoryView: false,
-    lockScroll: false,
+    lockScroll: true,
   });
 
   const injectionEngine = useInjectEngine(getDomainFromURL(url), 'Title', true);
