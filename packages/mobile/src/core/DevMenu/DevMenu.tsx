@@ -197,7 +197,10 @@ export const DevMenu: FC = () => {
         <List>
           <List.Item onPress={handleCopyFCMToken} title="Copy FCM token" />
           <List.Item onPress={handlePushNotification} title="Push notification" />
-          <List.Item onPress={() => DeviceInfo.getUniqueId()} title="Copy Firebase ID" />
+          <List.Item
+            onPress={() => Clipboard.setString(DeviceInfo.getUniqueId())}
+            title="Copy Firebase ID"
+          />
         </List>
       </Screen.ScrollView>
     </Screen>
