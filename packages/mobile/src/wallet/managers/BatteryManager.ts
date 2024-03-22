@@ -1,9 +1,9 @@
-import { BatteryAPI } from '@tonkeeper/core/src/BatteryAPI';
+import { BatteryAPI, UnitsEnum } from '@tonkeeper/core/src/BatteryAPI';
 import { MessageConsequences } from '@tonkeeper/core/src/TonAPI';
 import { Storage } from '@tonkeeper/core/src/declarations/Storage';
 import { State } from '@tonkeeper/core/src/utils/State';
 import { TonProofManager } from '$wallet/managers/TonProofManager';
-import { NamespacedLogger, logger } from '$logger';
+import { logger, NamespacedLogger } from '$logger';
 
 export interface BatteryState {
   isLoading: boolean;
@@ -38,11 +38,14 @@ export class BatteryManager {
         throw new Error('No proof token');
       }
       this.state.set({ isLoading: true });
-      const data = await this.batteryapi.getBalance({
-        headers: {
-          'X-TonConnect-Auth': this.tonProof.tonProofToken,
+      const data = await this.batteryapi.getBalance(
+        { units: UnitsEnum.Ton },
+        {
+          headers: {
+            'X-TonConnect-Auth': this.tonProof.tonProofToken,
+          },
         },
-      });
+      );
       this.state.set({ isLoading: false, balance: data.balance });
     } catch (err) {
       this.state.set({ isLoading: false, balance: '0' });

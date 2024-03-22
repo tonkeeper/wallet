@@ -63,7 +63,7 @@ export const RefillBatteryIAP = memo(() => {
             ) {
               continue;
             }
-            await finishTransaction({ purchase: product, isConsumable: true });
+            await finishTransaction({ purchase, isConsumable: true });
           }
         } else if (Platform.OS === 'android') {
           await tk.wallet.battery.makeAndroidPurchase(

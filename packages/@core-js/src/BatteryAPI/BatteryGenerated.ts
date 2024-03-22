@@ -14,6 +14,12 @@ export interface Error {
   error: string;
 }
 
+export interface Status {
+  pending_transactions: {
+    id: string;
+  }[];
+}
+
 export interface Config {
   /**
    * when building a message to transfer an NFT or Jetton, use this address to send excess funds back to Battery Service.
@@ -25,6 +31,8 @@ export interface Config {
 export interface Balance {
   /** @example "10.250" */
   balance: string;
+  /** @example "usd" */
+  units: BalanceUnitsEnum;
 }
 
 export interface Purchases {
@@ -87,7 +95,7 @@ export interface PromoCodeBatteryPurchaseStatus {
   error?: {
     /** @example "Temporary error. Try again later." */
     msg: string;
-    /** @example "promo-code-is-already-used" */
+    /** @example "promo-code-not-found" */
     code: PromoCodeBatteryPurchaseStatusCodeEnum;
   };
 }
@@ -112,6 +120,12 @@ export interface Transactions {
     /** @example "2006-01-02T15:04:05Z07:00" */
     created_at: string;
   }[];
+}
+
+/** @example "usd" */
+export enum BalanceUnitsEnum {
+  Usd = 'usd',
+  Ton = 'ton',
 }
 
 /** @example "android" */
@@ -139,10 +153,10 @@ export enum IOsBatteryPurchaseStatusCodeEnum {
   Unknown = 'unknown',
 }
 
-/** @example "promo-code-is-already-used" */
+/** @example "promo-code-not-found" */
 export enum PromoCodeBatteryPurchaseStatusCodeEnum {
-  PromoCodeIsAlreadyUsed = 'promo-code-is-already-used',
   PromoCodeNotFound = 'promo-code-not-found',
+  PromoExceededAttempts = 'promo-exceeded-attempts',
   TemporaryError = 'temporary-error',
 }
 
@@ -151,6 +165,23 @@ export enum TransactionsStatusEnum {
   Pending = 'pending',
   Completed = 'completed',
   Failed = 'failed',
+}
+
+export interface GetBalanceParams {
+  /** @default "usd" */
+  units?: UnitsEnum;
+}
+
+/** @default "usd" */
+export enum UnitsEnum {
+  Usd = 'usd',
+  Ton = 'ton',
+}
+
+/** @default "usd" */
+export enum GetBalanceParams1UnitsEnum {
+  Usd = 'usd',
+  Ton = 'ton',
 }
 
 export interface GetPurchasesParams {
@@ -421,7 +452,21 @@ export class BatteryGenerated<SecurityDataType extends unknown> {
   }
 
   /**
-   * @description This method returns information about the battery service.
+   * @description This method returns information about the current status of Battery Service.
+   *
+   * @name GetStatus
+   * @request GET:/status
+   */
+  getStatus = (params: RequestParams = {}) =>
+    this.http.request<Status, Error>({
+      path: `/status`,
+      method: 'GET',
+      format: 'json',
+      ...params,
+    });
+
+  /**
+   * @description This method returns information about Battery Service.
    *
    * @name GetConfig
    * @request GET:/config
@@ -435,15 +480,16 @@ export class BatteryGenerated<SecurityDataType extends unknown> {
     });
 
   /**
-   * @description This method returns information about a battery
+   * @description This method returns information about a user's balance.
    *
    * @name GetBalance
    * @request GET:/balance
    */
-  getBalance = (params: RequestParams = {}) =>
+  getBalance = (query: GetBalanceParams, params: RequestParams = {}) =>
     this.http.request<Balance, Error>({
       path: `/balance`,
       method: 'GET',
+      query: query,
       format: 'json',
       ...params,
     });
