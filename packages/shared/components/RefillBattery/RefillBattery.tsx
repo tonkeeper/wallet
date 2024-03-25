@@ -12,6 +12,7 @@ import { RefillBatteryIAP } from './RefillBatteryIAP';
 import { t } from '@tonkeeper/shared/i18n';
 import { config } from '@tonkeeper/mobile/src/config';
 import { RechargeByPromoButton } from './RechargeByPromoButton';
+import { RestorePurchases } from './RestorePurchases';
 
 const iconNames: { [key: string]: IconNames } = {
   [BatteryState.Empty]: 'ic-empty-battery-128',
@@ -36,20 +37,16 @@ export const RefillBattery = memo(() => {
         <Icon colorless name={iconName} />
         <Spacer y={24} />
         <Text textAlign="center" type="h2">
-          {t(`battery.title.${batteryState.toLowerCase()}`)}
+          {t(`battery.title`)}
         </Text>
         <Spacer y={4} />
         <Text textAlign="center" type="body2" color="textSecondary">
           {t(
             `battery.description.${
-              batteryState === BatteryState.Empty
-                ? 'empty'
-                : availableNumOfTransactionsCount
-                ? 'other'
-                : 'less_10'
+              batteryState === BatteryState.Empty ? 'empty' : 'other'
             }`,
             {
-              cnt: availableNumOfTransactionsCount,
+              count: availableNumOfTransactionsCount.toNumber(),
             },
           )}
         </Text>
@@ -59,9 +56,7 @@ export const RefillBattery = memo(() => {
         {!isInAppPurchasesDisabled ? <RefillBatteryIAP /> : null}
         <RechargeByPromoButton />
         <Spacer y={16} />
-        <Text type="label2" textAlign="center" color="textTertiary">
-          {t('battery.packages.disclaimer')}
-        </Text>
+        <RestorePurchases />
       </View>
     </>
   );

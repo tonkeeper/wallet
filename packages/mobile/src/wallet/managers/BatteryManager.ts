@@ -1,8 +1,9 @@
-import { BatteryAPI } from '@tonkeeper/core/src/BatteryAPI';
+import { BatteryAPI, UnitsEnum } from '@tonkeeper/core/src/BatteryAPI';
 import { MessageConsequences } from '@tonkeeper/core/src/TonAPI';
 import { Storage } from '@tonkeeper/core/src/declarations/Storage';
 import { State } from '@tonkeeper/core/src/utils/State';
 import { TonProofManager } from '$wallet/managers/TonProofManager';
+import { logger, NamespacedLogger } from '$logger';
 
 export interface BatteryState {
   isLoading: boolean;
@@ -15,6 +16,8 @@ export class BatteryManager {
     balance: undefined,
   });
 
+  private logger: NamespacedLogger;
+
   constructor(
     private persistPath: string,
     private tonProof: TonProofManager,
@@ -26,6 +29,7 @@ export class BatteryManager {
       storage: this.storage,
       key: `${this.persistPath}/battery`,
     });
+    this.logger = logger.extend('BatteryManager');
   }
 
   public async fetchBalance() {
@@ -34,11 +38,14 @@ export class BatteryManager {
         throw new Error('No proof token');
       }
       this.state.set({ isLoading: true });
-      const data = await this.batteryapi.getBalance({
-        headers: {
-          'X-TonConnect-Auth': this.tonProof.tonProofToken,
+      const data = await this.batteryapi.getBalance(
+        { units: UnitsEnum.Ton },
+        {
+          headers: {
+            'X-TonConnect-Auth': this.tonProof.tonProofToken,
+          },
         },
-      });
+      );
       this.state.set({ isLoading: false, balance: data.balance });
     } catch (err) {
       this.state.set({ isLoading: false, balance: '0' });
@@ -108,7 +115,7 @@ export class BatteryManager {
 
       return data.transactions;
     } catch (err) {
-      console.log('[ios battery in-app purchase]', err);
+      this.logger.error(err);
     }
   }
 

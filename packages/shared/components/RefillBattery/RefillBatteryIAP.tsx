@@ -3,7 +3,6 @@ import { memo, useCallback, useEffect, useState } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import { tk } from '@tonkeeper/mobile/src/wallet';
 import { Platform } from 'react-native';
-import { goBack } from '@tonkeeper/mobile/src/navigation/imperative';
 import { useIAP } from 'react-native-iap';
 import { SkeletonLine } from '@tonkeeper/mobile/src/uikit/Skeleton/SkeletonLine';
 
@@ -11,23 +10,23 @@ const packages = [
   {
     key: 'large',
     transactions: 700,
-    packageId: 'Battery700',
+    packageId: 'LargePack',
   },
   {
     key: 'medium',
     transactions: 400,
-    packageId: 'Battery400',
+    packageId: 'MediumPack',
   },
   {
     key: 'small',
     transactions: 100,
-    packageId: 'Battery100',
+    packageId: 'SmallPack',
   },
 ];
 
 export const RefillBatteryIAP = memo(() => {
   const [purchaseInProgress, setPurchaseInProgress] = useState<boolean>(false);
-  const { products, getProducts, requestPurchase, connected } = useIAP();
+  const { products, getProducts, requestPurchase, finishTransaction } = useIAP();
 
   useEffect(() => {
     getProducts({
@@ -37,24 +36,51 @@ export const RefillBatteryIAP = memo(() => {
 
   const makePurchase = useCallback(
     (packageId: string) => async () => {
-      setPurchaseInProgress(true);
-      let product = await requestPurchase({ sku: packageId });
-      if (!product) return;
+      try {
+        setPurchaseInProgress(true);
+        let requestedPurchase = await requestPurchase({ sku: packageId });
 
-      if (Array.isArray(product)) product = product[0];
+        if (!requestedPurchase) {
+          return;
+        }
 
-      if (Platform.OS === 'ios') {
-        if (!product.transactionId) return;
-        await tk.wallet.battery.makeIosPurchase([{ id: product.transactionId }]);
-      } else {
-        if (!product.purchaseToken) return;
-        await tk.wallet.battery.makeAndroidPurchase([
-          { token: product.purchaseToken, product_id: product.productId },
-        ]);
+        const purchasesArray = Array.isArray(requestedPurchase)
+          ? requestedPurchase
+          : [requestedPurchase];
+
+        if (Platform.OS === 'ios') {
+          const processedTransactions = await tk.wallet.battery.makeIosPurchase(
+            purchasesArray.map((purchase) => ({ id: purchase.transactionId })),
+          );
+
+          for (let purchase of purchasesArray) {
+            if (
+              !processedTransactions ||
+              !processedTransactions.find(
+                (processedTransaction) =>
+                  purchase.transactionId === processedTransaction.transaction_id,
+              )
+            ) {
+              continue;
+            }
+            await finishTransaction({ purchase, isConsumable: true });
+          }
+        } else if (Platform.OS === 'android') {
+          await tk.wallet.battery.makeAndroidPurchase(
+            purchasesArray.map((purchase) => ({
+              token: purchase.purchaseToken,
+              product_id: purchase.productId,
+            })),
+          );
+        }
+
+        Toast.success(t('battery.refilled'));
+        setPurchaseInProgress(false);
+      } catch (e) {
+        console.log(e);
+        setPurchaseInProgress(false);
+        Toast.fail(e.message);
       }
-      goBack();
-      Toast.success(t('battery.refilled'));
-      setPurchaseInProgress(false);
     },
     [],
   );
@@ -68,10 +94,11 @@ export const RefillBatteryIAP = memo(() => {
           );
           return (
             <List.Item
+              titleContainerStyle={styles.titleContainer.static}
               title={
                 <View>
-                  <View style={styles.titleContainer}>
-                    <Text type="label1">
+                  <View style={styles.priceContainer}>
+                    <Text type="label1" numberOfLines={1} ellipsizeMode="middle">
                       {t(`battery.packages.title`, {
                         price: product?.localizedPrice ?? '',
                         cnt: item.transactions,
@@ -105,9 +132,13 @@ export const RefillBatteryIAP = memo(() => {
 
 const styles = Steezy.create({
   valueContainerStyle: {
+    flex: 1,
     justifyContent: 'center',
   },
   titleContainer: {
+    flex: 2,
+  },
+  priceContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },

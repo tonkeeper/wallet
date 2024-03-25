@@ -15,6 +15,7 @@ import { View } from '../View';
 export interface ListItemProps {
   titleType?: 'primary' | 'secondary';
   title?: string | React.ReactNode;
+  titleContainerStyle?: StyleProp<ViewStyle>;
   titleTextType?: TTextTypes;
   subtitle?: string | React.ReactNode;
   subtitleStyle?: StyleProp<TextStyle>;
@@ -113,7 +114,7 @@ export const ListItem = memo<ListItemProps>((props) => {
           )}
           <View style={styles.lines}>
             <View style={styles.topLine}>
-              <View style={styles.titleContainer}>
+              <View style={[styles.titleContainer, props.titleContainerStyle]}>
                 {isString(props.title) ? (
                   <Text
                     type={
