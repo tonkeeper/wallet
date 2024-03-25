@@ -29,7 +29,7 @@ export class BatteryManager {
       storage: this.storage,
       key: `${this.persistPath}/battery`,
     });
-    this.logger = logger.extend('TonPriceManager');
+    this.logger = logger.extend('BatteryManager');
   }
 
   public async fetchBalance() {
