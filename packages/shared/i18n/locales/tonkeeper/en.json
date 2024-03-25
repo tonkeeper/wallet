@@ -1111,6 +1111,19 @@
     "with_passcode": "Enter Passcode",
     "with_biometry": "Continue with %{type}"
   },
+  "restake_banner": {
+    "title": "Earn more TON with %apy in Tonstakers liquid staking",
+    "unstake_action_all": "Unstake %{amount}",
+    "unstake_action_manual": "Enter manually",
+    "unstake_step": "Unstake TON from your current staking provider.",
+    "wait_step": "Wait until your TON become available.",
+    "wait_step_pending": "Your TON will be available in %duration. After this time you can сollect them.",
+    "stake_into_tonstakers_action": "Stake into Tonstakers",
+    "stake_into_step": "Stake available TON into Tonstakers.",
+    "wait_step_withdraw": "Collect available TON from your previous staking provider.",
+    "wait_step_cooldown": "Your TON will be available soon. You'll be able to collect them shortly.",
+    "wait_step_collect": "Collect"
+  },
   "tokenDetails": {
     "title": "Token Details",
     "tonviewer_button": "View on Tonviewer",

@@ -45,7 +45,11 @@ const ChartComponent: React.FC<ChartProps> = (props) => {
   });
 
   const points = useMemo(
-    () => (data?.points ? data.points.map(([x, y]) => ({ x, y })).reverse() : []),
+    () =>
+      // We need to have at least 5 points to render the chart properly
+      data?.points && data?.points.length > 4
+        ? data.points.map(([x, y]) => ({ x, y })).reverse()
+        : [],
     [data],
   );
 

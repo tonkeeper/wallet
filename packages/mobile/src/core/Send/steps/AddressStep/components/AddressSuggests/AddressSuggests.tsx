@@ -26,6 +26,7 @@ interface Props {
   scrollY: Animated.SharedValue<number>;
   addresses: SuggestedAddress[];
   onPressSuggest: (suggest: SuggestedAddress) => void;
+  cellsDisabled?: boolean;
 }
 
 const AddressSuggestsComponent: FC<Props> = (props) => {
@@ -41,6 +42,7 @@ const AddressSuggestsComponent: FC<Props> = (props) => {
           layout={SequencedTransition.duration(250)}
         >
           <AddressSuggestCell
+            disabled={props.cellsDisabled}
             separator={index < addresses.length - 1}
             scrollY={scrollY}
             suggest={item}

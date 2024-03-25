@@ -45,6 +45,9 @@ export interface WalletsStoreState {
   selectedIdentifier: string;
   biometryEnabled: boolean;
   lockEnabled: boolean;
+}
+
+export interface MigrationState {
   isMigrated: boolean;
 }
 
@@ -77,6 +80,9 @@ export class Tonkeeper {
     selectedIdentifier: '',
     biometryEnabled: false,
     lockEnabled: true,
+  });
+
+  public migrationStore = new State<MigrationState>({
     isMigrated: false,
   });
 
@@ -98,6 +104,11 @@ export class Tonkeeper {
     this.walletsStore.persist({
       storage: this.storage,
       key: 'walletsStore',
+    });
+
+    this.migrationStore.persist({
+      storage: this.storage,
+      key: 'migrationStore',
     });
   }
 
@@ -122,12 +133,18 @@ export class Tonkeeper {
       await Promise.all([
         this.walletsStore.rehydrate(),
         this.tonPrice.rehydrate(),
+        this.migrationStore.rehydrate(),
         this.biometry.detectTypes(),
       ]);
 
+      // @ts-ignore moved to migrationStore, may be set on some clients. So we need to migrate it
+      if (this.walletsStore.data.isMigrated) {
+        this.setMigrated();
+      }
+
       this.tonPrice.load();
 
-      if (!this.walletsStore.data.isMigrated) {
+      if (!this.migrationStore.data.isMigrated) {
         this.migrationData = await this.getMigrationData();
       }
 
@@ -237,7 +254,9 @@ export class Tonkeeper {
       return indexA - indexB;
     });
 
-    this.walletsStore.set(({ wallets }) => ({ wallets: [...wallets, ...sortedWallets] }));
+    await this.walletsStore.setAsync(({ wallets }) => ({
+      wallets: [...wallets, ...sortedWallets],
+    }));
     const walletsInstances = await Promise.all(
       sortedWallets.map((wallet) => this.createWalletInstance(wallet)),
     );
@@ -334,7 +353,9 @@ export class Tonkeeper {
       version,
     };
 
-    this.walletsStore.set(({ wallets }) => ({ wallets: [...wallets, config] }));
+    await this.walletsStore.setAsync(({ wallets }) => ({
+      wallets: [...wallets, config],
+    }));
     const wallet = await this.createWalletInstance(config);
     this.setWallet(wallet);
 
@@ -348,7 +369,7 @@ export class Tonkeeper {
           Array.from(this.wallets.keys()).find((item) => item !== identifier) ?? '',
         ) ?? null;
 
-      this.walletsStore.set(({ wallets }) => ({
+      await this.walletsStore.setAsync(({ wallets }) => ({
         wallets: wallets.filter((w) => w.identifier !== identifier),
         selectedIdentifier: nextWallet?.identifier ?? '',
       }));
@@ -358,7 +379,7 @@ export class Tonkeeper {
       this.wallets.delete(identifier);
 
       if (this.wallets.size === 0) {
-        this.walletsStore.set({ biometryEnabled: false });
+        await this.walletsStore.setAsync({ biometryEnabled: false });
         this.vault.destroy();
       }
 
@@ -369,7 +390,7 @@ export class Tonkeeper {
   }
 
   public async removeAllWallets() {
-    this.walletsStore.set({
+    await this.walletsStore.setAsync({
       wallets: [],
       selectedIdentifier: '',
       biometryEnabled: false,
@@ -441,7 +462,7 @@ export class Tonkeeper {
         },
       );
 
-      this.walletsStore.set({ wallets: updatedWallets });
+      await this.walletsStore.setAsync({ wallets: updatedWallets });
 
       identifiers.forEach((identifier) => {
         const currentConfig = updatedWallets.find(
@@ -496,7 +517,7 @@ export class Tonkeeper {
 
   public setMigrated() {
     console.log('migrated');
-    this.walletsStore.set({ isMigrated: true });
+    this.migrationStore.set({ isMigrated: true });
   }
 
   public saveLastBackupTimestampAll(identifiers: string[], dismissSetup = false) {
@@ -512,7 +533,7 @@ export class Tonkeeper {
   public async enableBiometry(passcode: string) {
     await this.vault.setupBiometry(passcode);
 
-    this.walletsStore.set({ biometryEnabled: true });
+    await this.walletsStore.setAsync({ biometryEnabled: true });
   }
 
   public async disableBiometry() {
@@ -520,14 +541,14 @@ export class Tonkeeper {
       await this.vault.removeBiometry();
     } catch {}
 
-    this.walletsStore.set({ biometryEnabled: false });
+    await this.walletsStore.setAsync({ biometryEnabled: false });
   }
 
   public async enableLock() {
-    this.walletsStore.set({ lockEnabled: true });
+    await this.walletsStore.setAsync({ lockEnabled: true });
   }
 
   public async disableLock() {
-    this.walletsStore.set({ lockEnabled: false });
+    await this.walletsStore.setAsync({ lockEnabled: false });
   }
 }
