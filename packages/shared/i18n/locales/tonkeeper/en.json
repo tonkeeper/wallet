@@ -620,7 +620,7 @@
   "settings_delete_account": "Delete account",
   "settings_delete_alert_button": "Delete account and data",
   "settings_delete_alert_caption": "This action will delete your account and all data from this application.",
-  "settings_delete_alert_title": "\uD83D\uDEA7 \uD83D\uDEA8\uD83D\uDEA8\uD83D\uDEA8 \uD83D\uDEA7\u2028Are you sure you want to delete your account?",
+  "settings_delete_alert_title": "\uD83D\uDEA7 \uD83D\uDEA8\uD83D\uDEA8\uD83D\uDEA8 \uD83D\uDEA7\nAre you sure you want to delete your account?",
   "settings_jettons_list": "Tokens",
   "settings_legal_documents": "Legal",
   "language": {
@@ -650,7 +650,7 @@
   "settings_reset_alert_caption": "This will erase key to your wallet. Make sure you have backed up your recovery phrase.",
   "settings_reset_alert_title": "\uD83D\uDEA7 \uD83D\uDEA8 Sign Out? \uD83D\uDEA8 \uD83D\uDEA7",
   "settings_reset_alert_caption_all": "This will erase keys to all wallets. Make sure you have backed up your recovery phrases.",
-  "settings_reset_alert_title_all": "\uD83D\uDEA7 \uD83D\uDEA8\uD83D\uDEA8\uD83D\uDEA8 \uD83D\uDEA7\u2028Sign Out of All Wallets?",
+  "settings_reset_alert_title_all": "\uD83D\uDEA7 \uD83D\uDEA8\uD83D\uDEA8\uD83D\uDEA8 \uD83D\uDEA7\nSign Out of All Wallets?",
   "settings_delete_watch_account": "Delete Watch Account?",
   "settings_delete_watch_account_button": "Delete",
   "settings_search_engine": "Search",
