@@ -262,6 +262,7 @@ export const NFTSend: FC<Props> = (props) => {
 
       const checkResult = await checkIsInsufficient(totalAmount.toString(), tk.wallet);
       if (!isBattery && checkResult.insufficient) {
+        stepViewRef.current?.go(NFTSendSteps.ADDRESS);
         openInsufficientFundsModal({
           totalAmount: totalAmount.toString(),
           balance: checkResult.balance,

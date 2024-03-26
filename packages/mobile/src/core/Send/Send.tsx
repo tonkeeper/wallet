@@ -287,6 +287,7 @@ export const Send: FC<SendProps> = ({ route }) => {
       }
 
       if (insufficientFundsParams) {
+        goToAmount();
         openInsufficientFundsModal(insufficientFundsParams);
 
         return onFail(new CanceledActionError());
@@ -334,13 +335,13 @@ export const Send: FC<SendProps> = ({ route }) => {
       }
     },
     [
-      fee,
       recipient,
       expiryTimestamp,
       insufficientFundsParams,
       trcPayload.value,
-      isBattery,
+      goToAmount,
       dispatch,
+      fee,
       currencyAdditionalParams,
       currency,
       parsedAmount,
@@ -350,6 +351,7 @@ export const Send: FC<SendProps> = ({ route }) => {
       tokenType,
       jettonWalletAddress,
       decimals,
+      isBattery,
       from,
       unlock,
     ],
