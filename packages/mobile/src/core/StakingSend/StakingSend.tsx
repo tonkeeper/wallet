@@ -344,8 +344,12 @@ export const StakingSend: FC<Props> = (props) => {
       const privateKey = await vault.getTonPrivateKey();
 
       await actionRef.current.send(privateKey);
+
+      const endTimestamp = pool.cycle_end * 1000;
+      const isCooldown = Date.now() > endTimestamp;
+
       if (
-        isWithdrawalConfrim &&
+        (isWithdrawalConfrim || isCooldown) &&
         stakingAddressToMigrateFrom &&
         Address.compare(stakingAddressToMigrateFrom, pool.address)
       ) {
