@@ -110,6 +110,40 @@ export const useNotificationsStore = create(
             };
           });
         },
+        toggleRestakeBanner: (
+          rawAddress: string,
+          showRestakeBanner: boolean,
+          stakingAddressToMigrateFrom?: string,
+        ) => {
+          set((state) => {
+            const wallet = state.wallets[rawAddress];
+            return {
+              wallets: {
+                ...state.wallets,
+                [rawAddress]: {
+                  ...wallet,
+                  showRestakeBanner,
+                  bypassUnstakeStep: false,
+                  ...(stakingAddressToMigrateFrom ? { stakingAddressToMigrateFrom } : {}),
+                },
+              },
+            };
+          });
+        },
+        bypassUnstakeStep: (rawAddress) => {
+          set((state) => {
+            const wallet = state.wallets[rawAddress];
+            return {
+              wallets: {
+                ...state.wallets,
+                [rawAddress]: {
+                  ...wallet,
+                  bypassUnstakeStep: true,
+                },
+              },
+            };
+          });
+        },
         reset: () => set(initialState),
       },
     }),

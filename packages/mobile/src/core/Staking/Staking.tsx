@@ -2,7 +2,7 @@ import { useStakingRefreshControl } from '$hooks/useStakingRefreshControl';
 import { useNavigation } from '@tonkeeper/router';
 import { MainStackRouteNames, openDAppBrowser } from '$navigation';
 import { StakingListCell } from '$shared/components';
-import { FlashCountKeys, useFlashCount } from '$store';
+import { FlashCountKeys, useFlashCount, useNotificationsStore } from '$store';
 import { Button, Icon, ScrollHandler, Spacer, Text } from '$uikit';
 import { List } from '$uikit/List/old/List';
 import { getImplementationIcon, getPoolIcon } from '$utils/staking';
@@ -24,6 +24,8 @@ import { useBalancesState, useJettons, useStakingState } from '@tonkeeper/shared
 import { StakingManager, StakingProvider } from '$wallet/managers/StakingManager';
 import { config } from '$config';
 import { RestakeBanner } from '../../components/RestakeBanner/RestakeBanner';
+import { shallow } from 'zustand/shallow';
+import { tk } from '$wallet';
 
 interface Props {}
 
@@ -36,9 +38,11 @@ export const Staking: FC<Props> = () => {
   const pools = useStakingState((s) => s.pools);
   const stakingInfo = useStakingState((s) => s.stakingInfo);
   const highestApyPool = useStakingState((s) => s.highestApyPool);
-  const showRestakeBanner = useStakingState((s) => s.showRestakeBanner);
-  const stakingAddressToMigrateFrom = useStakingState(
-    (s) => s.stakingAddressToMigrateFrom,
+
+  const rawAddress = tk.wallet.address.ton.raw ?? '';
+  const notificationsStore = useNotificationsStore(
+    (state) => state.wallets[rawAddress],
+    shallow,
   );
 
   const [flashShownCount] = useFlashCount(FlashCountKeys.Staking);
@@ -221,15 +225,17 @@ export const Staking: FC<Props> = () => {
           showsVerticalScrollIndicator={false}
         >
           <S.Content bottomInset={bottomInset}>
-            {showRestakeBanner && stakingAddressToMigrateFrom && (
-              <>
-                <RestakeBanner
-                  migrateFrom={stakingAddressToMigrateFrom}
-                  poolsList={poolsList}
-                />
-                <Spacer y={16} />
-              </>
-            )}
+            {notificationsStore?.showRestakeBanner &&
+              notificationsStore?.stakingAddressToMigrateFrom && (
+                <>
+                  <RestakeBanner
+                    bypassUnstakeStep={notificationsStore?.bypassUnstakeStep}
+                    migrateFrom={notificationsStore?.stakingAddressToMigrateFrom}
+                    poolsList={poolsList}
+                  />
+                  <Spacer y={16} />
+                </>
+              )}
             {!hasActivePools ? (
               <S.LargeTitleContainer>
                 <Text variant="h2">{t('staking.title_large')}</Text>
