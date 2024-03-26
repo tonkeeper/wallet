@@ -399,12 +399,13 @@ export function useDeeplinkingResolvers() {
             amount,
             address,
             comment,
-            jettonWalletAddress: query.jetton,
+            jettonWalletAddress: jettonBalance.walletAddress,
             tokenType: TokenType.Jetton,
             onInsufficientFunds: openInsufficientFundsModal,
             onNext: (details) => {
               const options = {
                 currency: query.jetton,
+                isBattery: details.isBattery,
                 address,
                 comment,
                 amount,

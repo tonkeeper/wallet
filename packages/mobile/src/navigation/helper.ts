@@ -34,6 +34,7 @@ export interface OpenSendParams {
   expiryTimestamp?: number | null;
   redirectToActivity?: boolean;
   currencyAdditionalParams?: CurrencyAdditionalParams;
+  isBattery?: boolean;
 }
 
 export function openSend(params: OpenSendParams = {}) {

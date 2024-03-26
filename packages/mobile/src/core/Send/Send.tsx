@@ -68,6 +68,7 @@ export const Send: FC<SendProps> = ({ route }) => {
     from,
     expiryTimestamp,
     redirectToActivity = true,
+    isBattery: initialIsBattery = false,
   } = route.params;
 
   const initialAddress =
@@ -123,7 +124,7 @@ export const Send: FC<SendProps> = ({ route }) => {
   const [fee, setFee] = useState(initialFee);
 
   const [isInactive, setInactive] = useState(initialIsInactive);
-  const [isBattery, setBattery] = useState(false);
+  const [isBattery, setBattery] = useState(initialIsBattery);
 
   const [insufficientFundsParams, setInsufficientFundsParams] =
     useState<InsufficientFundsParams | null>(null);
