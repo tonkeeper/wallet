@@ -251,6 +251,7 @@ export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
         mediaPlaybackRequiresUserAction={false}
         contentInset={{ top: 0, bottom: 0 }}
         style={styles.webView.static}
+        webviewDebuggingEnabled={config.get('devmode_enabled')}
       />
       {mainButton && mainButton.isVisible && (
         <KeyboardAvoidingView

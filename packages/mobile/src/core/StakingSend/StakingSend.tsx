@@ -37,6 +37,7 @@ import { useCurrencyToSend } from '$hooks/useCurrencyToSend';
 import { SignRawMessage } from '$core/ModalContainer/NFTOperations/TXRequest.types';
 import { useStakingState, useWallet } from '@tonkeeper/shared/hooks';
 import { tk } from '$wallet';
+import { Address } from '@tonkeeper/shared/Address';
 
 interface Props {
   route: RouteProp<AppStackParamList, AppStackRouteNames.StakingSend>;
@@ -57,7 +58,7 @@ const getTitle = (transactionType: StakingTransactionType) => {
 export const StakingSend: FC<Props> = (props) => {
   const {
     route: {
-      params: { poolAddress, transactionType },
+      params: { poolAddress, transactionType, amount: initialAmount },
     },
   } = props;
 
@@ -127,7 +128,7 @@ export const StakingSend: FC<Props> = (props) => {
       ? formatter.format(isWhalesPool ? readyWithdraw : poolInfo.balance.amount, {
           decimals,
         })
-      : '0',
+      : initialAmount ?? '0',
     all: false,
   });
 
@@ -333,19 +334,29 @@ export const StakingSend: FC<Props> = (props) => {
       const privateKey = await vault.getTonPrivateKey();
 
       await actionRef.current.send(privateKey);
+      if (
+        isWithdrawalConfrim &&
+        tk.wallet.staking.state.data.stakingAddressToMigrateFrom &&
+        Address.compare(
+          tk.wallet.staking.state.data.stakingAddressToMigrateFrom,
+          pool.address,
+        )
+      ) {
+        tk.wallet.staking.setBypassStakeStep();
+      }
     } catch (e) {
       throw e;
     } finally {
       setSending(false);
     }
-  }, [isDeposit, pool, totalFee, unlockVault]);
+  }, [isDeposit, isWithdrawalConfrim, pool, totalFee, unlockVault]);
 
   useEffect(() => {
-    if (isWithdrawalConfrim) {
+    if (isWithdrawalConfrim || initialAmount) {
       prepareConfirmSending();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isWithdrawalConfrim]);
+  }, [isWithdrawalConfrim, initialAmount]);
 
   const title = getTitle(transactionType);
 
@@ -367,7 +378,9 @@ export const StakingSend: FC<Props> = (props) => {
         backDisabled={isSending || isPreparing || isWithdrawalConfrim}
         onChangeStep={handleChangeStep}
         initialStepId={
-          isWithdrawalConfrim ? StakingSendSteps.CONFIRM : StakingSendSteps.AMOUNT
+          isWithdrawalConfrim || initialAmount
+            ? StakingSendSteps.CONFIRM
+            : StakingSendSteps.AMOUNT
         }
         useBackHandler
       >

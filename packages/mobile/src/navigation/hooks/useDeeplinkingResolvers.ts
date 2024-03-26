@@ -39,6 +39,7 @@ import { tk } from '$wallet';
 import { config } from '$config';
 import { TokenType } from '$core/Send/Send.interface';
 import { ActionSource } from '$wallet/models/ActivityModel';
+import { StakingTransactionType } from '$core/StakingSend/types';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;
@@ -679,4 +680,21 @@ export function useDeeplinkingResolvers() {
   });
 
   deeplinking.add('/ton-connect/*', tonConnectResolver);
+
+  deeplinking.add('/confirm-withdrawal/:address', ({ params }) => {
+    let address = params.address;
+
+    if (!Address.isValid(address)) {
+      return Toast.fail('transfer_deeplink_address_error');
+    }
+
+    nav.push(AppStackRouteNames.StakingSend, {
+      poolAddress: address,
+      transactionType: StakingTransactionType.WITHDRAWAL_CONFIRM,
+    });
+  });
+
+  deeplinking.add('/staking', () => {
+    nav.push(MainStackRouteNames.Staking);
+  });
 }

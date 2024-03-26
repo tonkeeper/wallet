@@ -45,8 +45,9 @@ export const useUpdatesStore = create(
           }
         },
         startUpdate: async () => {
+          const state = getState();
           let download = RNFS.downloadFile({
-            fromUrl: 'https://data2.ton.app/apk/tonkeeper.apk',
+            fromUrl: `https://data2.ton.app/apk/tonkeeper.apk?requestVersion=${state.meta?.version}`,
             toFile: getUpdatePath(),
             progress: (res) => {
               set({

@@ -22,6 +22,7 @@ import crashlytics from '@react-native-firebase/crashlytics';
 import messaging from '@react-native-firebase/messaging';
 import { withIAPContext } from 'react-native-iap';
 import { startApp } from './src/index';
+import { tk } from './src/wallet';
 
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
@@ -32,13 +33,26 @@ if (__DEV__) {
   getAttachScreenFromStorage();
 }
 
+// TODO: should be address-specified store
 async function handleDappMessage(remoteMessage) {
   // handle data-only messages
   if (remoteMessage.notification?.body) {
     return null;
   }
-  if (!['console_dapp_notification'].includes(remoteMessage.data?.type)) {
+
+  if (
+    !['console_dapp_notification', 'better_stake_option_found', 'collect_stake'].includes(
+      remoteMessage.data?.type,
+    )
+  ) {
     return null;
+  }
+
+  if (remoteMessage.data?.type === 'better_stake_option_found') {
+    tk.wallet.staking.toggleRestakeBanner(
+      true,
+      remoteMessage.data.stakingAddressToMigrateFrom,
+    );
   }
 
   await useNotificationsStore.persist.rehydrate();

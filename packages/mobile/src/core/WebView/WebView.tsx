@@ -7,6 +7,7 @@ import { useTheme } from '$hooks/useTheme';
 import { deviceWidth, isAndroid } from '$utils';
 import { WebViewProps } from './WebView.interface';
 import { useDeeplinking } from '$libs/deeplinking';
+import { config } from '$config';
 
 export const WebView: FC<WebViewProps> = ({ route }) => {
   const webviewRef = useRef<WebviewComponent>(null);
@@ -39,7 +40,7 @@ export const WebView: FC<WebViewProps> = ({ route }) => {
       setLoading(false);
     }, 500);
   }, []);
-  
+
   const handleOpenExternalLink = useCallback((req) => {
     const isHTTPS =
       !req.url.startsWith('https://app.tonkeeper.com') &&
@@ -49,8 +50,8 @@ export const WebView: FC<WebViewProps> = ({ route }) => {
       return true;
     } else {
       console.log(req.url);
-      deeplinking.resolve(req.url, { 
-        params: { withGoBack: false } 
+      deeplinking.resolve(req.url, {
+        params: { withGoBack: false },
       });
 
       return false;
@@ -104,6 +105,7 @@ export const WebView: FC<WebViewProps> = ({ route }) => {
           allowsFullscreenVideo
           keyboardDisplayRequiresUserAction={false}
           mediaPlaybackRequiresUserAction={false}
+          webviewDebuggingEnabled={config.get('devmode_enabled')}
         />
       </S.Wrap>
     </>

@@ -119,6 +119,7 @@ export const IconList = {
   'ic-wallet-28': require('../../../assets/icons/png/ic-wallet-28.png'),
   'ic-warning-28': require('../../../assets/icons/png/ic-warning-28.png'),
   'ic-xmark-28': require('../../../assets/icons/png/ic-xmark-28.png'),
+  'ic-xmark-outline-28': require('../../../assets/icons/png/ic-xmark-outline-28.png'),
   'ic-checkmark-circle-32': require('../../../assets/icons/png/ic-checkmark-circle-32.png'),
   'ic-exclamationmark-circle-32': require('../../../assets/icons/png/ic-exclamationmark-circle-32.png'),
   'ic-delete-36': require('../../../assets/icons/png/ic-delete-36.png'),

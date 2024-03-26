@@ -168,6 +168,7 @@ export const BuyFiat: FC<BuyFiatProps> = ({ route }) => {
         allowsFullscreenVideo
         keyboardDisplayRequiresUserAction={false}
         mediaPlaybackRequiresUserAction={false}
+        webviewDebuggingEnabled={config.get('devmode_enabled')}
       />
       {isLoading && (
         <S.LoaderWrap>

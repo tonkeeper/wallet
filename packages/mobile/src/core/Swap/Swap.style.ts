@@ -1,4 +1,4 @@
-import { NavBarHeight, Opacity } from '$shared/constants';
+import { Opacity } from '$shared/constants';
 import styled from '$styled';
 import { hNs, ns } from '$utils';
 import WebView from 'react-native-webview';

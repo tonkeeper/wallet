@@ -15,6 +15,7 @@ import { DevFeature, useDevFeaturesToggle } from '@tonkeeper/mobile/src/store';
 import { tk } from '@tonkeeper/mobile/src/wallet';
 import { useUnlockVault } from '@tonkeeper/mobile/src/core/ModalContainer/NFTOperations/useUnlockVault';
 import { getLastEnteredPasscode } from '@tonkeeper/mobile/src/store/wallet/sagas';
+import { config } from '@tonkeeper/mobile/src/config';
 
 interface AddWalletModalProps {
   isTonConnect?: boolean;
@@ -114,7 +115,7 @@ export const AddWalletModal = memo<AddWalletModalProps>(({ isTonConnect }) => {
               />
             </List>
           ) : null}
-          {devFeatures[DevFeature.ShowTestnet] ? (
+          {config.get('devmode_enabled') ? (
             <List>
               <List.Item
                 onPress={() => {
