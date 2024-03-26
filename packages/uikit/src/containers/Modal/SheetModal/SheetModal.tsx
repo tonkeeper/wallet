@@ -19,6 +19,7 @@ import { useTheme } from '../../../styles';
 
 import { useSheetInternal } from '@tonkeeper/router';
 import { Easing, ReduceMotion, useReducedMotion } from 'react-native-reanimated';
+import { Handle, InteractionManager } from 'react-native';
 
 export type SheetModalRef = BottomSheetModal;
 
@@ -64,10 +65,15 @@ export const SheetModal = memo(
       return initialState === 'closed' ? -1 : 0;
     }, []);
 
+    const interactionHandle = useRef<Handle | null>(null);
+
     useEffect(() => {
       delegateMethods({
         present: () => bottomSheetRef.current?.snapToIndex(0),
-        close: () => bottomSheetRef.current?.close(),
+        close: () => {
+          interactionHandle.current = InteractionManager.createInteractionHandle();
+          bottomSheetRef.current?.close();
+        },
       });
     }, []);
 
@@ -83,6 +89,10 @@ export const SheetModal = memo(
     );
 
     const handleClose = useCallback(async () => {
+      if (interactionHandle.current !== null) {
+        InteractionManager.clearInteractionHandle(interactionHandle.current);
+        interactionHandle.current = null;
+      }
       if (ignoreOnClose) {
         return;
       }
