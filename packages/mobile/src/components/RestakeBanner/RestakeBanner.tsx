@@ -82,13 +82,17 @@ export const RestakeBanner = memo<RestakeBannerProps>((props) => {
 
   const handleWithdrawal = useCallback(
     (pool: ExtendedPoolInfo, withdrawAll?: boolean) => () => {
+      if (pool.implementation === PoolImplementationType.Tf) {
+        nav.push(AppStackRouteNames.StakingSend, {
+          poolAddress: pool.address,
+          transactionType: StakingTransactionType.WITHDRAWAL_CONFIRM,
+        });
+        return;
+      }
       nav.push(AppStackRouteNames.StakingSend, {
         amount: withdrawAll && pool.balance,
         poolAddress: pool.address,
-        transactionType:
-          pool.implementation === PoolImplementationType.Tf
-            ? StakingTransactionType.WITHDRAWAL_CONFIRM
-            : StakingTransactionType.WITHDRAWAL,
+        transactionType: StakingTransactionType.WITHDRAWAL,
       });
     },
     [nav],
@@ -202,12 +206,14 @@ export const RestakeBanner = memo<RestakeBannerProps>((props) => {
                   }),
                 })}
               />,
-              <Button
-                color="tertiary"
-                size="small"
-                onPress={handleWithdrawal(poolToWithdrawal)}
-                title={t('restake_banner.unstake_action_manual')}
-              />,
+              poolToWithdrawal.implementation !== PoolImplementationType.Tf && (
+                <Button
+                  color="tertiary"
+                  size="small"
+                  onPress={handleWithdrawal(poolToWithdrawal)}
+                  title={t('restake_banner.unstake_action_manual')}
+                />
+              ),
             ]
           }
           stepId={RestakeSteps.UNSTAKE}
