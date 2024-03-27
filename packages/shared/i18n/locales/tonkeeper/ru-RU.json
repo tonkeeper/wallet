@@ -611,7 +611,7 @@
   "settings_delete_account" : "Удалить аккаунт",
   "settings_delete_alert_button" : "Удалить аккаунт и данные",
   "settings_delete_alert_caption" : "Это действие приведет к удалению вашего аккаунта и всех данных из этого приложения.",
-  "settings_delete_alert_title": "\uD83D\uDEA7 \uD83D\uDEA8\uD83D\uDEA8\uD83D\uDEA8 \uD83D\uDEA7\nВы уверены, что хотите удалить аккаунт?",
+  "settings_delete_alert_title": "\uD83D\uDEA8\uD83D\uDEA8\uD83D\uDEA8%{space}Вы уверены, что хотите удалить аккаунт?",
   "settings_jettons_list" : "Токены",
   "settings_legal_documents" : "Юридические документы",
   "language": {

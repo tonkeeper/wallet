@@ -620,7 +620,7 @@
   "settings_delete_account": "Delete account",
   "settings_delete_alert_button": "Delete account and data",
   "settings_delete_alert_caption": "This action will delete your account and all data from this application.",
-  "settings_delete_alert_title": "\uD83D\uDEA7 \uD83D\uDEA8\uD83D\uDEA8\uD83D\uDEA8 \uD83D\uDEA7\nAre you sure you want to delete your account?",
+  "settings_delete_alert_title": "\uD83D\uDEA8\uD83D\uDEA8\uD83D\uDEA8%{space}Are you sure you want to delete your account?",
   "settings_jettons_list": "Tokens",
   "settings_legal_documents": "Legal",
   "language": {
