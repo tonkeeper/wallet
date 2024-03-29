@@ -265,7 +265,7 @@ export const Settings: FC = () => {
   }, [hasDiamods, flags.disable_apperance]);
 
   const handleOpenHolders = useCallback(() => {
-    enroll(() => nav.push(MainStackRouteNames.HoldersWebView));
+    enroll(() => nav.push(MainStackRouteNames.HoldersWebView, { path: '/create' }));
   }, [enroll, nav]);
 
   return (
