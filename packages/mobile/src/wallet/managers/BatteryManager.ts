@@ -142,6 +142,25 @@ export class BatteryManager {
     }
   }
 
+  public async getStatus() {
+    try {
+      if (!this.tonProof.tonProofToken) {
+        throw new Error('No proof token');
+      }
+
+      const data = await this.batteryapi.getStatus({
+        headers: {
+          'X-TonConnect-Auth': this.tonProof.tonProofToken,
+        },
+      });
+
+      return data.pending_transactions;
+    } catch (err) {
+      logger.error('getStatus error');
+      return [];
+    }
+  }
+
   public async sendMessage(boc: string) {
     try {
       if (!this.tonProof.tonProofToken) {

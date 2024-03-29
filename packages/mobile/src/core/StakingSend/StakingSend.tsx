@@ -276,6 +276,13 @@ export const StakingSend: FC<Props> = (props) => {
     try {
       setSending(true);
 
+      const pendingTransactions = await tk.wallet.battery.getStatus();
+      if (pendingTransactions.length) {
+        Toast.fail(t('transfer_pending_by_battery_error'));
+        await delay(200);
+        throw new CanceledActionError();
+      }
+
       const totalAmount = calculateMessageTransferAmount(messages.current);
       const checkResult = await checkIsInsufficient(totalAmount, tk.wallet);
       if (checkResult.insufficient) {

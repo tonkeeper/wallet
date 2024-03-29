@@ -5,7 +5,7 @@ import { StepView, StepViewItem, StepViewRef } from '$shared/components';
 import { CryptoCurrencies, CryptoCurrency, Decimals } from '$shared/constants';
 import { walletActions } from '$store/wallet';
 import { NavBar, Text } from '$uikit';
-import { parseLocaleNumber } from '$utils';
+import { delay, parseLocaleNumber } from '$utils';
 import React, {
   FC,
   useCallback,
@@ -278,6 +278,13 @@ export const Send: FC<SendProps> = ({ route }) => {
     async (onDone: () => void, onFail: (e?: Error) => void) => {
       if (!recipient) {
         return onFail(new DismissedActionError());
+      }
+
+      const pendingTransactions = await tk.wallet.battery.getStatus();
+      if (pendingTransactions.length) {
+        Toast.fail(t('transfer_pending_by_battery_error'));
+        await delay(200);
+        return onFail(new CanceledActionError());
       }
 
       if (expiryTimestamp && expiryTimestamp < getTimeSec()) {

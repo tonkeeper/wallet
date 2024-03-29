@@ -237,6 +237,13 @@ export const NFTSend: FC<Props> = (props) => {
     try {
       setSending(true);
 
+      const pendingTransactions = await tk.wallet.battery.getStatus();
+      if (pendingTransactions.length) {
+        Toast.fail(t('transfer_pending_by_battery_error'));
+        await delay(200);
+        throw new CanceledActionError();
+      }
+
       const vault = await unlockVault();
       const privateKey = await vault.getTonPrivateKey();
 

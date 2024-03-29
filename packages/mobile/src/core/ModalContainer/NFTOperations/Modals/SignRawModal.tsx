@@ -44,6 +44,7 @@ import {
   TokenDetailsProps,
 } from '../../../../components/TokenDetails/TokenDetails';
 import { ModalStackRouteNames } from '$navigation';
+import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
 
 interface SignRawModalProps {
   consequences?: MessageConsequences;
@@ -82,7 +83,14 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
 
   const handleOpenTokenDetails = (tokenDetailsParams: TokenDetailsParams) => () =>
     nav.navigate(ModalStackRouteNames.TokenDetails, tokenDetailsParams);
+
   const handleConfirm = onConfirm(async ({ startLoading }) => {
+    const pendingTransactions = await tk.wallet.battery.getStatus();
+    if (pendingTransactions.length) {
+      Toast.fail(t('transfer_pending_by_battery_error'));
+      await delay(200);
+      throw new CanceledActionError();
+    }
     const vault = await unlockVault(wallet.identifier);
     const privateKey = await vault.getTonPrivateKey();
 
