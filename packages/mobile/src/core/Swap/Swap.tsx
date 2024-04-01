@@ -83,6 +83,7 @@ export const Swap: FC<Props> = (props) => {
           openSignRawModal(
             request,
             {
+              experimentalWithBattery: true,
               expires_sec: valid_until,
               response_options: {
                 broadcast: false,

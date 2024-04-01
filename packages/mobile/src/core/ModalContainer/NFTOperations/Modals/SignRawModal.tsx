@@ -39,12 +39,10 @@ import {
   AnyActionItem,
 } from '$wallet/models/ActivityModel';
 import { JettonTransferAction, NftItemTransferAction } from 'tonapi-sdk-js';
-import {
-  TokenDetailsParams,
-  TokenDetailsProps,
-} from '../../../../components/TokenDetails/TokenDetails';
+import { TokenDetailsParams } from '../../../../components/TokenDetails/TokenDetails';
 import { ModalStackRouteNames } from '$navigation';
 import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
+import { emulateWithBattery } from '@tonkeeper/shared/utils/blockchain';
 
 interface SignRawModalProps {
   consequences?: MessageConsequences;
@@ -101,8 +99,12 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
       Buffer.from(vault.tonPublicKey),
       vault.workchain,
     );
+
     const boc = TransactionService.createTransfer(contract, {
-      messages: TransactionService.parseSignRawMessages(params.messages),
+      messages: TransactionService.parseSignRawMessages(
+        params.messages,
+        isBattery ? await tk.wallet.battery.getExcessesAccount() : undefined,
+      ),
       seqno: await getWalletSeqno(wallet),
       sendMode: 3,
       secretKey: Buffer.from(privateKey),
@@ -126,7 +128,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
     return () => {
       onDismiss?.();
     };
-  }, []);
+  }, [onDismiss]);
 
   const actions = useMemo(() => {
     if (consequences) {
@@ -327,9 +329,16 @@ export const openSignRawModal = async (
         seqno: await getWalletSeqno(wallet),
         secretKey: Buffer.alloc(64),
       });
-      consequences = await wallet.tonapi.wallet.emulateMessageToWallet({
-        boc,
-      });
+
+      if (options.experimentalWithBattery) {
+        const { emulateResult, battery } = await emulateWithBattery(boc);
+        consequences = emulateResult;
+        isBattery = battery;
+      } else {
+        consequences = await wallet.tonapi.wallet.emulateMessageToWallet({
+          boc,
+        });
+      }
 
       if (!isBattery) {
         const totalAmount = calculateMessageTransferAmount(params.messages);

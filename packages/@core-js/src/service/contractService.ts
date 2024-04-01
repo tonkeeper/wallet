@@ -8,6 +8,11 @@ import {
 import { WalletContractV3R1, WalletContractV3R2, WalletContractV4 } from '@ton/ton';
 import nacl from 'tweetnacl';
 
+export enum OpCodes {
+  JETTON_TRANSFER = 0xf8a7ea5,
+  NFT_TRANSFER = 0x5fcc3d14,
+}
+
 export enum WalletVersion {
   v3R1 = 0,
   v3R2 = 1,
@@ -89,7 +94,7 @@ export class ContractService {
 
   static createNftTransferBody(createNftTransferBodyParams: CreateNftTransferBodyParams) {
     return beginCell()
-      .storeUint(0x5fcc3d14, 32)
+      .storeUint(OpCodes.NFT_TRANSFER, 32)
       .storeUint(
         createNftTransferBodyParams.queryId || ContractService.getWalletQueryId(),
         64,
@@ -106,7 +111,7 @@ export class ContractService {
     createJettonTransferBodyParams: CreateJettonTransferBodyParams,
   ) {
     return beginCell()
-      .storeUint(0xf8a7ea5, 32) // request_transfer op
+      .storeUint(OpCodes.JETTON_TRANSFER, 32)
       .storeUint(
         createJettonTransferBodyParams.queryId || ContractService.getWalletQueryId(),
         64,
