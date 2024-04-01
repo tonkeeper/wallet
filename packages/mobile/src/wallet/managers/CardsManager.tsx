@@ -14,6 +14,8 @@ export interface AccountCard {
   kind: string;
 }
 
+export type PrepaidCard = AccountCard & { type: 'PREPAID'; fiatBalance: string };
+
 export interface AccountState {
   id: string;
   address: string;
@@ -82,6 +84,7 @@ export type IAccountState =
 export interface CardsState {
   onboardBannerDismissed: boolean;
   accounts: AccountState[];
+  prepaidCards: PrepaidCard[];
   token?: string;
   accountsLoading: boolean;
   accountState?: IAccountState;
@@ -100,6 +103,7 @@ export class CardsManager {
     accountStateLoading: false,
     accountsPrivate: null,
     accountsPrivateLoading: false,
+    prepaidCards: [],
   };
   public state = new State<CardsState>(CardsManager.INITIAL_STATE);
 
@@ -118,12 +122,14 @@ export class CardsManager {
         accountState,
         accountsPrivate,
         token,
+        prepaidCards,
       }) => ({
         onboardBannerDismissed,
         accounts,
         token,
         accountState,
         accountsPrivate,
+        prepaidCards,
       }),
       storage: this.storage,
       key: `${this.persistPath}/cards`,
@@ -234,8 +240,12 @@ export class CardsManager {
         this.state.set({ accountsPrivateLoading: false, accountsPrivate: undefined });
         return null;
       }
-      this.state.set({ accountsPrivateLoading: false, accountsPrivate: data.list });
-    } catch {
+      this.state.set({
+        accountsPrivateLoading: false,
+        accountsPrivate: data.list,
+        prepaidCards: data.prepaidCards,
+      });
+    } catch (e) {
       this.state.set({ accountsPrivateLoading: false });
     }
   }
@@ -243,6 +253,9 @@ export class CardsManager {
   public async load() {
     if (!this.isEnabled) {
       return;
+    }
+    if (this.state.data.token) {
+      await this.fetchAccountsPrivate();
     }
     return await this.fetchAccount();
   }

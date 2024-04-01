@@ -65,8 +65,11 @@ export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
   });
   const { isLoading: isAccountStateLoading, data: accountState } =
     useHoldersAccountState();
-  const { isLoading: isAccountsPrivateLoading, data: accountsPrivate } =
-    useHoldersAccountsPrivate();
+  const {
+    isLoading: isAccountsPrivateLoading,
+    data: accountsPrivate,
+    prepaidCards,
+  } = useHoldersAccountsPrivate();
   const currency = useWalletCurrency();
   const endpoint = config.get('holdersAppEndpoint', tk.wallet.isTestnet);
 
@@ -217,7 +220,7 @@ export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
           suspended: accountState?.suspended || false,
         },
       },
-      ...(accountsPrivate?.length ? { accountsList: accountsPrivate } : {}),
+      ...(accountsPrivate?.length ? { accountsList: accountsPrivate, prepaidCards } : {}),
     };
 
     return createInjectSource({

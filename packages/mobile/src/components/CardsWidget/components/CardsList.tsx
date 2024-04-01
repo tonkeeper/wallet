@@ -1,5 +1,5 @@
 import React, { memo, useCallback } from 'react';
-import { AccountState } from '$wallet/managers/CardsManager';
+import { AccountState, PrepaidCard } from '$wallet/managers/CardsManager';
 import { List, Steezy, TonIcon, View } from '@tonkeeper/uikit';
 import { formatter } from '@tonkeeper/shared/formatter';
 import { MainStackRouteNames } from '$navigation';
@@ -18,6 +18,7 @@ const CARD_DESIGN_3 = require('../../../../../uikit/assets/cardDesigns/design-3.
 
 export interface CardsListProps {
   accounts: AccountState[];
+  prepaidCards: PrepaidCard[];
 }
 
 const fontFamily = Platform.select({
@@ -70,6 +71,23 @@ export const CardsList = memo<CardsListProps>((props) => {
             ))}
           </View>
         </List.Item>
+      ))}
+      {props.prepaidCards.map((card) => (
+        <List.Item
+          onPress={openWebView(props.accounts[0]?.id)}
+          leftContent={
+            <View key={card.lastFourDigits} style={[styles.cardIcon]}>
+              <Image source={CARD_DESIGN_3} style={styles.cardCover.static} />
+              <Text style={cardNumberStyle}>{card.lastFourDigits}</Text>
+              <View style={styles.mastercardLogoContainer}>
+                <Image source={MC_LOGO_IMAGE} style={styles.mastercardLogo.static} />
+              </View>
+            </View>
+          }
+          value={card.fiatBalance}
+          subtitle={'Prepaid card'}
+          title={`* ${card.lastFourDigits}`}
+        />
       ))}
     </List>
   );

@@ -15,7 +15,7 @@ export const CardsWidget = memo(() => {
       ) : null}
       {state.accounts.filter((account) => account.state === 'ACTIVE').length ? (
         <>
-          <CardsList accounts={state.accounts} />
+          <CardsList prepaidCards={state.prepaidCards} accounts={state.accounts} />
           <Spacer y={16} />
         </>
       ) : null}
