@@ -129,8 +129,9 @@
     "settings": "Battery",
     "ok": "OK",
     "title": "Tonkeeper Battery",
+    "supported_transactions": "Supported transactions",
     "description": {
-      "empty": "Send tokens and NFTs, pay for staking actions with empty main balance.",
+      "empty": "Swap, send tokens and NFTs.",
       "other": {
         "few": "Your battery has %{count} charges",
         "many": "Your battery has %{count} charges",
@@ -153,7 +154,7 @@
         "small": "Small Pack"
       },
       "disclaimer": "One charge covers the average transaction fee. Some transactions may cost more.",
-      "restore": "Restore Purchases.",
+      "restore": "Restore Purchases",
       "buy": "Buy",
       "ok": "OK",
       "refilled": "Your battery is charged"

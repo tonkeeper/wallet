@@ -6,7 +6,15 @@ import {
 
 import { memo } from 'react';
 import { useBatteryBalance } from '../../query/hooks/useBatteryBalance';
-import { Icon, IconNames, Spacer, Steezy, Text, View } from '@tonkeeper/uikit';
+import {
+  Icon,
+  IconNames,
+  Spacer,
+  Steezy,
+  Text,
+  TouchableOpacity,
+  View,
+} from '@tonkeeper/uikit';
 import { navigation, SheetActions } from '@tonkeeper/router';
 import { RefillBatteryIAP } from './RefillBatteryIAP';
 import { t } from '@tonkeeper/shared/i18n';
@@ -50,6 +58,13 @@ export const RefillBattery = memo(() => {
             },
           )}
         </Text>
+        {batteryState === BatteryState.Empty && (
+          <TouchableOpacity>
+            <Text textAlign="center" type="body2" color="textAccent">
+              {t('battery.supported_transactions')}
+            </Text>
+          </TouchableOpacity>
+        )}
         <Spacer y={16} />
       </View>
       <View style={styles.indent}>

@@ -122,6 +122,11 @@ export type IconNames =
   | 'ic-xmark-outline-28'
   | 'ic-checkmark-circle-32'
   | 'ic-exclamationmark-circle-32'
+  | 'ic-almost-empty-battery-34'
+  | 'ic-empty-battery-accent-flash-34'
+  | 'ic-empty-battery-flash-34'
+  | 'ic-full-battery-34'
+  | 'ic-medium-battery-34'
   | 'ic-delete-36'
   | 'ic-exclamationmark-triangle-36'
   | 'ic-faceid-36'
@@ -268,6 +273,11 @@ export const AllIcons = [
   'ic-xmark-outline-28',
   'ic-checkmark-circle-32',
   'ic-exclamationmark-circle-32',
+  'ic-almost-empty-battery-34',
+  'ic-empty-battery-accent-flash-34',
+  'ic-empty-battery-flash-34',
+  'ic-full-battery-34',
+  'ic-medium-battery-34',
   'ic-delete-36',
   'ic-exclamationmark-triangle-36',
   'ic-faceid-36',
@@ -415,6 +425,11 @@ export const IconSizes = {
   'ic-xmark-outline-28': 28,
   'ic-checkmark-circle-32': 32,
   'ic-exclamationmark-circle-32': 32,
+  'ic-almost-empty-battery-34': 34,
+  'ic-empty-battery-accent-flash-34': 34,
+  'ic-empty-battery-flash-34': 34,
+  'ic-full-battery-34': 34,
+  'ic-medium-battery-34': 34,
   'ic-delete-36': 36,
   'ic-exclamationmark-triangle-36': 36,
   'ic-faceid-36': 36,

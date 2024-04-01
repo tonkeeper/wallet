@@ -31,6 +31,11 @@ export const TextTypes = StyleSheet.create({
     lineHeight: nfs(36),
     fontFamily: Font.Medium,
   },
+  num3: {
+    fontSize: nfs(44),
+    lineHeight: nfs(56),
+    fontFamily: Font.SemiBold,
+  },
   h1: {
     fontSize: nfs(32),
     lineHeight: nfs(40),
