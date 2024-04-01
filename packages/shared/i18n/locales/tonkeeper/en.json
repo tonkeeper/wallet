@@ -124,12 +124,33 @@
   "auth_failed": "Authentication failed",
   "balances_setup_wallet": "Set up wallet",
   "battery": {
+    "send_widget": {
+      "battery": "Battery"
+    },
+    "transactions": {
+      "types": {
+        "nft": "NFT transfers",
+        "swap": "swaps",
+        "jetton": "jetton transfers",
+        "ton": "TON transfers"
+      },
+      "title": "Transactions",
+      "settings": "Battery Settings",
+      "will_be_paid": "Will be paid: %{enabledTransactions}",
+      "description": "Selected transactions will be paid by Tonkeeper Battery.",
+      "supported": "Supported transactions",
+      "charges_per_swap": {
+        "few": "≈ %{count} charges per swap",
+        "other": "≈ %{count} charges per swap",
+        "one": "≈ %{count} charge per swap",
+        "many": "≈ %{count} charges per swap"
+      }
+    },
     "refilled": "Battery refilled",
     "screen_title": "Battery",
     "settings": "Battery",
     "ok": "OK",
     "title": "Tonkeeper Battery",
-    "supported_transactions": "Supported transactions",
     "description": {
       "empty": "Swap, send tokens and NFTs.",
       "other": {
@@ -147,11 +168,16 @@
       "success": "Your battery is charged"
     },
     "packages": {
-      "title": "Charges for {{price}}",
+      "title": {
+        "large": "Large",
+        "medium": "Medium",
+        "small": "Small"
+      },
       "subtitle": {
-        "large": "Large Pack",
-        "medium": "Medium Pack",
-        "small": "Small Pack"
+        "few": "%{count} charges",
+        "other": "%{count} charges",
+        "one": "%{count} charge",
+        "many": "%{count} charges"
       },
       "disclaimer": "One charge covers the average transaction fee. Some transactions may cost more.",
       "restore": "Restore Purchases",

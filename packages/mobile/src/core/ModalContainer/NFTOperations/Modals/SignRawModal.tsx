@@ -42,7 +42,7 @@ import { JettonTransferAction, NftItemTransferAction } from 'tonapi-sdk-js';
 import { TokenDetailsParams } from '../../../../components/TokenDetails/TokenDetails';
 import { ModalStackRouteNames } from '$navigation';
 import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
-import { emulateWithBattery } from '@tonkeeper/shared/utils/blockchain';
+import { emulateBoc, sendBoc } from '@tonkeeper/shared/utils/blockchain';
 
 interface SignRawModalProps {
   consequences?: MessageConsequences;
@@ -110,12 +110,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
       secretKey: Buffer.from(privateKey),
     });
 
-    await wallet.tonapi.blockchain.sendBlockchainMessage(
-      {
-        boc,
-      },
-      { format: 'text' },
-    );
+    await sendBoc(boc, isBattery);
 
     if (onSuccess) {
       trackEvent(Events.SendSuccess, { from: SendAnalyticsFrom.SignRaw });
@@ -330,15 +325,12 @@ export const openSignRawModal = async (
         secretKey: Buffer.alloc(64),
       });
 
-      if (options.experimentalWithBattery) {
-        const { emulateResult, battery } = await emulateWithBattery(boc);
-        consequences = emulateResult;
-        isBattery = battery;
-      } else {
-        consequences = await wallet.tonapi.wallet.emulateMessageToWallet({
-          boc,
-        });
-      }
+      const { emulateResult, battery } = await emulateBoc(
+        boc,
+        options.experimentalWithBattery,
+      );
+      consequences = emulateResult;
+      isBattery = battery;
 
       if (!isBattery) {
         const totalAmount = calculateMessageTransferAmount(params.messages);

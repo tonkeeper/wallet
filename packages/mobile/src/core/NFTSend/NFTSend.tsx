@@ -35,10 +35,7 @@ import { delay } from '$utils';
 import { Toast } from '$store';
 import axios from 'axios';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
-import {
-  emulateWithBattery,
-  sendBocWithBattery,
-} from '@tonkeeper/shared/utils/blockchain';
+import { emulateBoc, sendBoc } from '@tonkeeper/shared/utils/blockchain';
 import {
   checkIsInsufficient,
   openInsufficientFundsModal,
@@ -48,9 +45,10 @@ import { Keyboard } from 'react-native';
 import nacl from 'tweetnacl';
 import { useInstance } from '$hooks/useInstance';
 import { AccountsApi, Configuration } from '@tonkeeper/core/src/legacy';
-import { useWallet } from '@tonkeeper/shared/hooks';
+import { useIsEnabledForBattery, useWallet } from '@tonkeeper/shared/hooks';
 import { tk } from '$wallet';
 import { config } from '$config';
+import { BatterySupportedTransaction } from '$wallet/managers/BatteryManager';
 
 interface Props {
   route: RouteProp<AppStackParamList, AppStackRouteNames.NFTSend>;
@@ -63,6 +61,9 @@ export const NFTSend: FC<Props> = (props) => {
     },
   } = props;
 
+  const isNFTSendEnabledWithRelayer = useIsEnabledForBattery(
+    BatterySupportedTransaction.NFT,
+  );
   const wallet = useWallet();
   const stepViewRef = useRef<StepViewRef>(null);
 
@@ -155,9 +156,10 @@ export const NFTSend: FC<Props> = (props) => {
         secretKey: Buffer.alloc(64),
       });
 
-      const response = await emulateWithBattery(
+      const response = await emulateBoc(
         boc,
         [setBalanceForEmulation(toNano('2'))], // Emulate with higher balance to calculate fair amount to send
+        isNFTSendEnabledWithRelayer,
       );
 
       setConsequences(response.emulateResult);
@@ -178,7 +180,17 @@ export const NFTSend: FC<Props> = (props) => {
     } finally {
       setPreparing(false);
     }
-  }, [comment, isCommentEncrypted, nftAddress, recipient, wallet]);
+  }, [
+    comment,
+    isCommentEncrypted,
+    isNFTSendEnabledWithRelayer,
+    nftAddress,
+    recipient,
+    wallet.address.ton.raw,
+    wallet.config.version,
+    wallet.config.workchain,
+    wallet.pubkey,
+  ]);
 
   const accountsApi = useInstance(() => {
     const tonApiConfiguration = new Configuration({
@@ -307,7 +319,7 @@ export const NFTSend: FC<Props> = (props) => {
         secretKey: Buffer.from(privateKey),
       });
 
-      await sendBocWithBattery(boc);
+      await sendBoc(boc, isBattery);
     } catch (e) {
       throw e;
     } finally {

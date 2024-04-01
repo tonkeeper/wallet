@@ -5,15 +5,27 @@ import { State } from '@tonkeeper/core/src/utils/State';
 import { TonProofManager } from '$wallet/managers/TonProofManager';
 import { logger, NamespacedLogger } from '$logger';
 
+export enum BatterySupportedTransaction {
+  NFT = 'nft',
+  Jetton = 'jetton',
+  Swap = 'swap',
+}
+
 export interface BatteryState {
   isLoading: boolean;
   balance?: string;
+  supportedTransactions: Record<BatterySupportedTransaction, boolean>;
 }
 
 export class BatteryManager {
   public state = new State<BatteryState>({
     isLoading: false,
     balance: undefined,
+    supportedTransactions: {
+      [BatterySupportedTransaction.NFT]: true,
+      [BatterySupportedTransaction.Jetton]: true,
+      [BatterySupportedTransaction.Swap]: true,
+    },
   });
 
   private logger: NamespacedLogger;
@@ -25,7 +37,10 @@ export class BatteryManager {
     private storage: Storage,
   ) {
     this.state.persist({
-      partialize: ({ balance }) => ({ balance }),
+      partialize: ({ balance, supportedTransactions }) => ({
+        balance,
+        supportedTransactions,
+      }),
       storage: this.storage,
       key: `${this.persistPath}/battery`,
     });
@@ -117,6 +132,19 @@ export class BatteryManager {
     } catch (err) {
       this.logger.error(err);
     }
+  }
+
+  public async setSupportedTransaction(
+    transaction: BatterySupportedTransaction,
+    supported: boolean,
+  ) {
+    this.state.set((state) => ({
+      ...state,
+      supportedTransactions: {
+        ...state.supportedTransactions,
+        [transaction]: supported,
+      },
+    }));
   }
 
   public async makeAndroidPurchase(purchases: { token: string; product_id: string }[]) {

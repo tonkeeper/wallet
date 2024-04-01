@@ -132,8 +132,8 @@ export function openSelectLanguage() {
   push(SettingsStackRouteNames.Language);
 }
 
-export function openRefillBattery() {
-  push(SettingsStackRouteNames.RefillBattery);
+export function openRefillBatteryModal() {
+  push(AppStackRouteNames.RefillBattery);
 }
 
 export function openManageTokens(initialTab?: string) {

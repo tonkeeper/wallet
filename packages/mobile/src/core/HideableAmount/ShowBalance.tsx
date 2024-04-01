@@ -34,7 +34,7 @@ export const ShowBalance: React.FC<{ amount: string }> = ({ amount }) => {
         </View>
       ) : (
         <TouchableOpacity activeOpacity={0.6} onPress={handleToggleHideAmounts}>
-          <Text type="num2">{amount}</Text>
+          <Text type="num3">{amount}</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -43,9 +43,12 @@ export const ShowBalance: React.FC<{ amount: string }> = ({ amount }) => {
 
 const styles = Steezy.create(({ colors }) => ({
   container: {
-    height: 36,
+    flexDirection: 'row',
+    height: 54,
+    alignItems: 'center',
   },
   starsContainer: {
+    height: 40,
     backgroundColor: colors.backgroundSecondary,
     borderRadius: 100,
   },

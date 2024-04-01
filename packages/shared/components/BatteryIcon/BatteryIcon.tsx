@@ -2,9 +2,9 @@ import React, { memo } from 'react';
 import { useBatteryBalance } from '../../query/hooks/useBatteryBalance';
 import { Icon, IconNames, Steezy, TouchableOpacity } from '@tonkeeper/uikit';
 import { BatteryState, getBatteryState } from '../../utils/battery';
-import { openRefillBatteryModal } from '../../modals/RefillBatteryModal';
 import { config } from '@tonkeeper/mobile/src/config';
 import { useBatteryUIStore } from '@tonkeeper/mobile/src/store/zustand/batteryUI';
+import { openRefillBatteryModal } from '@tonkeeper/mobile/src/navigation';
 
 const iconNames: { [key: string]: ((isViewed: boolean) => IconNames) | IconNames } = {
   [BatteryState.Empty]: (isViewed) =>
