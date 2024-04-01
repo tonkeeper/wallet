@@ -4,8 +4,6 @@ import BigNumber from 'bignumber.js';
 import { config } from '@tonkeeper/mobile/src/config';
 import { t } from '@tonkeeper/shared/i18n';
 import { capitalizeFirstLetter } from '../../utils/date';
-import { useBatteryState } from '../../query/hooks/useBatteryState';
-import { BatteryState } from '../../utils/battery';
 import { useExternalState } from '../../hooks/useExternalState';
 import { tk } from '@tonkeeper/mobile/src/wallet';
 import { BatterySupportedTransaction } from '@tonkeeper/mobile/src/wallet/managers/BatteryManager';
@@ -13,6 +11,7 @@ import { BatterySupportedTransaction } from '@tonkeeper/mobile/src/wallet/manage
 export interface SupportedTransaction {
   type: BatterySupportedTransaction;
   name: string;
+  nameSingle: string;
   meanPrice: string;
 }
 
@@ -20,16 +19,19 @@ export const supportedTransactions: SupportedTransaction[] = [
   {
     type: BatterySupportedTransaction.Swap,
     name: 'battery.transactions.types.swap',
+    nameSingle: 'battery.transactions.type.swap',
     meanPrice: '0.22',
   },
   {
     type: BatterySupportedTransaction.NFT,
     name: 'battery.transactions.types.nft',
+    nameSingle: 'battery.transactions.type.transfer',
     meanPrice: '0.025',
   },
   {
     type: BatterySupportedTransaction.Jetton,
     name: 'battery.transactions.types.jetton',
+    nameSingle: 'battery.transactions.type.transfer',
     meanPrice: '0.055',
   },
 ];
@@ -70,13 +72,20 @@ export const BatterySupportedTransactions = memo<BatterySupportedTransactionsPro
         <List>
           {supportedTransactions.map((transaction) => (
             <List.Item
+              disabled={!props.editable}
+              onPress={() =>
+                handleSwitchSupport(transaction.type)(
+                  !supportedTransactionsValues[transaction.type],
+                )
+              }
               key={transaction.type}
               title={capitalizeFirstLetter(t(transaction.name))}
-              subtitle={t('battery.transactions.charges_per_swap', {
+              subtitle={t('battery.transactions.charges_per_action', {
                 count: calculateChargesAmount(
                   transaction.meanPrice,
                   config.get('batteryMeanFees'),
                 ),
+                transactionName: t(transaction.nameSingle),
               })}
               rightContent={
                 props.editable && (

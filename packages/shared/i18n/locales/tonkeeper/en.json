@@ -134,16 +134,20 @@
         "jetton": "jetton transfers",
         "ton": "TON transfers"
       },
+      "type": {
+        "swap": "swap",
+        "transfer": "transfer"
+      },
       "title": "Transactions",
       "settings": "Battery Settings",
       "will_be_paid": "Will be paid: %{enabledTransactions}",
       "description": "Selected transactions will be paid by Tonkeeper Battery.",
       "supported": "Supported transactions",
-      "charges_per_swap": {
-        "few": "≈ %{count} charges per swap",
-        "other": "≈ %{count} charges per swap",
-        "one": "≈ %{count} charge per swap",
-        "many": "≈ %{count} charges per swap"
+      "charges_per_action": {
+        "few": "≈ %{count} charges per %{transactionName}",
+        "other": "≈ %{count} charges per %{transactionName}",
+        "one": "≈ %{count} charge per %{transactionName}",
+        "many": "≈ %{count} charges per %{transactionName}"
       }
     },
     "refilled": "Battery refilled",

@@ -23,7 +23,7 @@ import { config } from '@tonkeeper/mobile/src/config';
 export interface InAppPackage {
   icon: IconNames;
   key: string;
-  proceeds: number;
+  userProceed: number;
   packageId: string;
 }
 
@@ -31,19 +31,19 @@ const packages: InAppPackage[] = [
   {
     icon: 'ic-battery-100-44',
     key: 'large',
-    proceeds: 24,
+    userProceed: 7.5,
     packageId: 'LargePack',
   },
   {
     icon: 'ic-battery-50-44',
     key: 'medium',
-    proceeds: 9,
+    userProceed: 5,
     packageId: 'MediumPack',
   },
   {
     icon: 'ic-battery-25-44',
     key: 'small',
-    proceeds: 5,
+    userProceed: 2.5,
     packageId: 'SmallPack',
   },
 ];
@@ -137,7 +137,7 @@ export const RefillBatteryIAP = memo(() => {
                   </View>
                   <Text type="body2" color="textSecondary">
                     {t(`battery.packages.subtitle`, {
-                      count: new BigNumber(item.proceeds)
+                      count: new BigNumber(item.userProceed)
                         .div(tonPriceInUsd)
                         .div(config.get('batteryMeanFees'))
                         .decimalPlaces(0)
