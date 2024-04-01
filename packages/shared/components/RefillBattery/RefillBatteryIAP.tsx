@@ -23,6 +23,7 @@ import { config } from '@tonkeeper/mobile/src/config';
 export interface InAppPackage {
   icon: IconNames;
   key: string;
+  // TODO: move to backend
   userProceed: number;
   packageId: string;
 }
