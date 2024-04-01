@@ -371,6 +371,7 @@
   "jetton_name": "%{name} Token",
   "jetton_open_explorer": "View details",
   "jetton_price": "Price:",
+  "jetton_locked_till": "Locked until %{date}",
   "jettons_list_title": "Tokens",
   "jettons_manage_tokens": "Manage tokens",
   "jettons_show_jettons": "Show tokens in wallet",
