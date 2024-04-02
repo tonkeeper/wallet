@@ -24,6 +24,9 @@ type TokenInfo = {
     value: string;
     formatted: string;
   };
+  lock?: {
+    formatted: string;
+  };
   price: TokenPrice;
   rate: {
     price: string | null;
@@ -64,6 +67,9 @@ export const useTonkens = (): {
         quantity: {
           value: item.balance,
           formatted: formatter.format(item.balance),
+        },
+        lock: item.lock && {
+          formatted: formatter.format(item.lock.amount),
         },
         price: rate,
         rate: {

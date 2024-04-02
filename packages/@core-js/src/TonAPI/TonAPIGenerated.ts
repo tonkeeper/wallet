@@ -63,6 +63,13 @@ export interface BlockValueFlow {
   minted: BlockCurrencyCollection;
 }
 
+export interface ServiceStatus {
+  /** @default true */
+  rest_online: boolean;
+  /** @example 100 */
+  indexing_latency: number;
+}
+
 export interface BlockchainBlock {
   /** @example 130 */
   tx_quantity: number;
@@ -296,7 +303,7 @@ export interface ComputePhase {
    */
   gas_used?: number;
   /**
-   * @format uint32
+   * @format int32
    * @example 5
    */
   vm_steps?: number;
@@ -811,8 +818,15 @@ export interface BlockchainRawAccount {
   last_transaction_lt: number;
   /** @example "088b436a846d92281734236967970612f87fbd64a2cd3573107948379e8e4161" */
   last_transaction_hash?: string;
+  /** @example "088b436a846d92281734236967970612f87fbd64a2cd3573107948379e8e4161" */
+  frozen_hash?: string;
   status: AccountStatus;
   storage: AccountStorageInfo;
+  libraries?: {
+    /** @example true */
+    public: boolean;
+    root: string;
+  }[];
 }
 
 export interface Account {
@@ -1692,7 +1706,7 @@ export interface TraceID {
   /** @example "55e8809519cd3c49098c9ee45afdafcea7a894a74d0f628d94a115a50e045122" */
   id: string;
   /**
-   * @format uint64
+   * @format int64
    * @example 1645544908
    */
   utime: number;
@@ -1893,17 +1907,17 @@ export interface DecodedMessage {
   ext_in_msg_decoded?: {
     wallet_v3?: {
       /**
-       * @format uint32
+       * @format int64
        * @example 1
        */
       subwallet_id: number;
       /**
-       * @format uint32
+       * @format int64
        * @example 1
        */
       valid_until: number;
       /**
-       * @format uint32
+       * @format int64
        * @example 1
        */
       seqno: number;
@@ -1911,22 +1925,22 @@ export interface DecodedMessage {
     };
     wallet_v4?: {
       /**
-       * @format uint32
+       * @format int64
        * @example 1
        */
       subwallet_id: number;
       /**
-       * @format uint32
+       * @format int64
        * @example 1
        */
       valid_until: number;
       /**
-       * @format uint32
+       * @format int64
        * @example 1
        */
       seqno: number;
       /**
-       * @format int8
+       * @format int32
        * @example 1
        */
       op: number;
@@ -1934,7 +1948,7 @@ export interface DecodedMessage {
     };
     wallet_highload_v2?: {
       /**
-       * @format uint32
+       * @format int64
        * @example 1
        */
       subwallet_id: number;
@@ -2211,23 +2225,20 @@ export interface AccountInfoByStateInit {
 }
 
 export interface Seqno {
-  /** @format uint32 */
+  /** @format int32 */
   seqno: number;
 }
 
 export interface BlockRaw {
   /**
-   * @format uint32
+   * @format int32
    * @example 4294967295
    */
   workchain: number;
+  /** @example 800000000000000 */
+  shard: string;
   /**
-   * @format uint64
-   * @example 9223372036854776000
-   */
-  shard: number;
-  /**
-   * @format uint32
+   * @format int32
    * @example 30699640
    */
   seqno: number;
@@ -2239,7 +2250,7 @@ export interface BlockRaw {
 
 export interface InitStateRaw {
   /**
-   * @format uint32
+   * @format int32
    * @example 4294967295
    */
   workchain: number;
@@ -2283,6 +2294,18 @@ export interface TokenRates {
   diff_7d?: Record<string, string>;
   /** @example {"TON":"-0.56%"} */
   diff_30d?: Record<string, string>;
+}
+
+export interface MarketTonRates {
+  /** @example "OKX" */
+  market: string;
+  /** @example 5.2 */
+  usd_price: number;
+  /**
+   * @format int64
+   * @example 1668436763
+   */
+  last_date_update: number;
 }
 
 /** @example "int_msg" */
@@ -2372,9 +2395,10 @@ export enum JettonSwapActionDexEnum {
 }
 
 export enum NftPurchaseActionAuctionTypeEnum {
+  DNSTon = 'DNS.ton',
   DNSTg = 'DNS.tg',
+  NUMBERTg = 'NUMBER.tg',
   Getgems = 'getgems',
-  Basic = 'basic',
 }
 
 /** @example "ton20" */
@@ -2448,12 +2472,21 @@ export interface EmulateMessageToTraceParams {
   ignore_signature_check?: boolean;
 }
 
+export interface EmulateMessageToAccountEventParams {
+  ignore_signature_check?: boolean;
+  /**
+   * account ID
+   * @example "0:97264395BD65A255A429B11326C84128B7D70FFED7949ABAE3036D506BA38621"
+   */
+  accountId: string;
+}
+
 export interface GetAccountJettonsBalancesParams {
   /**
    * accept ton and all possible fiat currencies, separated by commas
-   * @example "ton,usd,rub"
+   * @example ["ton","usd","rub"]
    */
-  currencies?: string;
+  currencies?: string[];
   /**
    * account ID
    * @example "0:97264395BD65A255A429B11326C84128B7D70FFED7949ABAE3036D506BA38621"
@@ -2604,8 +2637,8 @@ export interface GetAccountEventsParams {
   before_lt?: number;
   /**
    * @min 1
-   * @max 1000
-   * @example 100
+   * @max 100
+   * @example 20
    */
   limit: number;
   /**
@@ -2926,14 +2959,16 @@ export interface GetStakingPoolsParams {
 export interface GetRatesParams {
   /**
    * accept ton and jetton master addresses, separated by commas
-   * @example "ton"
+   * @maxItems 100
+   * @example ["ton"]
    */
-  tokens: string;
+  tokens: string[];
   /**
    * accept ton and all possible fiat currencies, separated by commas
-   * @example "ton,usd,rub"
+   * @maxItems 50
+   * @example ["ton","usd","rub"]
    */
-  currencies: string;
+  currencies: string[];
 }
 
 export interface GetChartRatesParams {
@@ -2963,7 +2998,7 @@ export interface GetChartRatesParams {
 export interface GetRawMasterchainInfoExtParams {
   /**
    * mode
-   * @format uint32
+   * @format int32
    * @example 0
    */
   mode: number;
@@ -2972,7 +3007,7 @@ export interface GetRawMasterchainInfoExtParams {
 export interface GetRawBlockchainBlockHeaderParams {
   /**
    * mode
-   * @format uint32
+   * @format int32
    * @example 0
    */
   mode: number;
@@ -2999,13 +3034,13 @@ export interface GetRawAccountStateParams {
 export interface GetRawShardInfoParams {
   /**
    * workchain
-   * @format uint32
+   * @format int32
    * @example 1
    */
   workchain: number;
   /**
    * shard
-   * @format uint64
+   * @format int64
    * @example 1
    */
   shard: number;
@@ -3024,13 +3059,13 @@ export interface GetRawShardInfoParams {
 export interface GetRawTransactionsParams {
   /**
    * count
-   * @format uint32
+   * @format int32
    * @example 100
    */
   count: number;
   /**
    * lt
-   * @format uint64
+   * @format int64
    * @example 23814011000000
    */
   lt: number;
@@ -3049,13 +3084,13 @@ export interface GetRawTransactionsParams {
 export interface GetRawListBlockTransactionsParams {
   /**
    * mode
-   * @format uint32
+   * @format int32
    * @example 0
    */
   mode: number;
   /**
    * count
-   * @format uint32
+   * @format int32
    * @example 100
    */
   count: number;
@@ -3066,7 +3101,7 @@ export interface GetRawListBlockTransactionsParams {
   account_id?: string;
   /**
    * lt
-   * @format uint64
+   * @format int64
    * @example 23814011000000
    */
   lt?: number;
@@ -3090,7 +3125,7 @@ export interface GetRawBlockProofParams {
   target_block?: string;
   /**
    * mode
-   * @format uint32
+   * @format int32
    * @example 0
    */
   mode: number;
@@ -3099,7 +3134,7 @@ export interface GetRawBlockProofParams {
 export interface GetRawConfigParams {
   /**
    * mode
-   * @format uint32
+   * @format int32
    * @example 0
    */
   mode: number;
@@ -3357,6 +3392,22 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
     this.http = http;
   }
 
+  status = {
+    /**
+     * @description Reduce indexing latency
+     *
+     * @tags Blockchain
+     * @name ReduceIndexingLatency
+     * @request GET:/v2/status
+     */
+    reduceIndexingLatency: (params: RequestParams = {}) =>
+      this.http.request<ServiceStatus, Error>({
+        path: `/v2/status`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+  };
   blockchain = {
     /**
      * @description Get blockchain block data
@@ -3895,7 +3946,7 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
            */
           timestamp: number;
           domain: {
-            /** @format uint32 */
+            /** @format int32 */
             length_bytes?: number;
             value: string;
           };
@@ -3945,7 +3996,7 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
      * @request POST:/v2/accounts/{account_id}/events/emulate
      */
     emulateMessageToAccountEvent: (
-      accountId: string,
+      { accountId, ...query }: EmulateMessageToAccountEventParams,
       data: {
         /** @example "te6ccgECBQEAARUAAkWIAWTtae+KgtbrX26Bep8JSq8lFLfGOoyGR/xwdjfvpvEaHg" */
         boc: string;
@@ -3955,6 +4006,7 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
       this.http.request<AccountEvent, Error>({
         path: `/v2/accounts/${accountId}/events/emulate`,
         method: 'POST',
+        query: query,
         body: data,
         format: 'json',
         ...params,
@@ -4723,6 +4775,26 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
         format: 'json',
         ...params,
       }),
+
+    /**
+     * @description Get the TON price from markets
+     *
+     * @tags Rates
+     * @name GetMarketsRates
+     * @request GET:/v2/rates/markets
+     */
+    getMarketsRates: (params: RequestParams = {}) =>
+      this.http.request<
+        {
+          markets: MarketTonRates[];
+        },
+        Error
+      >({
+        path: `/v2/rates/markets`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
   };
   tonconnect = {
     /**
@@ -4821,28 +4893,28 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
       this.http.request<
         {
           /**
-           * @format uint32
+           * @format int32
            * @example 0
            */
           mode: number;
           /**
-           * @format uint32
+           * @format int32
            * @example 257
            */
           version: number;
           /**
-           * @format uint64
+           * @format int64
            * @example 7
            */
           capabilities: number;
           last: BlockRaw;
           /**
-           * @format uint32
+           * @format int32
            * @example 1687938199
            */
           last_utime: number;
           /**
-           * @format uint32
+           * @format int32
            * @example 1687938204
            */
           now: number;
@@ -4870,7 +4942,7 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
       this.http.request<
         {
           /**
-           * @format uint32
+           * @format int32
            * @example 1687146728
            */
           time: number;
@@ -4946,7 +5018,7 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
         {
           id: BlockRaw;
           /**
-           * @format uint32
+           * @format int32
            * @example 0
            */
           mode: number;
@@ -4978,7 +5050,7 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
       this.http.request<
         {
           /**
-           * @format uint32
+           * @format int32
            * @example 200
            */
           code: number;
@@ -5117,7 +5189,7 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
         {
           id: BlockRaw;
           /**
-           * @format uint32
+           * @format int32
            * @example 100
            */
           req_count: number;
@@ -5125,13 +5197,13 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
           incomplete: boolean;
           ids: {
             /**
-             * @format uint32
+             * @format int32
              * @example 0
              */
             mode: number;
             /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
             account?: string;
-            /** @format uint64 */
+            /** @format int64 */
             lt?: number;
             /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
             hash?: string;
@@ -5185,9 +5257,9 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
               /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
               config_proof: string;
               signatures: {
-                /** @format uint32 */
+                /** @format int64 */
                 validator_set_hash: number;
-                /** @format uint32 */
+                /** @format int32 */
                 catchain_seqno: number;
                 signatures: {
                   /** @example "131D0C65055F04E9C19D687B51BC70F952FD9CA6F02C2801D3B89964A779DF85" */
@@ -5222,7 +5294,7 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
       this.http.request<
         {
           /**
-           * @format uint32
+           * @format int32
            * @example 0
            */
           mode: number;

@@ -7,8 +7,6 @@ import { JettonBalanceModel } from '../models/JettonBalanceModel';
 import { Address } from '@tonkeeper/core/src/formatters/Address';
 import { TokenApprovalManager } from './TokenApprovalManager';
 import { TonPriceManager } from './TonPriceManager';
-import BigNumber from 'bignumber.js';
-import { AmountFormatter } from '@tonkeeper/core';
 import { sortByPrice } from '@tonkeeper/core/src/utils/jettons';
 
 export type JettonsState = {
