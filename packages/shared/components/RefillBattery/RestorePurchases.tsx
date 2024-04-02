@@ -1,5 +1,5 @@
 import React, { memo, useCallback } from 'react';
-import { Text, Toast, TouchableOpacity } from '@tonkeeper/uikit';
+import { Steezy, Text, Toast, TouchableOpacity } from '@tonkeeper/uikit';
 import { t } from '../../i18n';
 import { getPendingPurchasesIOS, finishTransaction } from 'react-native-iap';
 import { Platform } from 'react-native';
@@ -46,7 +46,7 @@ export const RestorePurchases = memo(() => {
   }, []);
 
   return (
-    <Text type="body2" textAlign="center" color="textTertiary">
+    <Text style={styles.text.static} type="body2" textAlign="center" color="textTertiary">
       {t('battery.packages.disclaimer')}{' '}
       <Text
         onPress={handleRestorePurchases}
@@ -56,6 +56,13 @@ export const RestorePurchases = memo(() => {
       >
         {t('battery.packages.restore')}
       </Text>
+      .
     </Text>
   );
+});
+
+const styles = Steezy.create({
+  text: {
+    paddingHorizontal: 16,
+  },
 });

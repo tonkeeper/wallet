@@ -1057,13 +1057,39 @@
   "region_nokyc": "Нейтральные воды",
   "nokyc": "без KYC",
   "battery": {
+    "send_widget": {
+      "battery": "Батарейка"
+    },
+    "transactions": {
+      "types": {
+        "nft": "отправка NFT",
+        "swap": "обмен",
+        "jetton": "отправка токенов",
+        "ton": "отправка TON"
+      },
+      "type": {
+        "swap": "обмен",
+        "transfer": "отправку"
+      },
+      "title": "Транзакции",
+      "settings": "Настройки батарейки",
+      "will_be_paid": "Будут оплачены: %{enabledTransactions}",
+      "description": "Выбранные транзакции будут оплачены батарейкой Tonkeeper.",
+      "supported": "Поддерживаемые транзакции",
+      "charges_per_action": {
+        "few": "≈ %{count} заряда за %{transactionName}",
+        "other": "≈ %{count} зарядов за %{transactionName}",
+        "one": "≈ %{count} заряд за %{transactionName}",
+        "many": "≈ %{count} зарядов за %{transactionName}"
+      }
+    },
     "refilled": "Батарейка заряжена",
     "screen_title": "Батарейка",
     "settings": "Батарейка",
     "ok": "OK",
     "title": "Батарейка Tonkeeper",
     "description": {
-      "empty": "Отправляйте токены и NFT, взаимодействуйте со стейкингом при нулевом балансе кошелька.",
+      "empty": "Обменивайте и отправляйте токены",
       "other": {
         "few": "В вашей батарейке %{count} заряда",
         "many": "В вашей батарейке %{count} зарядов",
@@ -1079,15 +1105,19 @@
       "success": "Ваша батарейка заряжена"
     },
     "packages": {
-      "title": "{{cnt}} транзакций за {{price}}",
+      "title": {
+        "large": "Большой",
+        "medium": "Средний",
+        "small": "Маленький"
+      },
       "subtitle": {
-        "large": "Большой пакет",
-        "medium": "Средний пакет",
-        "small": "Малый пакет"
+        "few": "%{count} заряда",
+        "other": "%{count} зарядов",
+        "one": "%{count} заряд",
+        "many": "%{count} зарядов"
       },
       "disclaimer": "Один заряд покрывает среднюю комиссию за транзакцию. Некоторые транзакции могут стоить дороже.",
-      "restore": "Восстановить покупки.",
-      "buy": "Купить",
+      "restore": "Восстановить покупки",
       "ok": "OK",
       "refilled": "Ваша батарейка заряжена"
     }

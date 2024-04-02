@@ -131,41 +131,6 @@
   },
   "auth_failed": "Otentikasi gagal",
   "balances_setup_wallet": "Mengatur dompet",
-  "battery": {
-    "description": {
-      "empty": "Kirim token dan NFT, bayar untuk aksi staking dengan saldo utama kosong.",
-      "other": "Anda memiliki cukup daya baterai untuk lebih dari %{cnt} transaksi.",
-      "less_10": "Anda memiliki cukup daya baterai untuk kurang dari 10 transaksi."
-    },
-    "ok": "BAIK",
-    "packages": {
-      "buy": "Beli",
-      "disclaimer": "Ini adalah perkiraan jumlah transaksi. Beberapa transaksi Anda mungkin berbiaya lebih banyak.",
-      "ok": "OKE",
-      "refilled": "Baterai Anda sudah terisi",
-      "subtitle": {
-        "large": "Paket besar",
-        "medium": "Paket Medium",
-        "small": "Paket kecil"
-      },
-      "title": "{{cnt}} transaksi seharga {{price}}"
-    },
-    "promocode": {
-      "apply": "Terapkan",
-      "button": "Isi ulang dengan Kode Promo",
-      "placeholder": "Kode",
-      "success": "Baterai Anda sudah terisi",
-      "title": "Kode Promo"
-    },
-    "screen_title": "Baterai",
-    "settings": "Baterai",
-    "title": {
-      "almost_empty": "Baterai untuk biaya gas hampir habis",
-      "empty": "Isi ulang baterai Anda untuk biaya gas",
-      "full": "Baterai untuk biaya gas sudah penuh",
-      "medium": "Baterai untuk biaya gas setengah penuh"
-    }
-  },
   "browser": {
     "about_dapps_caption": "Jelajahi aplikasi dan layanan di mana Anda dapat menggunakan Tonkeeper untuk masuk dan pembayaran.",
     "about_dapps_learn_more": "Pelajari lebih lanjut",

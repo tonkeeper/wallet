@@ -11,3 +11,4 @@ export * from './useBalancesState';
 export * from './useBiometrySettings';
 export * from './useLockSettings';
 export * from './useWalletSetup';
+export * from './useIsEnabledForBattery';

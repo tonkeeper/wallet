@@ -6,7 +6,7 @@ import { Screen, Steezy, View } from '@tonkeeper/uikit';
 export const RefillBattery = memo(() => {
   return (
     <Screen>
-      <Screen.Header title={t('battery.screen_title')} subtitle={'Beta'} />
+      <Screen.Header title={t('battery.screen_title')} />
       <Screen.ScrollView>
         <View style={styles.container}>
           <RefillBatteryComponent />

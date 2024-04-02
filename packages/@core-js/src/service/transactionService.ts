@@ -10,7 +10,7 @@ import {
   loadStateInit,
 } from '@ton/core';
 import { Address as AddressFormatter } from '../formatters/Address';
-import { WalletContract } from './contractService';
+import { OpCodes, WalletContract } from './contractService';
 import { SignRawMessage } from '@tonkeeper/mobile/src/core/ModalContainer/NFTOperations/TxRequest.types';
 
 export type AnyAddress = string | Address | AddressFormatter;
@@ -71,16 +71,75 @@ export class TransactionService {
     return { code, data };
   }
 
-  static parseSignRawMessages(messages: SignRawMessage[]) {
-    return messages.map((message) =>
-      internal({
+  static parseSignRawMessages(
+    messages: SignRawMessage[],
+    customExcessesAccount?: string | null,
+  ) {
+    return messages.map((message) => {
+      let payload = message.payload && Cell.fromBase64(message.payload);
+
+      if (payload && customExcessesAccount) {
+        payload = TransactionService.rebuildBodyWithCustomExcessesAccount(
+          payload,
+          customExcessesAccount,
+        );
+      }
+
+      return internal({
         to: message.address,
         value: BigInt(message.amount),
-        body: message.payload && Cell.fromBase64(message.payload),
+        body: payload,
         bounce: this.getBounceFlagFromAddress(message.address),
         init: TransactionService.parseStateInit(message.stateInit),
-      }),
-    );
+      });
+    });
+  }
+
+  static rebuildBodyWithCustomExcessesAccount(
+    payload: Cell,
+    customExcessesAccount: string,
+  ) {
+    const slice = payload.beginParse();
+    const opCode = slice.loadUint(32);
+    let builder = beginCell();
+
+    switch (opCode) {
+      case OpCodes.NFT_TRANSFER:
+        builder = builder
+          .storeUint(OpCodes.NFT_TRANSFER, 32)
+          .storeUint(slice.loadUint(64), 64)
+          .storeAddress(slice.loadAddress());
+
+        slice.loadMaybeAddress();
+
+        while (slice.remainingRefs) {
+          builder = builder.storeRef(slice.loadRef());
+        }
+
+        return builder
+          .storeAddress(Address.parse(customExcessesAccount))
+          .storeBits(slice.loadBits(slice.remainingBits))
+          .endCell();
+      case OpCodes.JETTON_TRANSFER:
+        builder = builder
+          .storeUint(OpCodes.JETTON_TRANSFER, 32)
+          .storeUint(slice.loadUint(64), 64)
+          .storeCoins(slice.loadCoins())
+          .storeAddress(slice.loadAddress());
+
+        slice.loadMaybeAddress();
+
+        while (slice.remainingRefs) {
+          builder = builder.storeRef(slice.loadRef());
+        }
+
+        return builder
+          .storeAddress(Address.parse(customExcessesAccount))
+          .storeBits(slice.loadBits(slice.remainingBits))
+          .endCell();
+      default:
+        return payload;
+    }
   }
 
   static createTransfer(contract, transferParams: TransferParams) {

@@ -16,6 +16,7 @@ import { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
 import { Linking } from 'react-native';
 import { useDeeplinking } from '$libs/deeplinking';
 import DeviceInfo from 'react-native-device-info';
+import { BatterySupportedTransaction } from '$wallet/managers/BatteryManager';
 
 interface Props {
   jettonAddress?: string;
@@ -83,6 +84,10 @@ export const Swap: FC<Props> = (props) => {
           openSignRawModal(
             request,
             {
+              experimentalWithBattery:
+                tk.wallet.battery.state.data.supportedTransactions[
+                  BatterySupportedTransaction.Swap
+                ],
               expires_sec: valid_until,
               response_options: {
                 broadcast: false,

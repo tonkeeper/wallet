@@ -124,32 +124,6 @@
   },
   "auth_failed" : "Kimlik doğrulama başarısız oldu",
   "balances_setup_wallet" : "Cüzdanı ayarlayın",
-  "battery" : {
-    "description" : {
-      "empty" : "Ana bakiyeniz boş olsa bile token ve NFT gönderin, staking işlemleri gerçekleştirin."
-    },
-    "ok" : "TAMAM",
-    "packages" : {
-      "buy" : "Satın al",
-      "disclaimer" : "Bu yaklaşık işlem sayısıdır. Bazı işlemlerinizin maliyeti daha yüksek olabilir.",
-      "ok" : "TAMAM",
-      "refilled" : "Bataryanız şarj oldu",
-      "subtitle" : {
-        "large" : "Büyük paket",
-        "medium" : "Orta paket",
-        "small" : "Küçük paket"
-      }
-    },
-    "promocode" : {
-      "apply" : "Uygula",
-      "button" : "Promosyon Kodu ile yükleme yapın",
-      "placeholder" : "Kod",
-      "success" : "Bataryanız şarj oldu",
-      "title" : "Promosyon Kodu"
-    },
-    "screen_title" : "Batarya",
-    "settings" : "Batarya"
-  },
   "browser" : {
     "about_dapps_caption" : "Oturum açma ve ödemeler için Tonkeeper'ı kullanabileceğiniz uygulamaları ve hizmetleri keşfedin.",
     "about_dapps_learn_more" : "Daha fazla bilgi edinin",

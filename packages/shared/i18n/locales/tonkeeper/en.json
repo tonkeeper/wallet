@@ -124,13 +124,39 @@
   "auth_failed": "Authentication failed",
   "balances_setup_wallet": "Set up wallet",
   "battery": {
+    "send_widget": {
+      "battery": "Battery"
+    },
+    "transactions": {
+      "types": {
+        "nft": "NFT transfers",
+        "swap": "swaps",
+        "jetton": "jetton transfers",
+        "ton": "TON transfers"
+      },
+      "type": {
+        "swap": "swap",
+        "transfer": "transfer"
+      },
+      "title": "Transactions",
+      "settings": "Battery Settings",
+      "will_be_paid": "Will be paid: %{enabledTransactions}",
+      "description": "Selected transactions will be paid by Tonkeeper Battery.",
+      "supported": "Supported transactions",
+      "charges_per_action": {
+        "few": "≈ %{count} charges per %{transactionName}",
+        "other": "≈ %{count} charges per %{transactionName}",
+        "one": "≈ %{count} charge per %{transactionName}",
+        "many": "≈ %{count} charges per %{transactionName}"
+      }
+    },
     "refilled": "Battery refilled",
     "screen_title": "Battery",
     "settings": "Battery",
     "ok": "OK",
     "title": "Tonkeeper Battery",
     "description": {
-      "empty": "Send tokens and NFTs, pay for staking actions with empty main balance.",
+      "empty": "Swap, send tokens and NFTs.",
       "other": {
         "few": "Your battery has %{count} charges",
         "many": "Your battery has %{count} charges",
@@ -146,14 +172,19 @@
       "success": "Your battery is charged"
     },
     "packages": {
-      "title": "Charges for {{price}}",
+      "title": {
+        "large": "Large",
+        "medium": "Medium",
+        "small": "Small"
+      },
       "subtitle": {
-        "large": "Large Pack",
-        "medium": "Medium Pack",
-        "small": "Small Pack"
+        "few": "%{count} charges",
+        "other": "%{count} charges",
+        "one": "%{count} charge",
+        "many": "%{count} charges"
       },
       "disclaimer": "One charge covers the average transaction fee. Some transactions may cost more.",
-      "restore": "Restore Purchases.",
+      "restore": "Restore Purchases",
       "buy": "Buy",
       "ok": "OK",
       "refilled": "Your battery is charged"
@@ -921,6 +952,7 @@
   "transaction_view_in_explorer": "View in explorer",
   "transaction_wallet_initialized_date": "%{date}",
   "transaction_your_bid": "Your bid",
+  "transfer_pending_by_battery_error": "Another transaction is handling by battery",
   "transfer_deeplink_unknown_jetton_error" : "Unknown token",
   "transfer_deeplink_address_error": "Incorrect recipient address",
   "transfer_deeplink_unknown_token": "Unknown token",
