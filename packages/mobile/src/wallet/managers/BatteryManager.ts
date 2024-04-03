@@ -63,7 +63,7 @@ export class BatteryManager {
       );
       this.state.set({ isLoading: false, balance: data.balance });
     } catch (err) {
-      this.state.set({ isLoading: false, balance: '0' });
+      this.state.set({ isLoading: false });
       return null;
     }
   }
