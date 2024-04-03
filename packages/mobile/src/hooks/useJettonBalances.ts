@@ -43,13 +43,7 @@ export const useJettonBalances = (showStakingJettons = false) => {
     });
 
     return balances;
-  }, [
-    approvalStatuses.tokens,
-    jettonBalances,
-    showStakingJettons,
-    stakingJettons,
-    withZeroBalances,
-  ]);
+  }, [approvalStatuses.tokens, jettonBalances, showStakingJettons, stakingJettons]);
 
   return jettons;
 };
