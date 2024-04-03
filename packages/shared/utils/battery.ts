@@ -39,7 +39,5 @@ export function calculateAvailableNumOfTransactions(batteryBalance: string) {
   const balance = new BigNumber(batteryBalance);
 
   // return balance divided by mean fees rounded down
-  return balance
-    .div(config.get('batteryMeanFees'))
-    .decimalPlaces(0, BigNumber.ROUND_DOWN);
+  return balance.div(config.get('batteryMeanFees')).decimalPlaces(0, BigNumber.ROUND_UP);
 }

@@ -7,8 +7,9 @@ import {
 import { memo } from 'react';
 import { useBatteryBalance } from '../../query/hooks/useBatteryBalance';
 import {
+  AnimatedBatteryIcon,
+  AnimatedBatterySize,
   Icon,
-  IconNames,
   Spacer,
   Steezy,
   Text,
@@ -24,13 +25,6 @@ import { RefillBatterySettingsWidget } from './RefillBatterySettingsWidget';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const iconNames: { [key: string]: IconNames } = {
-  [BatteryState.Empty]: 'ic-empty-battery-128',
-  [BatteryState.AlmostEmpty]: 'ic-almost-empty-battery-128',
-  [BatteryState.Medium]: 'ic-medium-battery-128',
-  [BatteryState.Full]: 'ic-full-battery-128',
-};
-
 export interface RefillBatteryProps {
   navigateToTransactions: () => void;
 }
@@ -38,7 +32,6 @@ export interface RefillBatteryProps {
 export const RefillBattery = memo<RefillBatteryProps>((props) => {
   const { balance } = useBatteryBalance();
   const batteryState = getBatteryState(balance ?? '0');
-  const iconName = iconNames[batteryState];
   const availableNumOfTransactionsCount = calculateAvailableNumOfTransactions(
     balance ?? '0',
   );
@@ -52,7 +45,16 @@ export const RefillBattery = memo<RefillBatteryProps>((props) => {
       contentContainerStyle={{ paddingBottom: bottomInsets + 16 }}
     >
       <View style={styles.contentContainer}>
-        <Icon colorless name={iconName} />
+        {batteryState === BatteryState.Empty ? (
+          <Icon colorless name={'ic-empty-battery-128'} />
+        ) : (
+          <View style={styles.animatedBatteryContainer}>
+            <AnimatedBatteryIcon
+              progress={parseFloat(balance)}
+              size={AnimatedBatterySize.Large}
+            />
+          </View>
+        )}
         <Spacer y={16} />
         <Text textAlign="center" type="h2">
           {t(`battery.title`)}
@@ -99,5 +101,10 @@ export const styles = Steezy.create({
   },
   indent: {
     paddingHorizontal: 16,
+  },
+  animatedBatteryContainer: {
+    paddingHorizontal: 30,
+    paddingTop: 6,
+    paddingBottom: 8,
   },
 });
