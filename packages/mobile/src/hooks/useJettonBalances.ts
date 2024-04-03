@@ -28,7 +28,11 @@ export const useJettonBalances = (
       const approvalStatus = approvalStatuses.tokens[jettonAddress];
       const isBlacklisted = jetton.verification === JettonVerification.BLACKLIST;
 
-      if (!withZeroBalances && jetton.balance === '0') {
+      if (
+        !withZeroBalances &&
+        jetton.balance === '0' &&
+        (!jetton.lock || jetton.lock?.amount === '0')
+      ) {
         return;
       }
 
