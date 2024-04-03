@@ -80,7 +80,7 @@ export class JettonsManager {
 
       const jettonBalances = accountJettons.balances
         .filter((item) => {
-          return item.balance !== '0';
+          return item.balance !== '0' || (item.lock && item.lock.amount !== '0');
         })
         .sort((a, b) => {
           // Unverified or blacklisted tokens have to be at the end of array

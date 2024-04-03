@@ -9,10 +9,7 @@ export interface IBalances {
   enabled: JettonBalanceModel[];
   disabled: JettonBalanceModel[];
 }
-export const useJettonBalances = (
-  withZeroBalances?: boolean,
-  showStakingJettons = false,
-) => {
+export const useJettonBalances = (showStakingJettons = false) => {
   const { jettonBalances } = useJettons();
   const approvalStatuses = useTokenApproval();
   const stakingJettons = useStakingState(getStakingJettons);
@@ -27,14 +24,6 @@ export const useJettonBalances = (
       const jettonAddress = Address.parse(jetton.jettonAddress).toRaw();
       const approvalStatus = approvalStatuses.tokens[jettonAddress];
       const isBlacklisted = jetton.verification === JettonVerification.BLACKLIST;
-
-      if (
-        !withZeroBalances &&
-        jetton.balance === '0' &&
-        (!jetton.lock || jetton.lock?.amount === '0')
-      ) {
-        return;
-      }
 
       if (
         !showStakingJettons &&
