@@ -6,9 +6,9 @@ import { TonProofManager } from '$wallet/managers/TonProofManager';
 import { logger, NamespacedLogger } from '$logger';
 
 export enum BatterySupportedTransaction {
-  NFT = 'nft',
-  Jetton = 'jetton',
   Swap = 'swap',
+  Jetton = 'jetton',
+  NFT = 'nft',
 }
 
 export interface BatteryState {
@@ -22,9 +22,9 @@ export class BatteryManager {
     isLoading: false,
     balance: undefined,
     supportedTransactions: {
-      [BatterySupportedTransaction.NFT]: true,
-      [BatterySupportedTransaction.Jetton]: true,
       [BatterySupportedTransaction.Swap]: true,
+      [BatterySupportedTransaction.Jetton]: true,
+      [BatterySupportedTransaction.NFT]: true,
     },
   });
 
