@@ -154,6 +154,10 @@ export class Tonkeeper {
         ),
       );
 
+      if (!this.wallet && this.walletsStore.data.wallets.length) {
+        return await this.switchWallet(this.walletsStore.data.wallets[0].identifier);
+      }
+
       this.emitChangeWallet();
     } catch (err) {
       console.log('TK:init', err);
@@ -262,7 +266,7 @@ export class Tonkeeper {
     );
     walletsInstances.map((instance) => instance.tonProof.obtainProof(keyPair));
 
-    this.setWallet(walletsInstances[0]);
+    await this.setWallet(walletsInstances[0]);
 
     return walletsInstances.map((item) => item.identifier);
   }
@@ -357,7 +361,7 @@ export class Tonkeeper {
       wallets: [...wallets, config],
     }));
     const wallet = await this.createWalletInstance(config);
-    this.setWallet(wallet);
+    await this.setWallet(wallet);
 
     return [wallet.identifier];
   }
@@ -489,13 +493,13 @@ export class Tonkeeper {
     this.walletSubscribers.forEach((subscriber) => subscriber(this.wallet));
   }
 
-  public switchWallet(identifier: string) {
+  public async switchWallet(identifier: string) {
     const wallet = this.wallets.get(identifier);
-    this.setWallet(wallet!);
+    await this.setWallet(wallet!);
   }
 
-  private setWallet(wallet: Wallet | null) {
-    this.walletsStore.set({ selectedIdentifier: wallet?.identifier ?? '' });
+  private async setWallet(wallet: Wallet | null) {
+    await this.walletsStore.setAsync({ selectedIdentifier: wallet?.identifier ?? '' });
     this.emitChangeWallet();
   }
 
