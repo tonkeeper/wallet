@@ -1,10 +1,18 @@
+export enum NotificationType {
+  CONSOLE_DAPP_NOTIFICATION = 'console_dapp_notification',
+  BETTER_STAKE_OPTION_FOUND = 'better_stake_option_found',
+  COLLECT_STAKE = 'collect_stake',
+}
+
 export interface INotification {
+  type: NotificationType;
   message: string;
   dapp_url?: string;
   received_at: number;
   icon_url?: string;
   name?: string;
   link?: string;
+  deeplink?: string;
 }
 
 export interface INotificationsState {

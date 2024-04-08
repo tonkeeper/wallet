@@ -15,6 +15,7 @@ import { useAppInfo } from './hooks/useAppInfo';
 import { useDAppBridge } from './hooks/useDAppBridge';
 import { useWallet } from '@tonkeeper/shared/hooks';
 import { Address } from '@tonkeeper/shared/Address';
+import { config } from '$config';
 
 export interface DAppBrowserProps {
   url: string;
@@ -178,6 +179,7 @@ const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
           allowsBackForwardNavigationGestures={true}
           onNavigationStateChange={handleNavigationStateChange}
           onShouldStartLoadWithRequest={handleOpenExternalLink}
+          webviewDebuggingEnabled={config.get('devmode_enabled')}
           {...webViewProps}
         />
         <S.LoadingBar style={loadingBarAnimatedStyle} />
