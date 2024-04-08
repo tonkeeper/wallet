@@ -16,6 +16,7 @@ import { tk } from '@tonkeeper/mobile/src/wallet';
 import { useUnlockVault } from '@tonkeeper/mobile/src/core/ModalContainer/NFTOperations/useUnlockVault';
 import { getLastEnteredPasscode } from '@tonkeeper/mobile/src/store/wallet/sagas';
 import { config } from '@tonkeeper/mobile/src/config';
+import { InteractionManager } from 'react-native';
 
 interface AddWalletModalProps {
   isTonConnect?: boolean;
@@ -89,7 +90,9 @@ export const AddWalletModal = memo<AddWalletModalProps>(({ isTonConnect }) => {
             <List.Item
               onPress={() => {
                 nav.goBack();
-                nav.navigate('ImportWalletStack');
+                InteractionManager.runAfterInteractions(() => {
+                  nav.navigate('ImportWalletStack');
+                });
               }}
               leftContentStyle={styles.iconContainer}
               leftContent={<Icon name="ic-key-28" color="accentBlue" />}
@@ -104,7 +107,9 @@ export const AddWalletModal = memo<AddWalletModalProps>(({ isTonConnect }) => {
               <List.Item
                 onPress={() => {
                   nav.goBack();
-                  nav.navigate('AddWatchOnlyStack');
+                  InteractionManager.runAfterInteractions(() => {
+                    nav.navigate('AddWatchOnlyStack');
+                  });
                 }}
                 leftContentStyle={styles.iconContainer}
                 leftContent={<Icon name="ic-magnifying-glass-28" color="accentBlue" />}
@@ -120,9 +125,11 @@ export const AddWalletModal = memo<AddWalletModalProps>(({ isTonConnect }) => {
               <List.Item
                 onPress={() => {
                   nav.goBack();
-                  nav.navigate('ImportWalletStack', {
-                    screen: 'ImportWallet',
-                    params: { testnet: true },
+                  InteractionManager.runAfterInteractions(() => {
+                    nav.navigate('ImportWalletStack', {
+                      screen: 'ImportWallet',
+                      params: { testnet: true },
+                    });
                   });
                 }}
                 leftContentStyle={styles.iconContainer}

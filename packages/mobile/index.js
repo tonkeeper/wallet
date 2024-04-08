@@ -22,7 +22,6 @@ import crashlytics from '@react-native-firebase/crashlytics';
 import messaging from '@react-native-firebase/messaging';
 import { withIAPContext } from 'react-native-iap';
 import { startApp } from './src/index';
-import { tk } from './src/wallet';
 
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
@@ -47,15 +46,17 @@ async function handleDappMessage(remoteMessage) {
   ) {
     return null;
   }
-
+  await useNotificationsStore.persist.rehydrate();
   if (remoteMessage.data?.type === 'better_stake_option_found') {
-    tk.wallet.staking.toggleRestakeBanner(
-      true,
-      remoteMessage.data.stakingAddressToMigrateFrom,
-    );
+    useNotificationsStore
+      .getState()
+      .actions.toggleRestakeBanner(
+        remoteMessage.data.account,
+        true,
+        remoteMessage.data.stakingAddressToMigrateFrom,
+      );
   }
 
-  await useNotificationsStore.persist.rehydrate();
   useNotificationsStore.getState().actions.addNotification(
     {
       ...remoteMessage.data,
