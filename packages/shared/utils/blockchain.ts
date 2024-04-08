@@ -2,9 +2,13 @@ import { config } from '@tonkeeper/mobile/src/config';
 import { tk } from '@tonkeeper/mobile/src/wallet';
 import { ContentType } from '@tonkeeper/core/src/TonAPI';
 
-export async function sendBocWithBattery(boc) {
+export async function sendBoc(boc, attemptWithRelayer = true) {
   try {
-    if (config.get('disable_battery') || config.get('disable_battery_send')) {
+    if (
+      !attemptWithRelayer ||
+      config.get('disable_battery') ||
+      config.get('disable_battery_send')
+    ) {
       throw new Error('Battery disabled');
     }
     if (
@@ -24,9 +28,13 @@ export async function sendBocWithBattery(boc) {
   }
 }
 
-export async function emulateWithBattery(boc, params?) {
+export async function emulateBoc(boc, params?, attemptWithRelayer = true) {
   try {
-    if (config.get('disable_battery') || config.get('disable_battery_send')) {
+    if (
+      !attemptWithRelayer ||
+      config.get('disable_battery') ||
+      config.get('disable_battery_send')
+    ) {
       throw new Error('Battery disabled');
     }
     if (

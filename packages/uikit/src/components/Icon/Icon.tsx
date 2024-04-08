@@ -50,7 +50,7 @@ export const Icon = memo((props: IconProps) => {
 
   if (icon) {
     return (
-      <View style={[style, sizeStyle]}>
+      <View style={[sizeStyle, style]}>
         <Image style={[imageStyle, sizeStyle, customImageStyle]} source={icon} />
       </View>
     );

@@ -29,6 +29,7 @@
 		203A6A1F2760BD6800817B71 /* Montserrat-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 203A6A0D2760BD6800817B71 /* Montserrat-Regular.ttf */; };
 		5008E612299F9D1400D4850B /* SFMono-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 5008E610299F9D1400D4850B /* SFMono-Bold.otf */; };
 		5008E614299F9D1400D4850B /* SFMono-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 5008E611299F9D1400D4850B /* SFMono-Medium.otf */; };
+		506008722B7F9EF10061C2CD /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 506008712B7F9EF10061C2CD /* StoreKit.framework */; };
 		76F9B0131AB7FE11009E6D10 /* libPods-ton_keeper-ton_keeperTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FB5E03C54A755139D3788F39 /* libPods-ton_keeper-ton_keeperTests.a */; };
 		78B9AC5F426C0F28766DEC94 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7306F36185132B3874D4C /* ExpoModulesProvider.swift */; };
 		8D962335543EE7C6E1C6AB28 /* libPods-ton_keeper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 39C1C20FA83478354251FB2A /* libPods-ton_keeper.a */; };
@@ -130,6 +131,7 @@
 		39C1C20FA83478354251FB2A /* libPods-ton_keeper.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ton_keeper.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5008E610299F9D1400D4850B /* SFMono-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SFMono-Bold.otf"; path = "../assets/fonts/SFMono-Bold.otf"; sourceTree = "<group>"; };
 		5008E611299F9D1400D4850B /* SFMono-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SFMono-Medium.otf"; path = "../assets/fonts/SFMono-Medium.otf"; sourceTree = "<group>"; };
+		506008712B7F9EF10061C2CD /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		50AD04972AD96A5C00E0648C /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/PassCode.strings; sourceTree = "<group>"; };
 		50AD04982AD96A5D00E0648C /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = tr; path = tr.lproj/PassCode.stringsdict; sourceTree = "<group>"; };
 		50AD04992AD96AFA00E0648C /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/PassCode.strings"; sourceTree = "<group>"; };
@@ -225,6 +227,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8D962335543EE7C6E1C6AB28 /* libPods-ton_keeper.a in Frameworks */,
+				506008722B7F9EF10061C2CD /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -260,6 +263,7 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				506008712B7F9EF10061C2CD /* StoreKit.framework */,
 				C4FB2EE22912AF2700CB35D0 /* OpenSSL.xcframework */,
 				C4FB2EE32912AF2700CB35D0 /* TON.xcframework */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
@@ -1294,7 +1298,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.1.2;
+				MARKETING_VERSION = 4.2.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -1328,7 +1332,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 4.1.2;
+				MARKETING_VERSION = 4.2.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

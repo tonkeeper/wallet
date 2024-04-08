@@ -135,6 +135,7 @@ export type TxResponseOptions = {
 };
 
 export type TxRequestBody<TParams = TxParams> = {
+  experimentalWithBattery?: boolean;
   type: TxTypes;
   expires_sec?: number;
   response_options?: TxResponseOptions;

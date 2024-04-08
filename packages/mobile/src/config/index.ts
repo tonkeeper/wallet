@@ -82,9 +82,9 @@ const defaultConfig: Partial<AppConfigVars> = {
   tronapiTestnetHost: 'https://testnet-tron.tonkeeper.com',
   batteryHost: 'https://battery.tonkeeper.com',
   batteryTestnetHost: 'https://testnet-battery.tonkeeper.com',
-  batteryMeanFees: '0.08',
+  batteryMeanFees: '0.0055',
   disable_battery: true,
-  disable_battery_iap_module: true,
+  disable_battery_iap_module: Platform.OS !== 'android', // Enable for iOS, disable for Android
   disable_battery_send: true,
   disable_show_unverified_token: false,
   disable_tonstakers: false,

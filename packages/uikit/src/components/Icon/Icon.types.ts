@@ -15,6 +15,7 @@ export type IconNames =
   | 'ic-full-battery-128'
   | 'ic-gear-128'
   | 'ic-lock-128'
+  | 'ic-medium-battery-128'
   | 'ic-notification-128'
   | 'ic-appearance-16'
   | 'ic-arrow-down-16'
@@ -52,6 +53,7 @@ export type IconNames =
   | 'ic-xmark-circle-16'
   | 'ic-backspace-bold-24'
   | 'ic-backup-24'
+  | 'ic-battery-almost-empty-24'
   | 'ic-key-24'
   | 'ic-reset-24'
   | 'ic-ton-disabled-24'
@@ -122,10 +124,18 @@ export type IconNames =
   | 'ic-xmark-outline-28'
   | 'ic-checkmark-circle-32'
   | 'ic-exclamationmark-circle-32'
+  | 'ic-almost-empty-battery-34'
+  | 'ic-empty-battery-accent-flash-34'
+  | 'ic-empty-battery-flash-34'
+  | 'ic-full-battery-34'
+  | 'ic-medium-battery-34'
   | 'ic-delete-36'
   | 'ic-exclamationmark-triangle-36'
   | 'ic-faceid-36'
   | 'ic-fingerprint-36'
+  | 'ic-battery-100-44'
+  | 'ic-battery-25-44'
+  | 'ic-battery-50-44'
   | 'ic-cards-stack-44'
   | 'ic-ton-old-wallets-44'
   | 'ic-logo-48'
@@ -161,6 +171,7 @@ export const AllIcons = [
   'ic-full-battery-128',
   'ic-gear-128',
   'ic-lock-128',
+  'ic-medium-battery-128',
   'ic-notification-128',
   'ic-appearance-16',
   'ic-arrow-down-16',
@@ -198,6 +209,7 @@ export const AllIcons = [
   'ic-xmark-circle-16',
   'ic-backspace-bold-24',
   'ic-backup-24',
+  'ic-battery-almost-empty-24',
   'ic-key-24',
   'ic-reset-24',
   'ic-ton-disabled-24',
@@ -268,10 +280,18 @@ export const AllIcons = [
   'ic-xmark-outline-28',
   'ic-checkmark-circle-32',
   'ic-exclamationmark-circle-32',
+  'ic-almost-empty-battery-34',
+  'ic-empty-battery-accent-flash-34',
+  'ic-empty-battery-flash-34',
+  'ic-full-battery-34',
+  'ic-medium-battery-34',
   'ic-delete-36',
   'ic-exclamationmark-triangle-36',
   'ic-faceid-36',
   'ic-fingerprint-36',
+  'ic-battery-100-44',
+  'ic-battery-25-44',
+  'ic-battery-50-44',
   'ic-cards-stack-44',
   'ic-ton-old-wallets-44',
   'ic-logo-48',
@@ -308,6 +328,7 @@ export const IconSizes = {
   'ic-full-battery-128': 128,
   'ic-gear-128': 128,
   'ic-lock-128': 128,
+  'ic-medium-battery-128': 128,
   'ic-notification-128': 128,
   'ic-appearance-16': 16,
   'ic-arrow-down-16': 16,
@@ -345,6 +366,7 @@ export const IconSizes = {
   'ic-xmark-circle-16': 16,
   'ic-backspace-bold-24': 24,
   'ic-backup-24': 24,
+  'ic-battery-almost-empty-24': 24,
   'ic-key-24': 24,
   'ic-reset-24': 24,
   'ic-ton-disabled-24': 24,
@@ -415,10 +437,18 @@ export const IconSizes = {
   'ic-xmark-outline-28': 28,
   'ic-checkmark-circle-32': 32,
   'ic-exclamationmark-circle-32': 32,
+  'ic-almost-empty-battery-34': 34,
+  'ic-empty-battery-accent-flash-34': 34,
+  'ic-empty-battery-flash-34': 34,
+  'ic-full-battery-34': 34,
+  'ic-medium-battery-34': 34,
   'ic-delete-36': 36,
   'ic-exclamationmark-triangle-36': 36,
   'ic-faceid-36': 36,
   'ic-fingerprint-36': 36,
+  'ic-battery-100-44': 100,
+  'ic-battery-25-44': 25,
+  'ic-battery-50-44': 50,
   'ic-cards-stack-44': 44,
   'ic-ton-old-wallets-44': 44,
   'ic-logo-48': 48,

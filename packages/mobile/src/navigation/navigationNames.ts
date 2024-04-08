@@ -6,6 +6,7 @@ export enum ModalStackRouteNames {
 
 export enum AppStackRouteNames {
   MainStack = 'MainStack',
+  RefillBattery = 'RefillBattery',
   Receive = 'Receive',
   Send = 'Send',
   ChooseCountry = 'ChooseCountry',
@@ -78,7 +79,6 @@ export enum SettingsStackRouteNames {
   FontLicense = 'FontLicense',
   Notifications = 'Notifications',
   ChooseCurrency = 'ChooseCurrency',
-  RefillBattery = 'RefillBattery',
   Language = 'Language',
   Backup = 'Backup',
 }

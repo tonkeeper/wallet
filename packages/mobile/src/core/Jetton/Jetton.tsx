@@ -29,6 +29,7 @@ import { useWallet, useWalletCurrency } from '@tonkeeper/shared/hooks';
 import { tk } from '$wallet';
 import { Chart } from '$shared/components/Chart/new/Chart';
 import { ChartPeriod } from '$store/zustand/chart';
+import { formatDate } from '@tonkeeper/shared/utils/date';
 
 const unverifiedTokenHitSlop = { top: 4, left: 4, bottom: 4, right: 4 };
 
@@ -37,6 +38,10 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const jetton = useJetton(route.params.jettonAddress);
   const jettonActivityList = useJettonActivityList(jetton.jettonAddress);
   const jettonPrice = useTokenPrice(jetton.jettonAddress, jetton.balance);
+  const lockedJettonPrice = useTokenPrice(
+    jetton.jettonAddress,
+    jetton.lock?.amount.toString() ?? '0',
+  );
   const wallet = useWallet();
 
   const isWatchOnly = wallet && wallet.isWatchOnly;
@@ -95,10 +100,33 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
             >
               {jettonPrice.formatted.totalFiat}
             </HideableAmount>
+            {jetton.lock ? (
+              <>
+                <Spacer y={12} />
+                <Text variant="body2" color="textSecondary">
+                  {formatter.format(jetton.lock.amount, {
+                    decimals: jetton.metadata.decimals,
+                    currency: jetton.metadata.symbol,
+                    currencySeparator: 'wide',
+                  })}
+                   ·
+                  {' '}
+                  {lockedJettonPrice.formatted.totalFiat}
+                </Text>
+                <Text variant="body2" color="textTertiary">
+                  {t('jetton_locked_till', {
+                    date: formatDate(jetton.lock.till * 1000, 'd MMM yyyy'),
+                  })}
+                </Text>
+              </>
+            ) : null}
             {jettonPrice.formatted.fiat ? (
-              <Text style={{ marginTop: 12 }} variant="body2" color="foregroundSecondary">
-                {t('jetton_price')} {jettonPrice.formatted.fiat}
-              </Text>
+              <>
+                <Spacer y={12} />
+                <Text variant="body2" color="foregroundSecondary">
+                  {t('jetton_price')} {jettonPrice.formatted.fiat}
+                </Text>
+              </>
             ) : null}
           </S.JettonAmountWrapper>
           {jetton.metadata.image ? (

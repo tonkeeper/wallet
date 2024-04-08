@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo, ReactNode, useMemo } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import {
   Screen,
@@ -55,7 +55,7 @@ type TokenItem = {
   onPress?: () => void;
   title: string;
   subtitle?: string;
-  value?: string;
+  value?: string | ReactNode;
   subvalue?: string;
   rate?: Rate;
   picture?: string;
@@ -142,11 +142,15 @@ const RenderItem = ({ item }: { item: Content }) => {
             }
             picture={item.picture}
             value={
-              <HideableAmount
-                style={styles.valueText.static}
-                variant="label1"
-                stars=" * * *"
-              >{` ${item.value}`}</HideableAmount>
+              typeof item.value === 'string' ? (
+                <HideableAmount
+                  style={styles.valueText.static}
+                  variant="label1"
+                  stars=" * * *"
+                >{` ${item.value}`}</HideableAmount>
+              ) : (
+                item.value
+              )
             }
             subvalue={
               item.subvalue && (
@@ -303,7 +307,24 @@ export const WalletContentList = memo<BalancesListProps>(
           onPress: () => openJetton(item.address.rawAddress),
           picture: item.iconUrl,
           title: item.symbol,
-          value: item.quantity.formatted,
+          value: item.lock ? (
+            <HideableAmount
+              style={styles.valueText.static}
+              variant="label1"
+              stars=" * * *"
+            >
+              {item.quantity.formatted}
+              <Text type="label1" color="textTertiary">
+                {' '}
+                ·{' '}
+              </Text>
+              <Text type="label1" color="textSecondary">
+                {item.lock.formatted}
+              </Text>
+            </HideableAmount>
+          ) : (
+            item.quantity.formatted
+          ),
           subvalue: item.rate.total,
           rate: item.rate.price
             ? {

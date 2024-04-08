@@ -22,10 +22,10 @@ import {
   openLegalDocuments,
   openManageTokens,
   openNotifications,
-  openRefillBattery,
   openSecurity,
   openSelectLanguage,
   openSubscriptions,
+  openRefillBatteryModal,
 } from '$navigation';
 import { walletActions } from '$store/wallet';
 import {
@@ -207,7 +207,7 @@ export const Settings: FC = () => {
   }, []);
 
   const handleBattery = useCallback(() => {
-    openRefillBattery();
+    openRefillBatteryModal();
   }, []);
 
   const handleDeleteAccount = useCallback(() => {
