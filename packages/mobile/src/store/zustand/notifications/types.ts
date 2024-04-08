@@ -20,6 +20,9 @@ export interface INotificationsState {
   last_seen: number;
   last_seen_activity_screen: number;
   should_show_red_dot: boolean;
+  showRestakeBanner?: boolean;
+  stakingAddressToMigrateFrom?: string;
+  bypassUnstakeStep?: boolean;
 }
 
 export interface INotificationsStore {
@@ -35,5 +38,11 @@ export interface INotificationsStore {
     deleteNotificationByReceivedAt: (receivedAt: number, rawAddress: string) => void;
     removeNotificationsByDappUrl: (dapp_url: string, rawAddress: string) => void;
     removeRedDot: (rawAddress: string) => void;
+    toggleRestakeBanner: (
+      rawAddress: string,
+      showRestakeBanner: boolean,
+      stakingAddressToMigrateFrom?: string,
+    ) => void;
+    bypassUnstakeStep: (rawAddress: string) => void;
   };
 }

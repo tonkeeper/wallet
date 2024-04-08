@@ -6,6 +6,7 @@ import {
   disableNotifications,
   useConnectedAppsList,
   useDAppsNotifications,
+  useNotificationsStore,
 } from '$store';
 import { format, getDomainFromURL } from '$utils';
 import { Swipeable, TouchableOpacity } from 'react-native-gesture-handler';
@@ -54,6 +55,9 @@ export const Notification: React.FC<NotificationProps> = (props) => {
   const { showActionSheetWithOptions } = useActionSheet();
   const { deleteNotificationByReceivedAt } = useDAppsNotifications();
   const listItemRef = useRef(null);
+  const toggleRestakeBanner = useNotificationsStore(
+    (state) => state.actions.toggleRestakeBanner,
+  );
 
   const handleDelete = useCallback(() => {
     deleteNotificationByReceivedAt(props.notification.received_at);
@@ -141,7 +145,7 @@ export const Notification: React.FC<NotificationProps> = (props) => {
 
   const handleOpenInWebView = useCallback(() => {
     if (props.notification.type === NotificationType.BETTER_STAKE_OPTION_FOUND) {
-      tk.wallet.staking.toggleRestakeBanner(true);
+      toggleRestakeBanner(tk.wallet.address.ton.raw, true);
     }
 
     if (!props.notification.link && !props.notification.deeplink) {

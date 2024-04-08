@@ -26,6 +26,7 @@ import { IconsComposition } from './IconsComposition';
 import { useFiatValue } from '$hooks/useFiatValue';
 import { CryptoCurrencies } from '$shared/constants';
 import { stakingFormatter } from '$utils/formatter';
+import { useNotificationsStore } from '$store';
 
 export interface ExtendedPoolInfo extends PoolInfo {
   isWithdrawal: boolean;
@@ -35,6 +36,7 @@ export interface ExtendedPoolInfo extends PoolInfo {
 export interface RestakeBannerProps {
   poolsList: ExtendedPoolInfo[];
   migrateFrom: string;
+  bypassUnstakeStep?: boolean;
 }
 
 export enum RestakeSteps {
@@ -52,11 +54,14 @@ export const RestakeBanner = memo<RestakeBannerProps>((props) => {
     ) as ExtendedPoolInfo;
   }, [props.poolsList]);
   const { handleTopUpPress } = usePoolInfo(tonstakersPool);
+  const toggleRestakeBanner = useNotificationsStore(
+    (state) => state.actions.toggleRestakeBanner,
+  );
 
   const handleCloseRestakeBanner = useCallback(() => {
     LayoutAnimation.easeInEaseOut();
-    tk.wallet.staking.toggleRestakeBanner(false);
-  }, []);
+    toggleRestakeBanner(tk.wallet.address.ton.raw, false);
+  }, [toggleRestakeBanner]);
 
   const poolToWithdrawal = useMemo(
     () =>
@@ -68,8 +73,6 @@ export const RestakeBanner = memo<RestakeBannerProps>((props) => {
     [poolToWithdrawal],
   );
 
-  const bypassStakeStep = useStakingState((s) => s.bypassStakeStep, []);
-
   const readyWithdraw = useFiatValue(
     CryptoCurrencies.Ton,
     stakingFormatter.fromNano(toWithdrawalStakingInfo?.ready_withdraw ?? '0'),
@@ -79,13 +82,17 @@ export const RestakeBanner = memo<RestakeBannerProps>((props) => {
 
   const handleWithdrawal = useCallback(
     (pool: ExtendedPoolInfo, withdrawAll?: boolean) => () => {
+      if (pool.implementation === PoolImplementationType.Tf) {
+        nav.push(AppStackRouteNames.StakingSend, {
+          poolAddress: pool.address,
+          transactionType: StakingTransactionType.WITHDRAWAL_CONFIRM,
+        });
+        return;
+      }
       nav.push(AppStackRouteNames.StakingSend, {
         amount: withdrawAll && pool.balance,
         poolAddress: pool.address,
-        transactionType:
-          pool.implementation === PoolImplementationType.Tf
-            ? StakingTransactionType.WITHDRAWAL_CONFIRM
-            : StakingTransactionType.WITHDRAWAL,
+        transactionType: StakingTransactionType.WITHDRAWAL,
       });
     },
     [nav],
@@ -107,7 +114,11 @@ export const RestakeBanner = memo<RestakeBannerProps>((props) => {
       return RestakeSteps.DONE;
     }
     // Go to last step if pool to withdrawal is empty now (or if balance so small, or step is bypassed)
-    if (bypassStakeStep || Number(poolToWithdrawal?.balance) < 0.1) {
+    if (
+      props.bypassUnstakeStep ||
+      !poolToWithdrawal?.balance ||
+      Number(poolToWithdrawal?.balance) < 0.1
+    ) {
       return RestakeSteps.STAKE_INTO_TONSTAKERS;
     }
     // If user has pending withdrawal, render step with waiting
@@ -116,7 +127,7 @@ export const RestakeBanner = memo<RestakeBannerProps>((props) => {
     }
     return RestakeSteps.UNSTAKE;
   }, [
-    bypassStakeStep,
+    props.bypassUnstakeStep,
     isWaitingForWithdrawal,
     poolToWithdrawal?.balance,
     readyWithdraw.amount,
@@ -130,8 +141,8 @@ export const RestakeBanner = memo<RestakeBannerProps>((props) => {
   }, [currentStepId, handleCloseRestakeBanner]);
 
   const { formattedDuration, isCooldown } = useStakingCycle(
-    poolToWithdrawal?.cycle_start,
-    poolToWithdrawal?.cycle_end,
+    poolToWithdrawal?.cycle_start ?? Date.now(),
+    poolToWithdrawal?.cycle_end ?? Date.now(),
     isWaitingForWithdrawal,
   );
 
@@ -195,12 +206,14 @@ export const RestakeBanner = memo<RestakeBannerProps>((props) => {
                   }),
                 })}
               />,
-              <Button
-                color="tertiary"
-                size="small"
-                onPress={handleWithdrawal(poolToWithdrawal)}
-                title={t('restake_banner.unstake_action_manual')}
-              />,
+              poolToWithdrawal.implementation !== PoolImplementationType.Tf && (
+                <Button
+                  color="tertiary"
+                  size="small"
+                  onPress={handleWithdrawal(poolToWithdrawal)}
+                  title={t('restake_banner.unstake_action_manual')}
+                />
+              ),
             ]
           }
           stepId={RestakeSteps.UNSTAKE}

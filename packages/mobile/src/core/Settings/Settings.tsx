@@ -211,20 +211,24 @@ export const Settings: FC = () => {
   }, []);
 
   const handleDeleteAccount = useCallback(() => {
-    Alert.alert(t('settings_delete_alert_title'), t('settings_delete_alert_caption'), [
-      {
-        text: t('cancel'),
-        style: 'cancel',
-      },
-      {
-        text: t('settings_delete_alert_button'),
-        style: 'destructive',
-        onPress: () => {
-          trackEvent('delete_wallet');
-          openDeleteAccountDone();
+    Alert.alert(
+      t('settings_delete_alert_title', { space: Platform.OS === 'ios' ? '\n' : ' ' }),
+      t('settings_delete_alert_caption'),
+      [
+        {
+          text: t('cancel'),
+          style: 'cancel',
         },
-      },
-    ]);
+        {
+          text: t('settings_delete_alert_button'),
+          style: 'destructive',
+          onPress: () => {
+            trackEvent('delete_wallet');
+            openDeleteAccountDone();
+          },
+        },
+      ],
+    );
   }, []);
 
   const handleCustomizePress = useCallback(

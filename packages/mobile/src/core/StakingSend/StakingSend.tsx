@@ -9,7 +9,7 @@ import { AppStackRouteNames } from '$navigation';
 import { AppStackParamList } from '$navigation/AppStack';
 import { StepView, StepViewItem, StepViewRef } from '$shared/components';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
-import { Toast } from '$store';
+import { Toast, useNotificationsStore } from '$store';
 import { getStakingPoolByAddress } from '@tonkeeper/shared/utils/staking';
 import { walletWalletSelector } from '$store/wallet';
 import { NavBar } from '$uikit';
@@ -38,6 +38,7 @@ import { SignRawMessage } from '$core/ModalContainer/NFTOperations/TXRequest.typ
 import { useStakingState, useWallet } from '@tonkeeper/shared/hooks';
 import { tk } from '$wallet';
 import { Address } from '@tonkeeper/shared/Address';
+import { shallow } from 'zustand/shallow';
 
 interface Props {
   route: RouteProp<AppStackParamList, AppStackRouteNames.StakingSend>;
@@ -175,6 +176,15 @@ export const StakingSend: FC<Props> = (props) => {
   const actionRef = useRef<Awaited<ReturnType<typeof operations.signRaw>> | null>(null);
 
   const messages = useRef<SignRawMessage[]>([]);
+
+  const rawAddress = wallet.address.ton.raw ?? '';
+  const stakingAddressToMigrateFrom = useNotificationsStore(
+    (state) => state.wallets[rawAddress]?.stakingAddressToMigrateFrom,
+    shallow,
+  );
+  const bypassUnstakeStep = useNotificationsStore(
+    (state) => state.actions.bypassUnstakeStep,
+  );
 
   const { isLiquidJetton, price } = useCurrencyToSend(currency, tokenType);
 
@@ -341,22 +351,32 @@ export const StakingSend: FC<Props> = (props) => {
       const privateKey = await vault.getTonPrivateKey();
 
       await actionRef.current.send(privateKey);
+
+      const endTimestamp = pool.cycle_end * 1000;
+      const isCooldown = Date.now() > endTimestamp;
+
       if (
-        isWithdrawalConfrim &&
-        tk.wallet.staking.state.data.stakingAddressToMigrateFrom &&
-        Address.compare(
-          tk.wallet.staking.state.data.stakingAddressToMigrateFrom,
-          pool.address,
-        )
+        (isWithdrawalConfrim || isCooldown) &&
+        stakingAddressToMigrateFrom &&
+        Address.compare(stakingAddressToMigrateFrom, pool.address)
       ) {
-        tk.wallet.staking.setBypassStakeStep();
+        bypassUnstakeStep(rawAddress);
       }
     } catch (e) {
       throw e;
     } finally {
       setSending(false);
     }
-  }, [isDeposit, isWithdrawalConfrim, pool, totalFee, unlockVault]);
+  }, [
+    bypassUnstakeStep,
+    isDeposit,
+    isWithdrawalConfrim,
+    pool,
+    rawAddress,
+    stakingAddressToMigrateFrom,
+    totalFee,
+    unlockVault,
+  ]);
 
   useEffect(() => {
     if (isWithdrawalConfrim || initialAmount) {

@@ -40,9 +40,6 @@ export type StakingState = {
   stakingJettons: Record<string, JettonMetadata>;
   stakingJettonsUpdatedAt: number;
   stakingBalance: string;
-  showRestakeBanner: boolean;
-  stakingAddressToMigrateFrom?: string;
-  bypassStakeStep?: boolean;
 };
 
 export class StakingManager {
@@ -61,8 +58,6 @@ export class StakingManager {
     providers: [],
     highestApyPool: null,
     stakingBalance: '0',
-    showRestakeBanner: false,
-    bypassStakeStep: false,
   };
 
   static calculatePoolBalance(pool: PoolInfo, stakingInfo: StakingInfo) {
@@ -279,24 +274,6 @@ export class StakingManager {
     } finally {
       this.state.set({ status: StakingApiStatus.Idle });
     }
-  }
-
-  public toggleRestakeBanner(
-    showRestakeBanner: boolean,
-    stakingAddressToMigrateFrom?: string,
-  ) {
-    if (stakingAddressToMigrateFrom) {
-      return this.state.set({
-        stakingAddressToMigrateFrom,
-        showRestakeBanner,
-        bypassStakeStep: false,
-      });
-    }
-    this.state.set({ showRestakeBanner, bypassStakeStep: false });
-  }
-
-  public setBypassStakeStep() {
-    this.state.set({ bypassStakeStep: true });
   }
 
   public async reload() {

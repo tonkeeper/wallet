@@ -22,7 +22,7 @@ export const DeleteAccountDone: React.FC = () => {
   }, []);
 
   const handleAnimationEnd = useCallback(() => {
-    dispatch(walletActions.cleanWallet({ cleanAll: true }));
+    dispatch(walletActions.cleanWallet({ cleanAll: false }));
   }, [dispatch]);
 
   return (
