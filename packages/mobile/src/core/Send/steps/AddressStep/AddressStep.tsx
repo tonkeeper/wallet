@@ -100,7 +100,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
             return new TonWeb.Address(resolvedDomain.wallet.address).toString(
               true,
               true,
-              true,
+              false,
             ) as string;
           }
 

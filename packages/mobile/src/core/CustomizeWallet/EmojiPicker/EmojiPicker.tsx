@@ -1,8 +1,9 @@
 import { isAndroid } from '$utils';
 import { FlashList } from '@shopify/flash-list';
-import { Steezy, View, ns } from '@tonkeeper/uikit';
+import { Steezy, View, WalletIcon, ns } from '@tonkeeper/uikit';
+import { WALLET_ICONS } from '@tonkeeper/uikit/src/utils/walletIcons';
 import React, { memo, useCallback } from 'react';
-import { Text, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 interface Emoji {
@@ -11,6 +12,11 @@ interface Emoji {
 }
 
 const emojis: Emoji[] = require('./emojis.json');
+
+const items: Emoji[] = [
+  ...WALLET_ICONS.map((value) => ({ emoji: value, name: value })),
+  ...emojis,
+];
 
 interface EmojiPickerProps {
   onChange: (value: string) => void;
@@ -22,7 +28,7 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = memo(({ onChange }) => {
       return (
         <TouchableOpacity activeOpacity={0.5} onPress={() => onChange(item.emoji)}>
           <View style={styles.emojiContainer}>
-            <Text style={styles.emoji.static}>{item.emoji}</Text>
+            <WalletIcon emojiStyle={styles.emoji.static} size={32} value={item.emoji} />
           </View>
         </TouchableOpacity>
       );
@@ -33,7 +39,7 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = memo(({ onChange }) => {
   return (
     <View style={styles.container}>
       <FlashList
-        data={emojis}
+        data={items}
         numColumns={7}
         keyExtractor={(item) => item.name}
         renderItem={renderEmoji}

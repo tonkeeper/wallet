@@ -6,6 +6,7 @@ import { tk } from '@tonkeeper/mobile/src/wallet';
 import { t } from '../i18n';
 import { formatter } from '../formatter';
 import { WalletListItem } from '../components';
+import { HideableAmount } from '@tonkeeper/mobile/src/core/HideableAmount/HideableAmount';
 
 interface Props {
   selected?: string;
@@ -47,7 +48,11 @@ export const SwitchWalletModal: FC<Props> = memo((props) => {
                 key={wallet.identifier}
                 wallet={wallet}
                 onPress={handlePress(wallet.identifier)}
-                subtitle={formatter.format(wallet.totalFiat, { currency })}
+                subtitle={
+                  <HideableAmount variant="body2" color="textSecondary">
+                    {formatter.format(wallet.totalFiat, { currency })}
+                  </HideableAmount>
+                }
                 rightContent={
                   selectedIdentifier === wallet.identifier && (
                     <View style={styles.checkmark}>

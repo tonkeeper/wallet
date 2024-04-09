@@ -954,7 +954,7 @@
   "transaction_wallet_initialized_date": "%{date}",
   "transaction_your_bid": "Your bid",
   "transfer_pending_by_battery_error": "Another transaction is handling by battery",
-  "transfer_deeplink_unknown_jetton_error" : "Unknown token",
+  "transfer_deeplink_unknown_jetton_error": "Unknown token",
   "transfer_deeplink_address_error": "Incorrect recipient address",
   "transfer_deeplink_unknown_token": "Unknown token",
   "transfer_deeplink_wrong_params": "Wrong parameters",
@@ -990,6 +990,7 @@
         "stakingFee": "%{count} TON needed for transaction. Estimated fee %{fee} TON will be deducted, the rest will be refunded.",
         "stakingDeposit": "Minimum balance for participate:\n%{amount} %{currency}\n",
         "title": "Insufficient funds",
+        "title_multiwallet": "Insufficient funds in wallet",
         "toBePaid": "To be paid: %{amount} %{currency}\n",
         "withFees": "+ blockchain fees.\n",
         "yourBalance": "Your balance: %{balance} %{currency}."

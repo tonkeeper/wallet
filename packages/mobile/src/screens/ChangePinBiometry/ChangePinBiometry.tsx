@@ -61,6 +61,7 @@ export const ChangePinBiometry: FC = () => {
             {t('later')}
           </Button>
         }
+        hideBackButton
       />
       <S.Wrap>
         <S.Content>

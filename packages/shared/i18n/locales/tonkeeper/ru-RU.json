@@ -987,6 +987,7 @@
         },
         "stakingDeposit" : "Минимальный баланс для участия:\n%{amount} %{currency}\n",
         "title" : "Недостаточно средств",
+        "title_multiwallet": "Недостаточно средств на кошельке",
         "toBePaid" : "Необходимо: %{amount} %{currency}\n",
         "withFees" : "+ комиссия сети.\n",
         "yourBalance" : "Ваш баланс: %{balance} %{currency}."

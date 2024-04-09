@@ -298,14 +298,16 @@ export class Tonkeeper {
       {},
     );
 
-    const wallets = accounts.map(
-      (account, index): ImportWalletInfo => ({
-        version: versionByAddress[account.address],
-        address: account.address,
-        balance: account.balance,
-        tokens: accountsJettons[index].balances.length > 0,
-      }),
-    );
+    const wallets = accounts
+      .map(
+        (account, index): ImportWalletInfo => ({
+          version: versionByAddress[account.address],
+          address: account.address,
+          balance: account.balance,
+          tokens: accountsJettons[index].balances.length > 0,
+        }),
+      )
+      .filter((item) => !!item.version);
 
     if (!wallets.some((wallet) => wallet.version === DEFAULT_WALLET_VERSION)) {
       wallets.push({

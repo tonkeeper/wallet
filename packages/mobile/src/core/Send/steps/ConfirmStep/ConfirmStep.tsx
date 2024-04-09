@@ -25,6 +25,7 @@ import { BatteryState } from '@tonkeeper/shared/utils/battery';
 import { TokenType } from '$core/Send/Send.interface';
 import { useBalancesState, useWallet } from '@tonkeeper/shared/hooks';
 import { tk } from '$wallet';
+import { Steezy, WalletIcon, isAndroid } from '@tonkeeper/uikit';
 
 const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const {
@@ -226,9 +227,15 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
                 <S.Item>
                   <S.ItemLabel>{t('send_screen_steps.comfirm.wallet')}</S.ItemLabel>
                   <S.ItemContent>
-                    <S.ItemValue numberOfLines={1}>
-                      {tk.wallet.config.emoji} {tk.wallet.config.name}
-                    </S.ItemValue>
+                    <S.WalletNameRow>
+                      <WalletIcon
+                        emojiStyle={styles.emoji.static}
+                        size={20}
+                        value={wallet.config.emoji}
+                      />
+                      <Spacer x={4} />
+                      <S.ItemValue numberOfLines={1}>{tk.wallet.config.name}</S.ItemValue>
+                    </S.WalletNameRow>
                   </S.ItemContent>
                 </S.Item>
                 <Separator />
@@ -370,3 +377,10 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
 };
 
 export const ConfirmStep = memo(ConfirmStepComponent);
+
+const styles = Steezy.create({
+  emoji: {
+    fontSize: isAndroid ? 17 : 20,
+    marginTop: isAndroid ? -1 : 1,
+  },
+});

@@ -104,3 +104,9 @@ export const WarningRow = styled.View`
 export const WarningIcon = styled.View`
   margin-top: ${ns(2)}px;
 `;
+
+export const WalletNameRow = styled.View`
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+`;
