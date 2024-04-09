@@ -35,7 +35,7 @@ export function useHoldersEnroll(unlockVault: () => Promise<UnlockedVault>) {
           //
 
           const manifestUrl = `${config.get(
-            'holdersAppEndpoint',
+            'holdersTonconnect',
             false,
           )}/jsons/tonconnect-manifest.json`;
 

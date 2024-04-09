@@ -51,7 +51,7 @@ export const CardsList = memo<CardsListProps>((props) => {
     <List indent={false}>
       {props.accounts.map((account) => (
         <List.Item
-          disabled={account.state !== 'ACTIVE'}
+          disabled={!['PENDING_CONTRACT', 'ACTIVE'].includes(account.state)}
           leftContent={<TonIcon showDiamond />}
           onPress={openWebView(account.id)}
           value={`${formatter.fromNano(account.balance)} TON`}

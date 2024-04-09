@@ -47,6 +47,7 @@ export type AppConfigVars = {
   batteryTestnetHost: string;
   batteryMeanFees: string;
   holdersAppEndpoint: string;
+  holdersTonconnect: string;
   holdersService: string;
   aptabaseEndpoint: string;
   aptabaseAppKey: string;
@@ -76,7 +77,8 @@ const defaultConfig: Partial<AppConfigVars> = {
   transactionExplorer: 'https://tonviewer.com/transaction/%s',
   flags: {},
   holdersAppEndpoint: 'https://tonkeeper-dev.holders.io/',
-  holdersService: 'https://card-dev.whales-api.com',
+  holdersTonconnect: 'https://app.holders.io',
+  holdersService: 'https://card-staging.whales-api.com',
   tronapiHost: 'https://tron.tonkeeper.com',
   tronapiTestnetHost: 'https://testnet-tron.tonkeeper.com',
   batteryHost: 'https://battery.tonkeeper.com',
