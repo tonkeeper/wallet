@@ -109,8 +109,9 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
                     currency: jetton.metadata.symbol,
                     currencySeparator: 'wide',
                   })}
-                   ·
-                  {' '}
+                  <Text variant="body2" color="textTertiary">
+                    {' '}·{' '}
+                  </Text>
                   {lockedJettonPrice.formatted.totalFiat}
                 </Text>
                 <Text variant="body2" color="textTertiary">
