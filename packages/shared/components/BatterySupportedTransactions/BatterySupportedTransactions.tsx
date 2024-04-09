@@ -7,12 +7,12 @@ import { capitalizeFirstLetter } from '../../utils/date';
 import { useExternalState } from '../../hooks/useExternalState';
 import { tk } from '@tonkeeper/mobile/src/wallet';
 import { BatterySupportedTransaction } from '@tonkeeper/mobile/src/wallet/managers/BatteryManager';
+import { Platform } from 'react-native';
 
 export interface SupportedTransaction {
   type: BatterySupportedTransaction;
   name: string;
   nameSingle: string;
-  meanPrice: string;
 }
 
 export const supportedTransactions: SupportedTransaction[] = [
@@ -20,19 +20,16 @@ export const supportedTransactions: SupportedTransaction[] = [
     type: BatterySupportedTransaction.Swap,
     name: 'battery.transactions.types.swap',
     nameSingle: 'battery.transactions.type.swap',
-    meanPrice: '0.22',
   },
   {
     type: BatterySupportedTransaction.NFT,
     name: 'battery.transactions.types.nft',
     nameSingle: 'battery.transactions.type.transfer',
-    meanPrice: '0.025',
   },
   {
     type: BatterySupportedTransaction.Jetton,
     name: 'battery.transactions.types.jetton',
     nameSingle: 'battery.transactions.type.transfer',
-    meanPrice: '0.055',
   },
 ];
 
@@ -72,28 +69,29 @@ export const BatterySupportedTransactions = memo<BatterySupportedTransactionsPro
         <List>
           {supportedTransactions.map((transaction) => (
             <List.Item
+              key={transaction.type}
               disabled={!props.editable}
               onPress={() =>
                 handleSwitchSupport(transaction.type)(
                   !supportedTransactionsValues[transaction.type],
                 )
               }
-              key={transaction.type}
               title={capitalizeFirstLetter(t(transaction.name))}
               subtitle={t('battery.transactions.charges_per_action', {
                 count: calculateChargesAmount(
-                  transaction.meanPrice,
+                  config.get(`batteryMeanPrice_${transaction.type}`),
                   config.get('batteryMeanFees'),
                 ),
                 transactionName: t(transaction.nameSingle),
               })}
               rightContent={
-                props.editable && (
+                props.editable ? (
                   <Switch
+                    disabled={Platform.OS === 'android'} // Temp fix. Should refactor screen with react-native-pager-view
                     onChange={handleSwitchSupport(transaction.type)}
                     value={supportedTransactionsValues[transaction.type]}
                   />
-                )
+                ) : null
               }
             />
           ))}

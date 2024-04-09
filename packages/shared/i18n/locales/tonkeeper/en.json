@@ -131,7 +131,7 @@
       "types": {
         "nft": "NFT transfers",
         "swap": "swaps",
-        "jetton": "jetton transfers",
+        "jetton": "token transfers",
         "ton": "TON transfers"
       },
       "type": {

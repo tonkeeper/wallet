@@ -1,20 +1,17 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import { Modal, Spacer } from '@tonkeeper/uikit';
-import { openExploreTab } from '$navigation';
+import { openExploreTab, openRefillBatteryModal } from '$navigation';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
 import { Button, Icon, Text } from '$uikit';
 import * as S from './InsufficientFunds.style';
 import { delay, fromNano } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import BigNumber from 'bignumber.js';
-import { store } from '$store';
 import { formatter } from '$utils/formatter';
 import { push } from '$navigation/imperative';
 import { useBatteryBalance } from '@tonkeeper/shared/query/hooks/useBatteryBalance';
 import { config } from '$config';
-import { openRefillBatteryModal } from '@tonkeeper/shared/modals/RefillBatteryModal';
-import { tk } from '$wallet';
 import { Wallet } from '$wallet/Wallet';
 import { AmountFormatter } from '@tonkeeper/core';
 

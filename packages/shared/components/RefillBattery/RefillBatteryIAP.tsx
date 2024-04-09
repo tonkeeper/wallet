@@ -19,6 +19,7 @@ import { useTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
 import { CryptoCurrencies } from '@tonkeeper/mobile/src/shared/constants';
 import BigNumber from 'bignumber.js';
 import { config } from '@tonkeeper/mobile/src/config';
+import { useExternalState } from '../../hooks/useExternalState';
 
 export interface InAppPackage {
   icon: IconNames;
@@ -53,6 +54,10 @@ export const RefillBatteryIAP = memo(() => {
   const [purchaseInProgress, setPurchaseInProgress] = useState<boolean>(false);
   const { products, getProducts, requestPurchase, finishTransaction } = useIAP();
   const tonPriceInUsd = useTokenPrice(CryptoCurrencies.Ton).usd;
+  const batteryBalance = useExternalState(
+    tk.wallet.battery.state,
+    (state) => state.balance,
+  );
 
   useEffect(() => {
     getProducts({
@@ -140,6 +145,7 @@ export const RefillBatteryIAP = memo(() => {
                     {t(`battery.packages.subtitle`, {
                       count: new BigNumber(item.userProceed)
                         .div(tonPriceInUsd)
+                        .minus(!batteryBalance ? config.get('batteryReservedAmount') : 0)
                         .div(config.get('batteryMeanFees'))
                         .decimalPlaces(0)
                         .toNumber(),

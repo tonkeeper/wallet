@@ -43,9 +43,15 @@ export type AppConfigVars = {
   tonapiTestnetHost: string;
   tronapiHost: string;
   tronapiTestnetHost: string;
+
   batteryHost: string;
   batteryTestnetHost: string;
   batteryMeanFees: string;
+  batteryReservedAmount: string;
+  batteryMeanPrice_swap: string;
+  batteryMeanPrice_jetton: string;
+  batteryMeanPrice_nft: string;
+
   holdersAppEndpoint: string;
   holdersService: string;
   aptabaseEndpoint: string;
@@ -83,6 +89,10 @@ const defaultConfig: Partial<AppConfigVars> = {
   batteryHost: 'https://battery.tonkeeper.com',
   batteryTestnetHost: 'https://testnet-battery.tonkeeper.com',
   batteryMeanFees: '0.0055',
+  batteryReservedAmount: '0.3',
+  batteryMeanPrice_swap: '0.22',
+  batteryMeanPrice_jetton: '0.06',
+  batteryMeanPrice_nft: '0.03',
   disable_battery: true,
   disable_battery_iap_module: Platform.OS !== 'android', // Enable for iOS, disable for Android
   disable_battery_send: true,
