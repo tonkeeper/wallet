@@ -55,13 +55,13 @@ export enum MainStackRouteNames {
   Backup = 'Backup',
   BackupPhrase = 'BackupPhrase',
   BackupCheckPhrase = 'BackupCheckPhrase',
+  Settings = 'SettingsStack',
 }
 
 export enum TabsStackRouteNames {
   Balances = 'Balances',
-  NFT = 'TabNFT',
   BrowserStack = 'BrowserStack',
-  SettingsStack = 'SettingsStack',
+  Collectibles = 'Collectibles',
   Activity = 'Activity',
 }
 

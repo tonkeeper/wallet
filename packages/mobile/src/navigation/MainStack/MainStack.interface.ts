@@ -38,4 +38,5 @@ export type MainStackParamList = {
   [MainStackRouteNames.Backup]: {};
   [MainStackRouteNames.BackupPhrase]: {};
   [MainStackRouteNames.BackupCheckPhrase]: {};
+  [MainStackRouteNames.Settings]: {};
 };

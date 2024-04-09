@@ -6,7 +6,6 @@ import {
   SpacerSizes,
   View,
   List,
-  PagerView,
   DEFAULT_TOKEN_LOGO,
 } from '@tonkeeper/uikit';
 import { Steezy } from '$styles';
@@ -16,7 +15,6 @@ import { Rate } from '../hooks/useBalance';
 import { ListItemRate } from './ListItemRate';
 import { TonIcon, TonIconProps } from '@tonkeeper/uikit';
 import { CryptoCurrencies, LockupNames } from '$shared/constants';
-import { NFTsList } from './NFTsList';
 import { TokenPrice } from '$hooks/useTokenPrice';
 import { useTheme } from '$hooks/useTheme';
 import { ListSeparator } from '$uikit/List/ListSeparator';
@@ -38,7 +36,6 @@ import BigNumber from 'bignumber.js';
 
 enum ContentType {
   Token,
-  Collectibles,
   Spacer,
   NFTCardsRow,
   Staking,
@@ -69,12 +66,6 @@ type SpacerItem = {
   bottom: SpacerSizes;
 };
 
-type NFTCardsRowItem = {
-  key: string;
-  type: ContentType.NFTCardsRow;
-  items: any; // TODO:
-};
-
 type StakingItem = {
   key: string;
   type: ContentType.Staking;
@@ -92,13 +83,7 @@ type SetupItem = {
   type: ContentType.Setup;
 };
 
-type Content =
-  | TokenItem
-  | SpacerItem
-  | NFTCardsRowItem
-  | StakingItem
-  | CardsItem
-  | SetupItem;
+type Content = TokenItem | SpacerItem | StakingItem | CardsItem | SetupItem;
 
 const RenderItem = ({ item }: { item: Content }) => {
   switch (item.type) {
@@ -180,8 +165,6 @@ const RenderItem = ({ item }: { item: Content }) => {
       );
     case ContentType.Spacer:
       return <SpacerView y={item.bottom} />;
-    case ContentType.NFTCardsRow:
-      return <NFTsList nfts={item.items} />;
     case ContentType.Staking:
       return (
         <StakingWidget
@@ -216,7 +199,6 @@ export const WalletContentList = memo<BalancesListProps>(
     tokens,
     balance,
     tonPrice,
-    nfts,
     handleRefresh,
     isRefreshing,
     inscriptions,
@@ -232,7 +214,7 @@ export const WalletContentList = memo<BalancesListProps>(
     const isWatchOnly = wallet && wallet.isWatchOnly;
     const isLockup = wallet && wallet.isLockup;
     const identifier = wallet.identifier;
-    const showStaking = isWatchOnly ? balance.staking.amount.nano !== '0' : true;
+    const showStaking = balance.staking.amount.nano !== '0';
     const showBuyButton =
       !isLockup && new BigNumber(balance.ton.amount.nano).isLessThan(50);
 
@@ -378,17 +360,6 @@ export const WalletContentList = memo<BalancesListProps>(
       firstTonkenElement.isFirst = true;
       lastTokenElement.isLast = true;
 
-      if (nfts) {
-        const numColumns = 3;
-        for (let i = 0; i < Math.ceil(nfts.length / numColumns); i++) {
-          content.push({
-            key: 'nft_' + i,
-            type: ContentType.NFTCardsRow,
-            items: nfts.slice(i * numColumns, i * numColumns + numColumns),
-          });
-        }
-      }
-
       content.push({
         key: 'spacer_bottom',
         type: ContentType.Spacer,
@@ -404,16 +375,13 @@ export const WalletContentList = memo<BalancesListProps>(
       isWatchOnly,
       tokens.list,
       inscriptions,
-      nfts,
       showBuyButton,
       identifier,
       currency,
     ]);
 
-    const ListComponent = nfts ? Screen.FlashList : PagerView.FlatList;
-
     return (
-      <ListComponent
+      <Screen.FlashList
         ListHeaderComponent={ListHeaderComponent}
         renderItem={RenderItem}
         data={data}

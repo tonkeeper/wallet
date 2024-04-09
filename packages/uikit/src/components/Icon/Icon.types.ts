@@ -60,7 +60,9 @@ export type IconNames =
   | 'ic-almost-empty-battery-28'
   | 'ic-appearance-28'
   | 'ic-arrow-down-28'
+  | 'ic-arrow-down-outline-28'
   | 'ic-arrow-up-28'
+  | 'ic-arrow-up-outline-28'
   | 'ic-battery-28'
   | 'ic-bell-28'
   | 'ic-creditcard-28'
@@ -81,6 +83,7 @@ export type IconNames =
   | 'ic-flash-28'
   | 'ic-full-battery-28'
   | 'ic-gear-28'
+  | 'ic-gear-outline-28'
   | 'ic-globe-28'
   | 'ic-home-28'
   | 'ic-jetton-28'
@@ -95,6 +98,8 @@ export type IconNames =
   | 'ic-notification-28'
   | 'ic-plus-28'
   | 'ic-plus-circle-28'
+  | 'ic-purchases-28'
+  | 'ic-qr-viewfinder-outline-28'
   | 'ic-reorder-28'
   | 'ic-return-28'
   | 'ic-secure-28'
@@ -103,11 +108,13 @@ export type IconNames =
   | 'ic-shopping-bag-28'
   | 'ic-speed-28'
   | 'ic-staking-28'
+  | 'ic-staking-outline-28'
   | 'ic-star-28'
   | 'ic-success-28'
   | 'ic-swap-28'
   | 'ic-swap-horizontal-28'
   | 'ic-swap-horizontal-alternative-28'
+  | 'ic-swap-horizontal-outline-28'
   | 'ic-telegram-28'
   | 'ic-testnet-28'
   | 'ic-ticket-28'
@@ -216,7 +223,9 @@ export const AllIcons = [
   'ic-almost-empty-battery-28',
   'ic-appearance-28',
   'ic-arrow-down-28',
+  'ic-arrow-down-outline-28',
   'ic-arrow-up-28',
+  'ic-arrow-up-outline-28',
   'ic-battery-28',
   'ic-bell-28',
   'ic-creditcard-28',
@@ -237,6 +246,7 @@ export const AllIcons = [
   'ic-flash-28',
   'ic-full-battery-28',
   'ic-gear-28',
+  'ic-gear-outline-28',
   'ic-globe-28',
   'ic-home-28',
   'ic-jetton-28',
@@ -251,6 +261,8 @@ export const AllIcons = [
   'ic-notification-28',
   'ic-plus-28',
   'ic-plus-circle-28',
+  'ic-purchases-28',
+  'ic-qr-viewfinder-outline-28',
   'ic-reorder-28',
   'ic-return-28',
   'ic-secure-28',
@@ -259,11 +271,13 @@ export const AllIcons = [
   'ic-shopping-bag-28',
   'ic-speed-28',
   'ic-staking-28',
+  'ic-staking-outline-28',
   'ic-star-28',
   'ic-success-28',
   'ic-swap-28',
   'ic-swap-horizontal-28',
   'ic-swap-horizontal-alternative-28',
+  'ic-swap-horizontal-outline-28',
   'ic-telegram-28',
   'ic-testnet-28',
   'ic-ticket-28',
@@ -373,7 +387,9 @@ export const IconSizes = {
   'ic-almost-empty-battery-28': 28,
   'ic-appearance-28': 28,
   'ic-arrow-down-28': 28,
+  'ic-arrow-down-outline-28': 28,
   'ic-arrow-up-28': 28,
+  'ic-arrow-up-outline-28': 28,
   'ic-battery-28': 28,
   'ic-bell-28': 28,
   'ic-creditcard-28': 28,
@@ -394,6 +410,7 @@ export const IconSizes = {
   'ic-flash-28': 28,
   'ic-full-battery-28': 28,
   'ic-gear-28': 28,
+  'ic-gear-outline-28': 28,
   'ic-globe-28': 28,
   'ic-home-28': 28,
   'ic-jetton-28': 28,
@@ -408,6 +425,8 @@ export const IconSizes = {
   'ic-notification-28': 28,
   'ic-plus-28': 28,
   'ic-plus-circle-28': 28,
+  'ic-purchases-28': 28,
+  'ic-qr-viewfinder-outline-28': 28,
   'ic-reorder-28': 28,
   'ic-return-28': 28,
   'ic-secure-28': 28,
@@ -416,11 +435,13 @@ export const IconSizes = {
   'ic-shopping-bag-28': 28,
   'ic-speed-28': 28,
   'ic-staking-28': 28,
+  'ic-staking-outline-28': 28,
   'ic-star-28': 28,
   'ic-success-28': 28,
   'ic-swap-28': 28,
   'ic-swap-horizontal-28': 28,
   'ic-swap-horizontal-alternative-28': 28,
+  'ic-swap-horizontal-outline-28': 28,
   'ic-telegram-28': 28,
   'ic-testnet-28': 28,
   'ic-ticket-28': 28,

@@ -6,7 +6,7 @@ import { checkIsTonDiamondsNFT } from '$utils';
 import { useFlags } from '$utils/flags';
 import _ from 'lodash';
 import React, { memo, useCallback, useMemo } from 'react';
-import * as S from '../../core/NFTs/NFTItem/NFTItem.style';
+import * as S from './NFTCardItem.style';
 import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 import { AnimationDirection, HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { HideableImage } from '$core/HideableAmount/HideableImage';
@@ -100,7 +100,6 @@ const styles = Steezy.create(({ colors, corners }) => ({
   container: {
     position: 'relative',
     flex: 1,
-    marginHorizontal: 4,
     marginBottom: 8,
     backgroundColor: colors.backgroundContent,
     borderRadius: corners.medium,

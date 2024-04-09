@@ -1,18 +1,12 @@
 import { useStakingStatuses } from '$hooks/useStakingStatuses';
-import { MainStackRouteNames } from '$navigation';
 import { StakingListCell } from '$shared/components';
 import { View } from '$uikit';
 import { List } from '$uikit/List/old/List';
 import React, { FC, memo, useCallback } from 'react';
 import { useNavigation } from '@tonkeeper/router';
 import { Steezy } from '$styles';
-import { FlashCountKeys, useFlashCount } from '$store';
 import { StakingWidgetStatus } from './StakingWidgetStatus';
-import { logEvent } from '@amplitude/analytics-browser';
 import { t } from '@tonkeeper/shared/i18n';
-import { Flash } from '@tonkeeper/uikit';
-import { useStakingState } from '@tonkeeper/shared/hooks';
-
 interface Props {
   isWatchOnly: boolean;
   showBuyButton: boolean;
@@ -23,27 +17,13 @@ const StakingWidgetComponent: FC<Props> = (props) => {
 
   const nav = useNavigation();
 
-  const highestApyPool = useStakingState((s) => s.highestApyPool);
-  const [flashShownCount] = useFlashCount(FlashCountKeys.StakingWidget);
-
   const stakingInfo = useStakingStatuses();
-
-  const handleStakingPress = useCallback(() => {
-    logEvent('staking_open');
-    nav.push(MainStackRouteNames.Staking);
-  }, [nav]);
 
   const handleBuyPress = useCallback(() => {
     nav.openModal('Exchange');
   }, [nav]);
 
   const staked = stakingInfo.length > 0;
-
-  const apyDescription = highestApyPool
-    ? t('staking.widget_desc', {
-        apy: highestApyPool.apy.toFixed(2),
-      })
-    : '';
 
   const shouldShowBuyButton = showBuyButton && !isWatchOnly && !staked;
 
@@ -57,19 +37,6 @@ const StakingWidgetComponent: FC<Props> = (props) => {
             pool={item.pool}
           />
         ))}
-        {!isWatchOnly && (
-          <Flash disabled={flashShownCount >= 2}>
-            <StakingListCell
-              isWidget={!staked}
-              isWidgetAccent={shouldShowBuyButton}
-              id="staking"
-              name={t('staking.widget_title')}
-              description={staked ? t('staking.widget_staking_options') : apyDescription}
-              onPress={handleStakingPress}
-              separator={shouldShowBuyButton}
-            />
-          </Flash>
-        )}
         {shouldShowBuyButton ? (
           <StakingListCell
             isWidget
