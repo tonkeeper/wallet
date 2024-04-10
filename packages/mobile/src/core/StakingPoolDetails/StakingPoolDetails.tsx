@@ -9,7 +9,6 @@ import {
 import {
   Button,
   Highlight,
-  IconButton,
   ScrollHandler,
   Spacer,
   StakedTonIcon,
@@ -27,12 +26,11 @@ import { t } from '@tonkeeper/shared/i18n';
 import { useFlag } from '$utils/flags';
 import { formatter } from '@tonkeeper/shared/formatter';
 import { IStakingLink, StakingLinkType } from './types';
-import { Icon, List, Steezy } from '@tonkeeper/uikit';
+import { ActionButtons, Icon, List, Steezy } from '@tonkeeper/uikit';
 import { getLinkIcon, getLinkTitle, getSocialLinkType } from './utils';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Linking } from 'react-native';
 import { PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
-import BigNumber from 'bignumber.js';
 import { ListItemRate } from '../../tabs/Wallet/components/ListItemRate';
 import { useStakingState, useWallet, useWalletCurrency } from '@tonkeeper/shared/hooks';
 import { StakingManager } from '$wallet/managers/StakingManager';
@@ -154,19 +152,6 @@ export const StakingPoolDetails: FC<Props> = (props) => {
 
   const isLiquidTF = pool.implementation === PoolImplementationType.LiquidTF;
 
-  const nextReward = useMemo(() => {
-    if (!stakingJetton || !pool.cycle_length) {
-      return;
-    }
-
-    return formatter.format(
-      new BigNumber(balance.totalTon)
-        .multipliedBy(pool.apy / 100)
-        .dividedBy(31536000)
-        .multipliedBy(pool.cycle_length),
-    );
-  }, [balance.totalTon, pool.apy, pool.cycle_length, stakingJetton]);
-
   const stakingJettonView = useMemo(
     () =>
       stakingJettonMetadata ? (
@@ -249,27 +234,24 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                 <Spacer x={16} />
                 <StakedTonIcon size="medium" pool={pool} />
               </S.FlexRow>
-              <S.Divider />
-              {!isWatchOnly ? (
-                <>
-                  <Spacer y={16} />
-                  <S.ActionsContainer>
-                    <IconButton
-                      onPress={handleTopUpPress}
-                      iconName="ic-plus-28"
-                      title={t('staking.top_up')}
-                      disabled={!isImplemeted}
-                    />
-                    <IconButton
-                      onPress={handleWithdrawalPress}
-                      iconName="ic-minus-28"
-                      title={t('staking.withdraw')}
-                      disabled={!isImplemeted || isWithdrawDisabled}
-                    />
-                  </S.ActionsContainer>
-                  <S.Divider />
-                </>
-              ) : null}
+              <ActionButtons
+                buttons={[
+                  {
+                    id: 'top-up',
+                    disabled: isWatchOnly || !isImplemeted,
+                    onPress: handleTopUpPress,
+                    icon: 'ic-plus-outline-28',
+                    title: t('wallet.send_btn'),
+                  },
+                  {
+                    id: 'withdraw',
+                    onPress: handleWithdrawalPress,
+                    icon: 'ic-minus-outline-28',
+                    title: t('wallet.receive_btn'),
+                    disabled: isWatchOnly || !isImplemeted || isWithdrawDisabled,
+                  },
+                ]}
+              />
             </S.HeaderWrap>
             {hasPendingDeposit ? (
               <>
@@ -336,23 +318,11 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                 </S.BalanceTouchableContainer>
               </>
             ) : null}
-            {/* {hasAnyBalance && stakingJetton && isLiquidTF ? (
-              <>
-                <Spacer y={24} />
-                <S.ChartContainer>
-                  <StakingChart stakingJetton={stakingJetton} />
-                </S.ChartContainer>
-              </>
-            ) : null} */}
             <Spacer y={8} />
-            <S.TitleContainer>
-              <Text variant="h3">{t('staking.details.about_pool')}</Text>
-            </S.TitleContainer>
             {stakingJettonMetadata && hasAnyBalance ? (
               <>
                 {stakingJettonView}
-                <Spacer y={16} />
-                <Spacer y={8} />
+                <Spacer y={24} />
               </>
             ) : null}
             <S.Table>

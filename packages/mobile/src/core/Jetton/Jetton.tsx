@@ -17,7 +17,15 @@ import { Events, JettonVerification, SendAnalyticsFrom } from '$store/models';
 import { t } from '@tonkeeper/shared/i18n';
 import { trackEvent } from '$utils/stats';
 import { Address } from '@tonkeeper/core';
-import { Icon, Screen, Spacer, Steezy, TouchableOpacity, View } from '@tonkeeper/uikit';
+import {
+  ActionButtons,
+  Icon,
+  Screen,
+  Spacer,
+  Steezy,
+  TouchableOpacity,
+  View,
+} from '@tonkeeper/uikit';
 
 import { useJettonActivityList } from '@tonkeeper/shared/query/hooks/useJettonActivityList';
 import { ActivityList } from '@tonkeeper/shared/components';
@@ -120,42 +128,38 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
                 </Text>
               </>
             ) : null}
-            {jettonPrice.formatted.fiat ? (
-              <>
-                <Spacer y={12} />
-                <Text variant="body2" color="foregroundSecondary">
-                  {t('jetton_price')} {jettonPrice.formatted.fiat}
-                </Text>
-              </>
-            ) : null}
           </S.JettonAmountWrapper>
           {jetton.metadata.image ? (
             <S.Logo source={{ uri: jetton.metadata.image }} />
           ) : null}
         </S.FlexRow>
-        <S.Divider style={{ marginBottom: ns(16) }} />
-        <S.ActionsContainer>
-          {!isWatchOnly ? (
-            <IconButton
-              onPress={handleSend}
-              iconName="ic-arrow-up-28"
-              title={t('wallet.send_btn')}
-            />
-          ) : null}
-          <IconButton
-            onPress={handleReceive}
-            iconName="ic-arrow-down-28"
-            title={t('wallet.receive_btn')}
-          />
-          {!isWatchOnly && showSwap && !flags.disable_swap ? (
-            <IconButton
-              onPress={handlePressSwap}
-              icon={<SwapIcon />}
-              title={t('wallet.swap_btn')}
-            />
-          ) : null}
-        </S.ActionsContainer>
-        <S.Divider style={styles.mb10.static} />
+        <Spacer y={24} />
+        <ActionButtons
+          buttons={[
+            {
+              id: 'send',
+              disabled: isWatchOnly,
+              onPress: handleSend,
+              icon: 'ic-arrow-up-outline-28',
+              title: t('wallet.send_btn'),
+            },
+            {
+              id: 'receive',
+              onPress: handleReceive,
+              icon: 'ic-arrow-down-outline-28',
+              title: t('wallet.receive_btn'),
+            },
+            {
+              id: 'swap',
+              disabled: !isWatchOnly && showSwap && !flags.disable_swap,
+              onPress: handlePressSwap,
+              icon: 'ic-swap-horizontal-outline-28',
+              title: t('wallet.swap_btn'),
+              visible: !isWatchOnly && showSwap && !flags.disable_swap,
+            },
+          ]}
+        />
+        <Spacer y={24} />
         {shouldShowChart && (
           <>
             <S.ChartWrap>
@@ -176,7 +180,9 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
     );
   }, [
     jetton,
-    jettonPrice,
+    jettonPrice.formatted.totalFiat,
+    jettonPrice.formatted.fiat,
+    lockedJettonPrice.formatted.totalFiat,
     isWatchOnly,
     handleSend,
     handleReceive,
@@ -184,6 +190,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
     flags.disable_swap,
     handlePressSwap,
     shouldShowChart,
+    shouldExcludeChartPeriods,
     fiatCurrency,
     route.params.jettonAddress,
   ]);

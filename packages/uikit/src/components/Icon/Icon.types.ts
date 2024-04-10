@@ -93,11 +93,13 @@ export type IconNames =
   | 'ic-magnifying-glass-28'
   | 'ic-message-bubble-28'
   | 'ic-minus-28'
+  | 'ic-minus-outline-28'
   | 'ic-money-28'
   | 'ic-nft-collection-28'
   | 'ic-notification-28'
   | 'ic-plus-28'
   | 'ic-plus-circle-28'
+  | 'ic-plus-outline-28'
   | 'ic-purchases-28'
   | 'ic-qr-viewfinder-outline-28'
   | 'ic-reorder-28'
@@ -256,11 +258,13 @@ export const AllIcons = [
   'ic-magnifying-glass-28',
   'ic-message-bubble-28',
   'ic-minus-28',
+  'ic-minus-outline-28',
   'ic-money-28',
   'ic-nft-collection-28',
   'ic-notification-28',
   'ic-plus-28',
   'ic-plus-circle-28',
+  'ic-plus-outline-28',
   'ic-purchases-28',
   'ic-qr-viewfinder-outline-28',
   'ic-reorder-28',
@@ -420,11 +424,13 @@ export const IconSizes = {
   'ic-magnifying-glass-28': 28,
   'ic-message-bubble-28': 28,
   'ic-minus-28': 28,
+  'ic-minus-outline-28': 28,
   'ic-money-28': 28,
   'ic-nft-collection-28': 28,
   'ic-notification-28': 28,
   'ic-plus-28': 28,
   'ic-plus-circle-28': 28,
+  'ic-plus-outline-28': 28,
   'ic-purchases-28': 28,
   'ic-qr-viewfinder-outline-28': 28,
   'ic-reorder-28': 28,

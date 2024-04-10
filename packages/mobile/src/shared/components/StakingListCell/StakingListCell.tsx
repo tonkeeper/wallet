@@ -10,7 +10,7 @@ import * as S from './StakingListCell.style';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { JettonBalanceModel } from '$store/models';
 import { t } from '@tonkeeper/shared/i18n';
-import { Icon, ListSeparator, Pressable, isAndroid, useTheme } from '@tonkeeper/uikit';
+import { Icon, Pressable, isAndroid, useTheme } from '@tonkeeper/uikit';
 import { useBackgroundHighlighted } from '@tonkeeper/shared/hooks/useBackgroundHighlighted';
 import Animated from 'react-native-reanimated';
 
@@ -22,7 +22,6 @@ interface Props {
   stakingJetton?: JettonBalanceModel;
   icon?: ReactNode;
   iconSource?: Source | ImageRequireSource | null;
-  separator?: boolean;
   isWidget?: boolean;
   isWidgetAccent?: boolean;
   isBuyTon?: boolean;
@@ -42,7 +41,6 @@ const StakingListCellComponent: FC<Props> = (props) => {
     stakingJetton,
     icon,
     iconSource,
-    separator,
     id,
     isWidget,
     isWidgetAccent,
@@ -151,7 +149,6 @@ const StakingListCellComponent: FC<Props> = (props) => {
           ) : null}
         </View>
       </TouchableComponent>
-      {separator ? <ListSeparator /> : null}
     </>
   );
 };

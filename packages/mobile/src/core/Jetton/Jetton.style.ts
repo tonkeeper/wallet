@@ -11,7 +11,6 @@ export const Wrap = styled.View`
 
 export const ChartWrap = styled.View`
   margin-bottom: ${ns(24.5)}px;
-  margin-top: 18px;
 `;
 
 export const HeaderWrap = styled.View`
@@ -44,7 +43,7 @@ export const FlexRow = styled.View`
   flex-direction: row;
   justify-content: space-between;
   margin-top: ${ns(16)}px;
-  margin-bottom: ${ns(28)}px;
+  padding-horizontal: ${ns(12)}px;
 `;
 
 export const JettonAmountWrapper = styled.View`

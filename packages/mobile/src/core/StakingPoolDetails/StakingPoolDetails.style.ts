@@ -90,10 +90,10 @@ export const DetailsButtonContainer = styled.View`
 
 export const HeaderWrap = styled.View`
   align-items: center;
-  padding-horizontal: ${ns(16)}px;
 `;
 
 export const FlexRow = styled.View`
+  padding-horizontal: ${ns(12)}px;
   flex-direction: row;
   justify-content: space-between;
   margin-top: ${ns(16)}px;

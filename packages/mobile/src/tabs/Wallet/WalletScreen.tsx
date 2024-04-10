@@ -6,13 +6,10 @@ import { useNavigation } from '@tonkeeper/router';
 import { useDispatch } from 'react-redux';
 import { useIsFocused } from '@react-navigation/native';
 import { useBalance } from './hooks/useBalance';
-import { CryptoCurrencies, TabletMaxWidth } from '$shared/constants';
+import { TabletMaxWidth } from '$shared/constants';
 import { useInternalNotifications } from './hooks/useInternalNotifications';
 import { mainActions } from '$store/main';
-import { useTonkens } from './hooks/useTokens';
-import { useTokenPrice } from '$hooks/useTokenPrice';
 import { Steezy } from '$styles';
-import { WalletContentList } from './components/WalletContentList';
 import { useUpdatesStore } from '$store/zustand/updates/useUpdatesStore';
 import { UpdatesCell } from '$core/ApprovalCell/Updates/UpdatesCell';
 import { UpdateState } from '$store/zustand/updates/types';
@@ -23,30 +20,26 @@ import { useNetInfo } from '@react-native-community/netinfo';
 import { format } from 'date-fns';
 import { getLocale } from '$utils/date';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useWallet, useWalletCurrency, useWalletStatus } from '@tonkeeper/shared/hooks';
+import { useWallet, useWalletStatus } from '@tonkeeper/shared/hooks';
 import { WalletSelector } from './components/WalletSelector';
-import { useInscriptionBalances } from '$hooks/useInscriptionBalances';
 import { MainStackRouteNames } from '$navigation';
 import { WalletActionButtons } from './components/WalletActionButtons/WalletActionButtons';
+import { WalletContentList } from './components/WalletContentList';
+import { usePreparedWalletContent } from './content-providers/utils/usePreparedWalletContent';
 
 export const WalletScreen = memo(({ navigation }) => {
   const dispatch = useDispatch();
   const nav = useNavigation();
-  const tokens = useTonkens();
-  const { enabled: inscriptions } = useInscriptionBalances();
   const wallet = useWallet();
   const shouldUpdate =
     useUpdatesStore((state) => state.update.state) !== UpdateState.NOT_STARTED;
-  const balance = useBalance(tokens.total.fiat);
-  const tonPrice = useTokenPrice(CryptoCurrencies.Ton);
-  const currency = useWalletCurrency();
+
+  const preparedContent = usePreparedWalletContent();
+  const balance = useBalance(preparedContent);
 
   const { isReloading: isRefreshing, updatedAt: walletUpdatedAt } = useWalletStatus();
 
   const isFocused = useIsFocused();
-
-  const tronBalances = undefined;
-
   const notifications = useInternalNotifications();
 
   const { isConnected } = useNetInfo();
@@ -97,7 +90,7 @@ export const WalletScreen = memo(({ navigation }) => {
         {shouldUpdate && <UpdatesCell />}
         <View style={styles.amount} pointerEvents="box-none">
           <View style={styles.balanceWithBattery}>
-            <ShowBalance amount={balance.total.fiat} />
+            <ShowBalance amount={balance} />
             <Spacer x={8} />
             <BatteryIcon />
           </View>
@@ -147,7 +140,7 @@ export const WalletScreen = memo(({ navigation }) => {
       </View>
     ),
     [
-      balance.total.fiat,
+      balance,
       isConnected,
       isWatchOnly,
       notifications,
@@ -173,16 +166,11 @@ export const WalletScreen = memo(({ navigation }) => {
         hideBackButton
       />
       <WalletContentList
-        inscriptions={inscriptions}
-        currency={currency}
-        tronBalances={tronBalances}
+        walletContent={preparedContent}
         ListHeaderComponent={ListHeader}
         handleRefresh={handleRefresh}
         isRefreshing={isRefreshing}
         isFocused={isFocused}
-        balance={balance}
-        tokens={tokens}
-        tonPrice={tonPrice}
       />
     </Screen>
   );

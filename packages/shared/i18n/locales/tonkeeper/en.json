@@ -1042,6 +1042,8 @@
     "screen_title": "Wallet",
     "send_btn": "Send",
     "swap_btn": "Swap",
+    "scan_btn": "Scan",
+    "stake_btn": "Stake",
     "tonkens_tab_lable": "Tokens",
     "updated_at": "Updated on %{value}",
     "inscriptions_tab_label": "Inscriptions"
