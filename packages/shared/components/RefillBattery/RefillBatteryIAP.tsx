@@ -133,7 +133,6 @@ export const RefillBatteryIAP = memo(() => {
                   name={item.icon}
                 />
               }
-              titleContainerStyle={styles.titleContainer.static}
               title={
                 <View>
                   <View style={styles.priceContainer}>
@@ -175,9 +174,6 @@ const styles = Steezy.create({
   valueContainerStyle: {
     flex: 1,
     justifyContent: 'center',
-  },
-  titleContainer: {
-    flex: 2,
   },
   priceContainer: {
     flexDirection: 'row',
