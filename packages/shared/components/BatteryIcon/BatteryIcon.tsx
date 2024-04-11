@@ -17,7 +17,14 @@ const hitSlop = { top: 12, bottom: 12, right: 24, left: 8 };
 export const BatteryIcon = memo(() => {
   const { balance } = useBatteryBalance();
   const isViewedBatteryScreen = useBatteryUIStore((state) => state.isViewedBatteryScreen);
-  if (config.get('disable_battery')) return null;
+  if (config.get('disable_battery')) {
+    return null;
+  }
+
+  // Hide battery icon if it's empty and beta is enabled
+  if (config.get('battery_beta') && (!balance || balance === '0')) {
+    return null;
+  }
 
   return (
     <TouchableOpacity onPress={openRefillBatteryModal} hitSlop={hitSlop}>

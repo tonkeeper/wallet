@@ -24,6 +24,7 @@ import { RestorePurchases } from './RestorePurchases';
 import { RefillBatterySettingsWidget } from './RefillBatterySettingsWidget';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Tag } from '@tonkeeper/mobile/src/uikit';
 
 export interface RefillBatteryProps {
   navigateToTransactions: () => void;
@@ -56,6 +57,12 @@ export const RefillBattery = memo<RefillBatteryProps>((props) => {
           </View>
         )}
         <Spacer y={16} />
+        {config.get('battery_beta') && (
+          <>
+            <Tag type="warning">Beta</Tag>
+            <Spacer y={4} />
+          </>
+        )}
         <Text textAlign="center" type="h2">
           {t(`battery.title`)}
         </Text>

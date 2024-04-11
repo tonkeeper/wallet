@@ -58,6 +58,10 @@ export const RefillBatteryIAP = memo(() => {
     tk.wallet.battery.state,
     (state) => state.balance,
   );
+  const reservedBalance = useExternalState(
+    tk.wallet.battery.state,
+    (state) => state.reservedBalance,
+  );
 
   useEffect(() => {
     getProducts({
@@ -144,7 +148,12 @@ export const RefillBatteryIAP = memo(() => {
                     {t(`battery.packages.subtitle`, {
                       count: new BigNumber(item.userProceed)
                         .div(tonPriceInUsd)
-                        .minus(!batteryBalance ? config.get('batteryReservedAmount') : 0)
+                        .minus(
+                          reservedBalance === '0' &&
+                            (!batteryBalance || batteryBalance === '0')
+                            ? config.get('batteryReservedAmount')
+                            : 0,
+                        )
                         .div(config.get('batteryMeanFees'))
                         .decimalPlaces(0)
                         .toNumber(),

@@ -1086,7 +1086,7 @@
     },
     "refilled": "Батарейка заряжена",
     "screen_title": "Батарейка",
-    "settings": "Батарейка",
+    "settings": "Батарейка %{betaLabel}",
     "ok": "OK",
     "title": "Батарейка Tonkeeper",
     "description": {

@@ -152,7 +152,7 @@
     },
     "refilled": "Battery refilled",
     "screen_title": "Battery",
-    "settings": "Battery",
+    "settings": "Battery %{betaLabel}",
     "ok": "OK",
     "title": "Tonkeeper Battery",
     "description": {

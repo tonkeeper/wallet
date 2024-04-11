@@ -57,6 +57,7 @@ export type AppConfigVars = {
   aptabaseEndpoint: string;
   aptabaseAppKey: string;
   disable_battery: boolean;
+  battery_beta: boolean;
   disable_battery_iap_module: boolean;
   disable_battery_send: boolean;
   disable_show_unverified_token: boolean;
@@ -86,6 +87,7 @@ const defaultConfig: Partial<AppConfigVars> = {
   holdersService: 'https://card-dev.whales-api.com',
   tronapiHost: 'https://tron.tonkeeper.com',
   tronapiTestnetHost: 'https://testnet-tron.tonkeeper.com',
+
   batteryHost: 'https://battery.tonkeeper.com',
   batteryTestnetHost: 'https://testnet-battery.tonkeeper.com',
   batteryMeanFees: '0.0055',
@@ -93,9 +95,11 @@ const defaultConfig: Partial<AppConfigVars> = {
   batteryMeanPrice_swap: '0.22',
   batteryMeanPrice_jetton: '0.06',
   batteryMeanPrice_nft: '0.03',
-  disable_battery: true,
+  battery_beta: true,
+  disable_battery: false,
+  disable_battery_send: false,
   disable_battery_iap_module: Platform.OS !== 'android', // Enable for iOS, disable for Android
-  disable_battery_send: true,
+
   disable_show_unverified_token: false,
   disable_tonstakers: false,
   disable_holders_cards: true,
