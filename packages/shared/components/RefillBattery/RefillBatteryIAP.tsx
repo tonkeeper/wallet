@@ -60,7 +60,7 @@ export const RefillBatteryIAP = memo(() => {
   );
   const reservedBalance = useExternalState(
     tk.wallet.battery.state,
-    (state) => state.reservedAmount,
+    (state) => state.reservedBalance,
   );
 
   useEffect(() => {
