@@ -327,6 +327,7 @@ export const openSignRawModal = async (
 
       const { emulateResult, battery } = await emulateBoc(
         boc,
+        undefined,
         options.experimentalWithBattery,
       );
       consequences = emulateResult;

@@ -19,6 +19,7 @@ import { useTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
 import { CryptoCurrencies } from '@tonkeeper/mobile/src/shared/constants';
 import BigNumber from 'bignumber.js';
 import { config } from '@tonkeeper/mobile/src/config';
+import { useExternalState } from '../../hooks/useExternalState';
 
 export interface InAppPackage {
   icon: IconNames;
@@ -53,6 +54,10 @@ export const RefillBatteryIAP = memo(() => {
   const [purchaseInProgress, setPurchaseInProgress] = useState<boolean>(false);
   const { products, getProducts, requestPurchase, finishTransaction } = useIAP();
   const tonPriceInUsd = useTokenPrice(CryptoCurrencies.Ton).usd;
+  const batteryBalance = useExternalState(
+    tk.wallet.battery.state,
+    (state) => state.balance,
+  );
 
   useEffect(() => {
     getProducts({
@@ -112,51 +117,57 @@ export const RefillBatteryIAP = memo(() => {
   );
 
   return (
-    <List indent={false}>
-      {packages.map((item) => {
-        const product = products.find((product) => product.productId === item.packageId);
-        return (
-          <List.Item
-            leftContent={
-              <Icon
-                style={styles.listItemIcon.static}
-                imageStyle={styles.listItemIcon.static}
-                colorless
-                name={item.icon}
-              />
-            }
-            title={
-              <View>
-                <View style={styles.priceContainer}>
-                  <Text type="label1" numberOfLines={1} ellipsizeMode="middle">
-                    {t(`battery.packages.title.${item.key}`)}
+    <>
+      <List indent={false}>
+        {packages.map((item) => {
+          const product = products.find(
+            (product) => product.productId === item.packageId,
+          );
+          return (
+            <List.Item
+              leftContent={
+                <Icon
+                  style={styles.listItemIcon.static}
+                  imageStyle={styles.listItemIcon.static}
+                  colorless
+                  name={item.icon}
+                />
+              }
+              titleContainerStyle={styles.titleContainer.static}
+              title={
+                <View>
+                  <View style={styles.priceContainer}>
+                    <Text type="label1" numberOfLines={1} ellipsizeMode="middle">
+                      {t(`battery.packages.title.${item.key}`)}
+                    </Text>
+                  </View>
+                  <Text type="body2" color="textSecondary">
+                    {t(`battery.packages.subtitle`, {
+                      count: new BigNumber(item.userProceed)
+                        .div(tonPriceInUsd)
+                        .minus(!batteryBalance ? config.get('batteryReservedAmount') : 0)
+                        .div(config.get('batteryMeanFees'))
+                        .decimalPlaces(0)
+                        .toNumber(),
+                    })}
                   </Text>
                 </View>
-                <Text type="body2" color="textSecondary">
-                  {t(`battery.packages.subtitle`, {
-                    count: new BigNumber(item.userProceed)
-                      .div(tonPriceInUsd)
-                      .div(config.get('batteryMeanFees'))
-                      .decimalPlaces(0)
-                      .toNumber(),
-                  })}
-                </Text>
-              </View>
-            }
-            key={item.key}
-            valueContainerStyle={styles.valueContainerStyle}
-            value={
-              <Button
-                disabled={purchaseInProgress || !product}
-                onPress={makePurchase(item.packageId)}
-                size="small"
-                title={product?.localizedPrice ?? 'Loading'}
-              />
-            }
-          />
-        );
-      })}
-    </List>
+              }
+              key={item.key}
+              valueContainerStyle={styles.valueContainerStyle}
+              value={
+                <Button
+                  disabled={purchaseInProgress || !product}
+                  onPress={makePurchase(item.packageId)}
+                  size="small"
+                  title={product?.localizedPrice ?? 'Loading'}
+                />
+              }
+            />
+          );
+        })}
+      </List>
+    </>
   );
 });
 

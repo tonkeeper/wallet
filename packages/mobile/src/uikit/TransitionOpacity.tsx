@@ -15,7 +15,7 @@ interface TransitionOpacity {
   style?: StyleProp<ViewStyle>;
   duration?: number;
   children: React.ReactNode;
-} 
+}
 
 export const TransitionOpacity: React.FC<TransitionOpacity> = (props) => {
   const {
@@ -32,12 +32,16 @@ export const TransitionOpacity: React.FC<TransitionOpacity> = (props) => {
 
   React.useEffect(() => {
     if (isVisible) {
-      setIsShown(true);
-      opacity.value = withDelay(
-        250,
-        withTiming(1, {
+      opacity.value = withTiming(
+        1,
+        {
           duration,
-        }),
+        },
+        (isComplete) => {
+          if (isComplete) {
+            runOnJS(setIsShown)(true);
+          }
+        },
       );
     } else {
       opacity.value = withTiming(
@@ -52,7 +56,7 @@ export const TransitionOpacity: React.FC<TransitionOpacity> = (props) => {
         },
       );
     }
-  }, [isVisible]);
+  }, [duration, isVisible, opacity]);
 
   const opacityStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,

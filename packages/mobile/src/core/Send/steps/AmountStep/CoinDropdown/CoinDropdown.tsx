@@ -56,7 +56,7 @@ const CoinDropdownComponent: FC<Props> = (props) => {
 
   const balances = useBalancesState();
 
-  const { enabled: jettons } = useJettonBalances(false, true);
+  const { enabled: jettons } = useJettonBalances(true);
   const inscriptions = useTonInscriptions();
   const { format } = useHideableFormatter();
 
