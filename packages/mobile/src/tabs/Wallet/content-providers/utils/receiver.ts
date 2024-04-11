@@ -71,7 +71,7 @@ export class WalletContentReceiver {
   public sortCellItems(cellItems: CellItemToRender[]): CellItemToRender[] {
     let content: CellItemToRender[] = cellItems;
 
-    content = content.sort((a, b) => {
+    content = content.slice().sort((a, b) => {
       const comparedPriority = b.renderPriority - a.renderPriority;
 
       if (comparedPriority !== 0) {
