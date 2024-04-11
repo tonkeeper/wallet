@@ -98,7 +98,7 @@ const defaultConfig: Partial<AppConfigVars> = {
   battery_beta: true,
   disable_battery: false,
   disable_battery_send: false,
-  disable_battery_iap_module: Platform.OS !== 'android', // Enable for iOS, disable for Android
+  disable_battery_iap_module: Platform.OS === 'android', // Enable for iOS, disable for Android
 
   disable_show_unverified_token: false,
   disable_tonstakers: false,
