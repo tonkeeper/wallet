@@ -44,12 +44,7 @@ export class StakingContentProvider extends ContentProviderPrototype<{
 
   get itemsArray() {
     return this.deps.staking.state.filter((item) => {
-      const jettonBalance = this.deps.jettonBalances.state.jettonBalances.find(
-        (balance) =>
-          Address.parse(balance.jettonAddress).toRaw() === item.pool.liquid_jetton_master,
-      );
-
-      return !!item.info || (!!jettonBalance && jettonBalance.balance !== '0');
+      return !!item.info;
     });
   }
 

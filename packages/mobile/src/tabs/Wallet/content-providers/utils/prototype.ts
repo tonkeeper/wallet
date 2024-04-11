@@ -19,20 +19,17 @@ export class ContentProviderPrototype<
   protected wallet: Wallet = tk.wallet;
   public subscribers = new Set<Subscriber>();
 
-  protected unsubscribe?: () => void;
+  protected debounceEmitSubscribers = debounce(() => {
+    this.emitSubscribers();
+  }, 20);
 
   constructor(protected deps: T = {} as T) {
-    // Subscribe to dependencies updates
-    Object.values(this.deps).map((dep) => {
+    Object.values(deps).map((dep) => {
       dep.subscribe(() => {
-        this.debouncedEmit();
+        this.debounceEmitSubscribers();
       });
     });
   }
-
-  private debouncedEmit = debounce(() => {
-    this.emitSubscribers();
-  }, 50);
 
   protected emitSubscribers() {
     this.subscribers.forEach((subscriber) => {
@@ -56,9 +53,7 @@ export class ContentProviderPrototype<
   }
 
   setWallet(wallet: Wallet) {
-    this.unsubscribe?.();
     this.wallet = wallet;
-
     Object.values(this.deps).map((dep) => {
       dep.setWallet(wallet);
     });

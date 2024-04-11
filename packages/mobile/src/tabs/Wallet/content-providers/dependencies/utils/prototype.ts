@@ -47,14 +47,18 @@ export class DependencyPrototype<
     const prevState = this.latestSnapshot;
     const currentState = this.selector(this.dataProvider?.getSnapshot());
     if (this.shouldEmit(prevState, currentState)) {
-      this.emitSubscribers();
       this.latestSnapshot = currentState;
+      this.emitSubscribers();
     }
   }
 
   protected emitSubscribers() {
     this.subscribers.forEach((subscriber) => {
-      subscriber();
+      try {
+        subscriber();
+      } catch (error) {
+        console.error('An error occurred when executing a subscriber: ', error);
+      }
     });
   }
 

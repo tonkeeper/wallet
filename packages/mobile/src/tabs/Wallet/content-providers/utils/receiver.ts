@@ -11,7 +11,7 @@ export class WalletContentReceiver {
     this.subscribers.forEach((subscriber) => {
       subscriber();
     });
-  }, 120);
+  }, 20);
 
   constructor(private providersList: ContentProviderPrototype<any>[]) {
     this.subscribeToProvidersChanges(providersList);

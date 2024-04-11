@@ -5,9 +5,9 @@ import { useInstance } from '$hooks/useInstance';
 import { WalletContentReceiver } from './receiver';
 import { useContentProvider } from './useContentProvider';
 import { TONContentProvider } from '../ton';
-import { TokensContentProvider } from '../tokens';
-import { StakingContentProvider } from '../staking';
 import { InscriptionsContentProvider } from '../inscriptions';
+import { StakingContentProvider } from '../staking';
+import { TokensContentProvider } from '../tokens';
 
 export const usePreparedWalletContent = () => {
   const tonContentProvider = useContentProvider(() => new TONContentProvider());
