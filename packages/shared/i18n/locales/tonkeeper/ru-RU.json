@@ -1064,7 +1064,7 @@
     "transactions": {
       "types": {
         "nft": "отправка NFT",
-        "swap": "обмен",
+        "swap": "обмен через Tonkeeper",
         "jetton": "отправка токенов",
         "ton": "отправка TON"
       },
@@ -1090,7 +1090,7 @@
     "ok": "OK",
     "title": "Батарейка Tonkeeper",
     "description": {
-      "empty": "Обменивайте и отправляйте токены.",
+      "empty": "Обменивайте через Tonkeeper, отправляйте токены.",
       "other": {
         "few": "%{count} заряда",
         "many": "%{count} зарядов",
