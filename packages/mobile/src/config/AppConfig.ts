@@ -14,7 +14,7 @@ type AppConfigOptions<TConfig> = {
 };
 
 export class AppConfig<TConfig = {}> {
-  static readonly CONFIG_VERSION = 2; // change it, if config needs to be force updated
+  static readonly CONFIG_VERSION = 3; // change it, if config needs to be force updated
 
   private clientConfigStorageKey = `__client-config__v${AppConfig.CONFIG_VERSION}`;
   private serverConfigStorageKey = `__server-config__v${AppConfig.CONFIG_VERSION}`;

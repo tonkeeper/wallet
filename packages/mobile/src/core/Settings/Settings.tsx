@@ -372,7 +372,9 @@ export const Settings: FC = () => {
                     name={'ic-battery-28'}
                   />
                 }
-                title={t('battery.settings')}
+                title={t('battery.settings', {
+                  betaLabel: config.get('battery_beta') ? '(Beta)' : '',
+                })}
                 onPress={handleBattery}
               />
             )}
