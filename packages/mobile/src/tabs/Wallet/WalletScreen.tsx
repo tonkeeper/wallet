@@ -26,6 +26,7 @@ import { MainStackRouteNames } from '$navigation';
 import { WalletActionButtons } from './components/WalletActionButtons/WalletActionButtons';
 import { WalletContentList } from './components/WalletContentList';
 import { usePreparedWalletContent } from './content-providers/utils/usePreparedWalletContent';
+import { FinishSetupList } from './components/FinishSetupList';
 
 export const WalletScreen = memo(({ navigation }) => {
   const dispatch = useDispatch();
@@ -72,6 +73,11 @@ export const WalletScreen = memo(({ navigation }) => {
   }, [nav, navigation]);
 
   const isWatchOnly = wallet && wallet.isWatchOnly;
+
+  const ListFooter = useMemo(
+    () => (isWatchOnly ? null : <FinishSetupList />),
+    [isWatchOnly],
+  );
 
   const ListHeader = useMemo(
     () => (
@@ -168,6 +174,7 @@ export const WalletScreen = memo(({ navigation }) => {
       <WalletContentList
         walletContent={preparedContent}
         ListHeaderComponent={ListHeader}
+        ListFooterComponent={ListFooter}
         handleRefresh={handleRefresh}
         isRefreshing={isRefreshing}
         isFocused={isFocused}

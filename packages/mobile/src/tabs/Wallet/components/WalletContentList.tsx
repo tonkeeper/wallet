@@ -8,6 +8,7 @@ import { useTheme } from '$hooks/useTheme';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { Text } from '@tonkeeper/uikit';
 import { CellItemToRender } from '../content-providers/utils/types';
+import { FinishSetupList } from './FinishSetupList';
 
 const RenderItem = ({ item }: { item: CellItemToRender }) => {
   const renderLeftContent = () => {
@@ -102,6 +103,7 @@ interface WalletContentListProps {
   isRefreshing: boolean;
   isFocused: boolean;
   ListHeaderComponent?: React.ReactElement;
+  ListFooterComponent?: React.ReactElement | null;
 }
 
 export const WalletContentList = memo<WalletContentListProps>((props) => {
@@ -115,6 +117,7 @@ export const WalletContentList = memo<WalletContentListProps>((props) => {
         </View>
       )}
       ListHeaderComponent={props.ListHeaderComponent}
+      ListFooterComponent={props.ListFooterComponent}
       renderItem={RenderItem}
       data={props.walletContent}
       refreshControl={
