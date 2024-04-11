@@ -3,7 +3,11 @@ import { CellItemToRender } from './utils/types';
 import { formatter } from '@tonkeeper/shared/formatter';
 import { Providers } from './providers';
 import { StakingWidgetStatus } from '../components/StakingWidgetStatus';
-import { AccountStakingInfo, PoolInfo } from '@tonkeeper/core/src/TonAPI';
+import {
+  AccountStakingInfo,
+  PoolImplementationType,
+  PoolInfo,
+} from '@tonkeeper/core/src/TonAPI';
 import { TonPriceDependency } from './dependencies/tonPrice';
 import { JettonBalancesDependency } from './dependencies/jettons';
 import { Address } from '@tonkeeper/shared/Address';
@@ -48,7 +52,19 @@ export class StakingContentProvider extends ContentProviderPrototype<{
 
   get itemsArray() {
     return this.deps.staking.state.filter((item) => {
-      return !!item.info;
+      const info = item.info;
+      if (info) {
+        return true;
+      }
+
+      if ([PoolImplementationType.LiquidTF].includes(item.pool.implementation)) {
+        const stakingJetton = this.deps.jettonBalances.state.jettonBalances.find(
+          (jettonBalance) =>
+            Address.parse(jettonBalance.jettonAddress).toRaw() ===
+            item.pool.liquid_jetton_master,
+        );
+        return stakingJetton && stakingJetton.balance !== '0';
+      }
     });
   }
 
