@@ -736,7 +736,7 @@
       },
       "tap_to_collect" : "Нажмите, чтобы вывести"
     },
-    "estimated_profit" : "%{amount} TON – доход за год,  если внесёте TON сегодня.",
+    "estimated_profit" : "%{amount} TON – доход за год, если внесёте TON сегодня.",
     "estimated_profit_compare" : "На %{amount} TON в год прибыльнее чем ваш текущий стейкинг",
     "get_withdrawal" : "Получить вывод",
     "highest_apy" : "MAX APY",
