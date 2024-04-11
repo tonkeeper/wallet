@@ -130,7 +130,7 @@
     "transactions": {
       "types": {
         "nft": "NFT transfers",
-        "swap": "swaps",
+        "swap": "swaps via Tonkeeper",
         "jetton": "token transfers",
         "ton": "TON transfers"
       },
@@ -156,7 +156,7 @@
     "ok": "OK",
     "title": "Tonkeeper Battery",
     "description": {
-      "empty": "Swap, send tokens and NFTs.",
+      "empty": "Swap via Tonkeeper, send tokens and NFTs.",
       "other": {
         "few": "%{count} charges",
         "many": "%{count} charges",
