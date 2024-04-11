@@ -32,6 +32,8 @@ export class WalletContentReceiver {
   private staking = new StakingDependency();
   private inscriptions = new InscriptionsDependency();
 
+  private memoizedCells = new Map<string, CellItemToRender[] | false>();
+
   private depsList = [
     this.tonPrice,
     this.tonBalances,
@@ -104,7 +106,15 @@ export class WalletContentReceiver {
 
   get cellItems() {
     return this.sortCellItems(
-      this.providersList.flatMap((provider) => provider.cellItems),
+      this.providersList.flatMap((provider) => {
+        const memoized = this.memoizedCells.get(provider.name);
+        if (memoized) {
+          return memoized;
+        }
+        const cellItems = provider.cellItems;
+        this.memoizedCells.set(provider.name, cellItems);
+        return cellItems;
+      }),
     );
   }
 
@@ -117,6 +127,7 @@ export class WalletContentReceiver {
   private subscribeToProvidersChanges(provider: ContentProviderPrototype<any>[]) {
     provider.forEach((provider) => {
       const unsubscribe = provider.subscribe(() => {
+        this.memoizedCells.set(provider.name, false);
         this.debouncedEmit();
       });
       this.subscribedTo.set(provider.name, unsubscribe);
