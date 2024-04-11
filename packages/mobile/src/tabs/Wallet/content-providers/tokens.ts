@@ -22,12 +22,17 @@ export class TokensContentProvider extends ContentProviderPrototype<{
   name = Providers.Tokens;
   renderPriority = 0;
 
-  constructor() {
+  constructor(
+    tonPrice: TonPriceDependency,
+    stakingJettons: StakingJettonsDependency,
+    tokenApproval: TokenApprovalDependency,
+    jettonBalances: JettonBalancesDependency,
+  ) {
     super({
-      tonPrice: new TonPriceDependency(),
-      tokenApproval: new TokenApprovalDependency(),
-      stakingJettons: new StakingJettonsDependency(),
-      jettonBalances: new JettonBalancesDependency(),
+      tonPrice,
+      tokenApproval,
+      stakingJettons,
+      jettonBalances,
     });
   }
 

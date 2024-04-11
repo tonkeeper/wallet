@@ -17,11 +17,15 @@ export class StakingContentProvider extends ContentProviderPrototype<{
   name = Providers.Staking;
   renderPriority = 0;
 
-  constructor() {
+  constructor(
+    tonPrice: TonPriceDependency,
+    jettonBalances: JettonBalancesDependency,
+    staking: StakingDependency,
+  ) {
     super({
-      tonPrice: new TonPriceDependency(),
-      jettonBalances: new JettonBalancesDependency(),
-      staking: new StakingDependency(),
+      tonPrice,
+      jettonBalances,
+      staking,
     });
   }
 

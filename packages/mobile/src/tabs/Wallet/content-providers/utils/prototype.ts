@@ -2,7 +2,6 @@ import { CellItemToRender } from './types';
 import { Wallet } from '$wallet/Wallet';
 import { tk } from '$wallet';
 import { DependencyPrototype } from '../dependencies/utils/prototype';
-import debounce from 'lodash/debounce';
 
 type Subscriber = () => void;
 
@@ -19,14 +18,10 @@ export class ContentProviderPrototype<
   protected wallet: Wallet = tk.wallet;
   public subscribers = new Set<Subscriber>();
 
-  protected debounceEmitSubscribers = debounce(() => {
-    this.emitSubscribers();
-  }, 20);
-
   constructor(protected deps: T = {} as T) {
     Object.values(deps).map((dep) => {
       dep.subscribe(() => {
-        this.debounceEmitSubscribers();
+        this.emitSubscribers();
       });
     });
   }
@@ -50,15 +45,6 @@ export class ContentProviderPrototype<
 
   get cellItems(): CellItemToRender[] {
     return this.itemsArray.map((item) => this.makeCellItemFromData(item));
-  }
-
-  setWallet(wallet: Wallet) {
-    this.wallet = wallet;
-    Object.values(this.deps).map((dep) => {
-      dep.setWallet(wallet);
-    });
-
-    this.emitSubscribers();
   }
 
   makeCellItemFromData(data: any): CellItemToRender {

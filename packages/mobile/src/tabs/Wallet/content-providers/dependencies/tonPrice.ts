@@ -13,6 +13,13 @@ export class TonPriceDependency extends DependencyPrototype<
     super(tk.tonPrice.state, (state) => ({ ton: state.ton, currency: state.currency }));
   }
 
+  protected shouldEmit(
+    prev: Pick<PricesState, 'ton' | 'currency'>,
+    cur: Pick<PricesState, 'ton' | 'currency'>,
+  ) {
+    return prev.ton !== cur.ton;
+  }
+
   setWallet(wallet) {
     this.dataProvider = wallet.tonPrice.state;
     super.setWallet(wallet);

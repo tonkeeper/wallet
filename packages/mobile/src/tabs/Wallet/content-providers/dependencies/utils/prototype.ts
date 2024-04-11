@@ -19,7 +19,7 @@ export class DependencyPrototype<
   protected unsubscribe?: () => void;
   protected latestSnapshot: TSelected;
 
-  protected shouldEmit(prev: any, cur: any): boolean {
+  protected shouldEmit(prev: TSelected, cur: TSelected): boolean {
     return !shallow(cur, prev);
   }
 

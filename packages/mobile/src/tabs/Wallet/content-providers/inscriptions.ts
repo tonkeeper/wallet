@@ -15,10 +15,10 @@ export class InscriptionsContentProvider extends ContentProviderPrototype<{
   name = Providers.Inscriptions;
   renderPriority = -2;
 
-  constructor() {
+  constructor(tonPrice: TonPriceDependency, inscriptions: InscriptionsDependency) {
     super({
-      inscriptions: new InscriptionsDependency(),
-      tonPrice: new TonPriceDependency(),
+      inscriptions,
+      tonPrice,
     });
   }
 

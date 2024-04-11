@@ -31,8 +31,8 @@ export class TONContentProvider extends ContentProviderPrototype<{
   name = Providers.TON;
   renderPriority = 999;
 
-  constructor() {
-    super({ tonPrice: new TonPriceDependency(), balances: new TonBalancesDependency() });
+  constructor(tonPrice: TonPriceDependency, balances: TonBalancesDependency) {
+    super({ tonPrice, balances });
   }
 
   get itemsArray() {
