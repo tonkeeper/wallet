@@ -39,6 +39,7 @@ export const RefillBattery = memo<RefillBatteryProps>((props) => {
   const bottomInsets = useSafeAreaInsets().bottom;
 
   const isInAppPurchasesDisabled = config.get('disable_battery_iap_module');
+  const isPromoDisabled = config.get('disable_battery_promo_module');
 
   return (
     <Animated.ScrollView
@@ -90,8 +91,12 @@ export const RefillBattery = memo<RefillBatteryProps>((props) => {
       )}
       <View style={styles.indent}>
         {!isInAppPurchasesDisabled ? <RefillBatteryIAP /> : null}
-        <RechargeByPromoButton />
-        <Spacer y={16} />
+        {!isPromoDisabled ? (
+          <>
+            <RechargeByPromoButton />
+            <Spacer y={16} />
+          </>
+        ) : null}
         <RestorePurchases />
       </View>
     </Animated.ScrollView>

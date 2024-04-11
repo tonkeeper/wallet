@@ -61,6 +61,7 @@ export type AppConfigVars = {
   disable_battery_iap_module: boolean;
   disable_battery_send: boolean;
   disable_show_unverified_token: boolean;
+  disable_battery_promo_module: boolean;
   disable_tonstakers: boolean;
   disable_holders_cards: boolean;
   exclude_jetton_chart_periods: boolean;
@@ -99,6 +100,7 @@ const defaultConfig: Partial<AppConfigVars> = {
   disable_battery: false,
   disable_battery_send: false,
   disable_battery_iap_module: Platform.OS === 'android', // Enable for iOS, disable for Android
+  disable_battery_promo_module: true,
 
   disable_show_unverified_token: false,
   disable_tonstakers: false,
