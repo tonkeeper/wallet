@@ -91,8 +91,12 @@ export const RefillBattery = memo<RefillBatteryProps>((props) => {
       )}
       <View style={styles.indent}>
         {!isInAppPurchasesDisabled ? <RefillBatteryIAP /> : null}
-        {!isPromoDisabled ? <RechargeByPromoButton /> : null}
-        <Spacer y={16} />
+        {!isPromoDisabled ? (
+          <>
+            <RechargeByPromoButton />
+            <Spacer y={16} />
+          </>
+        ) : null}
         <RestorePurchases />
       </View>
     </Animated.ScrollView>
