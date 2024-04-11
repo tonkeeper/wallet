@@ -5,18 +5,11 @@ import { openWallet } from '$core/Wallet/ToncoinScreen';
 import { CryptoCurrencies } from '$shared/constants';
 import { Providers } from './providers';
 import { TonPriceDependency } from './dependencies/tonPrice';
-import { TonBalancesDependency } from './dependencies/tonBalances';
-
-export enum TonBalanceType {
-  Liquid = 'Liquid',
-  Locked = 'Locked',
-  Restricted = 'Restricted',
-}
-
-export type TonBalance = {
-  type: TonBalanceType;
-  balance: string;
-};
+import {
+  TonBalancesDependency,
+  TonBalanceType,
+  TonBalance,
+} from './dependencies/tonBalances';
 
 export const mappedTonBalanceTitle = {
   [TonBalanceType.Liquid]: 'Toncoin',
@@ -26,31 +19,17 @@ export const mappedTonBalanceTitle = {
 
 export class TONContentProvider extends ContentProviderPrototype<{
   tonPrice: TonPriceDependency;
-  balances: TonBalancesDependency;
+  tonBalances: TonBalancesDependency;
 }> {
   name = Providers.TON;
   renderPriority = 999;
 
-  constructor(tonPrice: TonPriceDependency, balances: TonBalancesDependency) {
-    super({ tonPrice, balances });
+  constructor(tonPrice: TonPriceDependency, tonBalances: TonBalancesDependency) {
+    super({ tonPrice, tonBalances });
   }
 
   get itemsArray() {
-    const balances: TonBalance[] = [
-      { type: TonBalanceType.Liquid, balance: this.deps.balances.state.ton },
-    ];
-
-    if (this.wallet.isLockup) {
-      balances.push(
-        { type: TonBalanceType.Locked, balance: this.deps.balances.state.tonLocked },
-        {
-          type: TonBalanceType.Restricted,
-          balance: this.deps.balances.state.tonRestricted,
-        },
-      );
-    }
-
-    return balances;
+    return this.deps.tonBalances.balances;
   }
 
   makeCellItemFromData(data: TonBalance): CellItemToRender {
