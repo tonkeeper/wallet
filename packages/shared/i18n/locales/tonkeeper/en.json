@@ -158,10 +158,10 @@
     "description": {
       "empty": "Swap, send tokens and NFTs.",
       "other": {
-        "few": "Your battery has %{count} charges",
-        "many": "Your battery has %{count} charges",
-        "one": "Your battery has %{count} charge",
-        "other": "Your battery has %{count} charges"
+        "few": "%{count} charges",
+        "many": "%{count} charges",
+        "one": "%{count} charge",
+        "other": "%{count} charges"
       }
     },
     "promocode": {
