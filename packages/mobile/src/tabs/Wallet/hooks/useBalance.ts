@@ -18,6 +18,11 @@ export const useBalance = (cellItems: CellItemToRender[]) => {
       const balance = item.fiatRate?.total.raw ?? '0';
       return total.plus(balance);
     }, new BigNumber(0));
-    return formatter.format(totalNumber.toString(), { currency });
+
+    return formatter.format(totalNumber.toString(), {
+      currency,
+      forceRespectDecimalPlaces: true,
+      decimals: totalNumber.gte(1000) ? 0 : 2,
+    });
   }, [cellItems, currency]);
 };

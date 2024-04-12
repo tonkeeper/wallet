@@ -3,11 +3,10 @@ import { useDispatch } from 'react-redux';
 import Rate, { AndroidMarket } from 'react-native-rate';
 import { Alert, Linking, Platform, View } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
-import Animated from 'react-native-reanimated';
 import { TapGestureHandler } from 'react-native-gesture-handler';
 
 import * as S from './Settings.style';
-import { Icon, PopupSelect, ScrollHandler, Spacer, Text } from '$uikit';
+import { Icon, PopupSelect, Spacer, Text } from '$uikit';
 import { Icon as NewIcon, Screen } from '@tonkeeper/uikit';
 import { useShouldShowTokensButton } from '$hooks/useShouldShowTokensButton';
 import { useNavigation } from '@tonkeeper/router';
@@ -286,7 +285,6 @@ export const Settings: FC = () => {
                   rightContent={<Icon name="ic-chevron-right-16" />}
                 />
               </List>
-              <Spacer y={16} />
             </>
           ) : null}
           <List>

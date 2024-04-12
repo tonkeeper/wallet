@@ -27,6 +27,7 @@ import { WalletActionButtons } from './components/WalletActionButtons/WalletActi
 import { WalletContentList } from './components/WalletContentList';
 import { usePreparedWalletContent } from './content-providers/utils/usePreparedWalletContent';
 import { FinishSetupList } from './components/FinishSetupList';
+import { BackupIndicator } from './components/Tabs/BackupIndicator';
 
 export const WalletScreen = memo(({ navigation }) => {
   const dispatch = useDispatch();
@@ -165,7 +166,12 @@ export const WalletScreen = memo(({ navigation }) => {
       <Screen.Header
         title={<WalletSelector />}
         rightContent={
-          <TouchableOpacity activeOpacity={0.6} onPress={handleNavigateToSettingsStack}>
+          <TouchableOpacity
+            style={styles.gearContainer.static}
+            activeOpacity={0.6}
+            onPress={handleNavigateToSettingsStack}
+          >
+            {!isWatchOnly ? <BackupIndicator /> : null}
             <Icon color="iconSecondary" name={'ic-gear-outline-28'} />
           </TouchableOpacity>
         }
@@ -223,6 +229,12 @@ const styles = Steezy.create(({ isTablet }) => ({
   },
   addressContainer: {
     flexDirection: 'row',
+    alignItems: 'center',
+  },
+  gearContainer: {
+    width: 48,
+    height: 48,
+    justifyContent: 'center',
     alignItems: 'center',
   },
 }));

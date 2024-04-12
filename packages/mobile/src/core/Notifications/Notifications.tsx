@@ -9,19 +9,19 @@ import {
   View,
 } from '$uikit';
 import { ns } from '$utils';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { CellSection } from '$shared/components';
 import { t } from '@tonkeeper/shared/i18n';
 import { useConnectedAppsList } from '$store';
 import { Steezy } from '$styles';
 import { SwitchDAppNotifications } from '$core/Notifications/SwitchDAppNotifications';
 import { useNotificationsSwitch } from '$hooks/useNotificationsSwitch';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const Notifications: React.FC = () => {
-  const tabBarHeight = useBottomTabBarHeight();
   const connectedApps = useConnectedAppsList();
   const { isSubscribed, isDenied, openSettings, toggleNotifications } =
     useNotificationsSwitch();
+  const insets = useSafeAreaInsets();
 
   return (
     <Screen>
@@ -29,7 +29,7 @@ export const Notifications: React.FC = () => {
       <Screen.ScrollView
         contentContainerStyle={{
           paddingHorizontal: ns(16),
-          paddingBottom: tabBarHeight,
+          paddingBottom: insets.bottom,
         }}
       >
         {isDenied && (

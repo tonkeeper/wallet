@@ -8,6 +8,8 @@ import { INotification, useDAppsNotifications } from '$store';
 import { FlashList } from '@shopify/flash-list';
 import { LayoutAnimation } from 'react-native';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { safeAreaInsets } from '$utils';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export enum ActivityListItem {
   Notification = 'Notification',

@@ -21,6 +21,8 @@ export type AmountFormatOptions = {
   ignoreZeroTruncate?: boolean;
   absolute?: boolean;
   withPositivePrefix?: boolean;
+  // Truncate decimals. Required for backward compatibility
+  forceRespectDecimalPlaces?: boolean;
 };
 
 export type AmountFormatNanoOptions = AmountFormatOptions & {
@@ -144,7 +146,10 @@ export class AmountFormatter {
     };
 
     // truncate decimals 1.00 -> 1
-    if (!options.ignoreZeroTruncate && bn.isLessThan('1000')) {
+    if (
+      options.forceRespectDecimalPlaces ||
+      (!options.ignoreZeroTruncate && bn.isLessThan('1000'))
+    ) {
       bn = bn.decimalPlaces(decimals, BigNumber.ROUND_DOWN);
       return bn.toFormat(formatConf);
     }

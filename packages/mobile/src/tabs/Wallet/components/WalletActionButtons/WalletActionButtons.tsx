@@ -121,7 +121,7 @@ export const WalletActionButtons = memo(() => {
         {
           id: 'buy',
           onPress: handlePressBuy,
-          icon: 'ic-usd-28',
+          icon: 'ic-usd-outline-28',
           title: t('wallet.buy_btn'),
           visible: !wallet.isTestnet,
         },

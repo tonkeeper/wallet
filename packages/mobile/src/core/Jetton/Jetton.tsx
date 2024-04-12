@@ -151,7 +151,6 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
             },
             {
               id: 'swap',
-              disabled: !isWatchOnly && showSwap && !flags.disable_swap,
               onPress: handlePressSwap,
               icon: 'ic-swap-horizontal-outline-28',
               title: t('wallet.swap_btn'),
@@ -181,7 +180,6 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   }, [
     jetton,
     jettonPrice.formatted.totalFiat,
-    jettonPrice.formatted.fiat,
     lockedJettonPrice.formatted.totalFiat,
     isWatchOnly,
     handleSend,
