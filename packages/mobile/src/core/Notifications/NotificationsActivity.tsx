@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { Button, Icon, Screen, Spacer, Text, View } from '$uikit';
+import { Button, Icon, Spacer, Text, View } from '$uikit';
 import { Notification } from '$core/Notifications/Notification';
 import { Steezy } from '$styles';
 import { openNotifications } from '$navigation';
@@ -8,8 +8,7 @@ import { INotification, useDAppsNotifications } from '$store';
 import { FlashList } from '@shopify/flash-list';
 import { LayoutAnimation } from 'react-native';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import { safeAreaInsets } from '$utils';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Screen } from '@tonkeeper/uikit';
 
 export enum ActivityListItem {
   Notification = 'Notification',
@@ -53,7 +52,6 @@ export const NotificationsActivity: React.FC = () => {
   const list = useRef<FlashList<Element | null> | null>(null);
   const closeOtherSwipeable = useRef<null | (() => void)>(null);
   const lastSwipeableId = useRef<null | number>(null);
-  const tabBarHeight = useBottomTabBarHeight();
 
   const handleOpenNotificationSettings = useCallback(() => {
     openNotifications();
@@ -139,10 +137,10 @@ export const NotificationsActivity: React.FC = () => {
       ) : (
         <Screen.FlashList
           ref={list}
+          contentContainerStyle={styles.gap8.static}
           estimatedItemSize={87}
           keyExtractor={(item) => item.id}
           renderItem={renderNotificationsItem}
-          contentContainerStyle={{ paddingBottom: tabBarHeight + 8 }}
           data={flashListData}
           ListEmptyComponent={ListEmpty}
         />
@@ -155,6 +153,9 @@ const styles = Steezy.create({
   titleStyle: {
     marginVertical: 14,
     marginHorizontal: 16,
+  },
+  gap8: {
+    gap: 8,
   },
   emptyContainer: {
     paddingHorizontal: 32,

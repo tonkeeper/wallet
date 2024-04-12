@@ -20,7 +20,7 @@ export const Collectibles = memo(() => {
   const dimensions = useWindowDimensions();
 
   const size = useMemo(() => {
-    const width = (dimensions.width - 32) / numColumn - 4;
+    const width = (dimensions.width - 48) / numColumn;
     const height = width * heightRatio;
 
     return { width, height };
@@ -47,6 +47,7 @@ export const Collectibles = memo(() => {
 const styles = Steezy.create({
   collectiblesContainer: {
     marginHorizontal: 16,
+    gap: 8,
   },
   nftElements: {
     flexDirection: 'row',

@@ -106,16 +106,20 @@ interface WalletContentListProps {
   ListFooterComponent?: React.ReactElement | null;
 }
 
+function ItemSeparatorComponent() {
+  return (
+    <View style={styles.separatorContainer}>
+      <ListSeparator />
+    </View>
+  );
+}
+
 export const WalletContentList = memo<WalletContentListProps>((props) => {
   const theme = useTheme();
 
   return (
     <Screen.FlashList
-      ItemSeparatorComponent={() => (
-        <View style={styles.separatorContainer}>
-          <ListSeparator />
-        </View>
-      )}
+      ItemSeparatorComponent={ItemSeparatorComponent}
       ListHeaderComponent={props.ListHeaderComponent}
       ListFooterComponent={props.ListFooterComponent}
       renderItem={RenderItem}

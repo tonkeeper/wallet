@@ -218,7 +218,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
             </TouchableOpacity>
           )
         }
-        title={jetton.metadata?.name || Address.toShort(jetton.jettonAddress)}
+        title={jetton.metadata?.symbol || Address.toShort(jetton.jettonAddress)}
         rightContent={
           <PopupMenu
             items={[

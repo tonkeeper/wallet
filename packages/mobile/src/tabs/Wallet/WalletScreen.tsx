@@ -99,7 +99,7 @@ export const WalletScreen = memo(({ navigation }) => {
           <View style={styles.balanceWithBattery}>
             <ShowBalance amount={balance} />
             <Spacer x={8} />
-            <BatteryIcon />
+            {!isWatchOnly && <BatteryIcon />}
           </View>
           <View style={styles.addressContainer}>
             {wallet && isConnected !== false ? (

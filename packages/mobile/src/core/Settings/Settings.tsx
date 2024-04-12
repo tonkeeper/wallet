@@ -270,7 +270,7 @@ export const Settings: FC = () => {
         <Screen.ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
-            paddingBottom,
+            paddingBottom: paddingBottom + 16,
             paddingTop: 16,
           }}
           scrollEventThrottle={16}

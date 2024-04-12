@@ -1,4 +1,3 @@
-import { FlashList, ContentStyle, FlashListProps } from '@shopify/flash-list';
 import { Fragment, forwardRef, memo, useEffect, useMemo } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenBottomSeparator } from './ScreenBottomSeparator';
@@ -46,18 +45,22 @@ export const ScreenScrollList = memo<ScreenScrollListProps>(
 
     // useScrollHandler(undefined, true); // TODO: remove this, when old separator will be removed
 
-    const contentStyle: ContentStyle = useMemo(
-      () => ({
-        paddingBottom: safeArea ? safeAreaInsets.bottom : tabBarHeight,
-        ...contentContainerStyle,
-      }),
+    const contentStyle = useMemo(
+      () => [
+        {
+          paddingBottom: safeArea ? safeAreaInsets.bottom : tabBarHeight + 16,
+        },
+        contentContainerStyle,
+      ],
       [contentContainerStyle, tabBarHeight, safeArea, safeAreaInsets.bottom],
     );
 
     const HeaderComponent = (
       <Fragment>
         <Animated.View style={headerOffsetStyle} />
-        {typeof ListHeaderComponent === 'function' ? ListHeaderComponent() : ListHeaderComponent as any}
+        {typeof ListHeaderComponent === 'function'
+          ? ListHeaderComponent()
+          : (ListHeaderComponent as any)}
       </Fragment>
     );
 

@@ -100,7 +100,6 @@ const styles = Steezy.create(({ colors, corners }) => ({
   container: {
     position: 'relative',
     flex: 1,
-    marginBottom: 8,
     backgroundColor: colors.backgroundContent,
     borderRadius: corners.medium,
     overflow: 'hidden',

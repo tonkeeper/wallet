@@ -57,6 +57,6 @@ const styles = Steezy.create(({ colors }) => ({
     borderRadius: 100,
   },
   stars: {
-    paddingTop: 5.5,
+    paddingTop: 8,
   },
 }));

@@ -42,7 +42,6 @@ export const RechargeByPromoModal = memo(() => {
           />
           <Spacer y={32} />
           <Button onPress={applyPromo} title={t('battery.promocode.apply')} />
-          <Spacer y={16} />
         </View>
         <Modal.Footer />
       </Modal.Content>
