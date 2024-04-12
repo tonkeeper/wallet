@@ -60,7 +60,9 @@ export const RefillBattery = memo<RefillBatteryProps>((props) => {
         <Spacer y={16} />
         {config.get('battery_beta') && (
           <>
-            <Tag type="warning">Beta</Tag>
+            <Tag withLeftSpacing={false} type="warning">
+              Beta
+            </Tag>
             <Spacer y={4} />
           </>
         )}

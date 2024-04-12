@@ -2,7 +2,6 @@ import { Steezy } from '$styles';
 import React, { FC, memo } from 'react';
 import { View } from '../StyledNativeComponents';
 import { StyleSheet } from 'react-native';
-import { TonThemeColor } from '$styled';
 import { Text } from '@tonkeeper/uikit';
 import { TextColors } from '@tonkeeper/uikit/src/components/Text/Text';
 
@@ -11,6 +10,7 @@ export type TagType = 'default' | 'accent' | 'warning' | 'warningLight' | 'posit
 interface Props {
   type?: TagType;
   children: string;
+  withLeftSpacing?: boolean;
 }
 
 const getTextColor = (type: TagType): TextColors => {
@@ -30,12 +30,12 @@ const getTextColor = (type: TagType): TextColors => {
 };
 
 const TagComponent: FC<Props> = (props) => {
-  const { type = 'default', children } = props;
+  const { type = 'default', children, withLeftSpacing = true } = props;
 
   const textColor = getTextColor(type);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, !withLeftSpacing && styles.withoutMargin]}>
       <View style={[styles.background, styles[type]]} />
       <Text type="body4" color={textColor} style={styles.text.static}>
         {children}
@@ -55,6 +55,9 @@ const styles = Steezy.create(({ colors }) => ({
     paddingHorizontal: 5,
     marginLeft: 6,
     overflow: 'hidden',
+  },
+  withoutMargin: {
+    marginLeft: 0,
   },
   background: {
     ...StyleSheet.absoluteFillObject,

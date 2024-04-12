@@ -119,6 +119,7 @@ export const ListItem = memo<ListItemProps>((props) => {
               <View style={[styles.titleContainer, props.titleContainerStyle]}>
                 {isString(props.title) ? (
                   <Text
+                    color={titleType === 'primary' ? 'textPrimary' : 'textSecondary'}
                     type={
                       titleTextType
                         ? titleTextType
