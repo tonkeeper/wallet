@@ -271,7 +271,6 @@ export const Settings: FC = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             paddingBottom: paddingBottom + 16,
-            paddingTop: 16,
           }}
           scrollEventThrottle={16}
         >
@@ -285,6 +284,7 @@ export const Settings: FC = () => {
                   rightContent={<Icon name="ic-chevron-right-16" />}
                 />
               </List>
+              <Spacer y={16} />
             </>
           ) : null}
           <List>
