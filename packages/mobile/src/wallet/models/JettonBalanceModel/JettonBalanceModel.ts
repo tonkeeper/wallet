@@ -8,6 +8,7 @@ export class JettonBalanceModel {
   jettonAddress: string;
   walletAddress: string;
   verification: JettonVerification;
+  lock?: { amount: string; till: number };
 
   constructor(jettonBalance: JettonBalance) {
     this.metadata = jettonBalance.jetton;
@@ -15,6 +16,14 @@ export class JettonBalanceModel {
       jettonBalance.balance,
       jettonBalance.jetton.decimals,
     );
+
+    this.lock = jettonBalance.lock && {
+      amount: AmountFormatter.fromNanoStatic(
+        jettonBalance.lock.amount,
+        jettonBalance.jetton.decimals,
+      ),
+      till: jettonBalance.lock.till,
+    };
     this.jettonAddress = new Address(jettonBalance.jetton.address).toFriendly();
     this.walletAddress = new Address(jettonBalance.wallet_address.address).toFriendly();
     this.verification = jettonBalance.jetton

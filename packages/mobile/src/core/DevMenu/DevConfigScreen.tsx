@@ -68,28 +68,6 @@ export const DevConfigScreen = memo(() => {
               })
             }
           />
-          <List.Item
-            title="Enable battery"
-            onPress={handleBooleanSwitch('disable_battery')}
-            rightContent={
-              <Switch
-                trackColor={{ true: theme.accentBlue }}
-                value={!config.get('disable_battery')}
-                onChange={handleBooleanSwitch('disable_battery')}
-              />
-            }
-          />
-          <List.Item
-            title="Enable send using battery"
-            onPress={handleBooleanSwitch('disable_battery_send')}
-            rightContent={
-              <Switch
-                trackColor={{ true: theme.accentBlue }}
-                value={!config.get('disable_battery_send')}
-                onChange={handleBooleanSwitch('disable_battery_send')}
-              />
-            }
-          />
         </List>
       </Screen.ScrollView>
     </Screen>

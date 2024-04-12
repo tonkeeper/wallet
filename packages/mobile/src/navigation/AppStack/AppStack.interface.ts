@@ -17,6 +17,7 @@ export type AppStackParamList = {
     nftAddress: string;
   };
   [AppStackRouteNames.Send]: {
+    isBattery?: boolean;
     currency?: CryptoCurrency | string;
     address?: string;
     comment?: string;

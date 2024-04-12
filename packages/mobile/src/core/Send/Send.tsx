@@ -5,7 +5,7 @@ import { StepView, StepViewItem, StepViewRef } from '$shared/components';
 import { CryptoCurrencies, CryptoCurrency, Decimals } from '$shared/constants';
 import { walletActions } from '$store/wallet';
 import { NavBar, Text } from '$uikit';
-import { parseLocaleNumber } from '$utils';
+import { delay, parseLocaleNumber } from '$utils';
 import React, {
   FC,
   useCallback,
@@ -68,6 +68,7 @@ export const Send: FC<SendProps> = ({ route }) => {
     from,
     expiryTimestamp,
     redirectToActivity = true,
+    isBattery: initialIsBattery = false,
   } = route.params;
 
   const initialAddress =
@@ -123,7 +124,7 @@ export const Send: FC<SendProps> = ({ route }) => {
   const [fee, setFee] = useState(initialFee);
 
   const [isInactive, setInactive] = useState(initialIsInactive);
-  const [isBattery, setBattery] = useState(false);
+  const [isBattery, setBattery] = useState(initialIsBattery);
 
   const [insufficientFundsParams, setInsufficientFundsParams] =
     useState<InsufficientFundsParams | null>(null);
@@ -279,6 +280,13 @@ export const Send: FC<SendProps> = ({ route }) => {
         return onFail(new DismissedActionError());
       }
 
+      const pendingTransactions = await tk.wallet.battery.getStatus();
+      if (pendingTransactions.length) {
+        Toast.fail(t('transfer_pending_by_battery_error'));
+        await delay(200);
+        return onFail(new CanceledActionError());
+      }
+
       if (expiryTimestamp && expiryTimestamp < getTimeSec()) {
         Toast.fail(t('transfer_deeplink_expired_error'));
 
@@ -286,6 +294,7 @@ export const Send: FC<SendProps> = ({ route }) => {
       }
 
       if (insufficientFundsParams) {
+        goToAmount();
         openInsufficientFundsModal(insufficientFundsParams);
 
         return onFail(new CanceledActionError());
@@ -333,13 +342,13 @@ export const Send: FC<SendProps> = ({ route }) => {
       }
     },
     [
-      fee,
       recipient,
       expiryTimestamp,
       insufficientFundsParams,
       trcPayload.value,
-      isBattery,
+      goToAmount,
       dispatch,
+      fee,
       currencyAdditionalParams,
       currency,
       parsedAmount,
@@ -349,6 +358,7 @@ export const Send: FC<SendProps> = ({ route }) => {
       tokenType,
       jettonWalletAddress,
       decimals,
+      isBattery,
       from,
       unlock,
     ],

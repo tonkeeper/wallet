@@ -281,6 +281,7 @@ export interface JettonBalanceModel {
   currency: CryptoCurrency;
   metadata: JettonMetadata;
   balance: string;
+  lock?: { amount: string; till: number };
   jettonAddress: string;
   walletAddress: string;
   verification: JettonVerification;

@@ -264,7 +264,9 @@ export class Tonkeeper {
     const walletsInstances = await Promise.all(
       sortedWallets.map((wallet) => this.createWalletInstance(wallet)),
     );
-    walletsInstances.map((instance) => instance.tonProof.obtainProof(keyPair));
+    walletsInstances.map((instance) =>
+      instance.tonProof.obtainProof(keyPair).then(() => instance.battery.load()),
+    );
 
     await this.setWallet(walletsInstances[0]);
 

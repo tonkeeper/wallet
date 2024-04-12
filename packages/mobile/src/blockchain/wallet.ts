@@ -26,16 +26,14 @@ import {
 
 import { tk } from '$wallet';
 import { Address, Cell, internal } from '@ton/core';
-import {
-  emulateWithBattery,
-  sendBocWithBattery,
-} from '@tonkeeper/shared/utils/blockchain';
+import { emulateBoc, sendBoc } from '@tonkeeper/shared/utils/blockchain';
 import { OperationEnum, TonAPI, TypeEnum } from '@tonkeeper/core/src/TonAPI';
 import { setBalanceForEmulation } from '@tonkeeper/shared/utils/wallet';
 import { WalletNetwork } from '$wallet/WalletTypes';
 import { createTonApiInstance } from '$wallet/utils';
 import { config } from '$config';
 import { toNano } from '$utils';
+import { BatterySupportedTransaction } from '$wallet/managers/BatteryManager';
 
 const TonWeb = require('tonweb');
 
@@ -212,10 +210,6 @@ export class TonWallet {
     }
   }
 
-  private async sendBoc(boc: string): Promise<void> {
-    await sendBocWithBattery(boc);
-  }
-
   async createSubscription(
     unlockedVault: UnlockedVault | Vault,
     beneficiaryAddress: string,
@@ -327,8 +321,12 @@ export class TonWallet {
     return await this.vault.tonWallet.methods.isPluginInstalled(subscriptionAddress);
   }
 
-  private async calcFee(boc: string, params?): Promise<[BigNumber, boolean]> {
-    const { emulateResult, battery } = await emulateWithBattery(boc, params);
+  private async calcFee(
+    boc: string,
+    params?,
+    withRelayer = true,
+  ): Promise<[BigNumber, boolean]> {
+    const { emulateResult, battery } = await emulateBoc(boc, params, withRelayer);
     return [new BigNumber(emulateResult.event.extra).multipliedBy(-1), battery];
   }
 
@@ -422,6 +420,9 @@ export class TonWallet {
     let [feeNano, isBattery] = await this.calcFee(
       boc,
       [setBalanceForEmulation(toNano('2'))], // Emulate with higher balance to calculate fair amount to send
+      tk.wallet.battery.state.data.supportedTransactions[
+        BatterySupportedTransaction.Jetton
+      ],
     );
 
     return [Ton.fromNano(feeNano.toString()), isBattery];
@@ -486,7 +487,13 @@ export class TonWallet {
     let feeNano: BigNumber;
     let isBattery = false;
     try {
-      const [fee, battery] = await this.calcFee(boc);
+      const [fee, battery] = await this.calcFee(
+        boc,
+        undefined,
+        tk.wallet.battery.state.data.supportedTransactions[
+          BatterySupportedTransaction.Jetton
+        ],
+      );
       feeNano = fee;
       isBattery = battery;
     } catch (e) {
@@ -509,7 +516,7 @@ export class TonWallet {
     }
 
     try {
-      await this.sendBoc(boc);
+      await sendBoc(boc, isBattery);
     } catch (e) {
       if (!store.getState().main.isTimeSynced) {
         throw new Error('wrong_time');
@@ -721,7 +728,7 @@ export class TonWallet {
     }
 
     try {
-      await this.sendBoc(boc);
+      await sendBoc(boc, false);
     } catch (e) {
       if (!store.getState().main.isTimeSynced) {
         throw new Error('wrong_time');

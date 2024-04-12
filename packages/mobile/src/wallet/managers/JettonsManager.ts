@@ -7,8 +7,6 @@ import { JettonBalanceModel } from '../models/JettonBalanceModel';
 import { Address } from '@tonkeeper/core/src/formatters/Address';
 import { TokenApprovalManager } from './TokenApprovalManager';
 import { TonPriceManager } from './TonPriceManager';
-import BigNumber from 'bignumber.js';
-import { AmountFormatter } from '@tonkeeper/core';
 import { sortByPrice } from '@tonkeeper/core/src/utils/jettons';
 
 export type JettonsState = {
@@ -82,7 +80,7 @@ export class JettonsManager {
 
       const jettonBalances = accountJettons.balances
         .filter((item) => {
-          return item.balance !== '0';
+          return item.balance !== '0' || (item.lock && item.lock.amount !== '0');
         })
         .sort((a, b) => {
           // Unverified or blacklisted tokens have to be at the end of array

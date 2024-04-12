@@ -34,6 +34,7 @@ export interface OpenSendParams {
   expiryTimestamp?: number | null;
   redirectToActivity?: boolean;
   currencyAdditionalParams?: CurrencyAdditionalParams;
+  isBattery?: boolean;
 }
 
 export function openSend(params: OpenSendParams = {}) {
@@ -131,8 +132,8 @@ export function openSelectLanguage() {
   push(SettingsStackRouteNames.Language);
 }
 
-export function openRefillBattery() {
-  push(SettingsStackRouteNames.RefillBattery);
+export function openRefillBatteryModal() {
+  push(AppStackRouteNames.RefillBattery);
 }
 
 export function openManageTokens(initialTab?: string) {

@@ -1,28 +1,57 @@
 import React, { memo } from 'react';
 import { useBatteryBalance } from '../../query/hooks/useBatteryBalance';
-import { Icon, IconNames, TouchableOpacity } from '@tonkeeper/uikit';
+import {
+  AnimatedBatteryIcon,
+  AnimatedBatterySize,
+  Icon,
+  Steezy,
+  TouchableOpacity,
+} from '@tonkeeper/uikit';
 import { BatteryState, getBatteryState } from '../../utils/battery';
-import { openRefillBatteryModal } from '../../modals/RefillBatteryModal';
 import { config } from '@tonkeeper/mobile/src/config';
+import { useBatteryUIStore } from '@tonkeeper/mobile/src/store/zustand/batteryUI';
+import { openRefillBatteryModal } from '@tonkeeper/mobile/src/navigation';
 
-const iconNames: { [key: string]: IconNames } = {
-  [BatteryState.Empty]: 'ic-empty-battery-28',
-  [BatteryState.AlmostEmpty]: 'ic-empty-battery-28',
-  [BatteryState.Medium]: 'ic-almost-empty-battery-28',
-  [BatteryState.Full]: 'ic-full-battery-28',
-};
-
-const hitSlop = { top: 8, bottom: 8, right: 8, left: 8 };
+const hitSlop = { top: 12, bottom: 12, right: 24, left: 8 };
 
 export const BatteryIcon = memo(() => {
   const { balance } = useBatteryBalance();
-  if (!balance || balance === '0' || config.get('disable_battery')) return null;
+  const isViewedBatteryScreen = useBatteryUIStore((state) => state.isViewedBatteryScreen);
+  if (config.get('disable_battery')) {
+    return null;
+  }
 
-  const iconName = iconNames[getBatteryState(balance)];
+  // Hide battery icon if it's empty and beta is enabled
+  if (config.get('battery_beta') && (!balance || balance === '0')) {
+    return null;
+  }
 
   return (
     <TouchableOpacity onPress={openRefillBatteryModal} hitSlop={hitSlop}>
-      <Icon colorless name={iconName} />
+      {getBatteryState(balance) === BatteryState.Empty ? (
+        <Icon
+          imageStyle={styles.iconSize.static}
+          style={styles.iconSize.static}
+          colorless
+          name={
+            isViewedBatteryScreen
+              ? 'ic-empty-battery-flash-34'
+              : 'ic-empty-battery-accent-flash-34'
+          }
+        />
+      ) : (
+        <AnimatedBatteryIcon
+          progress={parseFloat(balance)}
+          size={AnimatedBatterySize.Small}
+        />
+      )}
     </TouchableOpacity>
   );
+});
+
+const styles = Steezy.create({
+  iconSize: {
+    width: 20,
+    height: 34,
+  },
 });

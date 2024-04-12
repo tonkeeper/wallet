@@ -22,10 +22,10 @@ import {
   openLegalDocuments,
   openManageTokens,
   openNotifications,
-  openRefillBattery,
   openSecurity,
   openSelectLanguage,
   openSubscriptions,
+  openRefillBatteryModal,
 } from '$navigation';
 import { walletActions } from '$store/wallet';
 import {
@@ -207,7 +207,7 @@ export const Settings: FC = () => {
   }, []);
 
   const handleBattery = useCallback(() => {
-    openRefillBattery();
+    openRefillBatteryModal();
   }, []);
 
   const handleDeleteAccount = useCallback(() => {
@@ -372,7 +372,9 @@ export const Settings: FC = () => {
                     name={'ic-battery-28'}
                   />
                 }
-                title={t('battery.settings')}
+                title={t('battery.settings', {
+                  betaLabel: config.get('battery_beta') ? '(Beta)' : '',
+                })}
                 onPress={handleBattery}
               />
             )}

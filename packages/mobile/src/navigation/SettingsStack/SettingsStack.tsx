@@ -41,10 +41,6 @@ export const SettingsStack: FC = () => {
       />
       <Stack.Screen name={SettingsStackRouteNames.FontLicense} component={FontLicense} />
       <Stack.Screen
-        name={SettingsStackRouteNames.RefillBattery}
-        component={RefillBattery}
-      />
-      <Stack.Screen
         name={SettingsStackRouteNames.Notifications}
         component={Notifications}
       />

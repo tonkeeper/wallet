@@ -15,6 +15,7 @@ import { View } from '../View';
 export interface ListItemProps {
   titleType?: 'primary' | 'secondary';
   title?: string | React.ReactNode;
+  titleContainerStyle?: StyleProp<ViewStyle>;
   titleTextType?: TTextTypes;
   subtitle?: string | React.ReactNode;
   subtitleStyle?: StyleProp<TextStyle>;
@@ -37,6 +38,7 @@ export interface ListItemProps {
   rightContent?: React.ReactNode;
   valueMultiline?: boolean;
   onPress?: () => void;
+  disabled?: boolean;
 }
 
 function isString<T>(str: T) {
@@ -45,6 +47,7 @@ function isString<T>(str: T) {
 
 export const ListItem = memo<ListItemProps>((props) => {
   const {
+    disabled,
     onPress,
     navigate,
     chevronColor = 'iconTertiary',
@@ -88,7 +91,7 @@ export const ListItem = memo<ListItemProps>((props) => {
   return (
     <TouchableComponent
       underlayColor={theme.backgroundContentTint}
-      disabled={!onPress && !navigate}
+      disabled={disabled || (!onPress && !navigate)}
       onPressOut={onPressOut}
       onPressIn={onPressIn}
       onPress={handlePress}
@@ -113,7 +116,7 @@ export const ListItem = memo<ListItemProps>((props) => {
           )}
           <View style={styles.lines}>
             <View style={styles.topLine}>
-              <View style={styles.titleContainer}>
+              <View style={[styles.titleContainer, props.titleContainerStyle]}>
                 {isString(props.title) ? (
                   <Text
                     type={

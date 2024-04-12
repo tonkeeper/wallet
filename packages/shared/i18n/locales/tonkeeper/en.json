@@ -124,19 +124,45 @@
   "auth_failed": "Authentication failed",
   "balances_setup_wallet": "Set up wallet",
   "battery": {
-    "screen_title": "Battery",
-    "settings": "Battery",
-    "ok": "OK",
-    "title": {
-      "empty": "Recharge your battery for gas fees",
-      "almost_empty": "Battery for gas fees is almost empty",
-      "medium": "Battery for gas fees is half full",
-      "full": "Battery for gas fees is full"
+    "send_widget": {
+      "battery": "Battery"
     },
+    "transactions": {
+      "types": {
+        "nft": "NFT transfers",
+        "swap": "swaps via Tonkeeper",
+        "jetton": "token transfers",
+        "ton": "TON transfers"
+      },
+      "type": {
+        "swap": "swap",
+        "transfer": "transfer"
+      },
+      "title": "Transactions",
+      "settings": "Battery Settings",
+      "will_be_paid": "Will be paid: %{enabledTransactions}",
+      "description": "Selected transactions will be paid by Tonkeeper Battery.",
+      "supported": "Supported transactions",
+      "charges_per_action": {
+        "few": "≈ %{count} charges per %{transactionName}",
+        "other": "≈ %{count} charges per %{transactionName}",
+        "one": "≈ %{count} charge per %{transactionName}",
+        "many": "≈ %{count} charges per %{transactionName}"
+      }
+    },
+    "refilled": "Battery refilled",
+    "screen_title": "Battery",
+    "settings": "Battery %{betaLabel}",
+    "ok": "OK",
+    "title": "Tonkeeper Battery",
     "description": {
-      "empty": "Send tokens and NFTs, pay for staking actions with empty main balance.",
-      "other": "You have enough charge battery for more than %{cnt} transactions.",
-      "less_10": "You have enough charge battery for less than 10 transactions."
+      "empty": "Swap via Tonkeeper, send tokens and NFTs.",
+      "other": {
+        "few": "%{count} charges",
+        "many": "%{count} charges",
+        "one": "%{count} charge",
+        "other": "%{count} charges"
+      }
     },
     "promocode": {
       "button": "Recharge by Promo Code",
@@ -146,13 +172,19 @@
       "success": "Your battery is charged"
     },
     "packages": {
-      "title": "{{cnt}} transactions for {{price}}",
-      "subtitle": {
-        "large": "Large pack",
-        "medium": "Medium pack",
-        "small": "Small pack"
+      "title": {
+        "large": "Large",
+        "medium": "Medium",
+        "small": "Small"
       },
-      "disclaimer": "This is approximate transactions number. Some your transactions may cost more.",
+      "subtitle": {
+        "few": "%{count} charges",
+        "other": "%{count} charges",
+        "one": "%{count} charge",
+        "many": "%{count} charges"
+      },
+      "disclaimer": "One charge covers the average transaction fee. Some transactions may cost more.",
+      "restore": "Restore Purchases",
       "buy": "Buy",
       "ok": "OK",
       "refilled": "Your battery is charged"
@@ -370,6 +402,7 @@
   "jetton_name": "%{name} Token",
   "jetton_open_explorer": "View details",
   "jetton_price": "Price:",
+  "jetton_locked_till": "Locked until %{date}",
   "jettons_list_title": "Tokens",
   "jettons_manage_tokens": "Manage tokens",
   "jettons_show_jettons": "Show tokens in wallet",
@@ -920,6 +953,7 @@
   "transaction_view_in_explorer": "View in explorer",
   "transaction_wallet_initialized_date": "%{date}",
   "transaction_your_bid": "Your bid",
+  "transfer_pending_by_battery_error": "Another transaction is handling by battery",
   "transfer_deeplink_unknown_jetton_error" : "Unknown token",
   "transfer_deeplink_address_error": "Incorrect recipient address",
   "transfer_deeplink_unknown_token": "Unknown token",
