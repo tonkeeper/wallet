@@ -52,7 +52,7 @@ export const RestorePurchases = memo(() => {
         onPress={handleRestorePurchases}
         type="body2"
         textAlign="center"
-        color="textPrimary"
+        color="textSecondary"
       >
         {t('battery.packages.restore')}
       </Text>
