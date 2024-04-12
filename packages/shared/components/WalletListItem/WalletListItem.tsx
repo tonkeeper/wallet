@@ -5,13 +5,13 @@ import {
   Steezy,
   Text,
   View,
+  WalletIcon,
   deviceWidth,
   getWalletColorHex,
   isAndroid,
 } from '@tonkeeper/uikit';
 import { ListItemProps } from '@tonkeeper/uikit/src/components/List/ListItem';
 import { FC, memo } from 'react';
-import { Text as RNText } from 'react-native';
 import { t } from '../../i18n';
 
 interface Props extends ListItemProps {
@@ -41,7 +41,11 @@ const WalletListItemComponent: FC<Props> = (props) => {
             { backgroundColor: getWalletColorHex(wallet.config.color) },
           ]}
         >
-          <RNText style={styles.emoji.static}>{wallet.config.emoji}</RNText>
+          <WalletIcon
+            emojiStyle={styles.emoji.static}
+            size={24}
+            value={wallet.config.emoji}
+          />
         </View>
       }
       {...listItemProps}

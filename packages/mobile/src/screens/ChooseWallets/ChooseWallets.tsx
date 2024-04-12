@@ -11,6 +11,7 @@ import { RouteProp } from '@react-navigation/native';
 import { Address } from '@tonkeeper/shared/Address';
 import { formatter } from '@tonkeeper/shared/formatter';
 import { useImportWallet } from '$hooks/useImportWallet';
+import { DEFAULT_WALLET_VERSION } from '$wallet/constants';
 
 export const ChooseWallets: FC<{
   route: RouteProp<ImportWalletStackParamList, ImportWalletStackRouteNames.ChooseWallets>;
@@ -22,7 +23,10 @@ export const ChooseWallets: FC<{
 
   const [selectedVersions, setSelectedVersions] = useState<WalletContractVersion[]>(
     walletsInfo
-      .filter((item) => item.balance > 0 || item.tokens)
+      .filter(
+        (item) =>
+          item.balance > 0 || item.tokens || item.version === DEFAULT_WALLET_VERSION,
+      )
       .map((item) => item.version),
   );
   const [loading, setLoading] = useState(false);

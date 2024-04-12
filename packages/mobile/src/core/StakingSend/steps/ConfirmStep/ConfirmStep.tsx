@@ -21,6 +21,7 @@ import { t } from '@tonkeeper/shared/i18n';
 import { PoolInfo } from '@tonkeeper/core/src/TonAPI';
 import { SkeletonLine } from '$uikit/Skeleton/SkeletonLine';
 import { tk } from '$wallet';
+import { Steezy, WalletIcon, isAndroid } from '@tonkeeper/uikit';
 
 interface Props extends StepComponentProps {
   transactionType: StakingTransactionType;
@@ -119,9 +120,15 @@ const ConfirmStepComponent: FC<Props> = (props) => {
                 <S.Item>
                   <S.ItemLabel>{t('send_screen_steps.comfirm.wallet')}</S.ItemLabel>
                   <S.ItemContent>
-                    <S.ItemValue numberOfLines={1}>
-                      {tk.wallet.config.emoji} {tk.wallet.config.name}
-                    </S.ItemValue>
+                    <S.WalletNameRow>
+                      <WalletIcon
+                        emojiStyle={styles.emoji.static}
+                        size={20}
+                        value={tk.wallet.config.emoji}
+                      />
+                      <Spacer x={4} />
+                      <S.ItemValue numberOfLines={1}>{tk.wallet.config.name}</S.ItemValue>
+                    </S.WalletNameRow>
                   </S.ItemContent>
                 </S.Item>
                 <Separator />
@@ -212,3 +219,10 @@ const ConfirmStepComponent: FC<Props> = (props) => {
 };
 
 export const ConfirmStep = memo(ConfirmStepComponent);
+
+const styles = Steezy.create({
+  emoji: {
+    fontSize: isAndroid ? 17 : 20,
+    marginTop: isAndroid ? -1 : 1,
+  },
+});

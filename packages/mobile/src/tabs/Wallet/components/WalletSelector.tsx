@@ -8,12 +8,12 @@ import {
   Text,
   TouchableOpacity,
   View,
+  WalletIcon,
   deviceWidth,
   getWalletColorHex,
   isAndroid,
 } from '@tonkeeper/uikit';
 import React, { FC, memo, useCallback } from 'react';
-import { Text as RNText } from 'react-native';
 import { useNavigation } from '@tonkeeper/router';
 import { FlashCountKeys, useFlashCount } from '$store';
 import { tk } from '$wallet';
@@ -39,7 +39,11 @@ const WalletSelectorComponent: FC = () => {
           ]}
           disabled={!tk.migrationData || flashShownCount >= 3}
         >
-          <RNText style={styles.emoji.static}>{wallet.config.emoji}</RNText>
+          <WalletIcon
+            emojiStyle={styles.emoji.static}
+            size={20}
+            value={wallet.config.emoji}
+          />
           <Spacer x={4} />
           <View style={styles.nameContainer}>
             <Text type="label2" numberOfLines={1}>

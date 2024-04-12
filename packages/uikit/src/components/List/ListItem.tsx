@@ -126,6 +126,7 @@ export const ListItem = memo<ListItemProps>((props) => {
                         ? 'label1'
                         : 'body1'
                     }
+                    color={titleType === 'primary' ? 'textPrimary' : 'textSecondary'}
                     numberOfLines={titleNumberOfLines}
                     ellipsizeMode="tail"
                   >

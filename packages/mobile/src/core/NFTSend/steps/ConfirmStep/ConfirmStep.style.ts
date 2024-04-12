@@ -98,3 +98,9 @@ export const Icon = styled(FastImage).attrs({
 export const ItemSkeleton = styled.View`
   align-self: flex-end;
 `;
+
+export const WalletNameRow = styled.View`
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+`;

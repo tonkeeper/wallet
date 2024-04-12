@@ -1,19 +1,14 @@
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, Linking } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import TonWeb from 'tonweb';
 import { getUnixTime } from 'date-fns';
 import { CreateSubscriptionProps } from './CreateSubscription.interface';
 import * as S from './CreateSubscription.style';
-import { Button, Icon, Loader, Text } from '$uikit';
-import { List } from '@tonkeeper/uikit';
+import { Button, Loader, Text } from '$uikit';
+import { List, Spacer } from '@tonkeeper/uikit';
 import { SubscriptionModel } from '$store/models';
-import {
-  format,
-  formatSubscriptionPeriod,
-  toLocaleNumber,
-  triggerNotificationSuccess,
-} from '$utils';
+import { format, formatSubscriptionPeriod, toLocaleNumber } from '$utils';
 import { subscriptionsActions } from '$store/subscriptions';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { formatCryptoCurrency } from '$utils/currency';
@@ -29,6 +24,7 @@ import { SheetActions, useNavigation } from '@tonkeeper/router';
 import { Modal, View } from '@tonkeeper/uikit';
 import { config } from '$config';
 import { tk } from '$wallet';
+import { ActionFooter, useActionFooter } from '../NFTOperations/NFTOperationFooter';
 
 export const CreateSubscription: FC<CreateSubscriptionProps> = ({
   invoiceId = null,
@@ -43,15 +39,13 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
   const { amount: balance } = useWalletInfo();
 
   const [isLoading, setLoading] = useState(!isEdit);
-  const [failed, setFailed] = useState(0);
   const [fee, setFee] = useState(
     passedFee || (subscription && subscription.fee ? subscription.fee : '~'),
   );
   const [info, setInfo] = useState<SubscriptionModel | null>(subscription);
-  const [isSending, setSending] = useState(false);
-  const [isSuccess, setSuccess] = useState(false);
   const [totalMoreThanBalance, setTotalMoreThanBalance] = React.useState(false);
-  const closeTimer = useRef<any>(null);
+
+  const { footerRef, onConfirm } = useActionFooter();
 
   useEffect(() => {
     if (fee !== '~') {
@@ -60,39 +54,6 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
       setTotalMoreThanBalance(totalIsMoreBalance);
     }
   }, [info, balance, fee]);
-
-  useEffect(() => {
-    if (isSuccess) {
-      triggerNotificationSuccess();
-      closeTimer.current = setTimeout(() => {
-        nav.goBack();
-
-        if (!isEdit && !subscription) {
-          const returnUrl = info!.userReturnUrl;
-          Alert.alert(
-            t('subscription_back_to_merchant_title'),
-            t('subscription_back_to_merchant_caption'),
-            [
-              {
-                text: t('cancel'),
-                style: 'cancel',
-              },
-              {
-                text: t('subscription_back_to_merchant_button'),
-                onPress: () => {
-                  Linking.openURL(returnUrl).catch((err) => {
-                    console.log(err);
-                  });
-                },
-              },
-            ],
-          );
-        }
-      }, 2500);
-    }
-
-    return () => closeTimer.current && clearTimeout(closeTimer.current);
-  }, [isSuccess]);
 
   const loadInfo = useCallback(() => {
     const host = config.get('subscriptionsHost', tk.wallet.isTestnet);
@@ -110,7 +71,7 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
         Toast.fail(e.message);
         nav.goBack();
       });
-  }, [invoiceId]);
+  }, [invoiceId, nav]);
 
   useEffect(() => {
     if (!isEdit) {
@@ -169,22 +130,47 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
     return format((info.chargedAt + info.intervalSec) * 1000, 'EEE, MMM d');
   }, [info]);
 
-  const handleSubscribe = useCallback(() => {
-    setSending(true);
-    dispatch(
-      subscriptionsActions.subscribe({
-        subscription: info!,
-        onDone: () => {
-          setSuccess(true);
-        },
-        onFail: () => {
-          setSending(false);
-        },
-      }),
-    );
-  }, [dispatch, info]);
+  const handleSubscribe = useCallback(async () => {
+    onConfirm(async ({ startLoading }) => {
+      startLoading();
 
-  const handleUnsubscribe = useCallback(() => {
+      await new Promise<void>((resolve, reject) => {
+        dispatch(
+          subscriptionsActions.subscribe({
+            subscription: info!,
+            onDone: () => {
+              resolve();
+
+              if (!isEdit && !subscription) {
+                const returnUrl = info!.userReturnUrl;
+                Alert.alert(
+                  t('subscription_back_to_merchant_title'),
+                  t('subscription_back_to_merchant_caption'),
+                  [
+                    {
+                      text: t('cancel'),
+                      style: 'cancel',
+                    },
+                    {
+                      text: t('subscription_back_to_merchant_button'),
+                      onPress: () => {
+                        Linking.openURL(returnUrl).catch((err) => {
+                          console.log(err);
+                        });
+                      },
+                    },
+                  ],
+                );
+              }
+            },
+            onFail: reject,
+          }),
+        );
+      });
+    })();
+  }, [dispatch, info, isEdit, onConfirm, subscription]);
+
+  const handleUnsubscribe = useCallback(async () => {
     Alert.alert(
       t('subscription_cancel_alert_title'),
       t('subscription_cancel_alert_caption', {
@@ -199,23 +185,24 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
           text: t('subscription_cancel_alert_submit_btn'),
           style: 'destructive',
           onPress: () => {
-            setSending(true);
-            dispatch(
-              subscriptionsActions.unsubscribe({
-                subscription: info!,
-                onDone: () => {
-                  setSuccess(true);
-                },
-                onFail: () => {
-                  setSending(false);
-                },
-              }),
-            );
+            onConfirm(async ({ startLoading }) => {
+              startLoading();
+
+              await new Promise<void>((resolve, reject) => {
+                dispatch(
+                  subscriptionsActions.unsubscribe({
+                    subscription: info!,
+                    onDone: resolve,
+                    onFail: reject,
+                  }),
+                );
+              });
+            })();
           },
         },
       ],
     );
-  }, [dispatch, info, nextBill, t]);
+  }, [dispatch, info, nextBill, onConfirm]);
 
   const isButtonShown = useMemo(() => {
     if (!info) {
@@ -227,7 +214,7 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
     }
 
     return info.status === 'new' || info.isActive;
-  }, [info, isEdit, isSuccess, isSending]);
+  }, [info, isEdit]);
 
   const handleOpenMerchant = useCallback(() => {
     Linking.openURL(info!.returnUrl).catch((err) => {
@@ -236,45 +223,32 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
   }, [info]);
 
   function renderButton() {
-    if (isSuccess) {
-      return (
-        <S.SuccessWrap>
-          <Icon name="ic-success-28" color="accentPositive" />
-          <S.SuccessLabelWrapper>
-            <Text color="accentPositive" variant="label2">
-              {t('subscription_sent')}
-            </Text>
-          </S.SuccessLabelWrapper>
-        </S.SuccessWrap>
-      );
-    }
-
-    if (isSending) {
-      return (
-        <S.ButtonSending>
-          <Loader size="medium" />
-        </S.ButtonSending>
-      );
-    }
-
     if (isEdit || info?.isActive) {
       return (
-        <Button onPress={handleUnsubscribe} isLoading={isSending} mode="secondary">
-          {t('subscription_cancel')}
-        </Button>
+        <ActionFooter
+          withCloseButton={false}
+          confirmTitle={t('subscription_cancel')}
+          secondary
+          onPressConfirm={handleUnsubscribe}
+          redirectToActivity={false}
+          ref={footerRef}
+        />
       );
     }
 
     return (
-      <Button
-        onPress={handleSubscribe}
-        isLoading={isSending}
+      <ActionFooter
+        withCloseButton={false}
+        confirmTitle={
+          totalMoreThanBalance
+            ? t('send_insufficient_funds')
+            : t('subscription_subscribe')
+        }
+        onPressConfirm={handleSubscribe}
         disabled={fee === '~' || totalMoreThanBalance}
-      >
-        {totalMoreThanBalance
-          ? t('send_insufficient_funds')
-          : t('subscription_subscribe')}
-      </Button>
+        redirectToActivity={false}
+        ref={footerRef}
+      />
     );
   }
 
@@ -287,37 +261,33 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
       );
     }
 
-    // ToDo: Сделать верстку, когда будет дизайн
-    if (failed) {
-      return <Text>Failed</Text>;
-    }
-
     return (
       <>
         <S.Header>
           <S.MerchantPhoto source={{ uri: info.merchantPhoto }} />
-          <S.MerchantInfoWrap>
-            <S.MerchantInfo>
-              <Text variant="label1" numberOfLines={1} fontWeight="700">
-                {info.merchantName}
-              </Text>
-              <S.ProductNameWrapper>
-                <Text variant="body1" numberOfLines={1}>
-                  {info.productName}
-                </Text>
-              </S.ProductNameWrapper>
-            </S.MerchantInfo>
-            {info.status === 'created' && (
+          <Spacer y={20} />
+          <Text variant="h2" numberOfLines={1} textAlign="center">
+            {info.merchantName}
+          </Text>
+          <Spacer y={4} />
+          <Text variant="body1" color="textSecondary" numberOfLines={1}>
+            {info.productName}
+          </Text>
+          {info.status === 'created' && (
+            <>
+              <Spacer y={16} />
               <Button mode="secondary" size="small" onPress={handleOpenMerchant}>
                 {t('subscription_open_merchant')}
               </Button>
-            )}
-          </S.MerchantInfoWrap>
+            </>
+          )}
         </S.Header>
+        <Spacer y={32} />
         <List>
           <List.Item
             titleType="secondary"
             title={t('subscription_price')}
+            titleTextType="body1"
             value={priceFormatted}
           />
           <List.Item
@@ -345,16 +315,14 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
             />
           )}
         </List>
-        <S.Content>
-          {isButtonShown && <S.ButtonWrap>{renderButton()}</S.ButtonWrap>}
-        </S.Content>
+        {isButtonShown && renderButton()}
       </>
     );
   }
 
   return (
     <Modal>
-      <Modal.Header title={t('subscription_title')} />
+      <Modal.Header />
       <Modal.Content safeArea>
         <View style={{ marginBottom: 16 }}>{renderContent()}</View>
       </Modal.Content>

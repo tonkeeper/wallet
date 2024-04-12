@@ -9,36 +9,17 @@ export const LoaderWrap = styled.View`
 `;
 
 export const Header = styled.View`
-  flex-direction: row;
-  padding: ${ns(0)}px ${ns(16)}px ${ns(32)}px;
+  align-items: center;
+  padding-top: ${ns(48)}px;
 `;
 
 export const MerchantPhoto = styled(FastImage).attrs({
   resizeMode: 'cover',
 })`
-  width: ${ns(72)}px;
-  height: ${ns(72)}px;
-  border-radius: ${ns(72 / 2)}px;
+  width: ${ns(96)}px;
+  height: ${ns(96)}px;
+  border-radius: ${ns(96 / 2)}px;
   background: ${({ theme }) => theme.colors.backgroundSecondary};
-`;
-
-export const MerchantInfoWrap = styled.View`
-  margin-left: ${ns(16)}px;
-  flex: 1;
-  align-items: flex-start;
-`;
-
-export const MerchantInfo = styled.View`
-  height: ${ns(72)}px;
-  justify-content: center;
-`;
-
-export const ProductNameWrapper = styled.View`
-  margin-top: ${ns(2)}px;
-`;
-
-export const Content = styled.View`
-  padding-horizontal: ${ns(16)}px;
 `;
 
 export const ButtonWrap = styled.View`

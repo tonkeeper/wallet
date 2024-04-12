@@ -157,6 +157,7 @@ export const MainStack: FC = () => {
       <Stack.Screen
         name={MainStackRouteNames.ChangePinBiometry}
         component={ChangePinBiometry}
+        options={{ gestureEnabled: false }}
       />
       <Stack.Screen name={MainStackRouteNames.Backup} component={BackupScreen} />
       <Stack.Screen

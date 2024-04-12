@@ -323,7 +323,7 @@ export const Settings: FC = () => {
                 onPress={handleManageTokens}
               />
             )}
-            {hasSubscriptions && (
+            {!wallet.isWatchOnly && hasSubscriptions && (
               <List.Item
                 value={
                   <Icon
