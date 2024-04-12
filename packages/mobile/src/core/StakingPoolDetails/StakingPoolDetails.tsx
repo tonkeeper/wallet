@@ -241,13 +241,13 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                     disabled: isWatchOnly || !isImplemeted,
                     onPress: handleTopUpPress,
                     icon: 'ic-plus-outline-28',
-                    title: t('wallet.send_btn'),
+                    title: t('staking.top_up'),
                   },
                   {
                     id: 'withdraw',
                     onPress: handleWithdrawalPress,
                     icon: 'ic-minus-outline-28',
-                    title: t('wallet.receive_btn'),
+                    title: t('staking.withdraw'),
                     disabled: isWatchOnly || !isImplemeted || isWithdrawDisabled,
                   },
                 ]}
