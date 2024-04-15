@@ -8,7 +8,6 @@ import { useTheme } from '$hooks/useTheme';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { Text } from '@tonkeeper/uikit';
 import { CellItemToRender } from '../content-providers/utils/types';
-import { FinishSetupList } from './FinishSetupList';
 
 const RenderItem = ({ item }: { item: CellItemToRender }) => {
   const renderLeftContent = () => {
@@ -42,13 +41,9 @@ const RenderItem = ({ item }: { item: CellItemToRender }) => {
         onPress={item.onPress}
         title={
           <View style={styles.tokenTitle}>
-            <HideableAmount
-              style={styles.valueText.static}
-              variant="label1"
-              stars="* * *"
-            >
+            <Text style={styles.valueText.static} type="label1">
               {item.title}
-            </HideableAmount>
+            </Text>
             {!!item.tag && (
               <View style={styles.tag}>
                 <Text type="body4" color="textSecondary">
