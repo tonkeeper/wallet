@@ -346,7 +346,7 @@ function* sendCoinsWorker(action: SendCoinsAction) {
 
     onDone();
   } catch (e) {
-    action.payload.onFail();
+    action.payload.onFail(e);
     console.error(e);
     e && debugLog(e.message);
 

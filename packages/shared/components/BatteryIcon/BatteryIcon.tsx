@@ -4,6 +4,7 @@ import {
   AnimatedBatteryIcon,
   AnimatedBatterySize,
   Icon,
+  Spacer,
   Steezy,
   TouchableOpacity,
 } from '@tonkeeper/uikit';
@@ -27,25 +28,28 @@ export const BatteryIcon = memo(() => {
   }
 
   return (
-    <TouchableOpacity onPress={openRefillBatteryModal} hitSlop={hitSlop}>
-      {getBatteryState(balance) === BatteryState.Empty ? (
-        <Icon
-          imageStyle={styles.iconSize.static}
-          style={styles.iconSize.static}
-          colorless
-          name={
-            isViewedBatteryScreen
-              ? 'ic-empty-battery-flash-34'
-              : 'ic-empty-battery-accent-flash-34'
-          }
-        />
-      ) : (
-        <AnimatedBatteryIcon
-          progress={parseFloat(balance)}
-          size={AnimatedBatterySize.Small}
-        />
-      )}
-    </TouchableOpacity>
+    <>
+      <Spacer x={8} />
+      <TouchableOpacity onPress={openRefillBatteryModal} hitSlop={hitSlop}>
+        {getBatteryState(balance) === BatteryState.Empty ? (
+          <Icon
+            imageStyle={styles.iconSize.static}
+            style={styles.iconSize.static}
+            colorless
+            name={
+              isViewedBatteryScreen
+                ? 'ic-empty-battery-flash-34'
+                : 'ic-empty-battery-accent-flash-34'
+            }
+          />
+        ) : (
+          <AnimatedBatteryIcon
+            progress={parseFloat(balance)}
+            size={AnimatedBatterySize.Small}
+          />
+        )}
+      </TouchableOpacity>
+    </>
   );
 });
 

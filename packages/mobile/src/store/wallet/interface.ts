@@ -49,7 +49,7 @@ export type SendCoinsAction = PayloadAction<{
   isSendAll?: boolean;
   decimals?: number;
   onDone: () => void;
-  onFail: () => void;
+  onFail: (error?: Error) => void;
   sendWithBattery?: boolean;
   currencyAdditionalParams?: CurrencyAdditionalParams;
 }>;

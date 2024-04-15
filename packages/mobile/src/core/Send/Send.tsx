@@ -52,6 +52,7 @@ import {
 import { getTimeSec } from '$utils/getTimeSec';
 import { Toast } from '$store';
 import { config } from '$config';
+import { NetworkOverloadedError } from '@tonkeeper/shared/utils/blockchain';
 
 const tokensWithAllowedEncryption = [TokenType.TON, TokenType.Jetton];
 
@@ -325,9 +326,13 @@ export const Send: FC<SendProps> = ({ route }) => {
               setSending(false);
               onDone();
             },
-            onFail: () => {
+            onFail: (error) => {
               setSending(false);
-              onFail(new DismissedActionError());
+              onFail(
+                error instanceof NetworkOverloadedError
+                  ? error
+                  : new DismissedActionError(),
+              );
             },
           }),
         );
