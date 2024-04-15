@@ -23,7 +23,6 @@ export const SwitchWalletModal: FC<Props> = memo((props) => {
     [allWallets, props.onSelect],
   );
   const currency = useWalletCurrency();
-  const { format } = useHideableFormatter();
 
   const handlePress = useCallback(
     (identifier: string) => () => {
