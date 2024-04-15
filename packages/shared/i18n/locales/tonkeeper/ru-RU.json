@@ -610,9 +610,6 @@
   "settings_backup_seed" : "Резервная копия",
   "settings_contact_support" : "Написать команде",
   "settings_delete_account" : "Удалить аккаунт",
-  "settings_delete_alert_button" : "Удалить аккаунт и данные",
-  "settings_delete_alert_caption" : "Это действие приведет к удалению вашего аккаунта и всех данных из этого приложения.",
-  "settings_delete_alert_title": "\uD83D\uDEA8\uD83D\uDEA8\uD83D\uDEA8%{space}Вы уверены, что хотите удалить аккаунт?",
   "settings_jettons_list" : "Токены",
   "settings_legal_documents" : "Юридические документы",
   "language": {
@@ -1266,5 +1263,15 @@
   "buy_ton": {
     "title": "Купить TON",
     "subtitle": "Моментально с банковской картой"
+  },
+  "logout_modal": {
+    "title": "Выйти",
+    "caption": "Ключи кошелька будут удалены с этого устройства.",
+    "delete_title": "Удалить данные кошелька",
+    "delete_caption": "Ключи кошелька и все личные данные будут удалены с этого устройства.",
+    "agreement": "У меня есть резервная копия фразы восстановления",
+    "backup_button": "Сделать резервную копию",
+    "logout_button": "Выйти",
+    "delete_button": "Удалить данные кошелька"
   }
 }
