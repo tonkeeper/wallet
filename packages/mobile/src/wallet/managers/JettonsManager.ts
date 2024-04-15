@@ -79,7 +79,7 @@ export class JettonsManager {
 
       const jettonBalances = accountJettons.balances
         .filter((item) => {
-          return item.balance !== '0';
+          return item.balance !== '0' || (item.lock && item.lock.amount !== '0');
         })
         .map((item) => {
           return new JettonBalanceModel(item);

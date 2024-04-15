@@ -1258,6 +1258,15 @@ export interface JettonBalance {
   price?: TokenRates;
   wallet_address: AccountAddress;
   jetton: JettonPreview;
+  lock?: {
+    /** @example 597968399 */
+    amount: string;
+    /**
+     * @format int64
+     * @example 1678223064
+     */
+    till: number;
+  };
 }
 
 export interface JettonsBalances {

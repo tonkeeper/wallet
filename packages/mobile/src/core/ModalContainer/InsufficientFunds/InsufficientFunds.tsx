@@ -1,20 +1,17 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
-import { Modal, Spacer } from '@tonkeeper/uikit';
-import { openExploreTab } from '$navigation';
+import { Modal, Spacer, WalletIcon } from '@tonkeeper/uikit';
+import { openExploreTab, openRefillBatteryModal } from '$navigation';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
 import { Button, Icon, Text } from '$uikit';
 import * as S from './InsufficientFunds.style';
 import { delay, fromNano } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import BigNumber from 'bignumber.js';
-import { store } from '$store';
 import { formatter } from '$utils/formatter';
 import { push } from '$navigation/imperative';
 import { useBatteryBalance } from '@tonkeeper/shared/query/hooks/useBatteryBalance';
 import { config } from '$config';
-import { openRefillBatteryModal } from '@tonkeeper/shared/modals/RefillBatteryModal';
-import { tk } from '$wallet';
 import { Wallet } from '$wallet/Wallet';
 import { AmountFormatter } from '@tonkeeper/core';
 
@@ -38,6 +35,7 @@ export interface InsufficientFundsParams {
   stakingFee?: string;
   fee?: string;
   isStakingDeposit?: boolean;
+  walletIdentifier?: string;
 }
 
 export const InsufficientFundsModal = memo<InsufficientFundsParams>((props) => {
@@ -49,6 +47,7 @@ export const InsufficientFundsModal = memo<InsufficientFundsParams>((props) => {
     stakingFee,
     fee,
     isStakingDeposit,
+    walletIdentifier,
   } = props;
   const { balance: batteryBalance } = useBatteryBalance();
   const nav = useNavigation();
@@ -123,6 +122,8 @@ export const InsufficientFundsModal = memo<InsufficientFundsParams>((props) => {
     );
   }, [currency, fee, formattedAmount, formattedBalance, isStakingDeposit, stakingFee]);
 
+  const wallet = walletIdentifier ? tk.wallets.get(walletIdentifier)! : tk.wallet;
+
   return (
     <Modal>
       <Modal.Header />
@@ -131,7 +132,15 @@ export const InsufficientFundsModal = memo<InsufficientFundsParams>((props) => {
           <Icon name={'ic-exclamationmark-circle-84'} />
           <Spacer y={12} />
           <Text textAlign="center" variant="h2">
-            {t('txActions.signRaw.insufficientFunds.title')}
+            {tk.wallets.size > 1 ? (
+              <>
+                {t('txActions.signRaw.insufficientFunds.title_multiwallet')}{' '}
+                <WalletIcon size={24} value={wallet.config.emoji} />{' '}
+                <Text variant="h2">{wallet.config.name}</Text>
+              </>
+            ) : (
+              t('txActions.signRaw.insufficientFunds.title')
+            )}
           </Text>
           <Spacer y={4} />
           {content}

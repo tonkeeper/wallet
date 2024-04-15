@@ -131,6 +131,7 @@ interface ActionFooterProps {
   responseOptions?: TxResponseOptions;
   withCloseButton?: boolean;
   confirmTitle?: string;
+  secondary?: boolean;
   onPressConfirm: () => Promise<void>;
   onCloseModal?: () => void;
   disabled?: boolean;
@@ -205,6 +206,7 @@ export const ActionFooter = React.forwardRef<ActionFooterRef, ActionFooterProps>
             <S.ActionButton
               disabled={props.disabled}
               onPress={() => props.onPressConfirm()}
+              mode={props.secondary ? 'secondary' : 'primary'}
             >
               {props.confirmTitle ?? t('nft_confirm_operation')}
             </S.ActionButton>

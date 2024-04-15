@@ -15,7 +15,6 @@ import {
   AppStackRouteNames,
   MainStackRouteNames,
   SettingsStackRouteNames,
-  openDeleteAccountDone,
   openDevMenu,
   openLegalDocuments,
   openManageTokens,
@@ -40,7 +39,6 @@ import { SearchEngine, useBrowserStore } from '$store';
 import AnimatedLottieView from 'lottie-react-native';
 import { Steezy } from '$styles';
 import { i18n, t } from '@tonkeeper/shared/i18n';
-import { trackEvent } from '$utils/stats';
 import { openAppearance } from '$core/ModalContainer/AppearanceModal';
 import { config } from '$config';
 import {
@@ -125,20 +123,8 @@ export const Settings: FC = () => {
   }, []);
 
   const handleResetWallet = useCallback(() => {
-    Alert.alert(t('settings_reset_alert_title'), t('settings_reset_alert_caption'), [
-      {
-        text: t('cancel'),
-        style: 'cancel',
-      },
-      {
-        text: t('settings_reset_alert_button'),
-        style: 'destructive',
-        onPress: () => {
-          dispatch(walletActions.cleanWallet());
-        },
-      },
-    ]);
-  }, [dispatch]);
+    nav.navigate('/logout-warning');
+  }, [nav]);
 
   const handleStopWatchWallet = useCallback(() => {
     Alert.alert(t('settings_delete_watch_account'), undefined, [
@@ -210,25 +196,8 @@ export const Settings: FC = () => {
   }, []);
 
   const handleDeleteAccount = useCallback(() => {
-    Alert.alert(
-      t('settings_delete_alert_title', { space: Platform.OS === 'ios' ? '\n' : ' ' }),
-      t('settings_delete_alert_caption'),
-      [
-        {
-          text: t('cancel'),
-          style: 'cancel',
-        },
-        {
-          text: t('settings_delete_alert_button'),
-          style: 'destructive',
-          onPress: () => {
-            trackEvent('delete_wallet');
-            openDeleteAccountDone();
-          },
-        },
-      ],
-    );
-  }, []);
+    nav.openModal('/logout-warning', { isDelete: true });
+  }, [nav]);
 
   const handleCustomizePress = useCallback(
     () => nav.navigate(AppStackRouteNames.CustomizeWallet),
@@ -321,7 +290,7 @@ export const Settings: FC = () => {
                 onPress={handleManageTokens}
               />
             )}
-            {hasSubscriptions && (
+            {!wallet.isWatchOnly && hasSubscriptions && (
               <List.Item
                 value={
                   <Icon
@@ -370,7 +339,9 @@ export const Settings: FC = () => {
                     name={'ic-battery-28'}
                   />
                 }
-                title={t('battery.settings')}
+                title={t('battery.settings', {
+                  betaLabel: config.get('battery_beta') ? '(Beta)' : '',
+                })}
                 onPress={handleBattery}
               />
             )}

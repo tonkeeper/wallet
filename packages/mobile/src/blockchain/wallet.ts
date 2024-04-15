@@ -487,7 +487,13 @@ export class TonWallet {
     let feeNano: BigNumber;
     let isBattery = false;
     try {
-      const [fee, battery] = await this.calcFee(boc);
+      const [fee, battery] = await this.calcFee(
+        boc,
+        undefined,
+        tk.wallet.battery.state.data.supportedTransactions[
+          BatterySupportedTransaction.Jetton
+        ],
+      );
       feeNano = fee;
       isBattery = battery;
     } catch (e) {

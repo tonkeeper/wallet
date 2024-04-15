@@ -14,6 +14,7 @@ import {
   TouchableOpacity,
   View,
   WalletColor,
+  WalletIcon,
   getWalletColorHex,
   isAndroid,
   ns,
@@ -29,7 +30,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Keyboard, LayoutChangeEvent, Text as RNText } from 'react-native';
+import { Keyboard, LayoutChangeEvent } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { EmojiPicker } from './EmojiPicker';
@@ -163,7 +164,7 @@ export const CustomizeWallet: FC<Props> = memo((props) => {
                   { backgroundColor: getWalletColorHex(selectedColor) },
                 ]}
               >
-                <RNText style={styles.emoji.static}>{emoji}</RNText>
+                <WalletIcon emojiStyle={styles.emoji.static} size={28} value={emoji} />
               </View>
             </View>
           </View>

@@ -7,8 +7,9 @@ import {
 import { memo } from 'react';
 import { useBatteryBalance } from '../../query/hooks/useBatteryBalance';
 import {
+  AnimatedBatteryIcon,
+  AnimatedBatterySize,
   Icon,
-  IconNames,
   Spacer,
   Steezy,
   Text,
@@ -23,13 +24,7 @@ import { RestorePurchases } from './RestorePurchases';
 import { RefillBatterySettingsWidget } from './RefillBatterySettingsWidget';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-const iconNames: { [key: string]: IconNames } = {
-  [BatteryState.Empty]: 'ic-empty-battery-128',
-  [BatteryState.AlmostEmpty]: 'ic-almost-empty-battery-128',
-  [BatteryState.Medium]: 'ic-medium-battery-128',
-  [BatteryState.Full]: 'ic-full-battery-128',
-};
+import { Tag } from '@tonkeeper/mobile/src/uikit';
 
 export interface RefillBatteryProps {
   navigateToTransactions: () => void;
@@ -38,13 +33,13 @@ export interface RefillBatteryProps {
 export const RefillBattery = memo<RefillBatteryProps>((props) => {
   const { balance } = useBatteryBalance();
   const batteryState = getBatteryState(balance ?? '0');
-  const iconName = iconNames[batteryState];
   const availableNumOfTransactionsCount = calculateAvailableNumOfTransactions(
     balance ?? '0',
   );
   const bottomInsets = useSafeAreaInsets().bottom;
 
   const isInAppPurchasesDisabled = config.get('disable_battery_iap_module');
+  const isPromoDisabled = config.get('disable_battery_promo_module');
 
   return (
     <Animated.ScrollView
@@ -52,8 +47,23 @@ export const RefillBattery = memo<RefillBatteryProps>((props) => {
       contentContainerStyle={{ paddingBottom: bottomInsets + 16 }}
     >
       <View style={styles.contentContainer}>
-        <Icon colorless name={iconName} />
+        {batteryState === BatteryState.Empty ? (
+          <Icon colorless name={'ic-empty-battery-128'} />
+        ) : (
+          <View style={styles.animatedBatteryContainer}>
+            <AnimatedBatteryIcon
+              progress={parseFloat(balance)}
+              size={AnimatedBatterySize.Large}
+            />
+          </View>
+        )}
         <Spacer y={16} />
+        {config.get('battery_beta') && (
+          <>
+            <Tag type="warning">Beta</Tag>
+            <Spacer y={4} />
+          </>
+        )}
         <Text textAlign="center" type="h2">
           {t(`battery.title`)}
         </Text>
@@ -81,8 +91,12 @@ export const RefillBattery = memo<RefillBatteryProps>((props) => {
       )}
       <View style={styles.indent}>
         {!isInAppPurchasesDisabled ? <RefillBatteryIAP /> : null}
-        <RechargeByPromoButton />
-        <Spacer y={16} />
+        {!isPromoDisabled ? (
+          <>
+            <RechargeByPromoButton />
+            <Spacer y={16} />
+          </>
+        ) : null}
         <RestorePurchases />
       </View>
     </Animated.ScrollView>
@@ -99,5 +113,10 @@ export const styles = Steezy.create({
   },
   indent: {
     paddingHorizontal: 16,
+  },
+  animatedBatteryContainer: {
+    paddingHorizontal: 30,
+    paddingTop: 6,
+    paddingBottom: 8,
   },
 });

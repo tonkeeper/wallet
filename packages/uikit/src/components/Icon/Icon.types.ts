@@ -132,8 +132,29 @@ export type IconNames =
   | 'ic-warning-28'
   | 'ic-xmark-28'
   | 'ic-xmark-outline-28'
+  | 'ic-bank-card-32'
   | 'ic-checkmark-circle-32'
+  | 'ic-chinese-yuan-circle-32'
+  | 'ic-dollar-circle-32'
+  | 'ic-euro-circle-32'
   | 'ic-exclamationmark-circle-32'
+  | 'ic-flash-32'
+  | 'ic-flash-circle-32'
+  | 'ic-gear-32'
+  | 'ic-hand-raised-32'
+  | 'ic-hare-32'
+  | 'ic-inbox-32'
+  | 'ic-indian-rupee-circle-32'
+  | 'ic-key-32'
+  | 'ic-leaf-32'
+  | 'ic-lock-32'
+  | 'ic-magnifying-glass-circle-32'
+  | 'ic-ruble-circle-32'
+  | 'ic-snowflake-32'
+  | 'ic-sparkles-32'
+  | 'ic-sterling-circle-32'
+  | 'ic-sun-32'
+  | 'ic-wallet-32'
   | 'ic-almost-empty-battery-34'
   | 'ic-empty-battery-accent-flash-34'
   | 'ic-empty-battery-flash-34'
@@ -298,8 +319,29 @@ export const AllIcons = [
   'ic-warning-28',
   'ic-xmark-28',
   'ic-xmark-outline-28',
+  'ic-bank-card-32',
   'ic-checkmark-circle-32',
+  'ic-chinese-yuan-circle-32',
+  'ic-dollar-circle-32',
+  'ic-euro-circle-32',
   'ic-exclamationmark-circle-32',
+  'ic-flash-32',
+  'ic-flash-circle-32',
+  'ic-gear-32',
+  'ic-hand-raised-32',
+  'ic-hare-32',
+  'ic-inbox-32',
+  'ic-indian-rupee-circle-32',
+  'ic-key-32',
+  'ic-leaf-32',
+  'ic-lock-32',
+  'ic-magnifying-glass-circle-32',
+  'ic-ruble-circle-32',
+  'ic-snowflake-32',
+  'ic-sparkles-32',
+  'ic-sterling-circle-32',
+  'ic-sun-32',
+  'ic-wallet-32',
   'ic-almost-empty-battery-34',
   'ic-empty-battery-accent-flash-34',
   'ic-empty-battery-flash-34',
@@ -465,8 +507,29 @@ export const IconSizes = {
   'ic-warning-28': 28,
   'ic-xmark-28': 28,
   'ic-xmark-outline-28': 28,
+  'ic-bank-card-32': 32,
   'ic-checkmark-circle-32': 32,
+  'ic-chinese-yuan-circle-32': 32,
+  'ic-dollar-circle-32': 32,
+  'ic-euro-circle-32': 32,
   'ic-exclamationmark-circle-32': 32,
+  'ic-flash-32': 32,
+  'ic-flash-circle-32': 32,
+  'ic-gear-32': 32,
+  'ic-hand-raised-32': 32,
+  'ic-hare-32': 32,
+  'ic-inbox-32': 32,
+  'ic-indian-rupee-circle-32': 32,
+  'ic-key-32': 32,
+  'ic-leaf-32': 32,
+  'ic-lock-32': 32,
+  'ic-magnifying-glass-circle-32': 32,
+  'ic-ruble-circle-32': 32,
+  'ic-snowflake-32': 32,
+  'ic-sparkles-32': 32,
+  'ic-sterling-circle-32': 32,
+  'ic-sun-32': 32,
+  'ic-wallet-32': 32,
   'ic-almost-empty-battery-34': 34,
   'ic-empty-battery-accent-flash-34': 34,
   'ic-empty-battery-flash-34': 34,

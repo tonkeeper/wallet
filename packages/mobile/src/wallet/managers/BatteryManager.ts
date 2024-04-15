@@ -6,14 +6,15 @@ import { TonProofManager } from '$wallet/managers/TonProofManager';
 import { logger, NamespacedLogger } from '$logger';
 
 export enum BatterySupportedTransaction {
-  NFT = 'nft',
-  Jetton = 'jetton',
   Swap = 'swap',
+  Jetton = 'jetton',
+  NFT = 'nft',
 }
 
 export interface BatteryState {
   isLoading: boolean;
   balance?: string;
+  reservedBalance?: string;
   supportedTransactions: Record<BatterySupportedTransaction, boolean>;
 }
 
@@ -21,10 +22,11 @@ export class BatteryManager {
   public state = new State<BatteryState>({
     isLoading: false,
     balance: undefined,
+    reservedBalance: '0',
     supportedTransactions: {
-      [BatterySupportedTransaction.NFT]: true,
-      [BatterySupportedTransaction.Jetton]: true,
       [BatterySupportedTransaction.Swap]: true,
+      [BatterySupportedTransaction.Jetton]: true,
+      [BatterySupportedTransaction.NFT]: true,
     },
   });
 
@@ -37,8 +39,9 @@ export class BatteryManager {
     private storage: Storage,
   ) {
     this.state.persist({
-      partialize: ({ balance, supportedTransactions }) => ({
+      partialize: ({ balance, reservedBalance, supportedTransactions }) => ({
         balance,
+        reservedBalance,
         supportedTransactions,
       }),
       storage: this.storage,
@@ -61,9 +64,15 @@ export class BatteryManager {
           },
         },
       );
-      this.state.set({ isLoading: false, balance: data.balance });
+
+      this.state.set({
+        isLoading: false,
+        balance: data.balance,
+        // @ts-expect-error reservedAmount will be implemented in API later. Remove then
+        reservedBalance: data.reservedBalance ?? '0',
+      });
     } catch (err) {
-      this.state.set({ isLoading: false, balance: '0' });
+      this.state.set({ isLoading: false });
       return null;
     }
   }

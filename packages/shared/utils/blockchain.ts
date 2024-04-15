@@ -28,7 +28,7 @@ export async function sendBoc(boc, attemptWithRelayer = true) {
   }
 }
 
-export async function emulateBoc(boc, params?, attemptWithRelayer = true) {
+export async function emulateBoc(boc, params?, attemptWithRelayer = false) {
   try {
     if (
       !attemptWithRelayer ||

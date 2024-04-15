@@ -58,6 +58,7 @@ export const RefillBatteryModal = memo(() => {
 
   const handleBack = useCallback(() => stepViewRef.current?.goBack(), []);
 
+  // TODO: rewrite to react-native-pager-view
   return (
     <>
       <NavBar

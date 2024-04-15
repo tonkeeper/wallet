@@ -610,9 +610,6 @@
   "settings_backup_seed" : "Резервная копия",
   "settings_contact_support" : "Написать команде",
   "settings_delete_account" : "Удалить аккаунт",
-  "settings_delete_alert_button" : "Удалить аккаунт и данные",
-  "settings_delete_alert_caption" : "Это действие приведет к удалению вашего аккаунта и всех данных из этого приложения.",
-  "settings_delete_alert_title": "\uD83D\uDEA8\uD83D\uDEA8\uD83D\uDEA8%{space}Вы уверены, что хотите удалить аккаунт?",
   "settings_jettons_list" : "Токены",
   "settings_legal_documents" : "Юридические документы",
   "language": {
@@ -736,7 +733,7 @@
       },
       "tap_to_collect" : "Нажмите, чтобы вывести"
     },
-    "estimated_profit" : "%{amount} TON – доход за год,  если внесёте TON сегодня.",
+    "estimated_profit" : "%{amount} TON – доход за год, если внесёте TON сегодня.",
     "estimated_profit_compare" : "На %{amount} TON в год прибыльнее чем ваш текущий стейкинг",
     "get_withdrawal" : "Получить вывод",
     "highest_apy" : "MAX APY",
@@ -987,6 +984,7 @@
         },
         "stakingDeposit" : "Минимальный баланс для участия:\n%{amount} %{currency}\n",
         "title" : "Недостаточно средств",
+        "title_multiwallet": "Недостаточно средств на кошельке",
         "toBePaid" : "Необходимо: %{amount} %{currency}\n",
         "withFees" : "+ комиссия сети.\n",
         "yourBalance" : "Ваш баланс: %{balance} %{currency}."
@@ -1066,7 +1064,7 @@
     "transactions": {
       "types": {
         "nft": "отправка NFT",
-        "swap": "обмен",
+        "swap": "обмен через Tonkeeper",
         "jetton": "отправка токенов",
         "ton": "отправка TON"
       },
@@ -1088,16 +1086,16 @@
     },
     "refilled": "Батарейка заряжена",
     "screen_title": "Батарейка",
-    "settings": "Батарейка",
+    "settings": "Батарейка %{betaLabel}",
     "ok": "OK",
     "title": "Батарейка Tonkeeper",
     "description": {
-      "empty": "Обменивайте и отправляйте токены",
+      "empty": "Обменивайте через Tonkeeper, отправляйте токены.",
       "other": {
-        "few": "В вашей батарейке %{count} заряда",
-        "many": "В вашей батарейке %{count} зарядов",
-        "one": "В вашей батарейке %{count} заряд",
-        "other": "В вашей батарейке %{count} зарядов"
+        "few": "%{count} заряда",
+        "many": "%{count} зарядов",
+        "one": "%{count} заряд",
+        "other": "%{count} зарядов"
       }
     },
     "promocode": {
@@ -1111,7 +1109,7 @@
       "title": {
         "large": "Большой",
         "medium": "Средний",
-        "small": "Маленький"
+        "small": "Малый"
       },
       "subtitle": {
         "few": "%{count} заряда",
@@ -1267,5 +1265,15 @@
   "buy_ton": {
     "title": "Купить TON",
     "subtitle": "Моментально с банковской картой"
+  },
+  "logout_modal": {
+    "title": "Выйти",
+    "caption": "Ключи кошелька будут удалены с этого устройства.",
+    "delete_title": "Удалить данные кошелька",
+    "delete_caption": "Ключи кошелька и все личные данные будут удалены с этого устройства.",
+    "agreement": "У меня есть резервная копия фразы восстановления",
+    "backup_button": "Сделать резервную копию",
+    "logout_button": "Выйти",
+    "delete_button": "Удалить данные кошелька"
   }
 }

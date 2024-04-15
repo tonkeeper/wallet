@@ -6,7 +6,16 @@ import { calculateMessageTransferAmount, delay } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { t } from '@tonkeeper/shared/i18n';
 import { Toast } from '$store';
-import { List, Modal, Spacer, Steezy, Text, View } from '@tonkeeper/uikit';
+import {
+  List,
+  Modal,
+  Spacer,
+  Steezy,
+  Text,
+  View,
+  WalletIcon,
+  isAndroid,
+} from '@tonkeeper/uikit';
 import { push } from '$navigation/imperative';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
 import {
@@ -219,9 +228,11 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
               <Text type="body2" color="textSecondary">
                 {t('confirmSendModal.wallet')}
               </Text>
-              <Text type="body2" color="textSecondary">
-                {wallet.config.emoji}
-              </Text>
+              <WalletIcon
+                emojiStyle={styles.emoji.static}
+                size={20}
+                value={wallet.config.emoji}
+              />
               <Text type="body2" color="textSecondary">
                 {wallet.config.name}
               </Text>
@@ -327,6 +338,7 @@ export const openSignRawModal = async (
 
       const { emulateResult, battery } = await emulateBoc(
         boc,
+        undefined,
         options.experimentalWithBattery,
       );
       consequences = emulateResult;
@@ -341,6 +353,7 @@ export const openSignRawModal = async (
           return openInsufficientFundsModal({
             totalAmount,
             balance: checkResult.balance,
+            walletIdentifier,
           });
         }
       }
@@ -391,11 +404,16 @@ const styles = Steezy.create({
   subtitleContainer: {
     flexDirection: 'row',
     gap: 4,
+    alignItems: 'center',
   },
   withBatteryContainer: {
     paddingHorizontal: 32,
   },
   actionsList: {
     marginBottom: 0,
+  },
+  emoji: {
+    fontSize: isAndroid ? 17 : 20,
+    marginTop: isAndroid ? -1 : 1,
   },
 });

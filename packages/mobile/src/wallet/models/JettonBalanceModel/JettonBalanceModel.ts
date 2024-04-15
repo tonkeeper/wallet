@@ -16,7 +16,7 @@ export class JettonBalanceModel {
       jettonBalance.balance,
       jettonBalance.jetton.decimals,
     );
-    // @ts-ignore will be implemented in API later
+
     this.lock = jettonBalance.lock && {
       amount: AmountFormatter.fromNanoStatic(
         jettonBalance.lock.amount,
