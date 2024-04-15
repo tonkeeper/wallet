@@ -33,7 +33,7 @@ export function tonAddress(address: AnyAddress) {
 }
 
 export class TransactionService {
-  private static TTL = 5 * 60;
+  public static TTL = 5 * 60;
 
   private static getTimeout() {
     return Math.floor(Date.now() / 1e3) + TransactionService.TTL;

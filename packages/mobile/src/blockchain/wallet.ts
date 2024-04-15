@@ -26,7 +26,11 @@ import {
 
 import { tk } from '$wallet';
 import { Address, Cell, internal } from '@ton/core';
-import { emulateBoc, sendBoc } from '@tonkeeper/shared/utils/blockchain';
+import {
+  NetworkOverloadedError,
+  emulateBoc,
+  sendBoc,
+} from '@tonkeeper/shared/utils/blockchain';
 import { OperationEnum, TonAPI, TypeEnum } from '@tonkeeper/core/src/TonAPI';
 import { setBalanceForEmulation } from '@tonkeeper/shared/utils/wallet';
 import { WalletNetwork } from '$wallet/WalletTypes';
@@ -518,6 +522,9 @@ export class TonWallet {
     try {
       await sendBoc(boc, isBattery);
     } catch (e) {
+      if (e instanceof NetworkOverloadedError) {
+        throw e;
+      }
       if (!store.getState().main.isTimeSynced) {
         throw new Error('wrong_time');
       }
@@ -730,6 +737,9 @@ export class TonWallet {
     try {
       await sendBoc(boc, false);
     } catch (e) {
+      if (e instanceof NetworkOverloadedError) {
+        throw e;
+      }
       if (!store.getState().main.isTimeSynced) {
         throw new Error('wrong_time');
       }

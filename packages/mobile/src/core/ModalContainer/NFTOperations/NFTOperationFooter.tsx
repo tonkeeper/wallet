@@ -19,6 +19,7 @@ import {
 import { tk } from '$wallet';
 import { TabsStackRouteNames } from '$navigation';
 import { Wallet } from '$wallet/Wallet';
+import { NetworkOverloadedError } from '@tonkeeper/shared/utils/blockchain';
 
 enum States {
   INITIAL,
@@ -95,7 +96,11 @@ export const useActionFooter = (wallet?: Wallet) => {
         (wallet ?? tk.wallet).activityList.reload();
       });
     } catch (error) {
-      if (error instanceof DismissedActionError) {
+      if (error instanceof NetworkOverloadedError) {
+        ref.current?.setError(error.message);
+        await delay(3500);
+        ref.current?.setState(States.INITIAL);
+      } else if (error instanceof DismissedActionError) {
         ref.current?.setState(States.ERROR);
         await delay(1750);
         ref.current?.setState(States.INITIAL);
