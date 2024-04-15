@@ -628,9 +628,6 @@
   "settings_backup_seed": "Recovery Phrase",
   "settings_contact_support": "Contact us",
   "settings_delete_account": "Delete account",
-  "settings_delete_alert_button": "Delete account and data",
-  "settings_delete_alert_caption": "This action will delete your account and all data from this application.",
-  "settings_delete_alert_title": "Are you sure you want to delete your account?",
   "settings_jettons_list": "Tokens",
   "settings_legal_documents": "Legal",
   "language": {

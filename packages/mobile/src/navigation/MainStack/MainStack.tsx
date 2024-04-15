@@ -167,6 +167,7 @@ export const MainStack: FC = () => {
       <Stack.Screen
         name={MainStackRouteNames.BackupCheckPhrase}
         component={BackupCheckPhraseScreen}
+        options={{ gestureEnabled: false }}
       />
     </Stack.Navigator>
   );
