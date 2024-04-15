@@ -1,8 +1,19 @@
 import { config } from '@tonkeeper/mobile/src/config';
 import { tk } from '@tonkeeper/mobile/src/wallet';
-import { ContentType } from '@tonkeeper/core/src/TonAPI';
+import { ContentType, ServiceStatus } from '@tonkeeper/core/src/TonAPI';
+import { TransactionService } from '@tonkeeper/core';
+import { t } from '../i18n';
+
+export class NetworkOverloadedError extends Error {}
 
 export async function sendBoc(boc, attemptWithRelayer = true) {
+  const { rest_online, indexing_latency } =
+    (await tk.wallet.tonapi.status.reduceIndexingLatency()) as ServiceStatus;
+
+  if (!rest_online || indexing_latency > TransactionService.TTL - 30) {
+    throw new NetworkOverloadedError(t('network_overloaded_error'));
+  }
+
   try {
     if (
       !attemptWithRelayer ||
