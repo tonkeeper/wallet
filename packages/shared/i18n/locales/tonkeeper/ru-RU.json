@@ -1265,13 +1265,13 @@
     "subtitle": "Моментально с банковской картой"
   },
   "logout_modal": {
-    "title": "Log Out",
-    "caption": "Wallet keys will be erased from this device.",
-    "delete_title": "Delete Wallet Data",
-    "delete_caption": "Wallet keys and all personal data will be erased from this device.",
-    "agreement": "I have a backup copy of recovery phrase",
-    "backup_button": "Back Up",
-    "logout_button": "Log Out",
-    "delete_button": "Delete Wallet Data"
+    "title": "Выйти",
+    "caption": "Ключи кошелька будут удалены с этого устройства.",
+    "delete_title": "Удалить данные кошелька",
+    "delete_caption": "Ключи кошелька и все личные данные будут удалены с этого устройства.",
+    "agreement": "У меня есть резервная копия фразы восстановления",
+    "backup_button": "Сделать резервную копию",
+    "logout_button": "Выйти",
+    "delete_button": "Удалить данные кошелька"
   }
 }
