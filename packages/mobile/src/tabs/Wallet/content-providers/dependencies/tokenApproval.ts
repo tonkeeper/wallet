@@ -30,10 +30,11 @@ export class TokenApprovalDependency extends DependencyPrototype<
       const approvalStatus = this.state.tokens[jettonAddress];
       const isBlacklisted = balance.verification === JettonVerification.BLACKLIST;
 
-      return (
-        !isBlacklisted &&
-        (!approvalStatus || approvalStatus.current !== TokenApprovalStatus.Declined)
-      );
+      if (isBlacklisted) {
+        return approvalStatus?.current === TokenApprovalStatus.Approved;
+      }
+
+      return !approvalStatus || approvalStatus.current !== TokenApprovalStatus.Declined;
     };
   }
 }

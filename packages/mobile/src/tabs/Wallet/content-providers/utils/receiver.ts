@@ -92,13 +92,13 @@ export class WalletContentReceiver {
       return new BigNumber(b.fiatRate.total.raw).comparedTo(a.fiatRate.total.raw);
     });
 
-    const firstTokenElement = content[0] as CellItemToRender;
-    const lastTokenElement = content[content.length - 1] as CellItemToRender;
-
-    // Make list; set corners
-    if (firstTokenElement) {
-      firstTokenElement.isFirst = true;
-      lastTokenElement.isLast = true;
+    // Make list; set corners. Mutates objects so we need to copy them
+    if (content[0]) {
+      content[0] = Object.assign({ isFirst: true }, content[0]);
+      content[content.length - 1] = Object.assign(
+        { isLast: true },
+        content[content.length - 1],
+      );
     }
 
     return content;
