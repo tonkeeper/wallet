@@ -159,7 +159,6 @@ export const WalletScreen = memo(({ navigation }) => {
         <View style={styles.amount} pointerEvents="box-none">
           <View style={styles.balanceWithBattery}>
             <ShowBalance amount={balance.total.fiat} />
-            <Spacer x={8} />
             <BatteryIcon />
           </View>
           <View style={styles.addressContainer}>
