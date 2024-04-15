@@ -25,6 +25,10 @@ export class TonPriceDependency extends DependencyPrototype<
     super.setWallet(wallet);
   }
 
+  public getRawTotal(balance: string): string {
+    return new BigNumber(balance).multipliedBy(this.state.ton.fiat).toString();
+  }
+
   public getFiatRate(balance: string): FiatRate | undefined {
     const rate = this.state;
 
@@ -44,7 +48,7 @@ export class TonPriceDependency extends DependencyPrototype<
         formatted: formatter.format(new BigNumber(balance).multipliedBy(rate.ton.fiat), {
           currency: rate.currency,
         }),
-        raw: new BigNumber(balance).multipliedBy(rate.ton.fiat).toString(),
+        raw: this.getRawTotal(balance),
       },
     };
   }

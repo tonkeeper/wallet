@@ -14,6 +14,5 @@ export const WalletProvider = ({ children }: { children: React.ReactNode }) => {
 
     return unsubscribe;
   }, []);
-
   return <WalletContext.Provider value={state}>{children}</WalletContext.Provider>;
 };

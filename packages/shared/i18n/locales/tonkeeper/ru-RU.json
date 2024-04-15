@@ -843,6 +843,7 @@
   "swap_title" : "Обмен",
   "tab_browser" : "Браузер",
   "tab_nft" : "NFT",
+  "tab_collectibles": "Покупки",
   "tab_settings" : "Настройки",
   "tab_swap" : "Обмен",
   "tab_wallet" : "Кошелёк",
@@ -1028,7 +1029,7 @@
   "wallet_about" : "Подробнее",
   "wallet_buy" : "Купить",
   "wallet" : {
-    "buy_btn" : "Покупки",
+    "buy_btn" : "Купить TON",
     "collectibles_tab_lable" : "Коллекции",
     "edit_tokens_btn" : "Настроить",
     "nft_tab_lable" : "Коллекции",
