@@ -38,6 +38,7 @@ import { InscriptionAdditionalParams, TokenType } from '$core/Send/Send.interfac
 import { WalletConfig, WalletContractVersion, WalletNetwork } from '$wallet/WalletTypes';
 import { v4 as uuidv4 } from 'uuid';
 import { vault as multiWalletVault } from '$wallet';
+import RNRestart from 'react-native-restart';
 
 function* generateVaultWorker() {
   try {
@@ -377,6 +378,7 @@ function* cleanWalletWorker(action: CleanWalletAction) {
       });
 
       yield call([tk, 'removeAllWallets']);
+      RNRestart.restart();
     } else {
       yield call(
         useConnectedAppsStore.getState().actions.unsubscribeFromAllNotifications,
@@ -389,12 +391,14 @@ function* cleanWalletWorker(action: CleanWalletAction) {
 
       yield call([tk, 'removeWallet'], tk.wallet.identifier);
 
+      yield call(trackEvent, 'reset_wallet');
+
       if (tk.wallets.size > 0) {
         navigate(TabsStackRouteNames.Balances);
+      } else {
+        RNRestart.restart();
       }
     }
-
-    yield call(trackEvent, 'reset_wallet');
   } catch (e) {
     e && debugLog(e.message);
     yield put(Toast.fail, e.message);

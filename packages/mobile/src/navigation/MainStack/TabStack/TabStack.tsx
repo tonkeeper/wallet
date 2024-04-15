@@ -5,12 +5,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StyleSheet } from 'react-native';
 import { TabsStackRouteNames } from '$navigation';
 import { TabStackParamList } from './TabStack.interface';
-import { Icon, ScrollPositionContext, View } from '$uikit';
+import { ScrollPositionContext, View } from '$uikit';
 import { usePreloadChart } from '$hooks/usePreloadChart';
 import { useTheme } from '$hooks/useTheme';
 import { isAndroid, nfs, ns } from '$utils';
 import { t } from '@tonkeeper/shared/i18n';
-import { SettingsStack } from '$navigation/SettingsStack/SettingsStack';
 import { TabBarBadgeIndicator } from './TabBarBadgeIndicator';
 import { WalletScreen } from '../../../tabs/Wallet/WalletScreen';
 import Animated from 'react-native-reanimated';
@@ -18,13 +17,15 @@ import { FONT } from '$styled';
 import { useCheckForUpdates } from '$hooks/useCheckForUpdates';
 import { useLoadExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 import { ActivityStack } from '$navigation/ActivityStack/ActivityStack';
-import { BackupIndicator } from '$navigation/MainStack/TabStack/BackupIndicator';
 import { useFetchMethodsToBuy } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
 import { trackEvent } from '$utils/stats';
 import { useRemoteBridge } from '$tonconnect';
 import { BrowserStack } from '$navigation/BrowserStack/BrowserStack';
 import { useWallet } from '@tonkeeper/shared/hooks';
 import { useDAppsNotifications } from '$store';
+import { Icon } from '@tonkeeper/uikit';
+import { Collectibles } from '$core/Colectibles/Collectibles';
+import { useHaveNfts } from '$hooks/useHaveNfts';
 
 const Tab = createBottomTabNavigator<TabStackParamList>();
 
@@ -33,6 +34,7 @@ export const TabStack: FC = () => {
   const safeArea = useSafeAreaInsets();
   const theme = useTheme();
   const { shouldShowRedDot, removeRedDot } = useDAppsNotifications();
+  const haveNfts = useHaveNfts();
 
   useRemoteBridge();
   useLoadExpiringDomains();
@@ -40,10 +42,15 @@ export const TabStack: FC = () => {
   usePreloadChart();
   useCheckForUpdates();
 
-  const tabBarStyle = { height: ns(64) + (safeArea.bottom > 0 ? ns(20) : 0) };
+  const tabBarStyle = useMemo(
+    () => ({
+      height: ns(64) + (safeArea.bottom > 0 ? ns(20) : 0),
+    }),
+    [safeArea.bottom],
+  );
   const containerTabStyle = useMemo(
     () => [tabBarStyle, styles.tabBarContainer, bottomSeparatorStyle],
-    [safeArea.bottom, bottomSeparatorStyle, tabBarStyle],
+    [bottomSeparatorStyle, tabBarStyle],
   );
 
   const wallet = useWallet();
@@ -102,7 +109,7 @@ export const TabStack: FC = () => {
         component={ActivityStack}
         name={TabsStackRouteNames.Activity}
         listeners={{
-          tabPress: (e) => {
+          tabPress: () => {
             removeRedDot();
           },
         }}
@@ -125,25 +132,22 @@ export const TabStack: FC = () => {
             tabBarIcon: ({ color }) => <Icon colorHex={color} name="ic-explore-28" />,
           }}
           listeners={{
-            tabPress: (e) => {
+            tabPress: () => {
               trackEvent('browser_open');
             },
           }}
         />
       ) : null}
-      <Tab.Screen
-        component={SettingsStack}
-        name={TabsStackRouteNames.SettingsStack}
-        options={{
-          tabBarLabel: t('tab_settings'),
-          tabBarIcon: ({ color }) => (
-            <View style={styles.settingsIcon}>
-              <Icon colorHex={color} name="ic-settings-28" />
-              {!isWatchOnly ? <BackupIndicator /> : null}
-            </View>
-          ),
-        }}
-      />
+      {haveNfts ? (
+        <Tab.Screen
+          component={Collectibles}
+          name={TabsStackRouteNames.Collectibles}
+          options={{
+            tabBarLabel: t('tab_collectibles'),
+            tabBarIcon: ({ color }) => <Icon colorHex={color} name="ic-purchases-28" />,
+          }}
+        />
+      ) : null}
     </Tab.Navigator>
   );
 };

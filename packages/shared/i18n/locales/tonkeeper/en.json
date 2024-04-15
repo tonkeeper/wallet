@@ -855,7 +855,7 @@
   "swap_title": "Swap",
   "tab_browser": "Browser",
   "tab_nft": "NFTs",
-  "tab_settings": "Settings",
+  "tab_collectibles": "Collectibles",
   "tab_swap": "Swap",
   "tab_wallet": "Wallet",
   "today": "Today",
@@ -1041,6 +1041,8 @@
     "screen_title": "Wallet",
     "send_btn": "Send",
     "swap_btn": "Swap",
+    "scan_btn": "Scan",
+    "stake_btn": "Stake",
     "tonkens_tab_lable": "Tokens",
     "updated_at": "Updated on %{value}",
     "inscriptions_tab_label": "Inscriptions"

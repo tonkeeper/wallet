@@ -192,7 +192,7 @@ export const Notification: React.FC<NotificationProps> = (props) => {
   }, [props.closeOtherSwipeable]);
 
   return (
-    <View style={styles.containerStyle}>
+    <View>
       <Swipeable
         waitFor={listItemRef}
         overshootFriction={6}
@@ -224,9 +224,6 @@ export const Notification: React.FC<NotificationProps> = (props) => {
 const styles = Steezy.create(({ colors }) => ({
   listStyle: {
     marginBottom: 0,
-  },
-  containerStyle: {
-    marginBottom: 8,
   },
   leftContentStyle: {
     alignItems: 'flex-start',

@@ -122,7 +122,7 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
     return {};
   });
 
-  const isSmallTitle = typeof title === 'string' && title.length > 18;
+  const isSmallTitle = typeof title === 'string' && title.length <= 18;
 
   const backButtonSlot = (
     <TouchableOpacity

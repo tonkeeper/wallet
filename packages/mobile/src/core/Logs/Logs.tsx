@@ -1,5 +1,4 @@
 import React, { FC, useCallback, useMemo } from 'react';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useDispatch, useSelector } from 'react-redux';
 import Clipboard from '@react-native-community/clipboard';
 
@@ -10,10 +9,11 @@ import { format, ns } from '$utils';
 
 import { Toast } from '$store';
 import { t } from '@tonkeeper/shared/i18n';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const Logs: FC = () => {
-  const tabBarHeight = useBottomTabBarHeight();
   const dispatch = useDispatch();
+  const insets = useSafeAreaInsets();
 
   const { logs } = useSelector(mainSelector);
 
@@ -33,27 +33,24 @@ export const Logs: FC = () => {
     ];
   }, [logs]);
 
-  const handleItemPress = useCallback(
-    (item) => {
-      const payload = [
-        `Screen: ${item.screen}`,
-        `Time: ${item.time}`,
-        `Message: ${item.message}`,
-        `Stack: ${item.trace}`,
-      ].join('\n');
+  const handleItemPress = useCallback((item) => {
+    const payload = [
+      `Screen: ${item.screen}`,
+      `Time: ${item.time}`,
+      `Message: ${item.message}`,
+      `Stack: ${item.trace}`,
+    ].join('\n');
 
-      Clipboard.setString(payload);
-      Toast.success(t('copied'));
-    },
-    [t, dispatch],
-  );
+    Clipboard.setString(payload);
+    Toast.success(t('copied'));
+  }, []);
 
   return (
     <S.Wrap>
       <NavBar>Logs</NavBar>
       <RoundedSectionList
         contentContainerStyle={{
-          paddingBottom: tabBarHeight + ns(16),
+          paddingBottom: insets.bottom + ns(16),
         }}
         sections={data}
         renderItem={(item) => {

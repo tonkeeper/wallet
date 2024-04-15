@@ -28,6 +28,7 @@ export { TransitionOpacity } from './components/TransitionOpacity';
 export * from './components/Flash';
 export * from './components/BlockingLoader';
 export { Switch } from './components/Switch';
+export * from './components/ActionButton';
 export * from './components/AnimatedBatteryIcon';
 export { WalletIcon } from './components/WalletIcon';
 

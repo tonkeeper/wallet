@@ -1,6 +1,7 @@
 import { useTonInscription } from '@tonkeeper/shared/query/hooks/useTonInscription';
 import { useParams } from '@tonkeeper/router/src/imperative';
 import {
+  ActionButtons,
   DEFAULT_TOKEN_LOGO,
   IconButton,
   IconButtonList,
@@ -62,21 +63,24 @@ export const InscriptionScreen = memo(() => {
           </View>
           <Picture uri={DEFAULT_TOKEN_LOGO} style={styles.tokenPicture} />
         </View>
-        <View style={styles.buttons}>
-          <IconButtonList>
-            {!wallet.isWatchOnly ? (
-              <IconButton
-                onPress={handleSend}
-                iconName="ic-arrow-up-28"
-                title={t('wallet.send_btn')}
-              />
-            ) : null}
-            <IconButton
-              onPress={handleReceive}
-              iconName="ic-arrow-down-28"
-              title={t('wallet.receive_btn')}
-            />
-          </IconButtonList>
+        <View>
+          <ActionButtons
+            buttons={[
+              {
+                id: 'send',
+                icon: 'ic-arrow-up-outline-28',
+                title: t('wallet.send_btn'),
+                onPress: handleSend,
+                disabled: wallet.isWatchOnly,
+              },
+              {
+                id: 'receive',
+                icon: 'ic-arrow-down-outline-28',
+                title: t('wallet.receive_btn'),
+                onPress: handleReceive,
+              },
+            ]}
+          />
         </View>
       </Screen.ScrollView>
     </Screen>
@@ -86,7 +90,7 @@ export const InscriptionScreen = memo(() => {
 const styles = Steezy.create(({ colors }) => ({
   tokenContainer: {
     paddingTop: 16,
-    paddingBottom: 28,
+    paddingBottom: 24,
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginHorizontal: 28,
@@ -95,14 +99,6 @@ const styles = Steezy.create(({ colors }) => ({
     width: 64,
     height: 64,
     borderRadius: 64 / 2,
-  },
-  buttons: {
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderTopColor: colors.backgroundContent,
-    borderBottomColor: colors.backgroundContent,
-    paddingTop: 16,
-    paddingBottom: 12,
   },
   tokenText: {
     paddingTop: 2,

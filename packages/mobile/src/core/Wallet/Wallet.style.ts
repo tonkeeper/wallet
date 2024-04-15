@@ -11,6 +11,10 @@ export const Header = styled.View`
   margin-horizontal: ${ns(-16)}px;
 `;
 
+export const ActionsWrap = styled.View`
+  padding-horizontal: ${ns(16)}px;
+`;
+
 export const TokenInfoWrap = styled.View`
   align-items: center;
   padding-horizontal: ${ns(28)}px;
@@ -24,7 +28,6 @@ export const FlexRow = styled.View`
   flex-direction: row;
   justify-content: space-between;
   margin-top: ${ns(16)}px;
-  margin-bottom: ${ns(28)}px;
 `;
 
 export const ExploreButtons = styled.View`

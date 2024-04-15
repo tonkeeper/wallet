@@ -1,6 +1,5 @@
 import React, { FC, useCallback } from 'react';
 import Animated from 'react-native-reanimated';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import Clipboard from '@react-native-community/clipboard';
 
 import * as S from './Security.style';
@@ -14,9 +13,10 @@ import { useBiometrySettings, useWallet } from '@tonkeeper/shared/hooks';
 import { useNavigation } from '@tonkeeper/router';
 import { vault } from '$wallet';
 import { Haptics, Switch } from '@tonkeeper/uikit';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const Security: FC = () => {
-  const tabBarHeight = useBottomTabBarHeight();
+  const insets = useSafeAreaInsets();
   const wallet = useWallet();
   const nav = useNavigation();
 
@@ -93,7 +93,7 @@ export const Security: FC = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             paddingHorizontal: ns(16),
-            paddingBottom: tabBarHeight,
+            paddingBottom: insets.bottom + 16,
           }}
           scrollEventThrottle={16}
         >

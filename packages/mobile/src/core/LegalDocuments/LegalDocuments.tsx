@@ -1,5 +1,4 @@
 import React, { FC, useCallback, useMemo } from 'react';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import Animated from 'react-native-reanimated';
 import { Icon, NavBar, ScrollHandler, Text } from '$uikit';
 import { ns } from '$utils';
@@ -7,9 +6,10 @@ import { CellSection, CellSectionItem } from '$shared/components';
 import * as S from './LegalDocuments.style';
 import { openDAppBrowser, openFontLicense } from '$navigation';
 import { t } from '@tonkeeper/shared/i18n';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const LegalDocuments: FC = () => {
-  const tabBarHeight = useBottomTabBarHeight();
+  const insets = useSafeAreaInsets();
 
   const handleTerms = useCallback(() => {
     openDAppBrowser('https://tonkeeper.com/terms');
@@ -36,7 +36,7 @@ export const LegalDocuments: FC = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             paddingHorizontal: ns(16),
-            paddingBottom: tabBarHeight,
+            paddingBottom: insets.bottom + 16,
           }}
           scrollEventThrottle={16}
         >

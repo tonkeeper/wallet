@@ -3,13 +3,11 @@ import { useDispatch } from 'react-redux';
 import Rate, { AndroidMarket } from 'react-native-rate';
 import { Alert, Linking, Platform, View } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import Animated from 'react-native-reanimated';
 import { TapGestureHandler } from 'react-native-gesture-handler';
 
 import * as S from './Settings.style';
-import { Icon, PopupSelect, ScrollHandler, Spacer, Text } from '$uikit';
-import { Icon as NewIcon } from '@tonkeeper/uikit';
+import { Icon, PopupSelect, Spacer, Text } from '$uikit';
+import { Icon as NewIcon, Screen } from '@tonkeeper/uikit';
 import { useShouldShowTokensButton } from '$hooks/useShouldShowTokensButton';
 import { useNavigation } from '@tonkeeper/router';
 import { List } from '@tonkeeper/uikit';
@@ -54,10 +52,12 @@ import { mapNewNftToOldNftData } from '$utils/mapNewNftToOldNftData';
 import { WalletListItem } from '@tonkeeper/shared/components';
 import { useSubscriptions } from '@tonkeeper/shared/hooks/useSubscriptions';
 import { nativeLocaleNames } from '@tonkeeper/shared/i18n/translations';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const Settings: FC = () => {
   const animationRef = useRef<AnimatedLottieView>(null);
   const devMenuHandlerRef = useRef(null);
+  const { bottom: paddingBottom } = useSafeAreaInsets();
 
   const flags = useFlags([
     'disable_apperance',
@@ -68,7 +68,6 @@ export const Settings: FC = () => {
   ]);
 
   const nav = useNavigation();
-  const tabBarHeight = useBottomTabBarHeight();
 
   const fiatCurrency = useWalletCurrency();
   const dispatch = useDispatch();
@@ -235,13 +234,12 @@ export const Settings: FC = () => {
 
   return (
     <S.Wrap>
-      <ScrollHandler navBarTitle={t('settings_title')}>
-        <Animated.ScrollView
+      <Screen>
+        <Screen.Header title={t('settings_title')} />
+        <Screen.ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
-            paddingTop: IsTablet ? ns(8) : hNs(LargeNavBarHeight),
-            paddingBottom: tabBarHeight,
-            alignItems: IsTablet ? 'center' : undefined,
+            paddingBottom: paddingBottom + 16,
           }}
           scrollEventThrottle={16}
         >
@@ -538,9 +536,8 @@ export const Settings: FC = () => {
               </TapGestureHandler>
             </TapGestureHandler>
           </S.Content>
-          <View style={{ height: LargeNavBarInteractiveDistance }} />
-        </Animated.ScrollView>
-      </ScrollHandler>
+        </Screen.ScrollView>
+      </Screen>
     </S.Wrap>
   );
 };

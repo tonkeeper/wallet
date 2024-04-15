@@ -632,9 +632,7 @@ export class TonWallet {
         ? AddressFormatter.isBounceable(address)
         : false,
     });
-
     const [feeNano, isBattery] = await this.calcFee(boc);
-
     return [Ton.fromNano(feeNano.toString()), isBattery];
   }
 

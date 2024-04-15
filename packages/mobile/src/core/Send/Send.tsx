@@ -260,18 +260,20 @@ export const Send: FC<SendProps> = ({ route }) => {
       setPreparing(false);
     }
   }, [
-    amount,
-    comment,
-    currency,
-    decimals,
+    recipient,
     dispatch,
-    isCommentEncrypted,
+    currencyAdditionalParams,
+    currency,
+    parsedAmount,
+    amount.all,
+    amount.value,
     tokenType,
     jettonWalletAddress,
-    parsedAmount,
-    recipient,
-    trcPayload,
+    decimals,
+    comment,
+    isCommentEncrypted,
     trcToken,
+    trcPayload,
   ]);
 
   const unlock = useUnlockVault();

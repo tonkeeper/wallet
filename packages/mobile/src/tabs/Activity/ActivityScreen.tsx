@@ -111,33 +111,37 @@ export const ActivityScreen = memo(() => {
   const renderNotificationsHeader = notifications.length ? (
     <View>
       <Spacer y={12} />
-      {notifications.slice(0, Math.min(newNotificationsCount, 2)).map((notification) => (
-        <Notification
-          onRemove={onRemoveNotification}
-          notification={notification}
-          key={notification.received_at}
-        />
-      ))}
-      <List style={styles.listStyle.static}>
-        <List.Item
-          leftContent={
-            <View style={styles.iconContainer}>
-              <Icon name={'ic-bell-28'} color={'iconSecondary'} />
-            </View>
-          }
-          rightContent={
-            newNotificationsCount - 2 > 0 ? (
-              <View style={styles.notificationsCount}>
-                <Text type="label2">{newNotificationsCount - 2}</Text>
+      <View style={styles.gap8}>
+        {notifications
+          .slice(0, Math.min(newNotificationsCount, 2))
+          .map((notification) => (
+            <Notification
+              onRemove={onRemoveNotification}
+              notification={notification}
+              key={notification.received_at}
+            />
+          ))}
+        <List style={styles.listStyle.static}>
+          <List.Item
+            leftContent={
+              <View style={styles.iconContainer}>
+                <Icon name={'ic-bell-28'} color={'iconSecondary'} />
               </View>
-            ) : null
-          }
-          onPress={handleOpenNotificationsScreen}
-          title={t('notifications.notifications')}
-          subtitle={t('notifications.from_connected')}
-          chevron
-        />
-      </List>
+            }
+            rightContent={
+              newNotificationsCount - 2 > 0 ? (
+                <View style={styles.notificationsCount}>
+                  <Text type="label2">{newNotificationsCount - 2}</Text>
+                </View>
+              ) : null
+            }
+            onPress={handleOpenNotificationsScreen}
+            title={t('notifications.notifications')}
+            subtitle={t('notifications.from_connected')}
+            chevron
+          />
+        </List>
+      </View>
     </View>
   ) : undefined;
 
@@ -195,5 +199,8 @@ const styles = Steezy.create(({ colors }) => ({
   },
   listStyle: {
     marginBottom: 8,
+  },
+  gap8: {
+    gap: 8,
   },
 }));
