@@ -99,7 +99,7 @@ export const WalletScreen = memo(({ navigation }) => {
             {wallet && isConnected !== false ? (
               <TouchableOpacity
                 hitSlop={{ top: 8, bottom: 8, left: 18, right: 18 }}
-                style={{ zIndex: 3, marginBottom: 8, marginTop: 4 }}
+                style={{ zIndex: 3 }}
                 onPress={copyText(wallet.address.ton.friendly)}
                 activeOpacity={0.6}
               >
@@ -119,7 +119,6 @@ export const WalletScreen = memo(({ navigation }) => {
                 </Text>
               </View>
             ) : null}
-
             {wallet && wallet.isTestnet ? (
               <>
                 <Tag type="warning">Testnet</Tag>
@@ -222,6 +221,8 @@ const styles = Steezy.create(({ isTablet }) => ({
     alignItems: 'center',
   },
   addressContainer: {
+    marginBottom: 8,
+    marginTop: 4,
     flexDirection: 'row',
     alignItems: 'center',
   },

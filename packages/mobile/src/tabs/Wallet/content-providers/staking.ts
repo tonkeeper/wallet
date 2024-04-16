@@ -55,18 +55,14 @@ export class StakingContentProvider extends ContentProviderPrototype<{
     }
 
     if (fiatRate && info.pending_deposit) {
-      fiatRate.total.raw = new BigNumber(
-        this.deps.tonPrice.getRawTotal(formatter.fromNano(info.pending_deposit)),
-      )
-        .plus(fiatRate.total.raw)
+      fiatRate.total.raw = new BigNumber(fiatRate.total.raw)
+        .plus(this.deps.tonPrice.getRawTotal(formatter.fromNano(info.pending_deposit)))
         .toString();
     }
 
     if (fiatRate && info.ready_withdraw) {
-      fiatRate.total.raw = new BigNumber(
-        this.deps.tonPrice.getRawTotal(formatter.fromNano(info.ready_withdraw)),
-      )
-        .plus(fiatRate.total.raw)
+      fiatRate.total.raw = new BigNumber(fiatRate.total.raw)
+        .plus(this.deps.tonPrice.getRawTotal(formatter.fromNano(info.ready_withdraw)))
         .toString();
     }
 
@@ -79,10 +75,8 @@ export class StakingContentProvider extends ContentProviderPrototype<{
       pool.implementation === PoolImplementationType.LiquidTF &&
       info.pending_withdraw
     ) {
-      fiatRate.total.raw = new BigNumber(
-        this.deps.tonPrice.getRawTotal(formatter.fromNano(info.pending_withdraw)),
-      )
-        .plus(fiatRate.total.raw)
+      fiatRate.total.raw = new BigNumber(fiatRate.total.raw)
+        .plus(this.deps.tonPrice.getRawTotal(formatter.fromNano(info.pending_withdraw)))
         .toString();
     }
 
