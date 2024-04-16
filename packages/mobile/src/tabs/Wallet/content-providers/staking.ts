@@ -62,6 +62,14 @@ export class StakingContentProvider extends ContentProviderPrototype<{
         .toString();
     }
 
+    if (fiatRate && info.ready_withdraw) {
+      fiatRate.total.raw = new BigNumber(
+        this.deps.tonPrice.getRawTotal(formatter.fromNano(info.ready_withdraw)),
+      )
+        .plus(fiatRate.total.raw)
+        .toString();
+    }
+
     /**
      * We should count pending withdraw balance for liquid staking.
      * But in other cases withdraw is counted in the total balance ¯\_(ツ)_/¯
