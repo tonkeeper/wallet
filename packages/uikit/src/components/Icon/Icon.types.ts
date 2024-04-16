@@ -61,6 +61,7 @@ export type IconNames =
   | 'ic-appearance-28'
   | 'ic-arrow-down-28'
   | 'ic-arrow-down-outline-28'
+  | 'ic-arrow-right-outline-28'
   | 'ic-arrow-up-28'
   | 'ic-arrow-up-outline-28'
   | 'ic-battery-28'
@@ -248,6 +249,7 @@ export const AllIcons = [
   'ic-appearance-28',
   'ic-arrow-down-28',
   'ic-arrow-down-outline-28',
+  'ic-arrow-right-outline-28',
   'ic-arrow-up-28',
   'ic-arrow-up-outline-28',
   'ic-battery-28',
@@ -436,6 +438,7 @@ export const IconSizes = {
   'ic-appearance-28': 28,
   'ic-arrow-down-28': 28,
   'ic-arrow-down-outline-28': 28,
+  'ic-arrow-right-outline-28': 28,
   'ic-arrow-up-28': 28,
   'ic-arrow-up-outline-28': 28,
   'ic-battery-28': 28,

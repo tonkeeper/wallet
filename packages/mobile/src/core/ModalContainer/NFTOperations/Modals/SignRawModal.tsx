@@ -15,6 +15,7 @@ import {
   View,
   WalletIcon,
   isAndroid,
+  SlideButton,
 } from '@tonkeeper/uikit';
 import { push } from '$navigation/imperative';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
@@ -216,6 +217,8 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
 
     return undefined;
   };
+
+  console.log(consequences?.risk);
 
   return (
     <Modal>

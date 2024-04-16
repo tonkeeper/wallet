@@ -2534,9 +2534,9 @@
     tslib "^2.5.0"
     webcrypto-core "^1.7.7"
 
-"@rainbow-me/animated-charts@https://github.com/tonkeeper/react-native-animated-charts#65f723604f3abc8a05ecfa2918fe9b0b42fd8363":
+"@rainbow-me/animated-charts@https://github.com/tonkeeper/react-native-animated-charts#737b1633c41e13da437c8e111c4aedd15bd10558":
   version "1.0.0-alpha.6"
-  resolved "https://github.com/tonkeeper/react-native-animated-charts#65f723604f3abc8a05ecfa2918fe9b0b42fd8363"
+  resolved "https://github.com/tonkeeper/react-native-animated-charts#737b1633c41e13da437c8e111c4aedd15bd10558"
 
 "@react-dnd/asap@^4.0.0":
   version "4.0.1"

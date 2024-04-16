@@ -61,6 +61,7 @@ export const IconList = {
   'ic-appearance-28': require('../../../assets/icons/png/ic-appearance-28.png'),
   'ic-arrow-down-28': require('../../../assets/icons/png/ic-arrow-down-28.png'),
   'ic-arrow-down-outline-28': require('../../../assets/icons/png/ic-arrow-down-outline-28.png'),
+  'ic-arrow-right-outline-28': require('../../../assets/icons/png/ic-arrow-right-outline-28.png'),
   'ic-arrow-up-28': require('../../../assets/icons/png/ic-arrow-up-28.png'),
   'ic-arrow-up-outline-28': require('../../../assets/icons/png/ic-arrow-up-outline-28.png'),
   'ic-battery-28': require('../../../assets/icons/png/ic-battery-28.png'),
