@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useMemo } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
-import { Screen, Text, View, Spacer, copyText, Haptics, Icon } from '@tonkeeper/uikit';
+import { Screen, Text, View, copyText, Haptics, Icon } from '@tonkeeper/uikit';
 import { InternalNotification, Tag } from '$uikit';
 import { useNavigation } from '@tonkeeper/router';
 import { useDispatch } from 'react-redux';
@@ -75,11 +75,6 @@ export const WalletScreen = memo(({ navigation }) => {
 
   const isWatchOnly = wallet && wallet.isWatchOnly;
 
-  const ListFooter = useMemo(
-    () => (isWatchOnly ? null : <FinishSetupList />),
-    [isWatchOnly],
-  );
-
   const ListHeader = useMemo(
     () => (
       <View style={styles.mainSection}>
@@ -141,6 +136,7 @@ export const WalletScreen = memo(({ navigation }) => {
         {wallet && !wallet.isWatchOnly && (
           <>
             <ExpiringDomainCell />
+            <FinishSetupList />
           </>
         )}
       </View>
@@ -179,7 +175,6 @@ export const WalletScreen = memo(({ navigation }) => {
       <WalletContentList
         walletContent={preparedContent}
         ListHeaderComponent={ListHeader}
-        ListFooterComponent={ListFooter}
         handleRefresh={handleRefresh}
         isRefreshing={isRefreshing}
         isFocused={isFocused}

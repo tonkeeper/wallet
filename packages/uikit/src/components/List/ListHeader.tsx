@@ -44,13 +44,13 @@ export const ListHeader = (props: ListHeaderProps) => {
         <Text type={titleTextType}>{title}</Text>
         {rightContent}
       </View>
+      <Spacer y={12} />
     </>
   );
 };
 
 const styles = Steezy.create({
   container: {
-    height: 48,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
