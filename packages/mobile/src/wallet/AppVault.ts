@@ -57,7 +57,7 @@ export class AppVault implements Vault {
 
   public async import(identifier: string, mnemonic: string, passcode: string) {
     try {
-      if (!this.decryptedVaultState) {
+      if (Object.keys(this.decryptedVaultState).length === 0) {
         this.decryptedVaultState = await this.getDecryptedVaultState(passcode);
       }
     } catch {}
