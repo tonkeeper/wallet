@@ -181,7 +181,7 @@ export const FinishSetupList = memo(() => {
           />
         ))}
       </List>
-      <Spacer y={16} />
+      <Spacer y={8} />
     </>
   );
 });

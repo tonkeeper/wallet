@@ -34,7 +34,7 @@ function renderSection({ section }: { section: SectionListData<any, DefaultSecti
   return (
     <List.Header
       title={formatTransactionsGroupDate(section.timestamp)}
-      spacerY={isFirstItem ? 20 : 12}
+      spacerY={isFirstItem ? 8 : 0}
       style={styles.date}
     />
   );
