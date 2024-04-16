@@ -219,7 +219,7 @@ export const Settings: FC = () => {
   const accountNfts = useNftsState((s) => s.accountNfts);
 
   const hasDiamods = useMemo(() => {
-    if (!wallet || wallet.isWatchOnly) {
+    if (!wallet || wallet?.isWatchOnly) {
       return false;
     }
 
@@ -290,7 +290,7 @@ export const Settings: FC = () => {
                 onPress={handleManageTokens}
               />
             )}
-            {!wallet.isWatchOnly && hasSubscriptions && (
+            {!!wallet && !wallet.isWatchOnly && hasSubscriptions && (
               <List.Item
                 value={
                   <Icon
