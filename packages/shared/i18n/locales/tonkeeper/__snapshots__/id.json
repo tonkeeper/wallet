@@ -272,7 +272,7 @@
   "confirmSendModal": {
     "wallet": "Wallet:",
     "refund": "Refund",
-    "network_fee": "Network fee",
+    "network_fee": "Fee",
     "will_be_paid_with_battery": "Will be paid with Battery",
     "title": "Confirm action",
     "to_your_address": "To your address",

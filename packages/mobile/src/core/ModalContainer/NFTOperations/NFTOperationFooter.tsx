@@ -204,7 +204,7 @@ export const ActionFooter = React.forwardRef<ActionFooterRef, ActionFooterProps>
             <SlideButton
               disabled={props.disabled}
               onSuccessSlide={() => props.onPressConfirm()}
-              text={'Slide to Confirm'}
+              text={t('nft_operation_slide_to_confirm')}
             />
           </View>
         </TransitionOpacity>

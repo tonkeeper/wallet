@@ -6,10 +6,12 @@ import { Text } from '../Text';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, {
   clamp,
+  ReduceMotion,
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withDelay,
+  withSpring,
   withTiming,
 } from 'react-native-reanimated';
 import {
@@ -24,6 +26,14 @@ export interface SlideButtonProps {
 }
 
 const BUTTON_WIDTH = 76;
+
+const SPRING_CONFIG = {
+  mass: 1.5,
+  damping: 90,
+  stiffness: 300,
+  overshootClamping: false,
+  reduceMotion: ReduceMotion.Never,
+};
 
 export const SlideButton = memo<SlideButtonProps>((props) => {
   const buttonStyle = Steezy.useStyle(styles.button);
@@ -40,14 +50,11 @@ export const SlideButton = memo<SlideButtonProps>((props) => {
     .onEnd((e) => {
       if (e.translationX > maxOffset.value - BUTTON_WIDTH) {
         runOnJS(triggerNotificationSuccess)();
-        leftOffset.value = withDelay(
-          300,
-          withTiming(0, { duration: e.translationX / 0.4 }),
-        );
+        leftOffset.value = withDelay(500, withSpring(0, SPRING_CONFIG));
         return runOnJS(props.onSuccessSlide)();
       }
       runOnJS(triggerImpactLight)();
-      leftOffset.value = withTiming(0, { duration: e.translationX / 0.4 });
+      leftOffset.value = withSpring(0, SPRING_CONFIG);
     });
 
   const animatedButtonOffset = useAnimatedStyle(() => {
