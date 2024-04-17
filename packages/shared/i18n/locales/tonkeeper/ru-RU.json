@@ -1042,7 +1042,7 @@
     "send_btn" : "Отправить",
     "swap_btn" : "Обменять",
     "scan_btn": "Сканировать",
-    "stake_btn": "Стейкать",
+    "stake_btn": "Застейкать",
     "tonkens_tab_lable" : "Токены",
     "inscriptions_tab_label": "Инскрипции",
     "updated_at" : "Обновлён %{value}"
