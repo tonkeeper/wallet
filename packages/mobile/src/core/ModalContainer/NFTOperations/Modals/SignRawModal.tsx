@@ -336,7 +336,10 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
                   )
                 }
               >
-                <Icon color="iconTertiary" name={'ic-information-circle-16'} />
+                <Icon
+                  color={totalRiskedAmount.isDangerous ? 'accentOrange' : 'iconTertiary'}
+                  name={'ic-information-circle-16'}
+                />
               </TouchableOpacity>
             </View>
             <Spacer y={16} />
