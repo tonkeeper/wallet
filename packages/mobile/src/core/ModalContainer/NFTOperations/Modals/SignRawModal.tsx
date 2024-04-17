@@ -41,7 +41,7 @@ import { formatValue, getActionTitle } from '@tonkeeper/shared/utils/signRaw';
 import { Buffer } from 'buffer';
 import { trackEvent } from '$utils/stats';
 import { Events, SendAnalyticsFrom } from '$store/models';
-import { getWalletSeqno } from '@tonkeeper/shared/utils/wallet';
+import { getWalletSeqno, setBalanceForEmulation } from '@tonkeeper/shared/utils/wallet';
 import { useWalletCurrency } from '@tonkeeper/shared/hooks';
 import {
   ActionAmountType,
@@ -56,6 +56,8 @@ import { ModalStackRouteNames } from '$navigation';
 import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
 import { emulateBoc, sendBoc } from '@tonkeeper/shared/utils/blockchain';
 import { openAboutRiskAmountModal } from '@tonkeeper/shared/modals/AboutRiskAmountModal';
+import { toNano } from '@ton/core';
+import BigNumber from 'bignumber.js';
 
 interface SignRawModalProps {
   consequences?: MessageConsequences;
@@ -387,16 +389,20 @@ export const openSignRawModal = async (
         secretKey: Buffer.alloc(64),
       });
 
+      const totalAmount = calculateMessageTransferAmount(params.messages);
       const { emulateResult, battery } = await emulateBoc(
         boc,
-        undefined,
+        [
+          setBalanceForEmulation(
+            new BigNumber(totalAmount).plus(toNano('2').toString()).toString(),
+          ),
+        ], // Emulate with higher balance to calculate fair amount to send
         options.experimentalWithBattery,
       );
       consequences = emulateResult;
       isBattery = battery;
 
       if (!isBattery) {
-        const totalAmount = calculateMessageTransferAmount(params.messages);
         const checkResult = await checkIsInsufficient(totalAmount, wallet);
         if (checkResult.insufficient) {
           Toast.hide();
