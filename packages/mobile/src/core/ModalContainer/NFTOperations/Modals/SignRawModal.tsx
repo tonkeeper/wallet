@@ -17,6 +17,7 @@ import {
   isAndroid,
   Icon,
   ListItemContent,
+  TouchableOpacity,
 } from '@tonkeeper/uikit';
 import { push } from '$navigation/imperative';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
@@ -54,6 +55,7 @@ import { TokenDetailsParams } from '../../../../components/TokenDetails/TokenDet
 import { ModalStackRouteNames } from '$navigation';
 import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
 import { emulateBoc, sendBoc } from '@tonkeeper/shared/utils/blockchain';
+import { openAboutRiskAmountModal } from '@tonkeeper/shared/modals/AboutRiskAmountModal';
 
 interface SignRawModalProps {
   consequences?: MessageConsequences;
@@ -224,6 +226,21 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
     }
   }, [consequences, wallet]);
 
+  const totalAmountTitle = useMemo(() => {
+    if (totalRiskedAmount) {
+      return (
+        t('confirmSendModal.total_risk', {
+          totalAmount: formatter.format(totalRiskedAmount.totalFiat, {
+            currency: fiatCurrency,
+          }),
+        }) +
+        (consequences?.risk.nfts.length > 0
+          ? ` + ${consequences?.risk.nfts.length} NFT`
+          : '')
+      );
+    }
+  }, [consequences?.risk.nfts.length, fiatCurrency, totalRiskedAmount]);
+
   return (
     <Modal>
       <Modal.Header
@@ -300,19 +317,29 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
           ref={footerRef}
         />
         {totalRiskedAmount ? (
-          <Text
-            color={totalRiskedAmount.isDangerous ? 'accentOrange' : 'textSecondary'}
-            type="body2"
-            textAlign="center"
-          >
-            {t('confirmSendModal.total_risk', {
-              totalAmount: formatter.format(totalRiskedAmount.totalFiat, {
-                currency: fiatCurrency,
-              }),
-            })}
-            {consequences?.risk.nfts.length > 0 &&
-              ` + ${consequences?.risk.nfts.length} NFT`}
-          </Text>
+          <>
+            <View style={styles.totalAmountContainer}>
+              <Text
+                color={totalRiskedAmount.isDangerous ? 'accentOrange' : 'textSecondary'}
+                type="body2"
+                textAlign="center"
+              >
+                {totalAmountTitle}
+              </Text>
+              <TouchableOpacity
+                hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}
+                onPress={() =>
+                  openAboutRiskAmountModal(
+                    totalAmountTitle!,
+                    consequences?.risk.nfts.length > 0,
+                  )
+                }
+              >
+                <Icon color="iconTertiary" name={'ic-information-circle-16'} />
+              </TouchableOpacity>
+            </View>
+            <Spacer y={16} />
+          </>
         ) : null}
       </Modal.Footer>
     </Modal>
@@ -443,5 +470,11 @@ const styles = Steezy.create(({ colors }) => ({
   emoji: {
     fontSize: isAndroid ? 17 : 20,
     marginTop: isAndroid ? -1 : 1,
+  },
+  totalAmountContainer: {
+    gap: 4,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 }));

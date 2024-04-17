@@ -1215,5 +1215,10 @@
     "backup_button": "Back up",
     "logout_button": "Sign Out",
     "delete_button": "Delete Wallet Data"
+  },
+  "about_risk_modal": {
+    "description": "The total value of tokens that will be sent from your wallet. Refunds are not included in the total value.",
+    "description_with_nft": "The total value of tokens, excluding the cost of NFTs, that will be sent from your wallet. Refunds are not included in the total value.",
+    "ok_button": "OK"
   }
 }
