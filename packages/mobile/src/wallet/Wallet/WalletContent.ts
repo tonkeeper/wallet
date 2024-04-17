@@ -25,6 +25,7 @@ import { NotificationsManager } from '../managers/NotificationsManager';
 import { TonProofManager } from '../managers/TonProofManager';
 import { JettonVerification } from '../models/JettonBalanceModel';
 import { CardsManager } from '$wallet/managers/CardsManager';
+import { JettonQuantity } from '@tonkeeper/core/src/TonAPI';
 
 export interface WalletStatusState {
   isReloading: boolean;
@@ -205,6 +206,7 @@ export class WalletContent extends WalletBase {
       }
       const rate =
         this.jettons.state.data.jettonRates[Address.parse(jetton.jettonAddress).toRaw()];
+
       return rate
         ? total.plus(new BigNumber(jetton.balance).multipliedBy(rate.fiat))
         : total;
@@ -213,5 +215,30 @@ export class WalletContent extends WalletBase {
       this.tonPrice.state.data.ton.fiat,
     );
     return ton.plus(jettons).plus(staking).toString();
+  }
+
+  public compareWithTotal(tonBalance: number, jettonBalances: JettonQuantity[]) {
+    const ton = new BigNumber(tonBalance)
+      .shiftedBy(-9)
+      .multipliedBy(this.tonPrice.state.data.ton.fiat);
+    const jettons = jettonBalances.reduce((total, jetton) => {
+      const rate =
+        this.jettons.state.data.jettonRates[Address.parse(jetton.jetton.address).toRaw()];
+
+      const decimalQuantity = new BigNumber(jetton.quantity).shiftedBy(
+        -(jetton.jetton.decimals ?? 9),
+      );
+      return rate
+        ? total.plus(new BigNumber(decimalQuantity).multipliedBy(rate.fiat))
+        : total;
+    }, new BigNumber(0));
+
+    const total = ton.plus(jettons);
+
+    const diff = total.div(this.totalFiat);
+    return {
+      totalFiat: total.toString(),
+      isDangerous: diff.isGreaterThanOrEqualTo('0.2'),
+    };
   }
 }

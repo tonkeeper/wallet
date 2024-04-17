@@ -299,6 +299,7 @@
   "confirm_sending_submit": "Confirm and Send",
   "confirm_sending_title": "Confirm sending",
   "confirmSendModal": {
+    "total_risk": "Total: %{totalAmount}",
     "wallet": "Wallet:",
     "refund": "Refund",
     "network_fee": "Network fee",
@@ -455,6 +456,7 @@
   "nft_open_in_marketplace": "View on NFT Market",
   "nft_operations_expired": "Request timed out, please try again",
   "nft_operation_success": "Done",
+  "nft_operation_slide_to_confirm": "Slide to Confirm",
   "nft_owner_address": "Owner",
   "nft_price": "Price",
   "nft_proceeds": "Your proceeds",

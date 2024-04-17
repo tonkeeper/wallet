@@ -15,6 +15,8 @@ import {
   View,
   WalletIcon,
   isAndroid,
+  Icon,
+  ListItemContent,
 } from '@tonkeeper/uikit';
 import { push } from '$navigation/imperative';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
@@ -173,8 +175,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
       return {
         isNegative: formatter.isNegative(extra),
         value: formatter.format(extra, {
-          ignoreZeroTruncate: true,
-          withoutTruncate: true,
+          decimals: 4,
           postfix: 'TON',
           absolute: true,
         }),
@@ -216,6 +217,12 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
 
     return undefined;
   };
+
+  const totalRiskedAmount = useMemo(() => {
+    if (consequences?.risk) {
+      return wallet.compareWithTotal(consequences.risk.ton, consequences.risk.jettons);
+    }
+  }, [consequences, wallet]);
 
   return (
     <Modal>
@@ -268,24 +275,22 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
               />
             </View>
           ))}
+          <List.Item
+            leftContent={
+              <ListItemContent style={styles.icon.static}>
+                <Icon name={'ic-ton-28'} color="iconSecondary" />
+              </ListItemContent>
+            }
+            subvalue={extra.fiat}
+            subtitle={isBattery && t('confirmSendModal.will_be_paid_with_battery')}
+            title={
+              extra.isNegative
+                ? t('confirmSendModal.network_fee')
+                : t('confirmSendModal.refund')
+            }
+            value={`≈ ${extra.value}`}
+          />
         </List>
-        <View style={styles.feeContainer}>
-          <Text type="body2" color="textSecondary">
-            {extra.isNegative
-              ? t('confirmSendModal.network_fee')
-              : t('confirmSendModal.refund')}
-          </Text>
-          <Text type="body2" color="textSecondary">
-            ≈ {extra.value} · {extra.fiat}
-          </Text>
-        </View>
-        {isBattery && (
-          <View style={styles.withBatteryContainer}>
-            <Text type="body2" color="textSecondary">
-              {t('confirmSendModal.will_be_paid_with_battery')}
-            </Text>
-          </View>
-        )}
         <Spacer y={16} />
       </Modal.ScrollView>
       <Modal.Footer>
@@ -294,6 +299,21 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
           redirectToActivity={redirectToActivity}
           ref={footerRef}
         />
+        {totalRiskedAmount ? (
+          <Text
+            color={totalRiskedAmount.isDangerous ? 'accentOrange' : 'textSecondary'}
+            type="body2"
+            textAlign="center"
+          >
+            {t('confirmSendModal.total_risk', {
+              totalAmount: formatter.format(totalRiskedAmount.totalFiat, {
+                currency: fiatCurrency,
+              }),
+            })}
+            {consequences?.risk.nfts.length > 0 &&
+              ` + ${consequences?.risk.nfts.length} NFT`}
+          </Text>
+        ) : null}
       </Modal.Footer>
     </Modal>
   );
@@ -394,7 +414,15 @@ export const openSignRawModal = async (
   }
 };
 
-const styles = Steezy.create({
+const styles = Steezy.create(({ colors }) => ({
+  icon: {
+    width: 44,
+    height: 44,
+    borderRadius: 44 / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.backgroundContentTint,
+  },
   feeContainer: {
     paddingHorizontal: 32,
     paddingTop: 12,
@@ -416,4 +444,4 @@ const styles = Steezy.create({
     fontSize: isAndroid ? 17 : 20,
     marginTop: isAndroid ? -1 : 1,
   },
-});
+}));
