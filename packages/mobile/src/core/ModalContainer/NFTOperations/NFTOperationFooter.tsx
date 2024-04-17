@@ -142,6 +142,7 @@ interface ActionFooterProps {
   onCloseModal?: () => void;
   disabled?: boolean;
   redirectToActivity?: boolean;
+  withSlider?: boolean;
 }
 
 export const ActionFooter = React.forwardRef<ActionFooterRef, ActionFooterProps>(
@@ -200,13 +201,33 @@ export const ActionFooter = React.forwardRef<ActionFooterRef, ActionFooterProps>
           isVisible={state === States.INITIAL}
           entranceAnimation={false}
         >
-          <View style={styles.slideContainer.static}>
-            <SlideButton
-              disabled={props.disabled}
-              onSuccessSlide={() => props.onPressConfirm()}
-              text={t('nft_operation_slide_to_confirm')}
-            />
-          </View>
+          {props.withSlider ? (
+            <View style={styles.slideContainer.static}>
+              <SlideButton
+                disabled={props.disabled}
+                onSuccessSlide={() => props.onPressConfirm()}
+                text={t('nft_operation_slide_to_confirm')}
+              />
+            </View>
+          ) : (
+            <View style={S.styles.footerButtons}>
+              {withCloseButton ? (
+                <>
+                  <S.ActionButton mode="secondary" onPress={() => closeModal(false)}>
+                    {t('cancel')}
+                  </S.ActionButton>
+                  <Spacer x={16} />
+                </>
+              ) : null}
+              <S.ActionButton
+                disabled={props.disabled}
+                onPress={() => props.onPressConfirm()}
+                mode={props.secondary ? 'secondary' : 'primary'}
+              >
+                {props.confirmTitle ?? t('nft_confirm_operation')}
+              </S.ActionButton>
+            </View>
+          )}
         </TransitionOpacity>
         <TransitionOpacity
           style={S.styles.transitionContainer}

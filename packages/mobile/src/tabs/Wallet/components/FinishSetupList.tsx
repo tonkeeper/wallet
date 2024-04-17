@@ -150,7 +150,7 @@ export const FinishSetupList = memo(() => {
       <List.Header
         title={t('finish_setup.header_title')}
         titleTextType="label1"
-        indent={true}
+        indent={false}
         indentTop={false}
         rightContent={headerRightContent}
       />

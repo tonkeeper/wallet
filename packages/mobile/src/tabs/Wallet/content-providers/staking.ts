@@ -54,6 +54,10 @@ export class StakingContentProvider extends ContentProviderPrototype<{
       );
     }
 
+    if (!info) {
+      return fiatRate;
+    }
+
     if (fiatRate && info.pending_deposit) {
       fiatRate.total.raw = new BigNumber(fiatRate.total.raw)
         .plus(this.deps.tonPrice.getRawTotal(formatter.fromNano(info.pending_deposit)))
