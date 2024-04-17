@@ -312,6 +312,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
       </Modal.ScrollView>
       <Modal.Footer>
         <NFTOperationFooter
+          withSlider
           onPressConfirm={handleConfirm}
           redirectToActivity={redirectToActivity}
           ref={footerRef}
