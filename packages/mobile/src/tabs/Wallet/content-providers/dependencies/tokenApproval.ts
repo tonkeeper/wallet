@@ -10,6 +10,7 @@ import {
   JettonBalanceModel,
   JettonVerification,
 } from '$wallet/models/JettonBalanceModel';
+import { InscriptionBalance } from '@tonkeeper/core/src/TonAPI';
 
 export class TokenApprovalDependency extends DependencyPrototype<
   TokenApprovalState,
@@ -22,6 +23,15 @@ export class TokenApprovalDependency extends DependencyPrototype<
   setWallet(wallet) {
     this.dataProvider = wallet.tokenApproval.state;
     super.setWallet(wallet);
+  }
+
+  get filterInscriptionsFn(): (balance: InscriptionBalance) => boolean {
+    return (balance: InscriptionBalance) => {
+      const key = balance.ticker + '_' + balance.type;
+      const approvalStatus = this.state.tokens[key];
+
+      return !approvalStatus || approvalStatus.current !== TokenApprovalStatus.Declined;
+    };
   }
 
   get filterTokensBalancesFn(): (balance: JettonBalanceModel) => boolean {

@@ -53,7 +53,7 @@ export class WalletContentReceiver {
       this.jettonBalances,
     ),
     new StakingContentProvider(this.tonPrice, this.jettonBalances, this.staking),
-    new InscriptionsContentProvider(this.tonPrice, this.inscriptions),
+    new InscriptionsContentProvider(this.tonPrice, this.inscriptions, this.tokenApproval),
   ];
 
   constructor() {
