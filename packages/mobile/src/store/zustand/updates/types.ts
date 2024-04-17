@@ -18,7 +18,7 @@ export interface IUpdatesStore {
     progress: number;
   };
   actions: {
-    fetchMeta: () => Promise<void>;
+    fetchMeta: (shouldUnlinkApk: boolean) => Promise<void>;
     declineUpdate: () => void;
     startUpdate: () => Promise<void>;
   };

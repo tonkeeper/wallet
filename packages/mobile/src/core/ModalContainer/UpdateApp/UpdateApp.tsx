@@ -7,8 +7,14 @@ import { Button, Icon, Spacer, Text, View } from '$uikit';
 import { bytesToMegabytes, delay } from '$utils';
 import { Steezy } from '$styles';
 import { useUpdatesStore } from '$store/zustand/updates/useUpdatesStore';
+import { Linking, Platform } from 'react-native';
+import { APPLE_STORE_URL, GOOGLE_PLAY_URL } from '$shared/constants';
 
-export const UpdateAppModal = memo(() => {
+export interface UpdateAppModalProps {
+  isApkInstall: boolean;
+}
+
+export const UpdateAppModal = memo<UpdateAppModalProps>((props) => {
   const nav = useNavigation();
   const meta = useUpdatesStore((state) => state.meta);
   const { declineUpdate, startUpdate } = useUpdatesStore((state) => state.actions);
@@ -22,8 +28,18 @@ export const UpdateAppModal = memo(() => {
   const handleUpdate = useCallback(async () => {
     nav.goBack();
     await delay(400);
+    if (!props.isApkInstall) {
+      return Linking.openURL(
+        Platform.select({
+          ios: APPLE_STORE_URL,
+          android: GOOGLE_PLAY_URL,
+          default: '',
+        }),
+      );
+    }
+
     startUpdate();
-  }, [nav, startUpdate]);
+  }, [nav, props.isApkInstall, startUpdate]);
 
   return (
     <Modal>
@@ -37,8 +53,12 @@ export const UpdateAppModal = memo(() => {
           <Spacer y={4} />
           <Text variant="body1" color="textSecondary" textAlign="center">
             {t('update.version', { version: meta?.version })}
-            <Text color="textTertiary"> · </Text>
-            {t('update.mb', { size: bytesToMegabytes(meta?.size || 0) })}
+            {props.isApkInstall && (
+              <>
+                <Text color="textTertiary"> · </Text>
+                {t('update.mb', { size: bytesToMegabytes(meta?.size || 0) })}
+              </>
+            )}
           </Text>
           <Spacer y={4} />
           <Text variant="body1" color="textSecondary" textAlign="center">
@@ -53,7 +73,7 @@ export const UpdateAppModal = memo(() => {
           </Button>
           <Spacer y={16} />
           <Button mode="secondary" onPress={handleRemindLater}>
-            {t('update.remindLater')}
+            {props.isApkInstall ? t('update.remindLater') : t('update.later')}
           </Button>
         </View>
         <Spacer y={16} />
@@ -74,10 +94,11 @@ const styles = Steezy.create({
   },
 });
 
-export const openUpdateAppModal = async () => {
+export const openUpdateAppModal = async (isApkInstall: boolean) => {
   push('SheetsProvider', {
     $$action: SheetActions.ADD,
     component: UpdateAppModal,
+    params: { isApkInstall },
     path: 'UpdateApp',
   });
 

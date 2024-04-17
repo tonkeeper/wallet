@@ -1023,6 +1023,7 @@
     "downloading": "Downloading… {{progress}}%",
     "mb": "{{size}} MB",
     "remindLater": "Remind me later",
+    "later": "Later",
     "retry": "Download error. Tap to retry.",
     "tap": "Tap to update",
     "title": "Update Tonkeeper",
