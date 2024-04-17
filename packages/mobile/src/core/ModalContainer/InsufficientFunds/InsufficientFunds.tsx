@@ -14,6 +14,7 @@ import { useBatteryBalance } from '@tonkeeper/shared/query/hooks/useBatteryBalan
 import { config } from '$config';
 import { Wallet } from '$wallet/Wallet';
 import { AmountFormatter } from '@tonkeeper/core';
+import { tk } from '$wallet';
 
 export interface InsufficientFundsParams {
   /**

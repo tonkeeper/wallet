@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useMemo } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
-import { Screen, Text, View, Spacer, copyText, Haptics, Icon } from '@tonkeeper/uikit';
+import { Screen, Text, View, copyText, Haptics, Icon } from '@tonkeeper/uikit';
 import { InternalNotification, Tag } from '$uikit';
 import { useNavigation } from '@tonkeeper/router';
 import { useDispatch } from 'react-redux';
@@ -75,11 +75,6 @@ export const WalletScreen = memo(({ navigation }) => {
 
   const isWatchOnly = wallet && wallet.isWatchOnly;
 
-  const ListFooter = useMemo(
-    () => (isWatchOnly ? null : <FinishSetupList />),
-    [isWatchOnly],
-  );
-
   const ListHeader = useMemo(
     () => (
       <View style={styles.mainSection}>
@@ -104,7 +99,7 @@ export const WalletScreen = memo(({ navigation }) => {
             {wallet && isConnected !== false ? (
               <TouchableOpacity
                 hitSlop={{ top: 8, bottom: 8, left: 18, right: 18 }}
-                style={{ zIndex: 3, marginBottom: 8, marginTop: 4 }}
+                style={{ zIndex: 3 }}
                 onPress={copyText(wallet.address.ton.friendly)}
                 activeOpacity={0.6}
               >
@@ -124,7 +119,6 @@ export const WalletScreen = memo(({ navigation }) => {
                 </Text>
               </View>
             ) : null}
-
             {wallet && wallet.isTestnet ? (
               <>
                 <Tag type="warning">Testnet</Tag>
@@ -141,6 +135,7 @@ export const WalletScreen = memo(({ navigation }) => {
         {wallet && !wallet.isWatchOnly && (
           <>
             <ExpiringDomainCell />
+            <FinishSetupList />
           </>
         )}
       </View>
@@ -179,7 +174,6 @@ export const WalletScreen = memo(({ navigation }) => {
       <WalletContentList
         walletContent={preparedContent}
         ListHeaderComponent={ListHeader}
-        ListFooterComponent={ListFooter}
         handleRefresh={handleRefresh}
         isRefreshing={isRefreshing}
         isFocused={isFocused}
@@ -227,6 +221,8 @@ const styles = Steezy.create(({ isTablet }) => ({
     alignItems: 'center',
   },
   addressContainer: {
+    marginBottom: 8,
+    marginTop: 4,
     flexDirection: 'row',
     alignItems: 'center',
   },

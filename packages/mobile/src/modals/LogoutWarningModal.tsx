@@ -46,7 +46,9 @@ export const LogoutWarningModal: FC<Props> = memo((props) => {
         openDeleteAccountDone();
       });
     } else {
-      dispatch(walletActions.cleanWallet());
+      InteractionManager.runAfterInteractions(() => {
+        dispatch(walletActions.cleanWallet());
+      });
     }
   }, [dispatch, isDelete, nav]);
 
