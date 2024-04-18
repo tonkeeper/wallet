@@ -329,7 +329,7 @@ export class TonWallet {
   private async calcFee(
     boc: string,
     params?,
-    withRelayer = true,
+    withRelayer = false,
     forceRelayer = false,
   ): Promise<[BigNumber, boolean]> {
     const { emulateResult, battery } = await emulateBoc(
@@ -641,7 +641,7 @@ export class TonWallet {
         ? AddressFormatter.isBounceable(address)
         : false,
     });
-    const [feeNano, isBattery] = await this.calcFee(boc, undefined, true);
+    const [feeNano, isBattery] = await this.calcFee(boc);
     return [Ton.fromNano(feeNano.toString()), isBattery];
   }
 

@@ -98,7 +98,7 @@ export class BatteryManager {
           'X-TonConnect-Auth': this.tonProof.tonProofToken,
         },
       });
-      console.log(data);
+
       return this.state.set({
         excessesAccount: data.excess_account,
         fundReceiver: data.fund_receiver,
