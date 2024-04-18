@@ -112,9 +112,13 @@ export const RefillBatteryIAP = memo(() => {
         Toast.success(t('battery.refilled'));
         setPurchaseInProgress(false);
       } catch (e) {
-        console.log(e);
         setPurchaseInProgress(false);
-        Toast.fail(e.message);
+
+        // SKErrorDomain, code=2 - user cancelled. Ignore this error
+        const regEx = /SKErrorDomain,.*2/;
+        if (!regEx.test(e.message)) {
+          Toast.fail(e.message);
+        }
       }
     },
     [],
