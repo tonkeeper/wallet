@@ -22,12 +22,7 @@ export async function sendBoc(boc, attemptWithRelayer = true) {
     ) {
       throw new Error('Battery disabled');
     }
-    if (
-      !tk.wallet.battery?.state?.data?.balance ||
-      tk.wallet.battery.state.data.balance === '0'
-    ) {
-      throw new Error('Zero balance');
-    }
+
     return await tk.wallet.battery.sendMessage(boc);
   } catch (err) {
     return await tk.wallet.tonapi.blockchain.sendBlockchainMessage(
@@ -39,7 +34,12 @@ export async function sendBoc(boc, attemptWithRelayer = true) {
   }
 }
 
-export async function emulateBoc(boc, params?, attemptWithRelayer = false) {
+export async function emulateBoc(
+  boc,
+  params?,
+  attemptWithRelayer = false,
+  forceRelayer = false,
+) {
   try {
     if (
       !attemptWithRelayer ||
@@ -48,14 +48,16 @@ export async function emulateBoc(boc, params?, attemptWithRelayer = false) {
     ) {
       throw new Error('Battery disabled');
     }
+
     if (
-      !tk.wallet.battery?.state?.data?.balance ||
-      tk.wallet.battery.state.data.balance === '0'
+      !forceRelayer &&
+      (!tk.wallet.battery?.state?.data?.balance ||
+        tk.wallet.battery.state.data.balance === '0')
     ) {
       throw new Error('Zero balance');
     }
-    const emulateResult = await tk.wallet.battery.emulate(boc);
-    return { emulateResult, battery: true };
+    const { consequences, withBattery } = await tk.wallet.battery.emulate(boc);
+    return { emulateResult: consequences, battery: withBattery };
   } catch (err) {
     const emulateResult = await tk.wallet.tonapi.wallet.emulateMessageToWallet({
       boc,

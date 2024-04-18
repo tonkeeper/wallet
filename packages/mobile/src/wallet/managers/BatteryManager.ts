@@ -4,6 +4,7 @@ import { Storage } from '@tonkeeper/core/src/declarations/Storage';
 import { State } from '@tonkeeper/core/src/utils/State';
 import { TonProofManager } from '$wallet/managers/TonProofManager';
 import { logger, NamespacedLogger } from '$logger';
+import { config } from '$config';
 
 export enum BatterySupportedTransaction {
   Swap = 'swap',
@@ -15,6 +16,8 @@ export interface BatteryState {
   isLoading: boolean;
   balance?: string;
   reservedBalance?: string;
+  excessesAccount?: string;
+  fundReceiver?: string;
   supportedTransactions: Record<BatterySupportedTransaction, boolean>;
 }
 
@@ -37,6 +40,7 @@ export class BatteryManager {
     private tonProof: TonProofManager,
     private batteryapi: BatteryAPI,
     private storage: Storage,
+    private isTestnet: boolean,
   ) {
     this.state.persist({
       partialize: ({ balance, reservedBalance, supportedTransactions }) => ({
@@ -48,6 +52,14 @@ export class BatteryManager {
       key: `${this.persistPath}/battery`,
     });
     this.logger = logger.extend('BatteryManager');
+  }
+
+  get excessesAccount() {
+    return this.state.data.excessesAccount;
+  }
+
+  get fundReceiver() {
+    return this.state.data.fundReceiver;
   }
 
   public async fetchBalance() {
@@ -68,8 +80,7 @@ export class BatteryManager {
       this.state.set({
         isLoading: false,
         balance: data.balance,
-        // @ts-expect-error reservedAmount will be implemented in API later. Remove then
-        reservedBalance: data.reservedBalance ?? '0',
+        reservedBalance: data.reserved ?? '0',
       });
     } catch (err) {
       this.state.set({ isLoading: false });
@@ -77,21 +88,23 @@ export class BatteryManager {
     }
   }
 
-  public async getExcessesAccount() {
+  public async loadBatteryConfig() {
     try {
       if (!this.tonProof.tonProofToken) {
         throw new Error('No proof token');
       }
-
       const data = await this.batteryapi.getConfig({
         headers: {
           'X-TonConnect-Auth': this.tonProof.tonProofToken,
         },
       });
-
-      return data.excess_account;
+      console.log(data);
+      return this.state.set({
+        excessesAccount: data.excess_account,
+        fundReceiver: data.fund_receiver,
+      });
     } catch (err) {
-      return null;
+      this.logger.error(err);
     }
   }
 
@@ -220,21 +233,35 @@ export class BatteryManager {
     }
   }
 
-  public async emulate(boc: string): Promise<MessageConsequences> {
+  public async emulate(
+    boc: string,
+  ): Promise<{ consequences: MessageConsequences; withBattery: boolean }> {
     try {
       if (!this.tonProof.tonProofToken) {
         throw new Error('No proof token');
       }
 
-      return await this.batteryapi.emulate.emulateMessageToWallet(
-        { boc },
+      const res = await fetch(
+        `${config.get('batteryHost', this.isTestnet)}/wallet/emulate`,
         {
+          method: 'POST',
+          body: JSON.stringify({ boc }),
           headers: {
+            'Content-Type': 'application/json',
             'X-TonConnect-Auth': this.tonProof.tonProofToken,
           },
         },
       );
+
+      const data: MessageConsequences = await res.json();
+
+      const withBattery =
+        res.headers.get('supported-by-battery') === 'true' &&
+        res.headers.get('allowed-by-battery') === 'true';
+
+      return { consequences: data, withBattery };
     } catch (err) {
+      console.log(err);
       throw new Error(err);
     }
   }

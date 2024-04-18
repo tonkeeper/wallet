@@ -22,6 +22,11 @@ export interface Status {
 
 export interface Config {
   /**
+   * with zero balance it is possible to transfer some jettons (stablecoins, jusdt, etc) to this address to refill the balance. Such transfers would be paid by Battery Service.
+   * @example "0:07331e629e39d006d86a8cc7659c10a97c671f7535dc8b7f251a1a944dda348e"
+   */
+  fund_receiver: string;
+  /**
    * when building a message to transfer an NFT or Jetton, use this address to send excess funds back to Battery Service.
    * @example "0:da6b1b6663a0e4d18cc8574ccd9db5296e367dd9324706f3bbd9eb1cd2caf0bf"
    */
@@ -31,6 +36,11 @@ export interface Config {
 export interface Balance {
   /** @example "10.250" */
   balance: string;
+  /**
+   * reserved amount in units (TON/USD)
+   * @example "0.3"
+   */
+  reserved: string;
   /** @example "usd" */
   units: BalanceUnitsEnum;
 }

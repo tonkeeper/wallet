@@ -471,7 +471,7 @@ export function useDeeplinkingResolvers() {
       const excessesAccount =
         !config.get('disable_battery_send') &&
         tk.wallet.battery.state.data.balance !== '0'
-          ? await tk.wallet.battery.getExcessesAccount()
+          ? tk.wallet.battery.excessesAccount
           : null;
 
       await openSignRawModal(

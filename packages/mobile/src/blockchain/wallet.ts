@@ -38,6 +38,7 @@ import { createTonApiInstance } from '$wallet/utils';
 import { config } from '$config';
 import { toNano } from '$utils';
 import { BatterySupportedTransaction } from '$wallet/managers/BatteryManager';
+import { compareAddresses } from '$utils/address';
 
 const TonWeb = require('tonweb');
 
@@ -329,8 +330,14 @@ export class TonWallet {
     boc: string,
     params?,
     withRelayer = true,
+    forceRelayer = false,
   ): Promise<[BigNumber, boolean]> {
-    const { emulateResult, battery } = await emulateBoc(boc, params, withRelayer);
+    const { emulateResult, battery } = await emulateBoc(
+      boc,
+      params,
+      withRelayer,
+      forceRelayer,
+    );
     return [new BigNumber(emulateResult.event.extra).multipliedBy(-1), battery];
   }
 
@@ -427,6 +434,7 @@ export class TonWallet {
       tk.wallet.battery.state.data.supportedTransactions[
         BatterySupportedTransaction.Jetton
       ],
+      compareAddresses(address, tk.wallet.battery.fundReceiver),
     );
 
     return [Ton.fromNano(feeNano.toString()), isBattery];
@@ -473,7 +481,7 @@ export class TonWallet {
     }
 
     const excessesAccount = sendWithBattery
-      ? await tk.wallet.battery.getExcessesAccount()
+      ? tk.wallet.battery.excessesAccount
       : tk.wallet.address.ton.raw;
 
     const boc = this.createJettonTransfer({
@@ -497,6 +505,7 @@ export class TonWallet {
         tk.wallet.battery.state.data.supportedTransactions[
           BatterySupportedTransaction.Jetton
         ],
+        compareAddresses(address, tk.wallet.battery.fundReceiver),
       );
       feeNano = fee;
       isBattery = battery;
@@ -632,7 +641,7 @@ export class TonWallet {
         ? AddressFormatter.isBounceable(address)
         : false,
     });
-    const [feeNano, isBattery] = await this.calcFee(boc);
+    const [feeNano, isBattery] = await this.calcFee(boc, undefined, true);
     return [Ton.fromNano(feeNano.toString()), isBattery];
   }
 
