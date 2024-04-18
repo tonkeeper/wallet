@@ -118,7 +118,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
     const boc = TransactionService.createTransfer(contract, {
       messages: TransactionService.parseSignRawMessages(
         params.messages,
-        isBattery ? await tk.wallet.battery.getExcessesAccount() : undefined,
+        isBattery ? tk.wallet.battery.excessesAccount : undefined,
       ),
       seqno: await getWalletSeqno(wallet),
       sendMode: 3,
