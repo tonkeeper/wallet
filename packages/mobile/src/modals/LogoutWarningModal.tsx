@@ -61,18 +61,15 @@ export const LogoutWarningModal: FC<Props> = memo((props) => {
       <Modal.Header />
       <Modal.Content safeArea>
         <View style={styles.container}>
-          <Text type="h2" textAlign="center">
-            {isDelete ? t('logout_modal.delete_title') : t('logout_modal.title')}
-          </Text>
-          <Spacer y={4} />
-          <Text
-            style={styles.desk.static}
-            type="body1"
-            color="textSecondary"
-            textAlign="center"
-          >
-            {isDelete ? t('logout_modal.delete_caption') : t('logout_modal.caption')}
-          </Text>
+          <View style={styles.textsContainer}>
+            <Text type="h2" textAlign="center">
+              {isDelete ? t('logout_modal.delete_title') : t('logout_modal.title')}
+            </Text>
+            <Spacer y={4} />
+            <Text type="body1" color="textSecondary" textAlign="center">
+              {isDelete ? t('logout_modal.delete_caption') : t('logout_modal.caption')}
+            </Text>
+          </View>
           <View style={styles.content}>
             <Checkbox checked={checked} onChange={() => setChecked((s) => !s)} />
             <Spacer x={12} />
@@ -108,6 +105,9 @@ const styles = Steezy.create(({ colors }) => ({
     marginHorizontal: 16,
     marginTop: 48,
   },
+  textsContainer: {
+    marginHorizontal: 16,
+  },
   content: {
     marginTop: 32,
     marginVertical: 32,
@@ -120,9 +120,6 @@ const styles = Steezy.create(({ colors }) => ({
   agreementContainer: {
     flex: 1,
     alignItems: 'flex-start',
-  },
-  desk: {
-    paddingHorizontal: 16,
   },
   dot: {
     backgroundColor: colors.textPrimary,
