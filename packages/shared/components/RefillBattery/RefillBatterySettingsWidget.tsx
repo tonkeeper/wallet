@@ -28,9 +28,13 @@ export const RefillBatterySettingsWidget = memo<RefillBatterySettingsWidgetProps
           onPress={props.onPress}
           chevron
           title={t('battery.transactions.settings')}
-          subtitle={t('battery.transactions.will_be_paid', {
-            enabledTransactions: enabledTransactionsNames,
-          })}
+          subtitle={
+            enabledTransactionsNames
+              ? t('battery.transactions.will_be_paid', {
+                  enabledTransactions: enabledTransactionsNames,
+                })
+              : null
+          }
           subtitleNumberOfLines={2}
         />
       </List>
