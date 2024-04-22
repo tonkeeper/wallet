@@ -17,6 +17,7 @@ export const InputNumber = styled.TextInput.attrs({
 })`
   font-family: ${({ theme }) => theme.font.regular};
   font-size: ${ns(16)}px;
+  line-height: ${ns(24)}px;
   color: ${({ theme }) => theme.colors.foregroundSecondary};
   margin: 0;
   text-align: right;
@@ -26,8 +27,8 @@ export const InputNumber = styled.TextInput.attrs({
   top: 0;
   padding-left: 0;
   padding-right: 0;
-  padding-top: ${ns(isAndroid ? 17 : 18.5)}px;
-  padding-bottom: ${ns(isAndroid ? 15.5 : 17.5)}px;
+  padding-top: ${ns(isAndroid ? 16.5 : 18.5)}px;
+  padding-bottom: ${ns(isAndroid ? 16 : 17.5)}px;
   ${isAndroid ? 'text-align-vertical: top;' : ''}
   z-index: 3;
   position: absolute;
