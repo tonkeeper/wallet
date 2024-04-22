@@ -1,6 +1,5 @@
 import React from 'react';
-import { Text } from '$uikit/Text/Text';
-import { TextProps } from '$uikit/Text/Text';
+import { Text, TextProps } from '@tonkeeper/uikit';
 import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
 
 export enum AnimationDirection {

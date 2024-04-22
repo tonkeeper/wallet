@@ -6,10 +6,11 @@ import { CryptoCurrencies } from '$shared/constants';
 import { Providers } from './providers';
 import { TonPriceDependency } from './dependencies/tonPrice';
 import {
+  TonBalance,
   TonBalancesDependency,
   TonBalanceType,
-  TonBalance,
 } from './dependencies/tonBalances';
+import { TonIcon } from '@tonkeeper/uikit';
 
 export const mappedTonBalanceTitle = {
   [TonBalanceType.Liquid]: 'Toncoin',
@@ -33,12 +34,13 @@ export class TONContentProvider extends ContentProviderPrototype<{
   }
 
   makeCellItemFromData(data: TonBalance): CellItemToRender {
+    const isLocked = data.type !== TonBalanceType.Liquid;
     return {
       key: data.type,
       renderPriority: this.renderPriority,
-      tonIcon: true,
       fiatRate: this.deps.tonPrice.getFiatRate(data.balance),
       onPress: () => openWallet(CryptoCurrencies.Ton),
+      renderIcon: () => <TonIcon locked={isLocked} showDiamond={!isLocked} />,
       title: mappedTonBalanceTitle[data.type],
       value: formatter.format(data.balance),
     };

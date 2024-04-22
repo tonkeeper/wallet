@@ -117,7 +117,7 @@ function DraggableFlashListInner<T>(props: DraggableFlashListProps<T>) {
         setLayoutAnimationDisabled(false);
       }, 100);
     }
-  }, [activeKey]);
+  }, [activeKey, propsRef]);
 
   useLayoutEffect(() => {
     props.data.forEach((d, i) => {
@@ -183,7 +183,7 @@ function DraggableFlashListInner<T>(props: DraggableFlashListProps<T>) {
         />
       );
     },
-    [props.renderItem, props.extraData, drag, keyExtractor],
+    [keyExtractor, keyToIndexRef, props.renderItem, props.extraData, drag],
   );
 
   const onRelease = useStableCallback((index: number) => {
@@ -356,6 +356,7 @@ function DraggableFlashListInner<T>(props: DraggableFlashListProps<T>) {
             keyExtractor={keyExtractor}
             onScroll={scrollHandler}
             scrollEventThrottle={16}
+            showsVerticalScrollIndicator={false}
             simultaneousHandlers={props.simultaneousHandlers}
             removeClippedSubviews={false}
           />

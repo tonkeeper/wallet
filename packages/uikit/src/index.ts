@@ -32,6 +32,7 @@ export * from './components/ActionButton';
 export * from './components/AnimatedBatteryIcon';
 export { WalletIcon } from './components/WalletIcon';
 export * from './components/SlideButton';
+export { AssetCell } from './components/AssetCell';
 
 // Containers
 export { HeaderButtonHitSlop } from './containers/Screen/utils/constants';

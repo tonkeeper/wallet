@@ -49,7 +49,7 @@ export const SwitchWalletModal: FC<Props> = memo((props) => {
                 wallet={wallet}
                 onPress={handlePress(wallet.identifier)}
                 subtitle={
-                  <HideableAmount variant="body2" color="textSecondary">
+                  <HideableAmount type="body2" color="textSecondary">
                     {formatter.format(wallet.totalFiat, { currency })}
                   </HideableAmount>
                 }

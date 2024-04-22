@@ -39,13 +39,13 @@ export const NftItemPayload = memo<NftItemPayloadProps>((props) => {
         />
       )}
       <View style={styles.nftNameContainer}>
-        <HideableAmount stars="* * * *" numberOfLines={1} variant="h2">
+        <HideableAmount stars="* * * *" numberOfLines={1} type="h2">
           {nft.name || t('nft_transaction_head_placeholder')}
         </HideableAmount>
       </View>
       {!!nft.collection?.name && (
         <View style={styles.nftCollectionContainer}>
-          <HideableAmount numberOfLines={1} color="foregroundSecondary" variant="body1">
+          <HideableAmount numberOfLines={1} color="textSecondary" type="body1">
             {nft.collection.name}
           </HideableAmount>
           {nft.approved_by.length > 0 && (

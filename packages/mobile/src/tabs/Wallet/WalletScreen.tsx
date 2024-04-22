@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useMemo } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
-import { Screen, Text, View, copyText, Haptics, Icon } from '@tonkeeper/uikit';
+import { Screen, Text, View, copyText, Haptics, Icon, Button } from '@tonkeeper/uikit';
 import { InternalNotification, Tag } from '$uikit';
 import { useNavigation } from '@tonkeeper/router';
 import { useDispatch } from 'react-redux';
@@ -22,7 +22,7 @@ import { getLocale } from '$utils/date';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useWallet, useWalletStatus } from '@tonkeeper/shared/hooks';
 import { WalletSelector } from './components/WalletSelector';
-import { MainStackRouteNames } from '$navigation';
+import { AppStackRouteNames, MainStackRouteNames } from '$navigation';
 import { WalletActionButtons } from './components/WalletActionButtons/WalletActionButtons';
 import { WalletContentList } from './components/WalletContentList';
 import { usePreparedWalletContent } from './content-providers/utils/usePreparedWalletContent';
@@ -74,6 +74,22 @@ export const WalletScreen = memo(({ navigation }) => {
   }, [nav, navigation]);
 
   const isWatchOnly = wallet && wallet.isWatchOnly;
+
+  const EditTokensButton = useMemo(() => {
+    if (isWatchOnly) {
+      return null;
+    }
+    return (
+      <View style={styles.manageButtonWrap}>
+        <Button
+          color={'secondary'}
+          size={'small'}
+          title={'Manage'}
+          onPress={() => nav.navigate(AppStackRouteNames.ManageHomeScreen)}
+        />
+      </View>
+    );
+  }, [isWatchOnly, nav]);
 
   const ListHeader = useMemo(
     () => (
@@ -172,6 +188,7 @@ export const WalletScreen = memo(({ navigation }) => {
         hideBackButton
       />
       <WalletContentList
+        ListFooterComponent={EditTokensButton}
         walletContent={preparedContent}
         ListHeaderComponent={ListHeader}
         handleRefresh={handleRefresh}
@@ -230,6 +247,10 @@ const styles = Steezy.create(({ isTablet }) => ({
     width: 48,
     height: 48,
     justifyContent: 'center',
+    alignItems: 'center',
+  },
+  manageButtonWrap: {
+    paddingTop: 16,
     alignItems: 'center',
   },
 }));

@@ -41,6 +41,10 @@ export function openSend(params: OpenSendParams = {}) {
   navigate(AppStackRouteNames.Send, params);
 }
 
+export function openStakingPoolDetails(poolAddress: string) {
+  push(MainStackRouteNames.StakingPoolDetails, { poolAddress });
+}
+
 export function openDAppsSearch(
   initialQuery?: string,
   onOpenUrl?: (url: string) => void,

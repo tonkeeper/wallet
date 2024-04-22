@@ -30,6 +30,7 @@ export interface ListItemProps {
   chevronColor?: 'iconTertiary' | 'iconSecondary';
   leftContentStyle?: StyleProp<ViewStyle>;
   leftContent?: React.ReactNode;
+  bottomContent?: React.ReactNode;
   navigate?: string;
   titleNumberOfLines?: number;
   subtitleNumberOfLines?: number;
@@ -60,6 +61,7 @@ export const ListItem = memo<ListItemProps>((props) => {
     leftContentStyle,
     gestureHandler,
     rightContent,
+    bottomContent,
     children,
   } = props;
 
@@ -127,7 +129,6 @@ export const ListItem = memo<ListItemProps>((props) => {
                         ? 'label1'
                         : 'body1'
                     }
-                    color={titleType === 'primary' ? 'textPrimary' : 'textSecondary'}
                     numberOfLines={titleNumberOfLines}
                     ellipsizeMode="tail"
                   >
@@ -181,6 +182,7 @@ export const ListItem = memo<ListItemProps>((props) => {
           {rightContent}
           {props.chevron && <Icon name="ic-chevron-right-16" color={chevronColor} />}
         </View>
+        {bottomContent}
       </ListItemPressedContext.Provider>
     </TouchableComponent>
   );

@@ -94,18 +94,14 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
       <S.HeaderWrap>
         <S.FlexRow>
           <S.JettonAmountWrapper>
-            <HideableAmount variant="h2">
+            <HideableAmount type="h2">
               {formatter.format(jetton.balance, {
                 decimals: jetton.metadata.decimals,
                 currency: jetton.metadata.symbol,
                 currencySeparator: 'wide',
               })}
             </HideableAmount>
-            <HideableAmount
-              style={{ marginTop: 2 }}
-              variant="body2"
-              color="foregroundSecondary"
-            >
+            <HideableAmount style={{ marginTop: 2 }} type="body2" color="textSecondary">
               {jettonPrice.formatted.totalFiat}
             </HideableAmount>
             {jetton.lock ? (

@@ -28,6 +28,7 @@ export enum AppStackRouteNames {
   Swap = 'Swap',
   ReceiveInscription = 'ReceiveInscription',
   CustomizeWallet = 'CustomizeWallet',
+  ManageHomeScreen = 'ManageHomeScreen',
 }
 
 export enum MainStackRouteNames {

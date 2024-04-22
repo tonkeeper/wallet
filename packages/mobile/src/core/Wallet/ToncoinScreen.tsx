@@ -156,18 +156,14 @@ const HeaderList = memo(() => {
       <S.TokenInfoWrap>
         <S.FlexRow>
           <S.AmountWrapper>
-            <HideableAmount variant="h2">
+            <HideableAmount type="h2">
               {formatter.format(amount, {
                 currency: 'TON',
                 currencySeparator: 'wide',
                 decimals: Decimals[CryptoCurrencies.Ton]!,
               })}
             </HideableAmount>
-            <HideableAmount
-              style={{ marginTop: 2 }}
-              variant="body2"
-              color="foregroundSecondary"
-            >
+            <HideableAmount style={{ marginTop: 2 }} type="body2" color="textSecondary">
               {tokenPrice.formatted.totalFiat ?? '-'}
             </HideableAmount>
           </S.AmountWrapper>

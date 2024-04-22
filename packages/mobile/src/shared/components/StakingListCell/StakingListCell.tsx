@@ -114,13 +114,13 @@ const StakingListCellComponent: FC<Props> = (props) => {
             <S.RightContainer>
               {balanceValue ? (
                 <>
-                  <HideableAmount variant="label1" numberOfLines={1} textAlign="right">
+                  <HideableAmount type="label1" numberOfLines={1} textAlign="right">
                     {stakingFormatter.format(balance.totalTon, { decimals: 2 })}{' '}
                     {balance.symbol}
                   </HideableAmount>
                   <HideableAmount
-                    variant="body2"
-                    color={'foregroundSecondary'}
+                    type="body2"
+                    color={'textSecondary'}
                     numberOfLines={1}
                     textAlign="right"
                   >

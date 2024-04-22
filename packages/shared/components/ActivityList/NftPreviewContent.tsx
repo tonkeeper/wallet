@@ -63,7 +63,7 @@ export const NftPreviewContent = memo<NftPreviewContentProps>((props) => {
             <HideableAmount
               animationDirection={AnimationDirection.Left}
               stars="* * * *"
-              variant="body2"
+              type="body2"
               numberOfLines={1}
             >
               {nft.name}
@@ -71,7 +71,7 @@ export const NftPreviewContent = memo<NftPreviewContentProps>((props) => {
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <HideableAmount
                 animationDirection={AnimationDirection.Left}
-                variant="body2"
+                type="body2"
                 color="textSecondary"
                 numberOfLines={1}
               >

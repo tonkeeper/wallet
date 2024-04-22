@@ -33,6 +33,7 @@ import { ReceiveInscriptionModal } from '@tonkeeper/shared/modals/ReceiveInscrip
 import { CustomizeWallet } from '$core/CustomizeWallet/CustomizeWallet';
 import { TokenDetails } from '../components/TokenDetails/TokenDetails';
 import { BackupWarningModal, ExchangeModal, LogoutWarningModal } from '$modals';
+import { ManageHomeScreen } from '$core/ManageHomeScreen/ManageHomeScreen';
 
 const Stack = createModalStackNavigator(ProvidersWithNavigation);
 
@@ -72,6 +73,10 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={NFTSend} path={AppStackRouteNames.NFTSend} />
       <Stack.Modal component={ScanQR} path={AppStackRouteNames.ScanQR} />
       <Stack.Modal component={Swap} path={AppStackRouteNames.Swap} />
+      <Stack.Modal
+        component={ManageHomeScreen}
+        path={AppStackRouteNames.ManageHomeScreen}
+      />
       <Stack.Modal
         component={CustomizeWallet}
         path={AppStackRouteNames.CustomizeWallet}

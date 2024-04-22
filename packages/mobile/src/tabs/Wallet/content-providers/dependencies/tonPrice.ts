@@ -44,6 +44,10 @@ export class TonPriceDependency extends DependencyPrototype<
         rate.ton.diff_24h.startsWith('+') || rate.ton.diff_24h === '0'
           ? 'positive'
           : 'negative',
+      totalTon: {
+        raw: balance,
+        formatted: formatter.format(balance, { currency: 'TON' }),
+      },
       total: {
         formatted: formatter.format(new BigNumber(balance).multipliedBy(rate.ton.fiat), {
           currency: rate.currency,

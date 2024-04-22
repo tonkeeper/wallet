@@ -164,7 +164,7 @@ export const StakingPoolDetails: FC<Props> = (props) => {
               value={
                 <HideableAmount
                   style={styles.valueText.static}
-                  variant="label1"
+                  type="label1"
                   stars=" * * *"
                 >{` ${formatter.format(stakingJettonMetadata.price.amount, {
                   decimals: Number(stakingJettonMetadata.decimals),
@@ -173,7 +173,7 @@ export const StakingPoolDetails: FC<Props> = (props) => {
               subvalue={
                 <HideableAmount
                   style={styles.subvalueText.static}
-                  variant="body2"
+                  type="body2"
                   color="textSecondary"
                 >
                   {formatter.format(stakingJettonMetadata.price.totalFiat, {
@@ -220,14 +220,14 @@ export const StakingPoolDetails: FC<Props> = (props) => {
             <S.HeaderWrap>
               <S.FlexRow>
                 <S.JettonAmountWrapper>
-                  <HideableAmount variant="h2">
+                  <HideableAmount type="h2">
                     {stakingFormatter.format(
                       stakingJetton ? balance.totalTon : balance.amount,
                     )}{' '}
                     TON
                   </HideableAmount>
                   <Spacer y={2} />
-                  <HideableAmount variant="body2" color="foregroundSecondary">
+                  <HideableAmount type="body2" color="textSecondary">
                     {formatter.format(balance.totalFiat, { currency: fiatCurrency })}
                   </HideableAmount>
                 </S.JettonAmountWrapper>
@@ -259,10 +259,10 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                 <S.BalanceContainer>
                   <Text variant="label1">{t('staking.details.pendingDeposit')}</Text>
                   <S.BalanceRight>
-                    <HideableAmount variant="label1">
+                    <HideableAmount type="label1">
                       {stakingFormatter.format(pendingDeposit.amount)} TON
                     </HideableAmount>
-                    <HideableAmount variant="body2" color="foregroundSecondary">
+                    <HideableAmount type="body2" color="textSecondary">
                       {pendingDeposit.formatted.totalFiat}
                     </HideableAmount>
                   </S.BalanceRight>
@@ -280,10 +280,10 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                     </Text>
                   </S.Column>
                   <S.BalanceRight>
-                    <HideableAmount variant="label1">
+                    <HideableAmount type="label1">
                       {stakingFormatter.format(pendingWithdraw.amount)} TON
                     </HideableAmount>
-                    <HideableAmount variant="body2" color="foregroundSecondary">
+                    <HideableAmount type="body2" color="textSecondary">
                       {pendingWithdraw.formatted.totalFiat}
                     </HideableAmount>
                   </S.BalanceRight>
@@ -306,10 +306,10 @@ export const StakingPoolDetails: FC<Props> = (props) => {
                         </Text>
                       </S.Flex>
                       <S.BalanceRight>
-                        <HideableAmount variant="label1">
+                        <HideableAmount type="label1">
                           {stakingFormatter.format(readyWithdraw.amount)} TON
                         </HideableAmount>
-                        <HideableAmount variant="body2" color="foregroundSecondary">
+                        <HideableAmount type="body2" color="textSecondary">
                           {readyWithdraw.formatted.totalFiat}
                         </HideableAmount>
                       </S.BalanceRight>

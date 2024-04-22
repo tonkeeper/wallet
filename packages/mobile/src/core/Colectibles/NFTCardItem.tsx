@@ -74,14 +74,14 @@ export const NFTCardItem = memo<NFTCardItemProps>((props) => {
         <HideableAmount
           animationDirection={AnimationDirection.Left}
           stars="* * * *"
-          variant="label2"
+          type="label2"
           numberOfLines={1}
         >
           {title}
         </HideableAmount>
         <HideableAmount
           animationDirection={AnimationDirection.Left}
-          variant="body3"
+          type="body3"
           color="textSecondary"
           numberOfLines={1}
         >

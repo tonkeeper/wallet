@@ -1,29 +1,31 @@
 import { usePoolInfo } from '$hooks/usePoolInfo';
 import { useStakingCycle } from '$hooks/useStakingCycle';
-import { StakingListCell } from '$shared/components';
-import React, { FC, memo, useCallback, useMemo } from 'react';
-import { useNavigation } from '@tonkeeper/router';
-import { MainStackRouteNames } from '$navigation';
+import React, { FC, memo, useContext, useMemo } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
-import { StakedTonIcon, Text } from '$uikit';
+import { Text, View } from '$uikit';
 import { stakingFormatter } from '@tonkeeper/shared/formatter';
 import {
   AccountStakingInfo,
   PoolImplementationType,
   PoolInfo,
 } from '@tonkeeper/core/src/TonAPI';
+import Animated, { interpolateColor, useAnimatedStyle } from 'react-native-reanimated';
+import { TouchableHighlight } from 'react-native';
+import { Steezy } from '$styles';
+import { useTheme } from '@tonkeeper/uikit';
+import { ListItemPressedContext } from '@tonkeeper/uikit/src/components/List/ListItemPressedContext';
 
 interface Props {
   pool: PoolInfo;
   poolStakingInfo: AccountStakingInfo;
 }
 
-const StakingWidgetStatusComponent: FC<Props> = (props) => {
+const StakingMessageComponent: FC<Props> = (props) => {
   const { pool, poolStakingInfo } = props;
+  const theme = useTheme();
+  const isPressed = useContext(ListItemPressedContext);
 
   const {
-    stakingJetton,
-    balance,
     pendingDeposit,
     pendingWithdraw,
     readyWithdraw,
@@ -39,11 +41,15 @@ const StakingWidgetStatusComponent: FC<Props> = (props) => {
     hasPendingWithdraw || hasPendingDeposit,
   );
 
-  const nav = useNavigation();
+  const backgroundStyle = useAnimatedStyle(() => ({
+    backgroundColor: interpolateColor(
+      isPressed?.value || 0,
+      [0, 1],
+      [theme.backgroundContentTint, theme.backgroundHighlighted],
+    ),
+  }));
 
-  const handlePoolPress = useCallback(() => {
-    nav.push(MainStackRouteNames.StakingPoolDetails, { poolAddress: pool.address });
-  }, [nav, pool.address]);
+  const onMessagePress = hasReadyWithdraw ? handleConfirmWithdrawalPress : undefined;
 
   const message = useMemo(() => {
     if (hasReadyWithdraw) {
@@ -103,26 +109,55 @@ const StakingWidgetStatusComponent: FC<Props> = (props) => {
     hasPendingWithdraw,
     hasReadyWithdraw,
     isCooldown,
-    pendingDeposit,
-    pendingWithdraw,
-    readyWithdraw,
+    pendingDeposit.amount,
+    pendingDeposit.totalTon,
+    pendingWithdraw.amount,
+    pendingWithdraw.totalTon,
+    pool.implementation,
+    readyWithdraw.amount,
+    readyWithdraw.totalTon,
   ]);
 
+  if (!message) {
+    return null;
+  }
+
   return (
-    <StakingListCell
-      id={`amount_${pool.address}`}
-      name={t('staking.staked')}
-      description={pool.name}
-      balance={balance.amount}
-      stakingJetton={stakingJetton}
-      icon={<StakedTonIcon pool={pool} size="small" />}
-      numberOfLines={1}
-      separator={true}
-      message={message}
-      onMessagePress={hasReadyWithdraw ? handleConfirmWithdrawalPress : undefined}
-      onPress={handlePoolPress}
-    />
+    <View style={{ flex: 1 }}>
+      <View style={styles.messageContainer}>
+        <Animated.View style={[styles.message.static, backgroundStyle]}>
+          <TouchableHighlight
+            underlayColor={theme.backgroundHighlighted}
+            onPress={onMessagePress}
+            disabled={!onMessagePress}
+          >
+            <View style={styles.messageInner}>
+              <Text variant="body2">{message}</Text>
+            </View>
+          </TouchableHighlight>
+        </Animated.View>
+      </View>
+    </View>
   );
 };
 
-export const StakingWidgetStatus = memo(StakingWidgetStatusComponent);
+export const StakingMessage = memo(StakingMessageComponent);
+
+const styles = Steezy.create(({ colors }) => ({
+  messageContainer: {
+    alignItems: 'flex-start',
+    paddingHorizontal: 16,
+  },
+  message: {
+    borderRadius: 12,
+    backgroundColor: colors.backgroundContentTint,
+    marginLeft: 60,
+    marginTop: -8,
+    marginBottom: 16,
+    overflow: 'hidden',
+  },
+  messageInner: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+}));

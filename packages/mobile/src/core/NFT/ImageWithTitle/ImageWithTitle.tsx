@@ -93,7 +93,7 @@ export const ImageWithTitle: React.FC<ImageWithTitleProps> = ({
             <HideableAmount
               stars="* * * *"
               style={{ alignItems: 'center', marginRight: ns(8) }}
-              variant="h2"
+              type="h2"
             >
               {title}
             </HideableAmount>
@@ -102,7 +102,7 @@ export const ImageWithTitle: React.FC<ImageWithTitleProps> = ({
         ) : null}
         <S.Row>
           <S.CollectionWrapper>
-            <HideableAmount color="foregroundSecondary" variant="body2">
+            <HideableAmount color="textSecondary" type="body2">
               {collection == null
                 ? t('nft_single_nft')
                 : collection || t('nft_unnamed_collection')}

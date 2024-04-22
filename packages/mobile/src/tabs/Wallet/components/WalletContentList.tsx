@@ -1,96 +1,9 @@
 import React, { memo } from 'react';
-import { Screen, View, List, ListSeparator } from '@tonkeeper/uikit';
+import { Screen, View, ListSeparator, AssetCell } from '@tonkeeper/uikit';
 import { Steezy } from '$styles';
 import { RefreshControl } from 'react-native';
-import { ListItemRate } from './ListItemRate';
-import { TonIcon } from '@tonkeeper/uikit';
 import { useTheme } from '$hooks/useTheme';
-import { HideableAmount } from '$core/HideableAmount/HideableAmount';
-import { Text } from '@tonkeeper/uikit';
 import { CellItemToRender } from '../content-providers/utils/types';
-
-const RenderItem = ({ item }: { item: CellItemToRender }) => {
-  const renderLeftContent = () => {
-    if (typeof item.tonIcon === 'object') {
-      return <TonIcon {...item.tonIcon} />;
-    } else if (typeof item.tonIcon === 'boolean') {
-      return <TonIcon showDiamond />;
-    }
-  };
-
-  const containerStyle = [
-    item.isFirst && styles.firstListItem,
-    item.isLast && styles.lastListItem,
-    styles.containerListItem,
-  ];
-
-  const RenderComponent = item.RenderComponent;
-
-  if (RenderComponent) {
-    return (
-      <View style={containerStyle}>
-        <RenderComponent {...item.passProps} />
-      </View>
-    );
-  }
-
-  return (
-    <View style={containerStyle}>
-      <List.Item
-        leftContent={renderLeftContent()}
-        onPress={item.onPress}
-        title={
-          <View style={styles.tokenTitle}>
-            <Text style={styles.valueText.static} type="label1">
-              {item.title}
-            </Text>
-            {!!item.tag && (
-              <View style={styles.tag}>
-                <Text type="body4" color="textSecondary">
-                  {item.tag.toUpperCase()}
-                </Text>
-              </View>
-            )}
-          </View>
-        }
-        picture={item.picture}
-        value={
-          typeof item.value === 'string' ? (
-            <HideableAmount
-              style={styles.valueText.static}
-              variant="label1"
-              stars=" * * *"
-            >{` ${item.value}`}</HideableAmount>
-          ) : (
-            item.value
-          )
-        }
-        subvalue={
-          item.fiatRate && (
-            <HideableAmount
-              style={styles.subvalueText.static}
-              variant="body2"
-              color="textSecondary"
-            >
-              {item.fiatRate.total.formatted}
-            </HideableAmount>
-          )
-        }
-        subtitle={
-          item.subtitle ||
-          (item.fiatRate && (
-            <ListItemRate
-              percent={item.fiatRate.percent}
-              price={item.fiatRate.price.formatted}
-              trend={item.fiatRate.trend}
-            />
-          ))
-        }
-        subtitleStyle={item.subtitleStyle}
-      />
-    </View>
-  );
-};
 
 interface WalletContentListProps {
   walletContent: CellItemToRender[];
@@ -117,7 +30,7 @@ export const WalletContentList = memo<WalletContentListProps>((props) => {
       ItemSeparatorComponent={ItemSeparatorComponent}
       ListHeaderComponent={props.ListHeaderComponent}
       ListFooterComponent={props.ListFooterComponent}
-      renderItem={RenderItem}
+      renderItem={AssetCell}
       data={props.walletContent}
       refreshControl={
         <RefreshControl

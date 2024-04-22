@@ -18,6 +18,7 @@ export type TextColors =
   | 'textPrimaryAlternate'
   | 'accentOrange'
   | 'accentGreen'
+  | 'accentRed'
   | 'accentBlue'
   | 'constantWhite'
   | 'constantBlack';

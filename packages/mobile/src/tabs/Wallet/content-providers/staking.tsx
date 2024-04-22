@@ -2,7 +2,6 @@ import { ContentProviderPrototype } from './utils/prototype';
 import { CellItemToRender, FiatRate } from './utils/types';
 import { formatter } from '@tonkeeper/shared/formatter';
 import { Providers } from './providers';
-import { StakingWidgetStatus } from '../components/StakingWidgetStatus';
 import {
   AccountStakingInfo,
   PoolImplementationType,
@@ -13,6 +12,9 @@ import { JettonBalancesDependency } from './dependencies/jettons';
 import { Address } from '@tonkeeper/shared/Address';
 import { StakingDependency } from './dependencies/staking';
 import BigNumber from 'bignumber.js';
+import { StakedTonIcon } from '$uikit/StakedTonIcon';
+import { StakingMessage } from '../components/StakingMessage';
+import { openStakingPoolDetails } from '$navigation';
 
 export class StakingContentProvider extends ContentProviderPrototype<{
   tonPrice: TonPriceDependency;
@@ -82,6 +84,9 @@ export class StakingContentProvider extends ContentProviderPrototype<{
       fiatRate.total.raw = new BigNumber(fiatRate.total.raw)
         .plus(this.deps.tonPrice.getRawTotal(formatter.fromNano(info.pending_withdraw)))
         .toString();
+      fiatRate.totalTon.raw = new BigNumber(fiatRate.totalTon.raw)
+        .plus(formatter.fromNano(info.pending_withdraw))
+        .toString();
     }
 
     return fiatRate;
@@ -109,18 +114,20 @@ export class StakingContentProvider extends ContentProviderPrototype<{
     info: AccountStakingInfo;
     pool: PoolInfo;
   }): CellItemToRender {
+    const fiatRate = this.getRate(data.pool, data.info);
+
     return {
+      onPress: () => openStakingPoolDetails(data.pool.address),
       renderPriority: this.renderPriority,
-      RenderComponent: StakingWidgetStatus,
-      passProps: {
-        poolStakingInfo: data.info,
-        pool: data.pool,
-      },
       fiatRate: this.getRate(data.pool, data.info),
       key: data.pool.address,
-      title: 'string',
-      subtitle: 'subtitle',
-      value: data.info && formatter.formatNano(data.info.amount),
+      title: 'Staking',
+      renderIcon: () => <StakedTonIcon size={'small'} pool={data.pool} />,
+      renderBottomContent: () => (
+        <StakingMessage pool={data.pool} poolStakingInfo={data.info} />
+      ),
+      subtitle: data.pool.name,
+      value: formatter.format(fiatRate?.totalTon.raw),
     };
   }
 }

@@ -7,6 +7,10 @@ export type FiatRate = {
     formatted: string;
     raw: string;
   };
+  totalTon: {
+    formatted: string;
+    raw: string;
+  };
   percent?: string;
   trend: string;
   price: {
@@ -17,8 +21,6 @@ export type FiatRate = {
 
 export type CellItemToRender = {
   isFirst?: boolean;
-  RenderComponent?: React.JSXElementConstructor<any>;
-  passProps?: Record<string, any>;
   isLast?: boolean;
   key: string;
   renderPriority: number;
@@ -30,6 +32,7 @@ export type CellItemToRender = {
   subvalue?: string;
   fiatRate?: FiatRate;
   picture?: string;
-  tonIcon?: boolean | TonIconProps;
+  renderIcon?: () => JSX.Element;
+  renderBottomContent?: () => JSX.Element;
   tag?: string;
 };
