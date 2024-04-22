@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { MainStackParamList } from './MainStack.interface';
@@ -61,12 +61,11 @@ export const MainStack: FC = () => {
 
   const hasWallet = !!wallet;
 
-  const showLockScreen =
-    tk.lockEnabled && !isUnlocked && hasWallet && !attachedScreen.pathname;
+  const showLockScreen = !isUnlocked && hasWallet && !attachedScreen.pathname;
 
   const isMigrated = useExternalState(tk.migrationStore, (state) => state.isMigrated);
 
-  const root = useMemo(() => {
+  const renderRoot = () => {
     if (hasWallet) {
       if (showLockScreen) {
         return (
@@ -90,7 +89,7 @@ export const MainStack: FC = () => {
     }
 
     return <Stack.Screen name={MainStackRouteNames.Start} component={StartScreen} />;
-  }, [hasWallet, isMigrated, showLockScreen]);
+  };
 
   return (
     <Stack.Navigator
@@ -104,73 +103,80 @@ export const MainStack: FC = () => {
         fullScreenGestureEnabled: true,
       }}
     >
-      {root}
-      <Stack.Screen
-        name={MainStackRouteNames.CreateWalletStack}
-        component={CreateWalletStack}
-      />
-      <Stack.Screen
-        name={MainStackRouteNames.ImportWalletStack}
-        component={ImportWalletStack}
-      />
-      <Stack.Screen
-        name={MainStackRouteNames.AddWatchOnlyStack}
-        component={AddWatchOnlyStack}
-      />
-      <Stack.Screen name={MainStackRouteNames.Settings} component={SettingsStack} />
-      <Stack.Screen name={MainStackRouteNames.Wallet} component={ToncoinScreen} />
-      <Stack.Screen name={MainStackRouteNames.Staking} component={Staking} />
-      <Stack.Screen name={MainStackRouteNames.StakingPools} component={StakingPools} />
-      <Stack.Screen
-        name={MainStackRouteNames.StakingPoolDetails}
-        component={StakingPoolDetails}
-      />
-      <Stack.Screen name={MainStackRouteNames.Subscriptions} component={Subscriptions} />
-      <Stack.Screen
-        name={MainStackRouteNames.DeleteAccountDone}
-        component={DeleteAccountDone}
-        options={{
-          gestureEnabled: false,
-          animation: 'fade',
-        }}
-      />
-      <Stack.Screen name={MainStackRouteNames.DevStack} component={DevStack} />
-      <Stack.Screen name={MainStackRouteNames.Jetton} component={Jetton} />
-      <Stack.Screen
-        name={MainStackRouteNames.Inscription}
-        component={InscriptionScreen}
-      />
-      <Stack.Screen
-        name={MainStackRouteNames.ManageTokens}
-        options={{ gestureEnabled: false }}
-        component={ManageTokens}
-      />
-      <Stack.Screen
-        name={MainStackRouteNames.AddressUpdateInfo}
-        component={AddressUpdateInfo}
-      />
-      <Stack.Screen
-        name={MainStackRouteNames.HoldersWebView}
-        component={HoldersWebView}
-        options={{ gestureEnabled: false }}
-      />
-      <Stack.Screen name={MainStackRouteNames.ChangePin} component={ChangePin} />
-      <Stack.Screen name={MainStackRouteNames.ResetPin} component={ResetPin} />
-      <Stack.Screen
-        name={MainStackRouteNames.ChangePinBiometry}
-        component={ChangePinBiometry}
-        options={{ gestureEnabled: false }}
-      />
-      <Stack.Screen name={MainStackRouteNames.Backup} component={BackupScreen} />
-      <Stack.Screen
-        name={MainStackRouteNames.BackupPhrase}
-        component={BackupPhraseScreen}
-      />
-      <Stack.Screen
-        name={MainStackRouteNames.BackupCheckPhrase}
-        component={BackupCheckPhraseScreen}
-        options={{ gestureEnabled: false }}
-      />
+      <Stack.Group key={hasWallet ? 'tabs' : 'start'}>{renderRoot()}</Stack.Group>
+      <Stack.Group>
+        <Stack.Screen
+          name={MainStackRouteNames.CreateWalletStack}
+          component={CreateWalletStack}
+        />
+        <Stack.Screen
+          name={MainStackRouteNames.ImportWalletStack}
+          component={ImportWalletStack}
+        />
+      </Stack.Group>
+      <Stack.Group>
+        <Stack.Screen
+          name={MainStackRouteNames.AddWatchOnlyStack}
+          component={AddWatchOnlyStack}
+        />
+        <Stack.Screen name={MainStackRouteNames.Settings} component={SettingsStack} />
+        <Stack.Screen name={MainStackRouteNames.Wallet} component={ToncoinScreen} />
+        <Stack.Screen name={MainStackRouteNames.Staking} component={Staking} />
+        <Stack.Screen name={MainStackRouteNames.StakingPools} component={StakingPools} />
+        <Stack.Screen
+          name={MainStackRouteNames.StakingPoolDetails}
+          component={StakingPoolDetails}
+        />
+        <Stack.Screen
+          name={MainStackRouteNames.Subscriptions}
+          component={Subscriptions}
+        />
+        <Stack.Screen
+          name={MainStackRouteNames.DeleteAccountDone}
+          component={DeleteAccountDone}
+          options={{
+            gestureEnabled: false,
+            animation: 'fade',
+          }}
+        />
+        <Stack.Screen name={MainStackRouteNames.DevStack} component={DevStack} />
+        <Stack.Screen name={MainStackRouteNames.Jetton} component={Jetton} />
+        <Stack.Screen
+          name={MainStackRouteNames.Inscription}
+          component={InscriptionScreen}
+        />
+        <Stack.Screen
+          name={MainStackRouteNames.ManageTokens}
+          options={{ gestureEnabled: false }}
+          component={ManageTokens}
+        />
+        <Stack.Screen
+          name={MainStackRouteNames.AddressUpdateInfo}
+          component={AddressUpdateInfo}
+        />
+        <Stack.Screen
+          name={MainStackRouteNames.HoldersWebView}
+          component={HoldersWebView}
+          options={{ gestureEnabled: false }}
+        />
+        <Stack.Screen name={MainStackRouteNames.ChangePin} component={ChangePin} />
+        <Stack.Screen name={MainStackRouteNames.ResetPin} component={ResetPin} />
+        <Stack.Screen
+          name={MainStackRouteNames.ChangePinBiometry}
+          component={ChangePinBiometry}
+          options={{ gestureEnabled: false }}
+        />
+        <Stack.Screen name={MainStackRouteNames.Backup} component={BackupScreen} />
+        <Stack.Screen
+          name={MainStackRouteNames.BackupPhrase}
+          component={BackupPhraseScreen}
+        />
+        <Stack.Screen
+          name={MainStackRouteNames.BackupCheckPhrase}
+          component={BackupCheckPhraseScreen}
+          options={{ gestureEnabled: false }}
+        />
+      </Stack.Group>
     </Stack.Navigator>
   );
 };

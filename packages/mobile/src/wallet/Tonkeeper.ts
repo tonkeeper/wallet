@@ -112,8 +112,14 @@ export class Tonkeeper {
     });
   }
 
-  public get wallet() {
-    return this.wallets.get(this.walletsStore.data.selectedIdentifier)!;
+  public get wallet(): Wallet {
+    const wallet = this.wallets.get(this.walletsStore.data.selectedIdentifier)!;
+
+    if (!wallet && this.walletsStore.data.wallets.length) {
+      return this.wallets.get(this.walletsStore.data.wallets[0].identifier)!;
+    }
+
+    return wallet;
   }
 
   public get walletForUnlock() {
