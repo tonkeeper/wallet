@@ -17,7 +17,6 @@ export const InputNumber = styled.TextInput.attrs({
 })`
   font-family: ${({ theme }) => theme.font.regular};
   font-size: ${ns(16)}px;
-  line-height: ${ns(24)}px;
   color: ${({ theme }) => theme.colors.foregroundSecondary};
   margin: 0;
   text-align: right;
@@ -32,6 +31,13 @@ export const InputNumber = styled.TextInput.attrs({
   ${isAndroid ? 'text-align-vertical: top;' : ''}
   z-index: 3;
   position: absolute;
+  ${() => {
+    if (isAndroid) {
+      return `
+      line-height: ${ns(24)}px;
+      `;
+    }
+  }}
 `;
 
 export const ButtonWrap = styled.View`
