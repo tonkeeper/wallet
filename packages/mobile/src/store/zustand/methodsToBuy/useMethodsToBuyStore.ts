@@ -41,18 +41,15 @@ export const useMethodsToBuyStore = create(
         },
         fetchMethodsToBuy: async () => {
           const currency = tk.tonPrice.state.data.currency;
-          const resp = await axios.get(
-            `${config.get('tonkeeperEndpoint')}/fiat/methods`,
-            {
-              params: {
-                platform: Platform.OS,
-                lang: i18n.locale,
-                build: DeviceInfo.getVersion(),
-                chainName: 'mainnet',
-                currency,
-              },
+          const resp = await axios.get(`http://127.0.0.1:8888/fiat/methods`, {
+            params: {
+              platform: Platform.OS,
+              lang: i18n.locale,
+              build: DeviceInfo.getVersion(),
+              chainName: 'mainnet',
+              currency,
             },
-          );
+          });
 
           const allMethods = uniqBy(
             flatMap(

@@ -6,17 +6,16 @@ import { openJetton } from '$navigation';
 import { Providers } from './providers';
 import { TonPriceDependency } from './dependencies/tonPrice';
 import { StakingJettonsDependency } from './dependencies/stakingJettons';
-import { TokenApprovalDependency } from './dependencies/tokenApproval';
 import { JettonBalancesDependency } from './dependencies/jettons';
 import { config } from '$config';
 import { JettonVerification } from '$store/models';
 import { t } from '@tonkeeper/shared/i18n';
 import { Steezy } from '$styles';
+import { Address } from '@tonkeeper/core';
 
 export class TokensContentProvider extends ContentProviderPrototype<{
   tonPrice: TonPriceDependency;
   stakingJettons: StakingJettonsDependency;
-  tokenApproval: TokenApprovalDependency;
   jettonBalances: JettonBalancesDependency;
 }> {
   name = Providers.Tokens;
@@ -25,12 +24,10 @@ export class TokensContentProvider extends ContentProviderPrototype<{
   constructor(
     tonPrice: TonPriceDependency,
     stakingJettons: StakingJettonsDependency,
-    tokenApproval: TokenApprovalDependency,
     jettonBalances: JettonBalancesDependency,
   ) {
     super({
       tonPrice,
-      tokenApproval,
       stakingJettons,
       jettonBalances,
     });
@@ -38,10 +35,9 @@ export class TokensContentProvider extends ContentProviderPrototype<{
 
   get itemsArray() {
     return this.deps.jettonBalances.state.jettonBalances.filter((jettonBalance) =>
-      [
-        this.deps.stakingJettons.filterTokensBalancesFn,
-        this.deps.tokenApproval.filterTokensBalancesFn,
-      ].every((filterFn) => filterFn(jettonBalance)),
+      [this.deps.stakingJettons.filterTokensBalancesFn].every((filterFn) =>
+        filterFn(jettonBalance),
+      ),
     );
   }
 
@@ -56,7 +52,8 @@ export class TokensContentProvider extends ContentProviderPrototype<{
       data.verification === JettonVerification.NONE;
 
     return {
-      key: data.jettonAddress,
+      key: Address.parse(data.jettonAddress).toRaw(),
+      _isHiddenByDefault: data.verification === JettonVerification.BLACKLIST,
       renderPriority: isUnverifiedToken ? -1 : this.renderPriority,
       title: data.metadata.symbol ?? '',
       onPress: () => openJetton(data.jettonAddress),

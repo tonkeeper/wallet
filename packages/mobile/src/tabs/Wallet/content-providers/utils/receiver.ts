@@ -24,10 +24,11 @@ export class WalletContentReceiver {
 
   private logger: NamespacedLogger;
 
+  private tokenApproval = new TokenApprovalDependency();
+
   private tonPrice = new TonPriceDependency();
   private tonBalances = new TonBalancesDependency();
   private stakingJettons = new StakingJettonsDependency();
-  private tokenApproval = new TokenApprovalDependency();
   private jettonBalances = new JettonBalancesDependency();
   private staking = new StakingDependency();
   private inscriptions = new InscriptionsDependency();
@@ -44,21 +45,23 @@ export class WalletContentReceiver {
     this.inscriptions,
   ];
 
-  private providersList: ContentProviderPrototype<any>[] = [
-    new TONContentProvider(this.tonPrice, this.tonBalances),
-    new TokensContentProvider(
-      this.tonPrice,
-      this.stakingJettons,
-      this.tokenApproval,
-      this.jettonBalances,
-    ),
-    new StakingContentProvider(this.tonPrice, this.jettonBalances, this.staking),
-    new InscriptionsContentProvider(this.tonPrice, this.inscriptions, this.tokenApproval),
-  ];
+  private providersList: ContentProviderPrototype<any>[] = [];
 
-  constructor() {
-    this.subscribeToProvidersChanges(this.providersList);
+  constructor(private isEditableMode = false) {
+    this.tokenApproval.subscribe(() => this.emit());
     this.logger = logger.extend('WalletListContent');
+    this.providersList = [
+      new TONContentProvider(this.isEditableMode, this.tonPrice, this.tonBalances),
+      new TokensContentProvider(this.tonPrice, this.stakingJettons, this.jettonBalances),
+      new StakingContentProvider(
+        this.isEditableMode,
+        this.tonPrice,
+        this.jettonBalances,
+        this.staking,
+      ),
+      new InscriptionsContentProvider(this.tonPrice, this.inscriptions),
+    ];
+    this.subscribeToProvidersChanges(this.providersList);
   }
 
   public setWallet(wallet: Wallet) {
@@ -69,10 +72,39 @@ export class WalletContentReceiver {
   }
 
   public sortCellItems(cellItems: CellItemToRender[]): CellItemToRender[] {
-    let content: CellItemToRender[] = cellItems;
+    let content: CellItemToRender[] = cellItems.slice();
 
-    content = content.slice().sort((a, b) => {
+    content = content.reduce((acc, cell) => {
+      let cellItem = cell;
+
+      cellItem.isHidden = !this.tokenApproval.filterAssetFn(cell);
+      cellItem.isPinned = !!this.tokenApproval.getPinnedIndex(cell.key);
+
+      if (this.isEditableMode || !cellItem.isHidden) {
+        acc.push(cell);
+      }
+      return acc;
+    }, [] as CellItemToRender[]);
+
+    content = content.sort((a, b) => {
       const comparedPriority = b.renderPriority - a.renderPriority;
+
+      if (b.renderPriority === 999) {
+        return 1;
+      }
+
+      if (!this.isEditableMode) {
+        if (a.isPinned && !b.isPinned) {
+          return -1;
+        } else if (!a.isPinned && b.isPinned) {
+          return 1;
+        } else if (a.isPinned && b.isPinned) {
+          return this.tokenApproval.getPinnedIndex(b.key) <
+            this.tokenApproval.getPinnedIndex(a.key)
+            ? 1
+            : -1;
+        }
+      }
 
       if (comparedPriority !== 0) {
         return comparedPriority;
@@ -118,10 +150,14 @@ export class WalletContentReceiver {
     );
   }
 
-  private debouncedEmit = debounce(() => {
+  private emit() {
     this.subscribers.forEach((subscriber) => {
       subscriber(this.cellItems);
     });
+  }
+
+  private debouncedEmit = debounce(() => {
+    this.emit();
   }, 50);
 
   private subscribeToProvidersChanges(provider: ContentProviderPrototype<any>[]) {

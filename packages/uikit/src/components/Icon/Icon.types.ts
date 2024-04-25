@@ -8,6 +8,7 @@ export type IconNames =
   | 'ic-information-circle-12'
   | 'ic-loader-xsmall-12'
   | 'ic-lock-12'
+  | 'ic-pin-12'
   | 'ic-star-12'
   | 'ic-up-12'
   | 'ic-almost-empty-battery-128'
@@ -76,6 +77,8 @@ export type IconNames =
   | 'ic-envelope-28'
   | 'ic-exclamationmark-circle-28'
   | 'ic-explore-28'
+  | 'ic-eye-closed-outline-28'
+  | 'ic-eye-outline-28'
   | 'ic-faceid-28'
   | 'ic-faceid-android-28'
   | 'ic-fingerprint-28'
@@ -98,6 +101,7 @@ export type IconNames =
   | 'ic-money-28'
   | 'ic-nft-collection-28'
   | 'ic-notification-28'
+  | 'ic-pin-28'
   | 'ic-plus-28'
   | 'ic-plus-circle-28'
   | 'ic-plus-outline-28'
@@ -196,6 +200,7 @@ export const AllIcons = [
   'ic-information-circle-12',
   'ic-loader-xsmall-12',
   'ic-lock-12',
+  'ic-pin-12',
   'ic-star-12',
   'ic-up-12',
   'ic-almost-empty-battery-128',
@@ -264,6 +269,8 @@ export const AllIcons = [
   'ic-envelope-28',
   'ic-exclamationmark-circle-28',
   'ic-explore-28',
+  'ic-eye-closed-outline-28',
+  'ic-eye-outline-28',
   'ic-faceid-28',
   'ic-faceid-android-28',
   'ic-fingerprint-28',
@@ -286,6 +293,7 @@ export const AllIcons = [
   'ic-money-28',
   'ic-nft-collection-28',
   'ic-notification-28',
+  'ic-pin-28',
   'ic-plus-28',
   'ic-plus-circle-28',
   'ic-plus-outline-28',
@@ -385,6 +393,7 @@ export const IconSizes = {
   'ic-information-circle-12': 12,
   'ic-loader-xsmall-12': 12,
   'ic-lock-12': 12,
+  'ic-pin-12': 12,
   'ic-star-12': 12,
   'ic-up-12': 12,
   'ic-almost-empty-battery-128': 128,
@@ -453,6 +462,8 @@ export const IconSizes = {
   'ic-envelope-28': 28,
   'ic-exclamationmark-circle-28': 28,
   'ic-explore-28': 28,
+  'ic-eye-closed-outline-28': 28,
+  'ic-eye-outline-28': 28,
   'ic-faceid-28': 28,
   'ic-faceid-android-28': 28,
   'ic-fingerprint-28': 28,
@@ -475,6 +486,7 @@ export const IconSizes = {
   'ic-money-28': 28,
   'ic-nft-collection-28': 28,
   'ic-notification-28': 28,
+  'ic-pin-28': 28,
   'ic-plus-28': 28,
   'ic-plus-circle-28': 28,
   'ic-plus-outline-28': 28,

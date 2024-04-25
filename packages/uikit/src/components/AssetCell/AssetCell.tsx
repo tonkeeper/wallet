@@ -9,6 +9,8 @@ import { Steezy } from '../../styles';
 import { TextColors } from '../Text/Text';
 import { Icon } from '../Icon';
 import { TouchableOpacity } from '../TouchableOpacity';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import { tk } from '@tonkeeper/mobile/src/wallet';
 
 interface ListItemRateProps {
   percent?: string;
@@ -52,9 +54,13 @@ export interface AssetCellProps {
   item: CellItemToRender;
   mode: AssetCellMode;
   drag?: () => void;
+  onEyePress?: (identifier: string) => void;
 }
 
+const actionButtonsHitSlop = { top: 12, bottom: 12, left: 12, right: 12 };
+
 export const AssetCell = (props: AssetCellProps) => {
+  const mode = props.mode ?? AssetCellMode.VIEW_ONLY;
   const renderLeftContent = () => {
     if (props.item.renderIcon) {
       return props.item.renderIcon();
@@ -81,7 +87,7 @@ export const AssetCell = (props: AssetCellProps) => {
   };
 
   const renderSubvalue = () => {
-    switch (props.mode) {
+    switch (mode) {
       case AssetCellMode.EDITABLE:
         return null;
       case AssetCellMode.VIEW_ONLY:
@@ -99,10 +105,44 @@ export const AssetCell = (props: AssetCellProps) => {
     }
   };
 
+  const renderRightContent = () => {
+    switch (mode) {
+      case AssetCellMode.VIEW_ONLY:
+        return null;
+      case AssetCellMode.EDITABLE:
+        return (
+          <View style={styles.actionsContainer}>
+            {!props.item.isHidden && (
+              <TouchableOpacity
+                onPress={() => tk.wallet.tokenApproval.togglePinAsset(props.item.key)}
+                hitSlop={actionButtonsHitSlop}
+              >
+                <Icon
+                  color={props.item.isPinned ? 'accentBlue' : 'iconTertiary'}
+                  name={'ic-pin-28'}
+                />
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity
+              onPress={() => props.onEyePress?.(props.item.key)}
+              hitSlop={actionButtonsHitSlop}
+            >
+              <Icon
+                color={props.item.isHidden ? 'iconTertiary' : 'accentBlue'}
+                name={
+                  props.item.isHidden ? 'ic-eye-closed-outline-28' : 'ic-eye-outline-28'
+                }
+              />
+            </TouchableOpacity>
+          </View>
+        );
+    }
+  };
+
   return (
     <View style={containerStyle}>
       <List.Item
-        disabled={props.mode === AssetCellMode.EDITABLE}
+        disabled={mode === AssetCellMode.EDITABLE}
         leftContent={renderLeftContent()}
         onPress={props.item.onPress}
         title={
@@ -117,15 +157,18 @@ export const AssetCell = (props: AssetCellProps) => {
                 </Text>
               </View>
             )}
+            {mode === AssetCellMode.VIEW_ONLY && props.item.isPinned && (
+              <View style={styles.pin}>
+                <Icon color="iconTertiary" name={'ic-pin-12'} />
+              </View>
+            )}
           </View>
         }
         picture={props.item.picture}
+        rightContent={renderRightContent()}
         value={
-          props.mode === AssetCellMode.EDITABLE ? (
-            <TouchableOpacity delayLongPress={50} onLongPress={props.drag}>
-              <Icon color="iconSecondary" name={'ic-reorder-28'} />
-            </TouchableOpacity>
-          ) : typeof props.item.value === 'string' ? (
+          mode === AssetCellMode.VIEW_ONLY &&
+          (typeof props.item.value === 'string' ? (
             <HideableAmount
               style={styles.valueText.static}
               type="label1"
@@ -133,11 +176,13 @@ export const AssetCell = (props: AssetCellProps) => {
             >{` ${props.item.value}`}</HideableAmount>
           ) : (
             props.item.value
-          )
+          ))
         }
         subvalue={renderSubvalue()}
         subtitle={renderSubtitle()}
-        bottomContent={props.item.renderBottomContent?.()}
+        bottomContent={
+          mode === AssetCellMode.VIEW_ONLY && props.item.renderBottomContent?.()
+        }
         subtitleStyle={props.item.subtitleStyle}
       />
     </View>
@@ -168,6 +213,7 @@ const styles = Steezy.create(({ colors, corners }) => ({
   },
   tokenTitle: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
   tag: {
     backgroundColor: colors.backgroundContentTint,
@@ -177,6 +223,15 @@ const styles = Steezy.create(({ colors, corners }) => ({
     paddingBottom: 3.5,
     borderRadius: 4,
     marginLeft: 6,
+  },
+  pin: {
+    marginLeft: 6,
+    paddingVertical: 4,
+  },
+  actionsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
   },
 }));
 

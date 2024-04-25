@@ -25,11 +25,18 @@ export class TONContentProvider extends ContentProviderPrototype<{
   name = Providers.TON;
   renderPriority = 999;
 
-  constructor(tonPrice: TonPriceDependency, tonBalances: TonBalancesDependency) {
+  constructor(
+    private isEditableMode: boolean,
+    tonPrice: TonPriceDependency,
+    tonBalances: TonBalancesDependency,
+  ) {
     super({ tonPrice, tonBalances });
   }
 
   get itemsArray() {
+    if (this.isEditableMode) {
+      return [];
+    }
     return this.deps.tonBalances.balances;
   }
 

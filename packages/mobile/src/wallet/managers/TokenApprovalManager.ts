@@ -22,12 +22,14 @@ export interface ApprovalStatus {
 
 export type TokenApprovalState = {
   tokens: Record<string, ApprovalStatus>;
+  pinned: Record<string, number>;
   hasWatchedCollectiblesTab: boolean;
 };
 
 export class TokenApprovalManager {
   static readonly INITIAL_STATE: TokenApprovalState = {
     tokens: {},
+    pinned: {},
     hasWatchedCollectiblesTab: false,
   };
 
@@ -106,5 +108,28 @@ export class TokenApprovalManager {
         this.state.set(state);
       }
     } catch {}
+  }
+
+  public togglePinAsset(assetKey: string) {
+    const { pinned } = this.state.data;
+    const isPinned = pinned[assetKey] !== undefined;
+    const pinnedCopy = { ...pinned };
+
+    if (isPinned) {
+      delete pinnedCopy[assetKey];
+    } else {
+      pinnedCopy[assetKey] = Object.keys(pinnedCopy).length;
+    }
+
+    this.state.set({ pinned: pinnedCopy });
+  }
+
+  public reorderPinnedAssets(assetKeys: string[]) {
+    const pinned = assetKeys.reduce((acc, key, index) => {
+      acc[key] = index;
+      return acc;
+    }, {});
+
+    this.state.set({ pinned });
   }
 }

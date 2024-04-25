@@ -4,8 +4,8 @@ import { useInstance } from '$hooks/useInstance';
 import { WalletContentReceiver } from './receiver';
 import { tk } from '$wallet';
 
-export const usePreparedWalletContent = () => {
-  const providersReceiver = useInstance(() => new WalletContentReceiver());
+export const usePreparedWalletContent = (isEditableMode: boolean = false) => {
+  const providersReceiver = useInstance(() => new WalletContentReceiver(isEditableMode));
   const [preparedContent, setPreparedContent] = useState<CellItemToRender[]>([]);
 
   useEffect(() => {

@@ -7,34 +7,23 @@ import { InscriptionsDependency } from './dependencies/inscriptions';
 import { openTonInscription } from '$navigation';
 import { DEFAULT_TOKEN_LOGO } from '@tonkeeper/uikit';
 import { TonPriceDependency } from './dependencies/tonPrice';
-import { TokenApprovalDependency } from './dependencies/tokenApproval';
 
 export class InscriptionsContentProvider extends ContentProviderPrototype<{
   inscriptions: InscriptionsDependency;
   tonPrice: TonPriceDependency;
-  approval: TokenApprovalDependency;
 }> {
   name = Providers.Inscriptions;
   renderPriority = -2;
 
-  constructor(
-    tonPrice: TonPriceDependency,
-    inscriptions: InscriptionsDependency,
-    approval: TokenApprovalDependency,
-  ) {
+  constructor(tonPrice: TonPriceDependency, inscriptions: InscriptionsDependency) {
     super({
       inscriptions,
       tonPrice,
-      approval,
     });
   }
 
-  private filterByTokenApproval(inscriptions: InscriptionBalance[]) {
-    return inscriptions.filter(this.deps.approval.filterInscriptionsFn);
-  }
-
   get itemsArray() {
-    return this.filterByTokenApproval(this.deps.inscriptions.state);
+    return this.deps.inscriptions.state;
   }
 
   makeCellItemFromData(data: InscriptionBalance): CellItemToRender {

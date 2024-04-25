@@ -15,6 +15,7 @@ import BigNumber from 'bignumber.js';
 import { StakedTonIcon } from '$uikit/StakedTonIcon';
 import { StakingMessage } from '../components/StakingMessage';
 import { openStakingPoolDetails } from '$navigation';
+import { t } from '@tonkeeper/shared/i18n';
 
 export class StakingContentProvider extends ContentProviderPrototype<{
   tonPrice: TonPriceDependency;
@@ -25,6 +26,7 @@ export class StakingContentProvider extends ContentProviderPrototype<{
   renderPriority = 0;
 
   constructor(
+    private isEditableMode: boolean,
     tonPrice: TonPriceDependency,
     jettonBalances: JettonBalancesDependency,
     staking: StakingDependency,
@@ -117,11 +119,11 @@ export class StakingContentProvider extends ContentProviderPrototype<{
     const fiatRate = this.getRate(data.pool, data.info);
 
     return {
+      key: data.pool.address,
       onPress: () => openStakingPoolDetails(data.pool.address),
       renderPriority: this.renderPriority,
       fiatRate: this.getRate(data.pool, data.info),
-      key: data.pool.address,
-      title: 'Staking',
+      title: t('staking.staked'),
       renderIcon: () => <StakedTonIcon size={'small'} pool={data.pool} />,
       renderBottomContent: () => (
         <StakingMessage pool={data.pool} poolStakingInfo={data.info} />
