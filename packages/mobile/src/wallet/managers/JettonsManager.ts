@@ -1,4 +1,4 @@
-import { JettonVerificationType, TonAPI } from '@tonkeeper/core/src/TonAPI';
+import { TonAPI } from '@tonkeeper/core/src/TonAPI';
 import { Storage } from '@tonkeeper/core/src/declarations/Storage';
 import { TokenRate, TonRawAddress } from '../WalletTypes';
 import { Logger } from '@tonkeeper/core/src/utils/Logger';
@@ -7,7 +7,6 @@ import { JettonBalanceModel } from '../models/JettonBalanceModel';
 import { Address } from '@tonkeeper/core/src/formatters/Address';
 import { TokenApprovalManager } from './TokenApprovalManager';
 import { TonPriceManager } from './TonPriceManager';
-import { sortByPrice } from '@tonkeeper/core/src/utils/jettons';
 
 export type JettonsState = {
   jettonBalances: JettonBalanceModel[];
@@ -81,31 +80,6 @@ export class JettonsManager {
       const jettonBalances = accountJettons.balances
         .filter((item) => {
           return item.balance !== '0' || (item.lock && item.lock.amount !== '0');
-        })
-        .sort((a, b) => {
-          // Unverified or blacklisted tokens have to be at the end of array
-          if (
-            [JettonVerificationType.None, JettonVerificationType.Blacklist].includes(
-              a.jetton.verification,
-            )
-          ) {
-            return [
-              JettonVerificationType.None,
-              JettonVerificationType.Blacklist,
-            ].includes(b.jetton.verification)
-              ? sortByPrice(a, b)
-              : 1;
-          }
-
-          if (
-            [JettonVerificationType.None, JettonVerificationType.Blacklist].includes(
-              b.jetton.verification,
-            )
-          ) {
-            return -1;
-          }
-
-          return sortByPrice(a, b);
         })
         .map((item) => {
           return new JettonBalanceModel(item);

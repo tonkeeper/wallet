@@ -1,13 +1,14 @@
 import React from 'react';
 import Animated from 'react-native-reanimated';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import {NavBar, ScrollHandler, Text} from '$uikit';
+import { NavBar, ScrollHandler, Text } from '$uikit';
 import { ns } from '$utils';
 import * as S from './LegalDocuments.style';
 import { t } from '@tonkeeper/shared/i18n';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const FontLicense: React.FC = () => {
-  const tabBarHeight = useBottomTabBarHeight();
+  const insets = useSafeAreaInsets();
 
   return (
     <S.Wrap>
@@ -17,7 +18,7 @@ export const FontLicense: React.FC = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             paddingHorizontal: ns(16),
-            paddingBottom: tabBarHeight,
+            paddingBottom: insets.bottom + 16,
           }}
           scrollEventThrottle={16}
         >

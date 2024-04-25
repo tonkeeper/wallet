@@ -238,9 +238,10 @@
   "confirm_sending_submit" : "Подтвердить и отправить",
   "confirm_sending_title" : "Перевод",
   "confirmSendModal" : {
+    "total_risk": "Всего: %{totalAmount}",
     "wallet": "Кошелёк:",
     "refund": "Возврат",
-    "network_fee" : "Комиссия сети",
+    "network_fee" : "Комиссия",
     "will_be_paid_with_battery": "Будет оплачена батарейкой",
     "title": "Подтвердить действие",
     "to_your_address" : "На ваш адрес",
@@ -307,6 +308,7 @@
   "edit_coins_title" : "Валюты",
   "error_network" : "Ошибка сети",
   "error_occurred" : "Произошла ошибка",
+  "network_overloaded_error": "Сеть перегружена",
   "exchange_method_dont_show_again" : "Больше не показывать",
   "exchange_method_open_warning" : "Вы открываете внешнее приложение, которым не управляет Tonkeeper.",
   "exchange_modal" : {
@@ -408,6 +410,7 @@
   "nft_open_in_marketplace" : "Посмотреть на NFT Маркете",
   "nft_operations_expired" : "Время запроса истекло, попробуйте еще раз",
   "nft_operation_success" : "Готово",
+  "nft_operation_slide_to_confirm": "Подтвердить",
   "nft_owner_address" : "Владелец",
   "nft_price" : "Цена",
   "nft_proceeds" : "Ваш доход",
@@ -610,9 +613,6 @@
   "settings_backup_seed" : "Резервная копия",
   "settings_contact_support" : "Написать команде",
   "settings_delete_account" : "Удалить аккаунт",
-  "settings_delete_alert_button" : "Удалить аккаунт и данные",
-  "settings_delete_alert_caption" : "Это действие приведет к удалению вашего аккаунта и всех данных из этого приложения.",
-  "settings_delete_alert_title": "\uD83D\uDEA8\uD83D\uDEA8\uD83D\uDEA8%{space}Вы уверены, что хотите удалить аккаунт?",
   "settings_jettons_list" : "Токены",
   "settings_legal_documents" : "Юридические документы",
   "language": {
@@ -736,7 +736,7 @@
       },
       "tap_to_collect" : "Нажмите, чтобы вывести"
     },
-    "estimated_profit" : "%{amount} TON – доход за год,  если внесёте TON сегодня.",
+    "estimated_profit" : "%{amount} TON – доход за год, если внесёте TON сегодня.",
     "estimated_profit_compare" : "На %{amount} TON в год прибыльнее чем ваш текущий стейкинг",
     "get_withdrawal" : "Получить вывод",
     "highest_apy" : "MAX APY",
@@ -845,6 +845,7 @@
   "swap_title" : "Обмен",
   "tab_browser" : "Браузер",
   "tab_nft" : "NFT",
+  "tab_collectibles": "Покупки",
   "tab_settings" : "Настройки",
   "tab_swap" : "Обмен",
   "tab_wallet" : "Кошелёк",
@@ -987,6 +988,7 @@
         },
         "stakingDeposit" : "Минимальный баланс для участия:\n%{amount} %{currency}\n",
         "title" : "Недостаточно средств",
+        "title_multiwallet": "Недостаточно средств на кошельке",
         "toBePaid" : "Необходимо: %{amount} %{currency}\n",
         "withFees" : "+ комиссия сети.\n",
         "yourBalance" : "Ваш баланс: %{balance} %{currency}."
@@ -1039,6 +1041,8 @@
     "screen_title" : "Кошелёк",
     "send_btn" : "Отправить",
     "swap_btn" : "Обменять",
+    "scan_btn": "Сканировать",
+    "stake_btn": "Застейкать",
     "tonkens_tab_lable" : "Токены",
     "inscriptions_tab_label": "Инскрипции",
     "updated_at" : "Обновлён %{value}"
@@ -1181,7 +1185,7 @@
     "subtitle": "Отслеживайте активность, получайте уведомления о транзакциях этого кошелька без ввода секретного ключа.",
     "wallet_not_found": "Адрес кошелька не найден"
   },
-  "watch_only": "Только просмотр",
+  "watch_only": "Просмотр",
   "stop_watch": "Удалить аккаунт",
   "customize": "Кастомизировать",
   "customize_modal": {
@@ -1265,5 +1269,20 @@
   "buy_ton": {
     "title": "Купить TON",
     "subtitle": "Моментально с банковской картой"
+  },
+  "logout_modal": {
+    "title": "Выйти",
+    "caption": "Ключи кошелька будут удалены с этого устройства.",
+    "delete_title": "Удалить данные кошелька",
+    "delete_caption": "Ключи кошелька и все личные данные будут удалены с этого устройства.",
+    "agreement": "У меня есть резервная копия фразы восстановления",
+    "backup_button": "Сделать резервную копию",
+    "logout_button": "Выйти",
+    "delete_button": "Удалить данные кошелька"
+  },
+  "about_risk_modal": {
+    "description": "Общая стоимость токенов, которые будут отправлены с вашего кошелька. Возвраты не учитываются в общей стоимости.",
+    "description_with_nft": "Общая стоимость токенов, за исключением стоимости NFT, которые будут отправлены с вашего кошелька. Возвраты не учитываются в общей стоимости.",
+    "ok_button": "Понятно"
   }
 }

@@ -41,6 +41,7 @@ import { useExternalState } from '@tonkeeper/shared/hooks/useExternalState';
 import { tk } from '$wallet';
 import { MigrationStack } from '$navigation/MigrationStack';
 import { useTonPriceUpdater } from '$hooks/useTonPriceUpdater';
+import { SettingsStack } from '$navigation/SettingsStack/SettingsStack';
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
 
@@ -116,6 +117,7 @@ export const MainStack: FC = () => {
         name={MainStackRouteNames.AddWatchOnlyStack}
         component={AddWatchOnlyStack}
       />
+      <Stack.Screen name={MainStackRouteNames.Settings} component={SettingsStack} />
       <Stack.Screen name={MainStackRouteNames.Wallet} component={ToncoinScreen} />
       <Stack.Screen name={MainStackRouteNames.Staking} component={Staking} />
       <Stack.Screen name={MainStackRouteNames.StakingPools} component={StakingPools} />
@@ -157,6 +159,7 @@ export const MainStack: FC = () => {
       <Stack.Screen
         name={MainStackRouteNames.ChangePinBiometry}
         component={ChangePinBiometry}
+        options={{ gestureEnabled: false }}
       />
       <Stack.Screen name={MainStackRouteNames.Backup} component={BackupScreen} />
       <Stack.Screen
@@ -166,6 +169,7 @@ export const MainStack: FC = () => {
       <Stack.Screen
         name={MainStackRouteNames.BackupCheckPhrase}
         component={BackupCheckPhraseScreen}
+        options={{ gestureEnabled: false }}
       />
     </Stack.Navigator>
   );

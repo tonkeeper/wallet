@@ -60,7 +60,10 @@ export type IconNames =
   | 'ic-almost-empty-battery-28'
   | 'ic-appearance-28'
   | 'ic-arrow-down-28'
+  | 'ic-arrow-down-outline-28'
+  | 'ic-arrow-right-outline-28'
   | 'ic-arrow-up-28'
+  | 'ic-arrow-up-outline-28'
   | 'ic-battery-28'
   | 'ic-bell-28'
   | 'ic-creditcard-28'
@@ -81,6 +84,7 @@ export type IconNames =
   | 'ic-flash-28'
   | 'ic-full-battery-28'
   | 'ic-gear-28'
+  | 'ic-gear-outline-28'
   | 'ic-globe-28'
   | 'ic-home-28'
   | 'ic-jetton-28'
@@ -90,11 +94,15 @@ export type IconNames =
   | 'ic-magnifying-glass-28'
   | 'ic-message-bubble-28'
   | 'ic-minus-28'
+  | 'ic-minus-outline-28'
   | 'ic-money-28'
   | 'ic-nft-collection-28'
   | 'ic-notification-28'
   | 'ic-plus-28'
   | 'ic-plus-circle-28'
+  | 'ic-plus-outline-28'
+  | 'ic-purchases-28'
+  | 'ic-qr-viewfinder-outline-28'
   | 'ic-reorder-28'
   | 'ic-return-28'
   | 'ic-secure-28'
@@ -103,11 +111,13 @@ export type IconNames =
   | 'ic-shopping-bag-28'
   | 'ic-speed-28'
   | 'ic-staking-28'
+  | 'ic-staking-outline-28'
   | 'ic-star-28'
   | 'ic-success-28'
   | 'ic-swap-28'
   | 'ic-swap-horizontal-28'
   | 'ic-swap-horizontal-alternative-28'
+  | 'ic-swap-horizontal-outline-28'
   | 'ic-telegram-28'
   | 'ic-testnet-28'
   | 'ic-ticket-28'
@@ -117,13 +127,35 @@ export type IconNames =
   | 'ic-tray-arrow-down-28'
   | 'ic-tray-arrow-up-28'
   | 'ic-usd-28'
+  | 'ic-usd-outline-28'
   | 'ic-viewfinder-28'
   | 'ic-wallet-28'
   | 'ic-warning-28'
   | 'ic-xmark-28'
   | 'ic-xmark-outline-28'
+  | 'ic-bank-card-32'
   | 'ic-checkmark-circle-32'
+  | 'ic-chinese-yuan-circle-32'
+  | 'ic-dollar-circle-32'
+  | 'ic-euro-circle-32'
   | 'ic-exclamationmark-circle-32'
+  | 'ic-flash-32'
+  | 'ic-flash-circle-32'
+  | 'ic-gear-32'
+  | 'ic-hand-raised-32'
+  | 'ic-hare-32'
+  | 'ic-inbox-32'
+  | 'ic-indian-rupee-circle-32'
+  | 'ic-key-32'
+  | 'ic-leaf-32'
+  | 'ic-lock-32'
+  | 'ic-magnifying-glass-circle-32'
+  | 'ic-ruble-circle-32'
+  | 'ic-snowflake-32'
+  | 'ic-sparkles-32'
+  | 'ic-sterling-circle-32'
+  | 'ic-sun-32'
+  | 'ic-wallet-32'
   | 'ic-almost-empty-battery-34'
   | 'ic-empty-battery-accent-flash-34'
   | 'ic-empty-battery-flash-34'
@@ -216,7 +248,10 @@ export const AllIcons = [
   'ic-almost-empty-battery-28',
   'ic-appearance-28',
   'ic-arrow-down-28',
+  'ic-arrow-down-outline-28',
+  'ic-arrow-right-outline-28',
   'ic-arrow-up-28',
+  'ic-arrow-up-outline-28',
   'ic-battery-28',
   'ic-bell-28',
   'ic-creditcard-28',
@@ -237,6 +272,7 @@ export const AllIcons = [
   'ic-flash-28',
   'ic-full-battery-28',
   'ic-gear-28',
+  'ic-gear-outline-28',
   'ic-globe-28',
   'ic-home-28',
   'ic-jetton-28',
@@ -246,11 +282,15 @@ export const AllIcons = [
   'ic-magnifying-glass-28',
   'ic-message-bubble-28',
   'ic-minus-28',
+  'ic-minus-outline-28',
   'ic-money-28',
   'ic-nft-collection-28',
   'ic-notification-28',
   'ic-plus-28',
   'ic-plus-circle-28',
+  'ic-plus-outline-28',
+  'ic-purchases-28',
+  'ic-qr-viewfinder-outline-28',
   'ic-reorder-28',
   'ic-return-28',
   'ic-secure-28',
@@ -259,11 +299,13 @@ export const AllIcons = [
   'ic-shopping-bag-28',
   'ic-speed-28',
   'ic-staking-28',
+  'ic-staking-outline-28',
   'ic-star-28',
   'ic-success-28',
   'ic-swap-28',
   'ic-swap-horizontal-28',
   'ic-swap-horizontal-alternative-28',
+  'ic-swap-horizontal-outline-28',
   'ic-telegram-28',
   'ic-testnet-28',
   'ic-ticket-28',
@@ -273,13 +315,35 @@ export const AllIcons = [
   'ic-tray-arrow-down-28',
   'ic-tray-arrow-up-28',
   'ic-usd-28',
+  'ic-usd-outline-28',
   'ic-viewfinder-28',
   'ic-wallet-28',
   'ic-warning-28',
   'ic-xmark-28',
   'ic-xmark-outline-28',
+  'ic-bank-card-32',
   'ic-checkmark-circle-32',
+  'ic-chinese-yuan-circle-32',
+  'ic-dollar-circle-32',
+  'ic-euro-circle-32',
   'ic-exclamationmark-circle-32',
+  'ic-flash-32',
+  'ic-flash-circle-32',
+  'ic-gear-32',
+  'ic-hand-raised-32',
+  'ic-hare-32',
+  'ic-inbox-32',
+  'ic-indian-rupee-circle-32',
+  'ic-key-32',
+  'ic-leaf-32',
+  'ic-lock-32',
+  'ic-magnifying-glass-circle-32',
+  'ic-ruble-circle-32',
+  'ic-snowflake-32',
+  'ic-sparkles-32',
+  'ic-sterling-circle-32',
+  'ic-sun-32',
+  'ic-wallet-32',
   'ic-almost-empty-battery-34',
   'ic-empty-battery-accent-flash-34',
   'ic-empty-battery-flash-34',
@@ -373,7 +437,10 @@ export const IconSizes = {
   'ic-almost-empty-battery-28': 28,
   'ic-appearance-28': 28,
   'ic-arrow-down-28': 28,
+  'ic-arrow-down-outline-28': 28,
+  'ic-arrow-right-outline-28': 28,
   'ic-arrow-up-28': 28,
+  'ic-arrow-up-outline-28': 28,
   'ic-battery-28': 28,
   'ic-bell-28': 28,
   'ic-creditcard-28': 28,
@@ -394,6 +461,7 @@ export const IconSizes = {
   'ic-flash-28': 28,
   'ic-full-battery-28': 28,
   'ic-gear-28': 28,
+  'ic-gear-outline-28': 28,
   'ic-globe-28': 28,
   'ic-home-28': 28,
   'ic-jetton-28': 28,
@@ -403,11 +471,15 @@ export const IconSizes = {
   'ic-magnifying-glass-28': 28,
   'ic-message-bubble-28': 28,
   'ic-minus-28': 28,
+  'ic-minus-outline-28': 28,
   'ic-money-28': 28,
   'ic-nft-collection-28': 28,
   'ic-notification-28': 28,
   'ic-plus-28': 28,
   'ic-plus-circle-28': 28,
+  'ic-plus-outline-28': 28,
+  'ic-purchases-28': 28,
+  'ic-qr-viewfinder-outline-28': 28,
   'ic-reorder-28': 28,
   'ic-return-28': 28,
   'ic-secure-28': 28,
@@ -416,11 +488,13 @@ export const IconSizes = {
   'ic-shopping-bag-28': 28,
   'ic-speed-28': 28,
   'ic-staking-28': 28,
+  'ic-staking-outline-28': 28,
   'ic-star-28': 28,
   'ic-success-28': 28,
   'ic-swap-28': 28,
   'ic-swap-horizontal-28': 28,
   'ic-swap-horizontal-alternative-28': 28,
+  'ic-swap-horizontal-outline-28': 28,
   'ic-telegram-28': 28,
   'ic-testnet-28': 28,
   'ic-ticket-28': 28,
@@ -430,13 +504,35 @@ export const IconSizes = {
   'ic-tray-arrow-down-28': 28,
   'ic-tray-arrow-up-28': 28,
   'ic-usd-28': 28,
+  'ic-usd-outline-28': 28,
   'ic-viewfinder-28': 28,
   'ic-wallet-28': 28,
   'ic-warning-28': 28,
   'ic-xmark-28': 28,
   'ic-xmark-outline-28': 28,
+  'ic-bank-card-32': 32,
   'ic-checkmark-circle-32': 32,
+  'ic-chinese-yuan-circle-32': 32,
+  'ic-dollar-circle-32': 32,
+  'ic-euro-circle-32': 32,
   'ic-exclamationmark-circle-32': 32,
+  'ic-flash-32': 32,
+  'ic-flash-circle-32': 32,
+  'ic-gear-32': 32,
+  'ic-hand-raised-32': 32,
+  'ic-hare-32': 32,
+  'ic-inbox-32': 32,
+  'ic-indian-rupee-circle-32': 32,
+  'ic-key-32': 32,
+  'ic-leaf-32': 32,
+  'ic-lock-32': 32,
+  'ic-magnifying-glass-circle-32': 32,
+  'ic-ruble-circle-32': 32,
+  'ic-snowflake-32': 32,
+  'ic-sparkles-32': 32,
+  'ic-sterling-circle-32': 32,
+  'ic-sun-32': 32,
+  'ic-wallet-32': 32,
   'ic-almost-empty-battery-34': 34,
   'ic-empty-battery-accent-flash-34': 34,
   'ic-empty-battery-flash-34': 34,

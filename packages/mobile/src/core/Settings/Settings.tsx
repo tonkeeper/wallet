@@ -3,13 +3,11 @@ import { useDispatch } from 'react-redux';
 import Rate, { AndroidMarket } from 'react-native-rate';
 import { Alert, Linking, Platform, View } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import Animated from 'react-native-reanimated';
 import { TapGestureHandler } from 'react-native-gesture-handler';
 
 import * as S from './Settings.style';
-import { Icon, PopupSelect, ScrollHandler, Spacer, Text } from '$uikit';
-import { Icon as NewIcon } from '@tonkeeper/uikit';
+import { Icon, PopupSelect, Spacer, Text } from '$uikit';
+import { Icon as NewIcon, Screen } from '@tonkeeper/uikit';
 import { useShouldShowTokensButton } from '$hooks/useShouldShowTokensButton';
 import { useNavigation } from '@tonkeeper/router';
 import { List } from '@tonkeeper/uikit';
@@ -17,7 +15,6 @@ import {
   AppStackRouteNames,
   MainStackRouteNames,
   SettingsStackRouteNames,
-  openDeleteAccountDone,
   openDevMenu,
   openLegalDocuments,
   openManageTokens,
@@ -42,7 +39,6 @@ import { SearchEngine, useBrowserStore } from '$store';
 import AnimatedLottieView from 'lottie-react-native';
 import { Steezy } from '$styles';
 import { i18n, t } from '@tonkeeper/shared/i18n';
-import { trackEvent } from '$utils/stats';
 import { openAppearance } from '$core/ModalContainer/AppearanceModal';
 import { config } from '$config';
 import {
@@ -56,10 +52,12 @@ import { mapNewNftToOldNftData } from '$utils/mapNewNftToOldNftData';
 import { WalletListItem } from '@tonkeeper/shared/components';
 import { useSubscriptions } from '@tonkeeper/shared/hooks/useSubscriptions';
 import { nativeLocaleNames } from '@tonkeeper/shared/i18n/translations';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const Settings: FC = () => {
   const animationRef = useRef<AnimatedLottieView>(null);
   const devMenuHandlerRef = useRef(null);
+  const { bottom: paddingBottom } = useSafeAreaInsets();
 
   const flags = useFlags([
     'disable_apperance',
@@ -70,7 +68,6 @@ export const Settings: FC = () => {
   ]);
 
   const nav = useNavigation();
-  const tabBarHeight = useBottomTabBarHeight();
 
   const fiatCurrency = useWalletCurrency();
   const dispatch = useDispatch();
@@ -126,20 +123,8 @@ export const Settings: FC = () => {
   }, []);
 
   const handleResetWallet = useCallback(() => {
-    Alert.alert(t('settings_reset_alert_title'), t('settings_reset_alert_caption'), [
-      {
-        text: t('cancel'),
-        style: 'cancel',
-      },
-      {
-        text: t('settings_reset_alert_button'),
-        style: 'destructive',
-        onPress: () => {
-          dispatch(walletActions.cleanWallet());
-        },
-      },
-    ]);
-  }, [dispatch]);
+    nav.navigate('/logout-warning');
+  }, [nav]);
 
   const handleStopWatchWallet = useCallback(() => {
     Alert.alert(t('settings_delete_watch_account'), undefined, [
@@ -211,25 +196,8 @@ export const Settings: FC = () => {
   }, []);
 
   const handleDeleteAccount = useCallback(() => {
-    Alert.alert(
-      t('settings_delete_alert_title', { space: Platform.OS === 'ios' ? '\n' : ' ' }),
-      t('settings_delete_alert_caption'),
-      [
-        {
-          text: t('cancel'),
-          style: 'cancel',
-        },
-        {
-          text: t('settings_delete_alert_button'),
-          style: 'destructive',
-          onPress: () => {
-            trackEvent('delete_wallet');
-            openDeleteAccountDone();
-          },
-        },
-      ],
-    );
-  }, []);
+    nav.openModal('/logout-warning', { isDelete: true });
+  }, [nav]);
 
   const handleCustomizePress = useCallback(
     () => nav.navigate(AppStackRouteNames.CustomizeWallet),
@@ -251,7 +219,7 @@ export const Settings: FC = () => {
   const accountNfts = useNftsState((s) => s.accountNfts);
 
   const hasDiamods = useMemo(() => {
-    if (!wallet || wallet.isWatchOnly) {
+    if (!wallet || wallet?.isWatchOnly) {
       return false;
     }
 
@@ -266,13 +234,12 @@ export const Settings: FC = () => {
 
   return (
     <S.Wrap>
-      <ScrollHandler navBarTitle={t('settings_title')}>
-        <Animated.ScrollView
+      <Screen>
+        <Screen.Header title={t('settings_title')} />
+        <Screen.ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
-            paddingTop: IsTablet ? ns(8) : hNs(LargeNavBarHeight),
-            paddingBottom: tabBarHeight,
-            alignItems: IsTablet ? 'center' : undefined,
+            paddingBottom: paddingBottom + 16,
           }}
           scrollEventThrottle={16}
         >
@@ -323,7 +290,7 @@ export const Settings: FC = () => {
                 onPress={handleManageTokens}
               />
             )}
-            {hasSubscriptions && (
+            {!!wallet && !wallet.isWatchOnly && hasSubscriptions && (
               <List.Item
                 value={
                   <Icon
@@ -569,9 +536,8 @@ export const Settings: FC = () => {
               </TapGestureHandler>
             </TapGestureHandler>
           </S.Content>
-          <View style={{ height: LargeNavBarInteractiveDistance }} />
-        </Animated.ScrollView>
-      </ScrollHandler>
+        </Screen.ScrollView>
+      </Screen>
     </S.Wrap>
   );
 };

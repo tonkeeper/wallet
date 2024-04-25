@@ -33,7 +33,7 @@ export function tonAddress(address: AnyAddress) {
 }
 
 export class TransactionService {
-  private static TTL = 5 * 60;
+  public static TTL = 5 * 60;
 
   private static getTimeout() {
     return Math.floor(Date.now() / 1e3) + TransactionService.TTL;
@@ -104,6 +104,21 @@ export class TransactionService {
     let builder = beginCell();
 
     switch (opCode) {
+      case OpCodes.STONFI_SWAP:
+        builder = builder
+          .storeUint(OpCodes.STONFI_SWAP, 32)
+          .storeAddress(slice.loadAddress())
+          .storeCoins(slice.loadCoins())
+          .storeAddress(slice.loadAddress());
+
+        if (slice.loadBoolean()) {
+          slice.loadAddress();
+        }
+
+        return builder
+          .storeBit(1)
+          .storeAddress(Address.parse(customExcessesAccount))
+          .endCell();
       case OpCodes.NFT_TRANSFER:
         builder = builder
           .storeUint(OpCodes.NFT_TRANSFER, 32)
@@ -130,7 +145,11 @@ export class TransactionService {
         slice.loadMaybeAddress();
 
         while (slice.remainingRefs) {
-          builder = builder.storeRef(slice.loadRef());
+          const forwardCell = slice.loadRef();
+          // recursively rebuild forward payloads
+          builder = builder.storeRef(
+            this.rebuildBodyWithCustomExcessesAccount(forwardCell, customExcessesAccount),
+          );
         }
 
         return builder

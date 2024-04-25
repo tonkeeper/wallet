@@ -13,6 +13,7 @@ import { openChooseCountry } from '$navigation';
 import { useSelectedCountry } from '$store/zustand/methodsToBuy/useSelectedCountry';
 import { CountryButton } from '@tonkeeper/shared/components';
 import { config } from '$config';
+import { useWallet } from '@tonkeeper/shared/hooks';
 
 export const ExchangeModal = () => {
   const [showAll, setShowAll] = React.useState(false);
@@ -65,6 +66,9 @@ export const ExchangeModal = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
   }, [showAll]);
 
+  const wallet = useWallet();
+  const watchOnly = wallet && wallet.isWatchOnly;
+
   const [segmentIndex, setSegmentIndex] = useState(0);
 
   const isLoading = buy.length === 0 && sell.length === 0;
@@ -79,11 +83,15 @@ export const ExchangeModal = () => {
           <CountryButton selectedCountry={selectedCountry} onPress={openChooseCountry} />
         }
         title={
-          <SegmentedControl
-            onChange={(segment) => setSegmentIndex(segment)}
-            index={segmentIndex}
-            items={[t('exchange_modal.buy'), t('exchange_modal.sell')]}
-          />
+          watchOnly ? (
+            categories && categories[0] && categories[0].title
+          ) : (
+            <SegmentedControl
+              onChange={(segment) => setSegmentIndex(segment)}
+              index={segmentIndex}
+              items={[t('exchange_modal.buy'), t('exchange_modal.sell')]}
+            />
+          )
         }
       />
       <Modal.ScrollView safeArea>
@@ -97,9 +105,11 @@ export const ExchangeModal = () => {
               {categories.map((category, cIndex) => (
                 <React.Fragment key={cIndex}>
                   {cIndex > 0 ? <Spacer y={16} /> : null}
-                  <S.TitleContainer>
-                    <Text type="h3">{category.title}</Text>
-                  </S.TitleContainer>
+                  {!(watchOnly && cIndex === 0) ? (
+                    <S.TitleContainer>
+                      <Text type="h3">{category.title}</Text>
+                    </S.TitleContainer>
+                  ) : null}
                   <S.Contain>
                     {category.items.map((item, idx, arr) => (
                       <ExchangeItem

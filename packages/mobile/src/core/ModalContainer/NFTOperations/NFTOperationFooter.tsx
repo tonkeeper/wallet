@@ -19,6 +19,8 @@ import {
 import { tk } from '$wallet';
 import { TabsStackRouteNames } from '$navigation';
 import { Wallet } from '$wallet/Wallet';
+import { NetworkOverloadedError } from '@tonkeeper/shared/utils/blockchain';
+import { SlideButton, Steezy } from '@tonkeeper/uikit';
 
 enum States {
   INITIAL,
@@ -95,7 +97,11 @@ export const useActionFooter = (wallet?: Wallet) => {
         (wallet ?? tk.wallet).activityList.reload();
       });
     } catch (error) {
-      if (error instanceof DismissedActionError) {
+      if (error instanceof NetworkOverloadedError) {
+        ref.current?.setError(error.message);
+        await delay(3500);
+        ref.current?.setState(States.INITIAL);
+      } else if (error instanceof DismissedActionError) {
         ref.current?.setState(States.ERROR);
         await delay(1750);
         ref.current?.setState(States.INITIAL);
@@ -131,10 +137,12 @@ interface ActionFooterProps {
   responseOptions?: TxResponseOptions;
   withCloseButton?: boolean;
   confirmTitle?: string;
+  secondary?: boolean;
   onPressConfirm: () => Promise<void>;
   onCloseModal?: () => void;
   disabled?: boolean;
   redirectToActivity?: boolean;
+  withSlider?: boolean;
 }
 
 export const ActionFooter = React.forwardRef<ActionFooterRef, ActionFooterProps>(
@@ -193,22 +201,33 @@ export const ActionFooter = React.forwardRef<ActionFooterRef, ActionFooterProps>
           isVisible={state === States.INITIAL}
           entranceAnimation={false}
         >
-          <View style={S.styles.footerButtons}>
-            {withCloseButton ? (
-              <>
-                <S.ActionButton mode="secondary" onPress={() => closeModal(false)}>
-                  {t('cancel')}
-                </S.ActionButton>
-                <Spacer x={16} />
-              </>
-            ) : null}
-            <S.ActionButton
-              disabled={props.disabled}
-              onPress={() => props.onPressConfirm()}
-            >
-              {props.confirmTitle ?? t('nft_confirm_operation')}
-            </S.ActionButton>
-          </View>
+          {props.withSlider ? (
+            <View style={styles.slideContainer.static}>
+              <SlideButton
+                disabled={props.disabled}
+                onSuccessSlide={() => props.onPressConfirm()}
+                text={t('nft_operation_slide_to_confirm')}
+              />
+            </View>
+          ) : (
+            <View style={S.styles.footerButtons}>
+              {withCloseButton ? (
+                <>
+                  <S.ActionButton mode="secondary" onPress={() => closeModal(false)}>
+                    {t('cancel')}
+                  </S.ActionButton>
+                  <Spacer x={16} />
+                </>
+              ) : null}
+              <S.ActionButton
+                disabled={props.disabled}
+                onPress={() => props.onPressConfirm()}
+                mode={props.secondary ? 'secondary' : 'primary'}
+              >
+                {props.confirmTitle ?? t('nft_confirm_operation')}
+              </S.ActionButton>
+            </View>
+          )}
         </TransitionOpacity>
         <TransitionOpacity
           style={S.styles.transitionContainer}
@@ -253,5 +272,12 @@ export const ActionFooter = React.forwardRef<ActionFooterRef, ActionFooterProps>
     );
   },
 );
+
+const styles = Steezy.create({
+  slideContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+  },
+});
 
 export const NFTOperationFooter = ActionFooter;

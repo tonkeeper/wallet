@@ -299,6 +299,7 @@
   "confirm_sending_submit": "Confirm and Send",
   "confirm_sending_title": "Confirm sending",
   "confirmSendModal": {
+    "total_risk": "Total: %{totalAmount}",
     "wallet": "Wallet:",
     "refund": "Refund",
     "network_fee": "Network fee",
@@ -361,6 +362,7 @@
   "edit_coins_title": "Add crypto",
   "error_network": "Network error",
   "error_occurred": "An error occurred",
+  "network_overloaded_error": "Network overloaded",
   "exchange_method_dont_show_again": "Do not show again",
   "exchange_method_open_warning": "You are opening an external app not operated by Tonkeeper.",
   "exchange_modal": {
@@ -454,6 +456,7 @@
   "nft_open_in_marketplace": "View on NFT Market",
   "nft_operations_expired": "Request timed out, please try again",
   "nft_operation_success": "Done",
+  "nft_operation_slide_to_confirm": "Slide to Confirm",
   "nft_owner_address": "Owner",
   "nft_price": "Price",
   "nft_proceeds": "Your proceeds",
@@ -651,9 +654,6 @@
   "settings_backup_seed": "Backup",
   "settings_contact_support": "Contact us",
   "settings_delete_account": "Delete account",
-  "settings_delete_alert_button": "Delete account and data",
-  "settings_delete_alert_caption": "This action will delete your account and all data from this application.",
-  "settings_delete_alert_title": "\uD83D\uDEA8\uD83D\uDEA8\uD83D\uDEA8%{space}Are you sure you want to delete your account?",
   "settings_jettons_list": "Tokens",
   "settings_legal_documents": "Legal",
   "language": {
@@ -857,7 +857,7 @@
   "swap_title": "Swap",
   "tab_browser": "Browser",
   "tab_nft": "NFTs",
-  "tab_settings": "Settings",
+  "tab_collectibles": "Purchases",
   "tab_swap": "Swap",
   "tab_wallet": "Wallet",
   "today": "Today",
@@ -954,7 +954,7 @@
   "transaction_wallet_initialized_date": "%{date}",
   "transaction_your_bid": "Your bid",
   "transfer_pending_by_battery_error": "Another transaction is handling by battery",
-  "transfer_deeplink_unknown_jetton_error" : "Unknown token",
+  "transfer_deeplink_unknown_jetton_error": "Unknown token",
   "transfer_deeplink_address_error": "Incorrect recipient address",
   "transfer_deeplink_unknown_token": "Unknown token",
   "transfer_deeplink_wrong_params": "Wrong parameters",
@@ -990,6 +990,7 @@
         "stakingFee": "%{count} TON needed for transaction. Estimated fee %{fee} TON will be deducted, the rest will be refunded.",
         "stakingDeposit": "Minimum balance for participate:\n%{amount} %{currency}\n",
         "title": "Insufficient funds",
+        "title_multiwallet": "Insufficient funds in wallet",
         "toBePaid": "To be paid: %{amount} %{currency}\n",
         "withFees": "+ blockchain fees.\n",
         "yourBalance": "Your balance: %{balance} %{currency}."
@@ -1042,6 +1043,8 @@
     "screen_title": "Wallet",
     "send_btn": "Send",
     "swap_btn": "Swap",
+    "scan_btn": "Scan",
+    "stake_btn": "Stake",
     "tonkens_tab_lable": "Tokens",
     "updated_at": "Updated on %{value}",
     "inscriptions_tab_label": "Inscriptions"
@@ -1202,5 +1205,20 @@
   "buy_ton": {
     "title": "Buy TON",
     "subtitle": "Instantly with a bank card"
+  },
+  "logout_modal": {
+    "title": "Sign Out",
+    "caption": "Wallet keys will be erased from this device.",
+    "delete_title": "Delete Wallet Data",
+    "delete_caption": "Wallet keys and all personal data will be erased from this device.",
+    "agreement": "I have a backup copy of recovery phrase",
+    "backup_button": "Back up",
+    "logout_button": "Sign Out",
+    "delete_button": "Delete Wallet Data"
+  },
+  "about_risk_modal": {
+    "description": "The total value of tokens that will be sent from your wallet. Refunds are not included in the total value.",
+    "description_with_nft": "The total value of tokens, excluding the cost of NFTs, that will be sent from your wallet. Refunds are not included in the total value.",
+    "ok_button": "OK"
   }
 }

@@ -16,6 +16,9 @@ import { MainStackRouteNames } from '$navigation';
 import { useDispatch } from 'react-redux';
 import { walletActions } from '$store/wallet';
 import { useNavigation } from '@tonkeeper/router';
+import { network } from '@tonkeeper/core';
+import { config } from '$config';
+import DeviceInfo from 'react-native-device-info';
 
 const HEIGHT_RATIO = deviceHeight / 844;
 
@@ -31,10 +34,30 @@ export const StartScreen = memo(() => {
   const logoShapesPosX = origShapesWidth / 2 - dimensions.width / 2;
   const logoShapesPosY = origShapesHeight / 2 - (origShapesHeight * ratioHeight) / 2;
 
+  const unsubscribeNotifications = useCallback(async () => {
+    // unsubscribe from all notifications, if app was reinstalled
+    try {
+      const deviceId = DeviceInfo.getUniqueId();
+      const endpoint = `${config.get('tonapiIOEndpoint')}/unsubscribe`;
+
+      await network.post(endpoint, {
+        params: {
+          device: deviceId,
+        },
+      });
+    } catch {}
+  }, []);
+
   const handleCreatePress = useCallback(() => {
     dispatch(walletActions.generateVault());
+    unsubscribeNotifications();
     nav.navigate(MainStackRouteNames.CreateWalletStack);
-  }, [dispatch, nav]);
+  }, [dispatch, nav, unsubscribeNotifications]);
+
+  const handleImportPress = useCallback(() => {
+    unsubscribeNotifications();
+    nav.navigate(MainStackRouteNames.ImportWalletStack);
+  }, [nav, unsubscribeNotifications]);
 
   return (
     <Screen>
@@ -79,7 +102,7 @@ export const StartScreen = memo(() => {
           <Button
             title={t('start_screen.import_wallet_button')}
             color="secondary"
-            navigate={MainStackRouteNames.ImportWalletStack}
+            onPress={handleImportPress}
           />
         </View>
       </View>

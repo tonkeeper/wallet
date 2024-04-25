@@ -2,7 +2,7 @@ import { InscriptionBalance, TonAPI } from '@tonkeeper/core/src/TonAPI';
 import { Storage } from '@tonkeeper/core/src/declarations/Storage';
 import { State } from '@tonkeeper/core/src/utils/State';
 
-type TonInscriptionsState = {
+export type TonInscriptionsState = {
   items: InscriptionBalance[];
   isLoading: boolean;
 };

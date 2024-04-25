@@ -52,6 +52,7 @@ import {
 import { getTimeSec } from '$utils/getTimeSec';
 import { Toast } from '$store';
 import { config } from '$config';
+import { NetworkOverloadedError } from '@tonkeeper/shared/utils/blockchain';
 
 const tokensWithAllowedEncryption = [TokenType.TON, TokenType.Jetton];
 
@@ -259,18 +260,20 @@ export const Send: FC<SendProps> = ({ route }) => {
       setPreparing(false);
     }
   }, [
-    amount,
-    comment,
-    currency,
-    decimals,
+    recipient,
     dispatch,
-    isCommentEncrypted,
+    currencyAdditionalParams,
+    currency,
+    parsedAmount,
+    amount.all,
+    amount.value,
     tokenType,
     jettonWalletAddress,
-    parsedAmount,
-    recipient,
-    trcPayload,
+    decimals,
+    comment,
+    isCommentEncrypted,
     trcToken,
+    trcPayload,
   ]);
 
   const unlock = useUnlockVault();
@@ -323,9 +326,13 @@ export const Send: FC<SendProps> = ({ route }) => {
               setSending(false);
               onDone();
             },
-            onFail: () => {
+            onFail: (error) => {
               setSending(false);
-              onFail(new DismissedActionError());
+              onFail(
+                error instanceof NetworkOverloadedError
+                  ? error
+                  : new DismissedActionError(),
+              );
             },
           }),
         );

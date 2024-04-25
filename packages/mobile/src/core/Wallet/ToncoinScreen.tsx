@@ -6,17 +6,17 @@ import { Button, PopupMenu, PopupMenuItem } from '$uikit';
 import { MainStackRouteNames, openDAppBrowser, openSend } from '$navigation';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { walletActions } from '$store/wallet';
-import { Linking, View } from 'react-native';
+import { View } from 'react-native';
 import { delay, ns } from '$utils';
 import { CryptoCurrencies, CryptoCurrency, Decimals } from '$shared/constants';
-import { i18n, t } from '@tonkeeper/shared/i18n';
+import { t } from '@tonkeeper/shared/i18n';
 import { useNavigation } from '@tonkeeper/router';
 import { Chart } from '$shared/components/Chart/new/Chart';
 import { formatter } from '$utils/formatter';
 import { Toast } from '$store';
 import { useFlags } from '$utils/flags';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
-import { Icon, Screen, TonIcon, IconButton, IconButtonList } from '@tonkeeper/uikit';
+import { Icon, Screen, TonIcon, ActionButtons, Spacer } from '@tonkeeper/uikit';
 
 import { ActivityList } from '@tonkeeper/shared/components';
 import { useTonActivityList } from '@tonkeeper/shared/query/hooks/useTonActivityList';
@@ -114,22 +114,6 @@ const HeaderList = memo(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleOpenAction = useCallback(async (action: any) => {
-    try {
-      let shouldOpenInBrowser = action.openInBrowser;
-      if (action.scheme) {
-        shouldOpenInBrowser = await Linking.canOpenURL(action.scheme);
-      }
-      if (shouldOpenInBrowser) {
-        return Linking.openURL(action.url);
-      }
-      openDAppBrowser(action.url);
-    } catch (e) {
-      console.log(e);
-      openDAppBrowser(action.url);
-    }
-  }, []);
-
   const { amount, tokenPrice } = useWalletInfo();
 
   const handleReceive = useCallback(() => {
@@ -146,13 +130,6 @@ const HeaderList = memo(() => {
     }
     openSend({ currency: 'ton' });
   }, [wallet]);
-
-  const handleOpenExchange = useCallback(() => {
-    if (!wallet) {
-      return openRequireWalletModal();
-    }
-    nav.openModal('Exchange');
-  }, [nav, wallet]);
 
   const handlePressSwap = useCallback(() => {
     if (wallet) {
@@ -196,39 +173,36 @@ const HeaderList = memo(() => {
           </S.AmountWrapper>
           <TonIcon size="medium" showDiamond />
         </S.FlexRow>
-        <S.Divider style={{ marginBottom: ns(16) }} />
-        <S.ActionsContainer>
-          <IconButtonList horizontalIndent={i18n.locale === 'ru' ? 'large' : 'small'}>
-            {!isWatchOnly ? (
-              <IconButton
-                onPress={handleSend}
-                iconName="ic-arrow-up-28"
-                title={t('wallet.send_btn')}
-              />
-            ) : null}
-            <IconButton
-              onPress={handleReceive}
-              iconName="ic-arrow-down-28"
-              title={t('wallet.receive_btn')}
-            />
-            {!isWatchOnly ? (
-              <IconButton
-                onPress={handleOpenExchange}
-                iconName="ic-usd-28"
-                title={t('wallet.buy_btn')}
-              />
-            ) : null}
-            {!flags.disable_swap && !isWatchOnly && (
-              <IconButton
-                onPress={handlePressSwap}
-                iconName="ic-swap-horizontal-28"
-                title={t('wallet.swap_btn')}
-              />
-            )}
-          </IconButtonList>
-        </S.ActionsContainer>
-        <S.Divider />
       </S.TokenInfoWrap>
+      <Spacer y={24} />
+      <S.ActionsWrap>
+        <ActionButtons
+          buttons={[
+            {
+              id: 'send',
+              disabled: isWatchOnly,
+              onPress: handleSend,
+              icon: 'ic-arrow-up-outline-28',
+              title: t('wallet.send_btn'),
+            },
+            {
+              id: 'receive',
+              onPress: handleReceive,
+              icon: 'ic-arrow-down-outline-28',
+              title: t('wallet.receive_btn'),
+            },
+            {
+              id: 'swap',
+              disabled: isWatchOnly,
+              onPress: handlePressSwap,
+              icon: 'ic-swap-horizontal-outline-28',
+              title: t('wallet.swap_btn'),
+              visible: !wallet.isTestnet && !flags.disable_swap,
+            },
+          ]}
+        />
+      </S.ActionsWrap>
+      <Spacer y={24} />
       {shouldShowChart && (
         <>
           <S.ChartWrap>

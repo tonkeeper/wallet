@@ -28,7 +28,10 @@ export { TransitionOpacity } from './components/TransitionOpacity';
 export * from './components/Flash';
 export * from './components/BlockingLoader';
 export { Switch } from './components/Switch';
+export * from './components/ActionButton';
 export * from './components/AnimatedBatteryIcon';
+export { WalletIcon } from './components/WalletIcon';
+export * from './components/SlideButton';
 
 // Containers
 export { HeaderButtonHitSlop } from './containers/Screen/utils/constants';

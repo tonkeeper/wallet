@@ -26,7 +26,11 @@ import {
 
 import { tk } from '$wallet';
 import { Address, Cell, internal } from '@ton/core';
-import { emulateBoc, sendBoc } from '@tonkeeper/shared/utils/blockchain';
+import {
+  NetworkOverloadedError,
+  emulateBoc,
+  sendBoc,
+} from '@tonkeeper/shared/utils/blockchain';
 import { OperationEnum, TonAPI, TypeEnum } from '@tonkeeper/core/src/TonAPI';
 import { setBalanceForEmulation } from '@tonkeeper/shared/utils/wallet';
 import { WalletNetwork } from '$wallet/WalletTypes';
@@ -34,6 +38,7 @@ import { createTonApiInstance } from '$wallet/utils';
 import { config } from '$config';
 import { toNano } from '$utils';
 import { BatterySupportedTransaction } from '$wallet/managers/BatteryManager';
+import { compareAddresses } from '$utils/address';
 
 const TonWeb = require('tonweb');
 
@@ -324,9 +329,15 @@ export class TonWallet {
   private async calcFee(
     boc: string,
     params?,
-    withRelayer = true,
+    withRelayer = false,
+    forceRelayer = false,
   ): Promise<[BigNumber, boolean]> {
-    const { emulateResult, battery } = await emulateBoc(boc, params, withRelayer);
+    const { emulateResult, battery } = await emulateBoc(
+      boc,
+      params,
+      withRelayer,
+      forceRelayer,
+    );
     return [new BigNumber(emulateResult.event.extra).multipliedBy(-1), battery];
   }
 
@@ -423,6 +434,7 @@ export class TonWallet {
       tk.wallet.battery.state.data.supportedTransactions[
         BatterySupportedTransaction.Jetton
       ],
+      compareAddresses(address, tk.wallet.battery.fundReceiver),
     );
 
     return [Ton.fromNano(feeNano.toString()), isBattery];
@@ -469,7 +481,7 @@ export class TonWallet {
     }
 
     const excessesAccount = sendWithBattery
-      ? await tk.wallet.battery.getExcessesAccount()
+      ? tk.wallet.battery.excessesAccount
       : tk.wallet.address.ton.raw;
 
     const boc = this.createJettonTransfer({
@@ -493,6 +505,7 @@ export class TonWallet {
         tk.wallet.battery.state.data.supportedTransactions[
           BatterySupportedTransaction.Jetton
         ],
+        compareAddresses(address, tk.wallet.battery.fundReceiver),
       );
       feeNano = fee;
       isBattery = battery;
@@ -518,6 +531,9 @@ export class TonWallet {
     try {
       await sendBoc(boc, isBattery);
     } catch (e) {
+      if (e instanceof NetworkOverloadedError) {
+        throw e;
+      }
       if (!store.getState().main.isTimeSynced) {
         throw new Error('wrong_time');
       }
@@ -625,9 +641,7 @@ export class TonWallet {
         ? AddressFormatter.isBounceable(address)
         : false,
     });
-
     const [feeNano, isBattery] = await this.calcFee(boc);
-
     return [Ton.fromNano(feeNano.toString()), isBattery];
   }
 
@@ -730,6 +744,9 @@ export class TonWallet {
     try {
       await sendBoc(boc, false);
     } catch (e) {
+      if (e instanceof NetworkOverloadedError) {
+        throw e;
+      }
       if (!store.getState().main.isTimeSynced) {
         throw new Error('wrong_time');
       }

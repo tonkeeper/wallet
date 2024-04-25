@@ -291,7 +291,7 @@ export const NFTSend: FC<Props> = (props) => {
         throw new CanceledActionError();
       }
 
-      const excessesAccount = isBattery && (await wallet.battery.getExcessesAccount());
+      const excessesAccount = isBattery && tk.wallet.battery.excessesAccount;
 
       const nftTransferMessages = [
         internal({

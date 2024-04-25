@@ -56,7 +56,11 @@ export const TonIcon = memo<TonIconProps>((props) => {
   return (
     <View style={containerStyle}>
       {showDiamond && hasDiamond ? (
-        <TonDiamondIcon id={accent} size={containerSize} nftIcon={accentTonIcon} />
+        <TonDiamondIcon
+          id={accent}
+          size={containerSize}
+          nftIcon={{ uri: accentTonIcon, size: containerSize }}
+        />
       ) : (
         <Icon name="ic-ton-96" color="constantWhite" size={containerSize} />
       )}
