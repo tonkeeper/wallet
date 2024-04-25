@@ -305,6 +305,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
         jettonActivityList.sections.length === 0 && (
           <View style={styles.buttonContainer}>
             <LinearGradient
+              pointerEvents="box-none"
               style={styles.buyButtonGradient.static}
               colors={[
                 'rgba(16, 22, 31, 0)',
@@ -313,7 +314,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
               ]}
             />
             <View style={styles.buyButtonContent}>
-              <Button onPress={handleOpenExchange} color="tether" title={'Buy USD₮'} />
+              <Button onPress={handleOpenExchange} color="tether" title={t('buy_usdt')} />
             </View>
           </View>
         )}
@@ -347,7 +348,7 @@ const styles = Steezy.create(({ safeArea }) => ({
     left: 0,
     right: 0,
     bottom: 0,
-    height: 140,
+    height: 165,
     width: '100%',
   },
   buyButtonContent: {
