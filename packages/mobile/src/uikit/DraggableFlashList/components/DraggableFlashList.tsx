@@ -1,5 +1,12 @@
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { ListRenderItem, LayoutChangeEvent } from 'react-native';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { ListRenderItem, FlatListProps, LayoutChangeEvent } from 'react-native';
 import { FlatList, Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   runOnJS,
@@ -8,10 +15,11 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
+import CellRendererComponent from './CellRendererComponent';
 import { DEFAULT_PROPS } from '../constants';
 import PlaceholderItem from './PlaceholderItem';
 import RowItem from './RowItem';
-import { DraggableFlashListProps } from '../types';
+import { DraggableFlatListProps } from '../types';
 import PropsProvider from '../context/propsContext';
 import AnimatedValueProvider, {
   useAnimatedValues,
@@ -22,27 +30,24 @@ import { useAutoScroll } from '../hooks/useAutoScroll';
 import { useStableCallback } from '../hooks/useStableCallback';
 import ScrollOffsetListener from './ScrollOffsetListener';
 import { typedMemo } from '../utils';
-import { FlashList, FlashListProps } from '@shopify/flash-list';
-import { Steezy } from '$styles';
-import CellRendererComponent from '$uikit/DraggableFlashList/components/CellRendererComponent';
 
-type FFlashListProps<T> = Animated.AnimateProps<
-  FlashListProps<T> & {
-    ref: React.Ref<FlashList<T>>;
+type RNGHFlatListProps<T> = Animated.AnimateProps<
+  FlatListProps<T> & {
+    ref: React.Ref<FlatList<T>>;
     simultaneousHandlers?: React.Ref<any> | React.Ref<any>[];
   }
 >;
 
 type OnViewableItemsChangedCallback<T> = Exclude<
-  FFlashListProps<T>['onViewableItemsChanged'],
+  FlatListProps<T>['onViewableItemsChanged'],
   undefined | null
 >;
 
-const AnimatedFlashList = Animated.createAnimatedComponent(FlatList) as unknown as <T>(
-  props: DraggableFlashListProps<T>,
+const AnimatedFlatList = Animated.createAnimatedComponent(FlatList) as unknown as <T>(
+  props: RNGHFlatListProps<T>,
 ) => React.ReactElement;
 
-function DraggableFlashListInner<T>(props: DraggableFlashListProps<T>) {
+function DraggableFlatListInner<T>(props: DraggableFlatListProps<T>) {
   const {
     cellDataRef,
     containerRef,
@@ -166,6 +171,14 @@ function DraggableFlashListInner<T>(props: DraggableFlashListProps<T>) {
     isTouchActiveNative.value = false;
   };
 
+  const extraData = useMemo(
+    () => ({
+      activeKey,
+      extraData: props.extraData,
+    }),
+    [activeKey, props.extraData],
+  );
+
   const renderItem: ListRenderItem<T> = useCallback(
     ({ item, index }) => {
       const key = keyExtractor(item, index);
@@ -243,6 +256,7 @@ function DraggableFlashListInner<T>(props: DraggableFlashListProps<T>) {
 
   const panGesture = Gesture.Pan()
     .enabled(true)
+    .activateAfterLongPress(100)
     .onBegin((evt) => {
       gestureDisabled.value = disabled.value;
       if (gestureDisabled.value) return;
@@ -344,19 +358,19 @@ function DraggableFlashListInner<T>(props: DraggableFlashListProps<T>) {
           {props.renderPlaceholder && (
             <PlaceholderItem renderPlaceholder={props.renderPlaceholder} />
           )}
-          <AnimatedFlashList
+          <AnimatedFlatList
             {...props}
             data={props.data}
             onViewableItemsChanged={onViewableItemsChanged}
+            CellRendererComponent={CellRendererComponent}
             ref={flatlistRef}
             onContentSizeChange={onListContentSizeChange}
-            CellRendererComponent={CellRendererComponent}
             scrollEnabled={!activeKey && scrollEnabled}
             renderItem={renderItem}
+            extraData={extraData}
             keyExtractor={keyExtractor}
             onScroll={scrollHandler}
             scrollEventThrottle={16}
-            showsVerticalScrollIndicator={false}
             simultaneousHandlers={props.simultaneousHandlers}
             removeClippedSubviews={false}
           />
@@ -372,8 +386,8 @@ function DraggableFlashListInner<T>(props: DraggableFlashListProps<T>) {
   );
 }
 
-function DraggableFlashList<T>(
-  props: DraggableFlashListProps<T>,
+function DraggableFlatList<T>(
+  props: DraggableFlatListProps<T>,
   ref?: React.ForwardedRef<FlatList<T>> | null,
 ) {
   return (
@@ -387,16 +401,10 @@ function DraggableFlashList<T>(
   );
 }
 
-const MemoizedInner = typedMemo(DraggableFlashListInner);
+const MemoizedInner = typedMemo(DraggableFlatListInner);
 
 // Generic forwarded ref type assertion taken from:
 // https://fettblog.eu/typescript-react-generic-forward-refs/#option-1%3A-type-assertion
-export default React.forwardRef(DraggableFlashList) as <T>(
-  props: DraggableFlashListProps<T> & { ref?: React.ForwardedRef<FlashList<T>> },
-) => ReturnType<typeof DraggableFlashList>;
-
-export const styles = Steezy.create({
-  container: {
-    flex: 1,
-  },
-});
+export default React.forwardRef(DraggableFlatList) as <T>(
+  props: DraggableFlatListProps<T> & { ref?: React.ForwardedRef<FlatList<T>> },
+) => ReturnType<typeof DraggableFlatList>;

@@ -84,7 +84,7 @@ export const WalletScreen = memo(({ navigation }) => {
         <Button
           color={'secondary'}
           size={'small'}
-          title={'Manage'}
+          title={t('manage_home_screen.manage')}
           onPress={() => nav.navigate(AppStackRouteNames.ManageHomeScreen)}
         />
       </View>

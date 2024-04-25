@@ -15,7 +15,12 @@ import { CountryButton } from '@tonkeeper/shared/components';
 import { config } from '$config';
 import { useWallet } from '@tonkeeper/shared/hooks';
 
-export const ExchangeModal = () => {
+export interface ExchangeModalParams {
+  filterMethods?: string[];
+  hideBuySellSwitch?: boolean;
+}
+
+export const ExchangeModal = (params: ExchangeModalParams) => {
   const [showAll, setShowAll] = React.useState(false);
   const { defaultLayout, layoutByCountry, buy, sell } = useMethodsToBuyStore(
     (state) => state,
@@ -33,31 +38,33 @@ export const ExchangeModal = () => {
       defaultLayout;
 
     return [buy, sell].map((tab) =>
-      tab.map((category) => {
-        if (category.type !== CategoryType.BUY) {
-          return category;
-        }
+      tab
+        .filter((cat) => !params.filterMethods || params.filterMethods.includes(cat.type))
+        .map((category) => {
+          if (category.type !== CategoryType.BUY) {
+            return category;
+          }
 
-        const items =
-          showAll || allRegions
-            ? category.items
-            : category.items.filter((item) => usedLayout.methods.includes(item.id));
+          const items =
+            showAll || allRegions
+              ? category.items
+              : category.items.filter((item) => usedLayout.methods.includes(item.id));
 
-        return {
-          ...category,
-          items: items.sort((a, b) => {
-            const aIdx = usedLayout.methods.indexOf(a.id);
-            const bIdx = usedLayout.methods.indexOf(b.id);
-            if (aIdx === -1) {
-              return 1;
-            }
-            if (bIdx === -1) {
-              return -1;
-            }
-            return aIdx - bIdx;
-          }),
-        };
-      }),
+          return {
+            ...category,
+            items: items.sort((a, b) => {
+              const aIdx = usedLayout.methods.indexOf(a.id);
+              const bIdx = usedLayout.methods.indexOf(b.id);
+              if (aIdx === -1) {
+                return 1;
+              }
+              if (bIdx === -1) {
+                return -1;
+              }
+              return aIdx - bIdx;
+            }),
+          };
+        }),
     );
   }, [layoutByCountry, defaultLayout, buy, sell, selectedCountry, showAll, allRegions]);
 
@@ -75,6 +82,8 @@ export const ExchangeModal = () => {
 
   const categories = segmentIndex === 0 ? filteredBuy : filteredSell;
 
+  const hideBuySellSwitch = params.hideBuySellSwitch ?? watchOnly;
+
   return (
     <Modal>
       <Modal.Header
@@ -83,7 +92,7 @@ export const ExchangeModal = () => {
           <CountryButton selectedCountry={selectedCountry} onPress={openChooseCountry} />
         }
         title={
-          watchOnly ? (
+          hideBuySellSwitch ? (
             categories && categories[0] && categories[0].title
           ) : (
             <SegmentedControl
@@ -105,7 +114,7 @@ export const ExchangeModal = () => {
               {categories.map((category, cIndex) => (
                 <React.Fragment key={cIndex}>
                   {cIndex > 0 ? <Spacer y={16} /> : null}
-                  {!(watchOnly && cIndex === 0) ? (
+                  {!(hideBuySellSwitch && cIndex === 0) ? (
                     <S.TitleContainer>
                       <Text type="h3">{category.title}</Text>
                     </S.TitleContainer>

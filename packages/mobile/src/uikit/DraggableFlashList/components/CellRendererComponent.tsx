@@ -142,7 +142,7 @@ function CellRendererComponent<T>(props: Props<T>) {
         global.LayoutAnimationRepository.registerConfig(t, stashedConfig);
       }
     })(tag, layoutAnimationDisabled);
-  }, [layoutAnimationDisabled]);
+  }, [layoutAnimationDisabled, propsRef]);
 
   return (
     <Animated.View
@@ -159,7 +159,9 @@ function CellRendererComponent<T>(props: Props<T>) {
       style={[props.style, baseStyle, activeKey ? animStyle : styles.zeroTranslate]}
       pointerEvents={activeKey ? 'none' : 'auto'}
     >
-      <CellProvider isActive={isActive}>{children}</CellProvider>
+      <CellProvider isActiveDragging={!!activeKey} isActive={isActive}>
+        {children}
+      </CellProvider>
     </Animated.View>
   );
 }

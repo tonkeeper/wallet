@@ -1,4 +1,4 @@
-import { TonAPI } from '@tonkeeper/core/src/TonAPI';
+import { JettonVerificationType, TonAPI } from '@tonkeeper/core/src/TonAPI';
 import { Storage } from '@tonkeeper/core/src/declarations/Storage';
 import { TokenRate, TonRawAddress } from '../WalletTypes';
 import { Logger } from '@tonkeeper/core/src/utils/Logger';
@@ -7,6 +7,8 @@ import { JettonBalanceModel } from '../models/JettonBalanceModel';
 import { Address } from '@tonkeeper/core/src/formatters/Address';
 import { TokenApprovalManager } from './TokenApprovalManager';
 import { TonPriceManager } from './TonPriceManager';
+import { JettonMasterMethods, TETHER_JETTON_MASTER } from '@tonkeeper/core';
+import { compareAddresses } from '$utils/address';
 
 export type JettonsState = {
   jettonBalances: JettonBalanceModel[];
@@ -77,9 +79,48 @@ export class JettonsManager {
         currencies: ['TON', 'USD', currency].join(','),
       });
 
+      const tetherIdx = accountJettons.balances.findIndex((bal) =>
+        compareAddresses(bal.jetton.address, TETHER_JETTON_MASTER),
+      );
+
+      if (tetherIdx === -1) {
+        const tether = await this.tonapi.jettons.getJettonInfo(TETHER_JETTON_MASTER);
+        const rate = await this.tonapi.rates.getRates({
+          tokens: TETHER_JETTON_MASTER,
+          currencies: ['TON', 'USD', currency].join(','),
+        });
+
+        const walletAddress =
+          await this.tonapi.blockchain.execGetMethodForBlockchainAccount({
+            accountId: TETHER_JETTON_MASTER,
+            methodName: JettonMasterMethods.GetWalletAddress,
+            args: [this.tonRawAddress],
+          });
+
+        accountJettons.balances.push({
+          jetton: {
+            ...tether.metadata,
+            decimals: Number(tether.metadata.decimals),
+            verification: JettonVerificationType.Whitelist,
+            image: tether.metadata.image ?? '',
+          },
+          price: rate.rates[TETHER_JETTON_MASTER],
+          balance: '0',
+          wallet_address: {
+            address: walletAddress.decoded.jetton_wallet_address,
+            is_wallet: false,
+            is_scam: true,
+          },
+        });
+      }
+
       const jettonBalances = accountJettons.balances
         .filter((item) => {
-          return item.balance !== '0' || (item.lock && item.lock.amount !== '0');
+          return (
+            item.jetton.address === TETHER_JETTON_MASTER ||
+            item.balance !== '0' ||
+            (item.lock && item.lock.amount !== '0')
+          );
         })
         .map((item) => {
           return new JettonBalanceModel(item);

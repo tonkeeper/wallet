@@ -3,7 +3,6 @@ import {
   Icon,
   IconNames,
   List,
-  Spacer,
   Steezy,
   Text,
   Toast,
@@ -14,7 +13,6 @@ import { t } from '@tonkeeper/shared/i18n';
 import { tk } from '@tonkeeper/mobile/src/wallet';
 import { Platform } from 'react-native';
 import { useIAP } from 'react-native-iap';
-import { SkeletonLine } from '@tonkeeper/mobile/src/uikit/Skeleton/SkeletonLine';
 import { useTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
 import { CryptoCurrencies } from '@tonkeeper/mobile/src/shared/constants';
 import BigNumber from 'bignumber.js';
@@ -82,6 +80,8 @@ export const RefillBatteryIAP = memo(() => {
         const purchasesArray = Array.isArray(requestedPurchase)
           ? requestedPurchase
           : [requestedPurchase];
+
+        console.log(purchasesArray);
 
         if (Platform.OS === 'ios') {
           const processedTransactions = await tk.wallet.battery.makeIosPurchase(

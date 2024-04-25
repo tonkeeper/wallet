@@ -52,14 +52,23 @@ export class WalletContentReceiver {
     this.logger = logger.extend('WalletListContent');
     this.providersList = [
       new TONContentProvider(this.isEditableMode, this.tonPrice, this.tonBalances),
-      new TokensContentProvider(this.tonPrice, this.stakingJettons, this.jettonBalances),
+      new TokensContentProvider(
+        this.isEditableMode,
+        this.tonPrice,
+        this.stakingJettons,
+        this.jettonBalances,
+      ),
       new StakingContentProvider(
         this.isEditableMode,
         this.tonPrice,
         this.jettonBalances,
         this.staking,
       ),
-      new InscriptionsContentProvider(this.tonPrice, this.inscriptions),
+      new InscriptionsContentProvider(
+        this.isEditableMode,
+        this.tonPrice,
+        this.inscriptions,
+      ),
     ];
     this.subscribeToProvidersChanges(this.providersList);
   }
@@ -78,7 +87,8 @@ export class WalletContentReceiver {
       let cellItem = cell;
 
       cellItem.isHidden = !this.tokenApproval.filterAssetFn(cell);
-      cellItem.isPinned = !!this.tokenApproval.getPinnedIndex(cell.key);
+      const pinnedIdx = this.tokenApproval.getPinnedIndex(cell.key);
+      cellItem.pinnedIndex = pinnedIdx !== -1 ? pinnedIdx : undefined;
 
       if (this.isEditableMode || !cellItem.isHidden) {
         acc.push(cell);
@@ -89,20 +99,18 @@ export class WalletContentReceiver {
     content = content.sort((a, b) => {
       const comparedPriority = b.renderPriority - a.renderPriority;
 
+      // Костыль для TON, надо будет убрать
       if (b.renderPriority === 999) {
         return 1;
       }
 
       if (!this.isEditableMode) {
-        if (a.isPinned && !b.isPinned) {
+        if (a.pinnedIndex !== undefined && b.pinnedIndex === undefined) {
           return -1;
-        } else if (!a.isPinned && b.isPinned) {
+        } else if (a.pinnedIndex === undefined && b.pinnedIndex !== undefined) {
           return 1;
-        } else if (a.isPinned && b.isPinned) {
-          return this.tokenApproval.getPinnedIndex(b.key) <
-            this.tokenApproval.getPinnedIndex(a.key)
-            ? 1
-            : -1;
+        } else if (a.pinnedIndex !== undefined && b.pinnedIndex !== undefined) {
+          return b.pinnedIndex < a.pinnedIndex ? 1 : -1;
         }
       }
 

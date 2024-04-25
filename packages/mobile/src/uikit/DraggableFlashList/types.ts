@@ -1,9 +1,14 @@
 import React from 'react';
-import { LayoutChangeEvent, StyleProp, ViewStyle } from 'react-native';
+import {
+  FlatList,
+  FlatListProps,
+  LayoutChangeEvent,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
 import { useAnimatedValues } from './context/animatedValueContext';
 import Animated, { AnimateProps, WithSpringConfig } from 'react-native-reanimated';
 import { DEFAULT_PROPS } from './constants';
-import { FlashList, FlashListProps } from '@shopify/flash-list';
 
 export type DragEndParams<T> = {
   data: T[];
@@ -14,8 +19,8 @@ type Modify<T, R> = Omit<T, keyof R> & R;
 
 type DefaultProps = Readonly<typeof DEFAULT_PROPS>;
 
-export type DraggableFlashListProps<T> = Modify<
-  FlashListProps<T>,
+export type DraggableFlatListProps<T> = Modify<
+  FlatListProps<T>,
   {
     data: T[];
     activationDistance?: number;
@@ -54,14 +59,15 @@ export type RenderItemParams<T> = {
   getIndex: () => number | undefined; // This is technically a "last known index" since cells don't necessarily rerender when their index changes
   drag: () => void;
   isActive: boolean;
+  isActiveDragging: boolean;
 };
 
 export type RenderItem<T> = (params: RenderItemParams<T>) => React.ReactNode;
 
 export type AnimatedFlatListType = <T>(
   props: Animated.AnimateProps<
-    FlashListProps<T> & {
-      ref: React.Ref<FlashList<T>>;
+    FlatListProps<T> & {
+      ref: React.Ref<FlatList<T>>;
       simultaneousHandlers?: React.Ref<any> | React.Ref<any>[];
     }
   >,

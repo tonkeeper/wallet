@@ -1,6 +1,7 @@
 import { Storage } from '@tonkeeper/core/src/declarations/Storage';
 import { State } from '@tonkeeper/core/src/utils/State';
 import { Address } from '@tonkeeper/core/src/formatters/Address';
+import { TETHER_JETTON_MASTER } from '@tonkeeper/core';
 
 export enum TokenApprovalStatus {
   Approved = 'approved',
@@ -22,14 +23,14 @@ export interface ApprovalStatus {
 
 export type TokenApprovalState = {
   tokens: Record<string, ApprovalStatus>;
-  pinned: Record<string, number>;
+  pinnedOrder: string[];
   hasWatchedCollectiblesTab: boolean;
 };
 
 export class TokenApprovalManager {
   static readonly INITIAL_STATE: TokenApprovalState = {
     tokens: {},
-    pinned: {},
+    pinnedOrder: [TETHER_JETTON_MASTER],
     hasWatchedCollectiblesTab: false,
   };
 
@@ -111,25 +112,20 @@ export class TokenApprovalManager {
   }
 
   public togglePinAsset(assetKey: string) {
-    const { pinned } = this.state.data;
-    const isPinned = pinned[assetKey] !== undefined;
-    const pinnedCopy = { ...pinned };
+    const { pinnedOrder } = this.state.data;
+    const isPinned = pinnedOrder.includes(assetKey);
+    let pinnedCopy = [...pinnedOrder];
 
     if (isPinned) {
-      delete pinnedCopy[assetKey];
+      pinnedCopy = pinnedCopy.filter((item) => item !== assetKey);
     } else {
-      pinnedCopy[assetKey] = Object.keys(pinnedCopy).length;
+      pinnedCopy = [...pinnedCopy, assetKey];
     }
 
-    this.state.set({ pinned: pinnedCopy });
+    this.state.set({ pinnedOrder: pinnedCopy });
   }
 
-  public reorderPinnedAssets(assetKeys: string[]) {
-    const pinned = assetKeys.reduce((acc, key, index) => {
-      acc[key] = index;
-      return acc;
-    }, {});
-
-    this.state.set({ pinned });
+  public reorderPinnedAssets(pinnedOrder: string[]) {
+    this.state.set({ pinnedOrder });
   }
 }

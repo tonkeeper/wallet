@@ -1,13 +1,22 @@
 import React, { memo, useCallback } from 'react';
 import { Steezy, Text, Toast, TouchableOpacity } from '@tonkeeper/uikit';
 import { t } from '../../i18n';
-import { getPendingPurchasesIOS, finishTransaction } from 'react-native-iap';
+import {
+  getPendingPurchasesIOS,
+  finishTransaction,
+  IapIosSk2,
+  setup,
+} from 'react-native-iap';
 import { Platform } from 'react-native';
 import { tk } from '@tonkeeper/mobile/src/wallet';
 
 export const RestorePurchases = memo(() => {
   const handleRestorePurchases = useCallback(async () => {
     try {
+      setup({ storekitMode: 'STOREKIT2_MODE' });
+      await IapIosSk2.sync();
+      const refund = IapIosSk2.beginRefundRequest('SmallPack');
+      return;
       const purchases = await getPendingPurchasesIOS();
 
       if (!purchases.length) {

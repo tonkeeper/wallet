@@ -1,25 +1,20 @@
-import React, { memo, ReactNode } from 'react';
-import { AssetCell, View } from '@tonkeeper/uikit';
+import React, { memo, useMemo } from 'react';
+import { AssetCell, Spacer, Steezy, Text, View } from '@tonkeeper/uikit';
 import { NavBar } from '$uikit';
-import DraggableFlashList from '$uikit/DraggableFlashList';
-import { CellItemToRender } from '../../tabs/Wallet/content-providers/utils/types';
 import { usePreparedWalletContent } from '../../tabs/Wallet/content-providers/utils/usePreparedWalletContent';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { NavBarHeight } from '$shared/constants';
 import { AssetCellMode } from '@tonkeeper/uikit/src/components/AssetCell';
 import { tk } from '$wallet';
 import {
   TokenApprovalStatus,
   TokenApprovalType,
 } from '$wallet/managers/TokenApprovalManager';
+import DraggableFlashList, { DragEndParams } from '$uikit/DraggableFlashList';
+import { CellItemToRender } from '../../tabs/Wallet/content-providers/utils/types';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import { t } from '@tonkeeper/shared/i18n';
 
-export interface ManageHomeScreenProps {
-  children: ReactNode;
-}
-
-export const ManageHomeScreen = memo<ManageHomeScreenProps>((props) => {
+export const ManageHomeScreen = memo(() => {
   const preparedContent = usePreparedWalletContent(true);
-  const bottomInset = useSafeAreaInsets().bottom;
 
   const handleApprovalUpdate = (identifier: string) => {
     const newStatus =
@@ -35,25 +30,95 @@ export const ManageHomeScreen = memo<ManageHomeScreenProps>((props) => {
     );
   };
 
+  const handlePin = (identifier: string) => {
+    tk.wallet.tokenApproval.togglePinAsset(identifier);
+  };
+
+  const handleUpdateOrder = (items: DragEndParams<CellItemToRender>) => {
+    tk.wallet.tokenApproval.reorderPinnedAssets(items.data.map((item) => item.key));
+  };
+
+  const pinnedAssets = useMemo(
+    () =>
+      preparedContent
+        .filter((asset) => typeof asset.pinnedIndex === 'number')
+        .sort((a, b) => a.pinnedIndex! - b.pinnedIndex!)
+        .map((asset, idx, arr) => ({
+          ...asset,
+          isFirst: idx === 0,
+          isLast: idx === arr.length - 1,
+        })),
+    [preparedContent],
+  );
+
+  const DraggableList = useMemo(
+    () =>
+      pinnedAssets.length ? (
+        <View>
+          <View style={styles.headerContainer}>
+            <Text type="label1">{t('manage_home_screen.pinned')}</Text>
+          </View>
+          <DraggableFlashList<CellItemToRender>
+            key={'pinned-list'}
+            data={pinnedAssets}
+            onDragEnd={handleUpdateOrder}
+            itemExitingAnimation={FadeOut.duration(500)}
+            itemEnteringAnimation={FadeIn.duration(500)}
+            keyExtractor={(item) => item.key}
+            renderItem={({ item, drag, isActiveDragging }) => (
+              <AssetCell
+                onEyePress={handleApprovalUpdate}
+                onPinPress={handlePin}
+                item={item}
+                mode={AssetCellMode.DRAGGABLE}
+                drag={drag}
+                isActiveDragging={isActiveDragging}
+              />
+            )}
+          />
+          <Spacer y={16} />
+          <View style={styles.headerContainer}>
+            <Text type="label1">{t('manage_home_screen.all_assets')}</Text>
+            <Text color="textSecondary" type="body2">
+              {t('manage_home_screen.sorted_by_price')}
+            </Text>
+          </View>
+        </View>
+      ) : null,
+    [pinnedAssets],
+  );
+
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.container}>
       <NavBar isModal isClosedButton hideBackButton>
-        Home screen
+        {t('manage_home_screen.title')}
       </NavBar>
-      <DraggableFlashList<CellItemToRender>
-        onDragEnd={(order) => console.log(order)}
+      <Animated.FlatList
+        ListHeaderComponent={DraggableList}
+        data={preparedContent}
         keyExtractor={(item) => item.key}
-        renderItem={({ item, drag }) => (
+        renderItem={({ item }) => (
           <AssetCell
+            onPinPress={handlePin}
             onEyePress={handleApprovalUpdate}
             item={item}
             mode={AssetCellMode.EDITABLE}
-            drag={drag}
           />
         )}
-        contentContainerStyle={{ paddingBottom: NavBarHeight + bottomInset + 16 }}
-        data={preparedContent}
       />
     </View>
   );
+});
+
+const styles = Steezy.create({
+  container: {
+    flex: 1,
+  },
+  headerContainer: {
+    paddingHorizontal: 18,
+    height: 48,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
 });

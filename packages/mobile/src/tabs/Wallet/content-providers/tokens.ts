@@ -11,7 +11,7 @@ import { config } from '$config';
 import { JettonVerification } from '$store/models';
 import { t } from '@tonkeeper/shared/i18n';
 import { Steezy } from '$styles';
-import { Address } from '@tonkeeper/core';
+import { Address, TETHER_JETTON_MASTER } from '@tonkeeper/core';
 
 export class TokensContentProvider extends ContentProviderPrototype<{
   tonPrice: TonPriceDependency;
@@ -22,6 +22,7 @@ export class TokensContentProvider extends ContentProviderPrototype<{
   renderPriority = 0;
 
   constructor(
+    private isEditableMode: boolean,
     tonPrice: TonPriceDependency,
     stakingJettons: StakingJettonsDependency,
     jettonBalances: JettonBalancesDependency,
@@ -51,8 +52,18 @@ export class TokensContentProvider extends ContentProviderPrototype<{
       !config.get('disable_show_unverified_token') &&
       data.verification === JettonVerification.NONE;
 
+    const subtitle = isUnverifiedToken
+      ? t('approval.unverified_token')
+      : this.isEditableMode
+      ? formatter.format(data.balance, { currency: data.metadata.symbol })
+      : undefined;
+
     return {
       key: Address.parse(data.jettonAddress).toRaw(),
+      tag:
+        Address.parse(data.jettonAddress).toRaw() === TETHER_JETTON_MASTER
+          ? 'TON'
+          : undefined,
       _isHiddenByDefault: data.verification === JettonVerification.BLACKLIST,
       renderPriority: isUnverifiedToken ? -1 : this.renderPriority,
       title: data.metadata.symbol ?? '',
@@ -61,7 +72,7 @@ export class TokensContentProvider extends ContentProviderPrototype<{
       picture: data.metadata.image,
       value: formatter.format(data.balance),
       subtitleStyle: isUnverifiedToken && styles.unverifiedSubtitleStyle,
-      subtitle: isUnverifiedToken ? t('approval.unverified_token') : undefined,
+      subtitle,
     };
   }
 }

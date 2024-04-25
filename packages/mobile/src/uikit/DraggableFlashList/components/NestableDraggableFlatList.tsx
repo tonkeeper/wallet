@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { findNodeHandle, LogBox } from 'react-native';
-import Animated, { useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
 import { DraggableFlashListProps } from '../types';
 import DraggableFlatList from './DraggableFlashList';
 import { useSafeNestableScrollContainerContext } from '../context/nestableScrollContainerContext';
@@ -17,7 +17,7 @@ function NestableDraggableFlatListInner<T>(
   if (!hasSuppressedWarnings.current) {
     LogBox.ignoreLogs([
       'VirtualizedLists should never be nested inside plain ScrollViews with the same orientation because it can break windowing',
-    ]); // Ignore log notification by message
+    ]);
     //@ts-ignore
     console.reportErrorsAsExceptions = false;
     hasSuppressedWarnings.current = true;

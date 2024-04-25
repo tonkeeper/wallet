@@ -98,7 +98,7 @@
     "details_token": "Token details",
     "id_collection": "Collection ID",
     "id_token": "Token ID",
-    "manage_tokens": "Manage tokens",
+    "manage_tokens": "Manage purchases",
     "move_to_accepted": "Move to Accepted",
     "move_to_accepted_collection": "Show collection in wallet",
     "move_to_accepted_token": "Show token in wallet",
@@ -654,7 +654,7 @@
   "settings_backup_seed": "Backup",
   "settings_contact_support": "Contact us",
   "settings_delete_account": "Delete account",
-  "settings_jettons_list": "Tokens",
+  "settings_purchases_list": "Purchases",
   "settings_legal_documents": "Legal",
   "language": {
     "title": "Language",
@@ -1220,5 +1220,12 @@
     "description": "The total value of tokens that will be sent from your wallet. Refunds are not included in the total value.",
     "description_with_nft": "The total value of tokens, excluding the cost of NFTs, that will be sent from your wallet. Refunds are not included in the total value.",
     "ok_button": "OK"
+  },
+  "manage_home_screen": {
+    "title": "Home Screen",
+    "pinned": "Pinned",
+    "all_assets": "All Assets",
+    "sorted_by_price": "Sorted by Price",
+    "manage": "Manage"
   }
 }

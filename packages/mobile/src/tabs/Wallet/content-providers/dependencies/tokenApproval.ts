@@ -9,12 +9,12 @@ import { CellItemToRender } from '../utils/types';
 
 export class TokenApprovalDependency extends DependencyPrototype<
   TokenApprovalState,
-  Pick<TokenApprovalState, 'tokens' | 'pinned'>
+  Pick<TokenApprovalState, 'tokens' | 'pinnedOrder'>
 > {
   constructor() {
     super(tk.wallet.tokenApproval.state, (state) => ({
       tokens: state.tokens,
-      pinned: state.pinned,
+      pinnedOrder: state.pinnedOrder,
     }));
   }
 
@@ -35,6 +35,6 @@ export class TokenApprovalDependency extends DependencyPrototype<
   }
 
   getPinnedIndex(identifier: string) {
-    return this.state.pinned[identifier] ?? false;
+    return this.state.pinnedOrder.findIndex((item) => item === identifier);
   }
 }

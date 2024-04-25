@@ -286,7 +286,7 @@ export const Settings: FC = () => {
                     name={'ic-jetton-28'}
                   />
                 }
-                title={t('settings_jettons_list')}
+                title={t('settings_purchases_list')}
                 onPress={handleManageTokens}
               />
             )}

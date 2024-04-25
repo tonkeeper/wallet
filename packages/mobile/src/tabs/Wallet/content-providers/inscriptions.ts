@@ -15,7 +15,11 @@ export class InscriptionsContentProvider extends ContentProviderPrototype<{
   name = Providers.Inscriptions;
   renderPriority = -2;
 
-  constructor(tonPrice: TonPriceDependency, inscriptions: InscriptionsDependency) {
+  constructor(
+    private isEditableMode: boolean,
+    tonPrice: TonPriceDependency,
+    inscriptions: InscriptionsDependency,
+  ) {
     super({
       inscriptions,
       tonPrice,
@@ -50,6 +54,12 @@ export class InscriptionsContentProvider extends ContentProviderPrototype<{
         },
         percent: '',
       },
+      subtitle: this.isEditableMode
+        ? formatter.formatNano(data.balance, {
+            decimals: data.decimals,
+            currency: data.ticker,
+          })
+        : undefined,
       value: formatter.formatNano(data.balance, { decimals: data.decimals }),
     };
   }

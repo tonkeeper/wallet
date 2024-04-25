@@ -15,7 +15,7 @@ import { Text } from './Text';
 import { ns } from '../utils';
 import { IconNames, Icon, IconColors } from './Icon';
 
-export type ButtonColors = 'green' | 'primary' | 'secondary' | 'tertiary';
+export type ButtonColors = 'green' | 'primary' | 'secondary' | 'tertiary' | 'tether';
 export type ButtonSizes = 'large' | 'medium' | 'small' | 'header' | 'icon';
 
 export interface ButtonProps {
@@ -240,6 +240,11 @@ const getButtonColors = (theme: Theme) => ({
     highlighted: theme.buttonPrimaryBackgroundGreenHighlighted,
     disable: theme.buttonPrimaryBackgroundGreenDisabled,
     background: theme.buttonPrimaryBackgroundGreen,
+  },
+  tether: {
+    highlighted: theme.buttonTetherBackgroundHighlighted,
+    disable: theme.buttonTetherBackgroundDisabled,
+    background: theme.buttonTetherBackground,
   },
 });
 

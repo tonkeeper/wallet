@@ -1,8 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { JettonProps } from './Jetton.interface';
 import * as S from './Jetton.style';
-import { IconButton, PopupMenu, PopupMenuItem, Skeleton, SwapIcon, Text } from '$uikit';
-import { ns } from '$utils';
+import { PopupMenu, PopupMenuItem, Skeleton, Text } from '$uikit';
 import { useJetton } from '$hooks/useJetton';
 import { useTokenPrice } from '$hooks/useTokenPrice';
 import { openDAppBrowser, openSend } from '$navigation';
@@ -16,9 +15,10 @@ import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { Events, JettonVerification, SendAnalyticsFrom } from '$store/models';
 import { t } from '@tonkeeper/shared/i18n';
 import { trackEvent } from '$utils/stats';
-import { Address } from '@tonkeeper/core';
+import { Address, TETHER_JETTON_MASTER } from '@tonkeeper/core';
 import {
   ActionButtons,
+  Button,
   Icon,
   Screen,
   Spacer,
@@ -38,6 +38,9 @@ import { tk } from '$wallet';
 import { Chart } from '$shared/components/Chart/new/Chart';
 import { ChartPeriod } from '$store/zustand/chart';
 import { formatDate } from '@tonkeeper/shared/utils/date';
+import { compareAddresses } from '$utils/address';
+import LinearGradient from 'react-native-linear-gradient';
+import { DarkTheme } from '@tonkeeper/uikit/src/styles/themes/dark';
 
 const unverifiedTokenHitSlop = { top: 4, left: 4, bottom: 4, right: 4 };
 
@@ -85,6 +88,9 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
         .replace('%s', wallet.address.ton.friendly) + `/jetton/${jetton.jettonAddress}`,
     );
   }, [jetton.jettonAddress, wallet]);
+
+  const handleOpenExchange = () =>
+    nav.openModal('Exchange', { filterMethods: ['buy_usdt'], hideBuySellSwitch: true });
 
   const renderHeader = useMemo(() => {
     if (!jetton) {
@@ -245,11 +251,27 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
         hasMore={jettonActivityList.hasMore}
         error={jettonActivityList.error}
       />
+      {compareAddresses(route.params.jettonAddress, TETHER_JETTON_MASTER) &&
+        jettonActivityList.sections.length === 0 && (
+          <View style={styles.buttonContainer}>
+            <LinearGradient
+              style={styles.buyButtonGradient.static}
+              colors={[
+                'rgba(16, 22, 31, 0)',
+                DarkTheme.backgroundPage,
+                DarkTheme.backgroundPage,
+              ]}
+            />
+            <View style={styles.buyButtonContent}>
+              <Button onPress={handleOpenExchange} color="tether" title={'Buy USD₮'} />
+            </View>
+          </View>
+        )}
     </Screen>
   );
 };
 
-const styles = Steezy.create({
+const styles = Steezy.create(({ safeArea }) => ({
   subtitleContainer: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -263,4 +285,24 @@ const styles = Steezy.create({
   mb0: {
     marginBottom: 0,
   },
-});
+  buttonContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  buyButtonGradient: {
+    position: 'absolute',
+    zIndex: 9999,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 140,
+    width: '100%',
+  },
+  buyButtonContent: {
+    bottom: safeArea.bottom,
+    padding: 16,
+    zIndex: 10000,
+  },
+}));

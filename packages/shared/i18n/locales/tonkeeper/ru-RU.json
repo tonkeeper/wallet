@@ -104,7 +104,7 @@
     "details_token" : "Подробнее о токене",
     "id_collection" : "ID коллекции",
     "id_token" : "ID токена",
-    "manage_tokens" : "Настроить токены",
+    "manage_tokens" : "Настроить покупки",
     "move_to_accepted" : "Переместить в Принятые",
     "move_to_accepted_collection" : "Показывать коллекцию в кошельке",
     "move_to_accepted_token" : "Показывать токен в кошельке",
@@ -613,7 +613,7 @@
   "settings_backup_seed" : "Резервная копия",
   "settings_contact_support" : "Написать команде",
   "settings_delete_account" : "Удалить аккаунт",
-  "settings_jettons_list" : "Токены",
+  "settings_purchases_list": "Покупки",
   "settings_legal_documents" : "Юридические документы",
   "language": {
     "title" : "Язык",
@@ -1284,5 +1284,12 @@
     "description": "Общая стоимость токенов, которые будут отправлены с вашего кошелька. Возвраты не учитываются в общей стоимости.",
     "description_with_nft": "Общая стоимость токенов, за исключением стоимости NFT, которые будут отправлены с вашего кошелька. Возвраты не учитываются в общей стоимости.",
     "ok_button": "Понятно"
+  },
+  "manage_home_screen": {
+    "title": "Управление",
+    "pinned": "Закреплённые",
+    "all_assets": "Все активы",
+    "sorted_by_price": "По стоимости",
+    "manage": "Настроить"
   }
 }

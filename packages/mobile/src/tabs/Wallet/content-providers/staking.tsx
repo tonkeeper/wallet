@@ -123,12 +123,14 @@ export class StakingContentProvider extends ContentProviderPrototype<{
       onPress: () => openStakingPoolDetails(data.pool.address),
       renderPriority: this.renderPriority,
       fiatRate: this.getRate(data.pool, data.info),
-      title: t('staking.staked'),
+      title: this.isEditableMode ? data.pool.name : t('staking.staked'),
       renderIcon: () => <StakedTonIcon size={'small'} pool={data.pool} />,
       renderBottomContent: () => (
         <StakingMessage pool={data.pool} poolStakingInfo={data.info} />
       ),
-      subtitle: data.pool.name,
+      subtitle: this.isEditableMode
+        ? formatter.format(fiatRate?.totalTon.raw, { currency: 'TON' })
+        : data.pool.name,
       value: formatter.format(fiatRate?.totalTon.raw),
     };
   }

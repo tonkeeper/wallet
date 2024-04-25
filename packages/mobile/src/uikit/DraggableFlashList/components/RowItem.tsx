@@ -1,9 +1,9 @@
-import React, { useRef } from "react";
-import { useDraggableFlatListContext } from "../context/draggableFlatListContext";
-import { useRefs } from "../context/refContext";
-import { useStableCallback } from "../hooks/useStableCallback";
-import { RenderItem } from "../types";
-import { typedMemo } from "../utils";
+import React, { useRef } from 'react';
+import { useDraggableFlatListContext } from '../context/draggableFlatListContext';
+import { useRefs } from '../context/refContext';
+import { useStableCallback } from '../hooks/useStableCallback';
+import { RenderItem } from '../types';
+import { typedMemo } from '../utils';
 
 type Props<T> = {
   extraData?: any;
@@ -28,9 +28,7 @@ function RowItem<T>(props: Props<T>) {
     if (activeKeyRef.current) {
       // already dragging an item, noop
       if (debug)
-        console.log(
-          "## attempt to drag item while another item is already active, noop"
-        );
+        console.log('## attempt to drag item while another item is already active, noop');
     }
     drag(itemKey);
   });
@@ -43,6 +41,7 @@ function RowItem<T>(props: Props<T>) {
 
   return (
     <MemoizedInner
+      isActiveDragging={!!activeKey}
       isActive={activeKey === itemKey}
       drag={drag}
       renderItem={renderItem}
@@ -57,6 +56,7 @@ export default typedMemo(RowItem);
 
 type InnerProps<T> = {
   isActive: boolean;
+  isActiveDragging: boolean;
   item: T;
   getIndex: () => number | undefined;
   drag: () => void;
@@ -64,7 +64,7 @@ type InnerProps<T> = {
   extraData?: any;
 };
 
-function Inner<T>({ renderItem, extraData, ...rest }: InnerProps<T>) {
+function Inner<T>({ renderItem, ...rest }: InnerProps<T>) {
   return renderItem({ ...rest }) as JSX.Element;
 }
 

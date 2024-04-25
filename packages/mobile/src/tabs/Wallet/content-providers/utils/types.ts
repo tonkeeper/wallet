@@ -22,7 +22,7 @@ export type FiatRate = {
 export type CellItemToRender = {
   _isHiddenByDefault?: boolean;
   isHidden?: boolean;
-  isPinned?: boolean;
+  pinnedIndex?: number;
   isFirst?: boolean;
   isLast?: boolean;
   key: string;

@@ -1,5 +1,4 @@
 import { CellItemToRender } from '@tonkeeper/mobile/src/tabs/Wallet/content-providers/utils/types';
-import { TonIcon } from '../TonIcon';
 import { View } from '../View';
 import { List } from '../List';
 import { Text } from '../Text';
@@ -9,8 +8,8 @@ import { Steezy } from '../../styles';
 import { TextColors } from '../Text/Text';
 import { Icon } from '../Icon';
 import { TouchableOpacity } from '../TouchableOpacity';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { tk } from '@tonkeeper/mobile/src/wallet';
+import { triggerImpactMedium } from '@tonkeeper/mobile/src/utils';
 
 interface ListItemRateProps {
   percent?: string;
@@ -21,7 +20,7 @@ interface ListItemRateProps {
 const trend2color: { [key: string]: TextColors } = {
   negative: 'accentRed',
   positive: 'accentGreen',
-  unknown: 'textSecondary',
+  unknown: 'textTertiary',
 };
 
 export const ListItemRate = (props: ListItemRateProps) => (
@@ -48,13 +47,16 @@ export const ListItemRate = (props: ListItemRateProps) => (
 export enum AssetCellMode {
   EDITABLE = 'editable',
   VIEW_ONLY = 'view-only',
+  DRAGGABLE = 'draggable',
 }
 
 export interface AssetCellProps {
   item: CellItemToRender;
   mode: AssetCellMode;
   drag?: () => void;
+  onPinPress?: (identifier: string) => void;
   onEyePress?: (identifier: string) => void;
+  isActiveDragging?: boolean;
 }
 
 const actionButtonsHitSlop = { top: 12, bottom: 12, left: 12, right: 12 };
@@ -68,8 +70,8 @@ export const AssetCell = (props: AssetCellProps) => {
   };
 
   const containerStyle = [
-    props.item.isFirst && styles.firstListItem,
-    props.item.isLast && styles.lastListItem,
+    !props.isActiveDragging && props.item.isFirst && styles.firstListItem,
+    !props.isActiveDragging && props.item.isLast && styles.lastListItem,
     styles.containerListItem,
   ];
 
@@ -118,7 +120,9 @@ export const AssetCell = (props: AssetCellProps) => {
                 hitSlop={actionButtonsHitSlop}
               >
                 <Icon
-                  color={props.item.isPinned ? 'accentBlue' : 'iconTertiary'}
+                  color={
+                    props.item.pinnedIndex !== undefined ? 'accentBlue' : 'iconTertiary'
+                  }
                   name={'ic-pin-28'}
                 />
               </TouchableOpacity>
@@ -136,13 +140,39 @@ export const AssetCell = (props: AssetCellProps) => {
             </TouchableOpacity>
           </View>
         );
+      case AssetCellMode.DRAGGABLE:
+        return (
+          <View style={styles.actionsContainer}>
+            <TouchableOpacity
+              onPress={() => props.onPinPress?.(props.item.key)}
+              hitSlop={actionButtonsHitSlop}
+            >
+              <Icon
+                color={
+                  props.item.pinnedIndex !== undefined ? 'accentBlue' : 'iconTertiary'
+                }
+                name={'ic-pin-28'}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              delayLongPress={50}
+              onLongPress={() => {
+                triggerImpactMedium();
+                props.drag?.();
+              }}
+              hitSlop={actionButtonsHitSlop}
+            >
+              <Icon color={'iconSecondary'} name={'ic-reorder-28'} />
+            </TouchableOpacity>
+          </View>
+        );
     }
   };
 
   return (
     <View style={containerStyle}>
       <List.Item
-        disabled={mode === AssetCellMode.EDITABLE}
+        disabled={mode !== AssetCellMode.VIEW_ONLY}
         leftContent={renderLeftContent()}
         onPress={props.item.onPress}
         title={
@@ -157,7 +187,7 @@ export const AssetCell = (props: AssetCellProps) => {
                 </Text>
               </View>
             )}
-            {mode === AssetCellMode.VIEW_ONLY && props.item.isPinned && (
+            {mode === AssetCellMode.VIEW_ONLY && props.item.pinnedIndex !== undefined && (
               <View style={styles.pin}>
                 <Icon color="iconTertiary" name={'ic-pin-12'} />
               </View>

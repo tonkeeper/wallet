@@ -35,6 +35,12 @@ export class JettonBalancesDependency extends DependencyPrototype<
       .toString()
       .toString();
 
+    const trendVariants = {
+      '+': 'positive',
+      '-': 'negative',
+      default: 'unknown',
+    };
+
     return {
       percent: rate.ton ? rate.diff_24h : undefined,
       price: {
@@ -43,8 +49,7 @@ export class JettonBalancesDependency extends DependencyPrototype<
           currency,
         }),
       },
-      trend:
-        rate.diff_24h.startsWith('+') || rate.diff_24h === '0' ? 'positive' : 'negative',
+      trend: trendVariants[rate.diff_24h?.[0]] ?? trendVariants.default,
       totalTon: {
         formatted: formatter.format(tonRaw, {
           currency: 'TON',

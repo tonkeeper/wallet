@@ -1,26 +1,14 @@
-import React, { FC, useCallback, useMemo, useState } from 'react';
+import React, { FC } from 'react';
 
 import { Screen, Spacer, SText, View, Button } from '$uikit';
 import { List } from '@tonkeeper/uikit';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Tabs } from '../../tabs/Wallet/components/Tabs';
 import { Steezy } from '$styles';
-import { FlashList } from '@shopify/flash-list';
 import { t } from '@tonkeeper/shared/i18n';
 import { ListSeparator } from '$uikit/List/ListSeparator';
 import { StyleSheet } from 'react-native';
 import { ContentType, Content } from '$core/ManageTokens/ManageTokens.types';
-import { useJettonData } from '$core/ManageTokens/hooks/useJettonData';
 import { useNftData } from '$core/ManageTokens/hooks/useNftData';
-import Animated, {
-  useAnimatedScrollHandler,
-  useSharedValue,
-} from 'react-native-reanimated';
-import { useParams } from '$navigation/imperative';
-import { useInscriptionData } from '$core/ManageTokens/hooks/useInscriptionData';
-
-const AnimatedFlashList = Animated.createAnimatedComponent(FlashList);
-
 const FLashListItem = ({
   item,
   renderDragButton,
@@ -76,112 +64,24 @@ const FLashListItem = ({
 };
 
 export const ManageTokens: FC = () => {
-  const params = useParams<{ initialTab?: string }>();
   const { bottom: bottomInset } = useSafeAreaInsets();
-  const [tab, setTab] = useState<string>(params?.initialTab || 'tokens');
-  const jettonData = useJettonData();
   const nftData = useNftData();
-  const inscriptionData = useInscriptionData();
-  const scrollY = useSharedValue(0);
-  const scrollHandler = useAnimatedScrollHandler({
-    onScroll: (event) => {
-      scrollY.value = event.contentOffset.y;
-    },
-  });
 
-  const tabsContent = useMemo(() => {
-    return [
-      {
-        label: t('wallet.tonkens_tab_lable'),
-        id: 'tokens',
-        items: jettonData,
-      },
-      {
-        label: t('wallet.nft_tab_lable'),
-        id: 'collectibles',
-        items: nftData,
-      },
-      {
-        label: t('wallet.inscriptions_tab_label'),
-        id: 'inscriptions',
-        items: inscriptionData,
-      },
-    ].filter((content) => content.items.length);
-  }, [inscriptionData, jettonData, nftData]);
-
-  const renderList = useCallback(
-    (data) => {
-      return (
-        <AnimatedFlashList
-          showsVerticalScrollIndicator={false}
-          estimatedItemSize={76}
-          contentContainerStyle={StyleSheet.flatten([
-            styles.flashList.static,
-            { paddingBottom: bottomInset },
-          ])}
-          onScroll={scrollHandler}
-          scrollEventThrottle={16}
-          data={data}
-          renderItem={FLashListItem}
-        />
-      );
-    },
-    [bottomInset, scrollHandler],
+  return (
+    <Screen>
+      <Screen.Header title={t('approval.manage_tokens')} />
+      <Screen.FlashList
+        keyExtractor={(item) => item?.id}
+        estimatedItemSize={76}
+        renderItem={FLashListItem}
+        contentContainerStyle={StyleSheet.flatten([
+          styles.flashList.static,
+          { paddingBottom: bottomInset },
+        ])}
+        data={nftData}
+      />
+    </Screen>
   );
-
-  const renderTabs = useCallback(() => {
-    return (
-      <Screen>
-        <Tabs>
-          <View style={styles.flex}>
-            <Tabs.Header leftContentGradient withBackButton style={styles.tabsHeader}>
-              <Tabs.ScrollableBar
-                contentContainerStyle={styles.contentContainer.static}
-                indent={false}
-                containerStyle={styles.tabsContainer.static}
-                itemStyle={styles.tabsItem.static}
-                indicatorStyle={styles.tabsIndicator.static}
-                scrollY={scrollY}
-                onChange={({ value }) => setTab(value)}
-                value={tab}
-                items={tabsContent.map((content) => ({
-                  label: content.label,
-                  value: content.id,
-                }))}
-              />
-            </Tabs.Header>
-            <Tabs.PagerView initialPage={tab === 'collectibles' ? 1 : 0}>
-              {tabsContent.map((content, idx) => (
-                <Tabs.Section key={content.id} index={idx}>
-                  {renderList(content.items)}
-                </Tabs.Section>
-              ))}
-            </Tabs.PagerView>
-          </View>
-        </Tabs>
-      </Screen>
-    );
-  }, [renderList, scrollY, tab, tabsContent]);
-
-  if (tabsContent.length > 1) {
-    return renderTabs();
-  } else {
-    return (
-      <Screen>
-        <Screen.Header title={t('approval.manage_tokens')} />
-        <Screen.FlashList
-          keyExtractor={(item) => item?.id}
-          estimatedItemSize={76}
-          renderItem={FLashListItem}
-          contentContainerStyle={StyleSheet.flatten([
-            styles.flashList.static,
-            { paddingBottom: bottomInset },
-          ])}
-          data={tabsContent[0].items}
-        />
-      </Screen>
-    );
-  }
 };
 
 const styles = Steezy.create(({ safeArea, corners, colors }) => ({

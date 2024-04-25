@@ -93,6 +93,7 @@
     "react-native-console-time-polyfill": "^1.2.3",
     "react-native-crypto": "^2.2.0",
     "react-native-device-info": "^8.3.1",
+    "react-native-draggable-flatlist": "^4.0.1",
     "react-native-encrypted-storage": "https://github.com/tonkeeper/react-native-encrypted-storage#6d2dd34fed3438364125175a32c6f4f3d018078e",
     "react-native-exception-handler": "^2.10.10",
     "react-native-fast-image": "^8.5.11",

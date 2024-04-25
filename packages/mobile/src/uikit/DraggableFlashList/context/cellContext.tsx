@@ -3,21 +3,24 @@ import { typedMemo } from '../utils';
 
 type CellContextValue = {
   isActive: boolean;
+  isActiveDragging: boolean;
 };
 
 const CellContext = React.createContext<CellContextValue | undefined>(undefined);
 
 type Props = {
   isActive: boolean;
+  isActiveDragging: boolean;
   children: React.ReactNode;
 };
 
-export function CellProvider({ isActive, children }: Props) {
+export function CellProvider({ isActive, isActiveDragging, children }: Props) {
   const value = useMemo(
     () => ({
       isActive,
+      isActiveDragging,
     }),
-    [isActive],
+    [isActive, isActiveDragging],
   );
   return <CellContext.Provider value={value}>{children}</CellContext.Provider>;
 }
