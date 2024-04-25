@@ -14,6 +14,7 @@ import { useSelectedCountry } from '$store/zustand/methodsToBuy/useSelectedCount
 import { CountryButton } from '@tonkeeper/shared/components';
 import { config } from '$config';
 import { useWallet } from '@tonkeeper/shared/hooks';
+import { getCryptoAssetIconSource } from '@tonkeeper/uikit/assets/cryptoAssets';
 
 export interface ExchangeModalParams {
   filterMethods?: string[];
@@ -66,7 +67,16 @@ export const ExchangeModal = (params: ExchangeModalParams) => {
           };
         }),
     );
-  }, [layoutByCountry, defaultLayout, buy, sell, selectedCountry, showAll, allRegions]);
+  }, [
+    layoutByCountry,
+    defaultLayout,
+    buy,
+    sell,
+    selectedCountry,
+    params.filterMethods,
+    showAll,
+    allRegions,
+  ]);
 
   const handleShowAll = useCallback(() => {
     setShowAll(!showAll);
@@ -117,6 +127,22 @@ export const ExchangeModal = (params: ExchangeModalParams) => {
                   {!(hideBuySellSwitch && cIndex === 0) ? (
                     <S.TitleContainer>
                       <Text type="h3">{category.title}</Text>
+                      {category.assets && (
+                        <S.AssetsContainer>
+                          {category.assets.slice(0, 3).map((asset, index) => (
+                            <S.Asset key={asset} style={{ zIndex: 3 - index }}>
+                              <S.AssetImage source={getCryptoAssetIconSource(asset)} />
+                            </S.Asset>
+                          ))}
+                          {category.assets.length > 3 ? (
+                            <S.AssetsCount>
+                              <Text type="body3" color="textSecondary">
+                                + {category.assets.length}
+                              </Text>
+                            </S.AssetsCount>
+                          ) : null}
+                        </S.AssetsContainer>
+                      )}
                     </S.TitleContainer>
                   ) : null}
                   <S.Contain>
