@@ -1291,5 +1291,11 @@
     "all_assets": "Все активы",
     "sorted_by_price": "По стоимости",
     "manage": "Настроить"
+  },
+  "jetton_actions": {
+    "view_on_explorer": "View on Tonviewer",
+    "unpin": "Unpin",
+    "pin": "Pin",
+    "hide": "Hide from Wallet"
   }
 }

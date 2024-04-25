@@ -13,7 +13,6 @@ import { RefreshControl } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as S from './Staking.style';
-import { logEvent } from '@amplitude/analytics-browser';
 import { t } from '@tonkeeper/shared/i18n';
 import { Address } from '@tonkeeper/shared/Address';
 import { PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
@@ -26,6 +25,7 @@ import { config } from '$config';
 import { RestakeBanner } from '../../components/RestakeBanner/RestakeBanner';
 import { shallow } from 'zustand/shallow';
 import { tk } from '$wallet';
+import { trackEvent } from '$utils/stats';
 
 interface Props {}
 
@@ -127,7 +127,7 @@ export const Staking: FC<Props> = () => {
 
       if (providerPools.length === 1) {
         const { address: poolAddress, name: poolName } = providerPools[0];
-        logEvent('pool_open', { poolName, poolAddress });
+        trackEvent('pool_open', { poolName, poolAddress });
         nav.push(MainStackRouteNames.StakingPoolDetails, {
           poolAddress: providerPools[0].address,
         });
@@ -140,7 +140,7 @@ export const Staking: FC<Props> = () => {
 
   const handlePoolPress = useCallback(
     (poolAddress: string, poolName: string) => {
-      logEvent('pool_open', { poolName, poolAddress });
+      trackEvent('pool_open', { poolName, poolAddress });
       nav.push(MainStackRouteNames.StakingPoolDetails, { poolAddress });
     },
     [nav],

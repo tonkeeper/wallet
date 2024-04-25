@@ -43,10 +43,7 @@ export async function trackEvent(name: string, params: any = {}) {
       return;
     }
     if (appKey) {
-      Aptabase.trackEvent(
-        name,
-        Object.assign(params, { firebase_user_id: DeviceInfo.getUniqueId() }),
-      );
+      Aptabase.trackEvent(name, params);
     }
     logEvent(name, params);
   } catch (e) {}

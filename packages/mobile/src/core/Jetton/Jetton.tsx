@@ -41,6 +41,12 @@ import { formatDate } from '@tonkeeper/shared/utils/date';
 import { compareAddresses } from '$utils/address';
 import LinearGradient from 'react-native-linear-gradient';
 import { DarkTheme } from '@tonkeeper/uikit/src/styles/themes/dark';
+import { useExternalState } from '@tonkeeper/shared/hooks/useExternalState';
+import { Toast } from '$store';
+import {
+  TokenApprovalStatus,
+  TokenApprovalType,
+} from '$wallet/managers/TokenApprovalManager';
 
 const unverifiedTokenHitSlop = { top: 4, left: 4, bottom: 4, right: 4 };
 
@@ -55,10 +61,34 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   );
   const wallet = useWallet();
 
+  const tokenApprovalState = useExternalState(tk.wallet.tokenApproval.state);
+
   const isWatchOnly = wallet && wallet.isWatchOnly;
   const fiatCurrency = useWalletCurrency();
   const shouldShowChart = jettonPrice.fiat !== 0;
   const shouldExcludeChartPeriods = config.get('exclude_jetton_chart_periods');
+
+  const isPinned = useMemo(
+    () =>
+      tokenApprovalState.pinnedOrder.findIndex((addr) =>
+        compareAddresses(addr, jetton.jettonAddress),
+      ) !== -1,
+    [jetton.jettonAddress, tokenApprovalState.pinnedOrder],
+  );
+
+  const handleTogglePin = () => {
+    Toast.success(isPinned ? 'jetton_actions.unpinned' : 'jetton_actions.pinned');
+    tk.wallet.tokenApproval.togglePinAsset(Address.parse(jetton.jettonAddress).toRaw());
+  };
+
+  const handleHideFromWallet = () => {
+    Toast.success('jetton_actions.hidden');
+    tk.wallet.tokenApproval.updateTokenStatus(
+      Address.parse(jetton.jettonAddress).toRaw(),
+      TokenApprovalStatus.Declined,
+      TokenApprovalType.Token,
+    );
+  };
 
   const nav = useNavigation();
 
@@ -224,13 +254,33 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
         title={jetton.metadata?.symbol || Address.toShort(jetton.jettonAddress)}
         rightContent={
           <PopupMenu
+            width={240}
             items={[
               <PopupMenuItem
                 waitForAnimationEnd
                 shouldCloseMenu
                 onPress={handleOpenExplorer}
-                text={t('jetton_open_explorer')}
+                text={t('jetton_actions.view_on_explorer')}
                 icon={<Icon name="ic-globe-16" color="accentBlue" />}
+              />,
+              <PopupMenuItem
+                waitForAnimationEnd
+                shouldCloseMenu
+                onPress={handleTogglePin}
+                text={t(isPinned ? 'jetton_actions.unpin' : 'jetton_actions.pin')}
+                icon={
+                  <Icon
+                    name={isPinned ? 'ic-unpin-16' : 'ic-pin-16'}
+                    color="accentBlue"
+                  />
+                }
+              />,
+              <PopupMenuItem
+                waitForAnimationEnd
+                shouldCloseMenu
+                onPress={handleHideFromWallet}
+                text={t('jetton_actions.hide')}
+                icon={<Icon name={'ic-block-16'} color="accentBlue" />}
               />,
             ]}
           >

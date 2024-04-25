@@ -21,6 +21,7 @@ export type IconNames =
   | 'ic-appearance-16'
   | 'ic-arrow-down-16'
   | 'ic-arrow-up-16'
+  | 'ic-block-16'
   | 'ic-chevron-16'
   | 'ic-chevron-down-16'
   | 'ic-chevron-left-16'
@@ -41,6 +42,7 @@ export type IconNames =
   | 'ic-lock-16'
   | 'ic-magnifying-glass-16'
   | 'ic-pencil-16'
+  | 'ic-pin-16'
   | 'ic-sale-badge-16'
   | 'ic-share-16'
   | 'ic-sliders-16'
@@ -49,6 +51,7 @@ export type IconNames =
   | 'ic-telegram-16'
   | 'ic-time-16'
   | 'ic-twitter-16'
+  | 'ic-unpin-16'
   | 'ic-verification-16'
   | 'ic-verification-secondary-16'
   | 'ic-xmark-circle-16'
@@ -213,6 +216,7 @@ export const AllIcons = [
   'ic-appearance-16',
   'ic-arrow-down-16',
   'ic-arrow-up-16',
+  'ic-block-16',
   'ic-chevron-16',
   'ic-chevron-down-16',
   'ic-chevron-left-16',
@@ -233,6 +237,7 @@ export const AllIcons = [
   'ic-lock-16',
   'ic-magnifying-glass-16',
   'ic-pencil-16',
+  'ic-pin-16',
   'ic-sale-badge-16',
   'ic-share-16',
   'ic-sliders-16',
@@ -241,6 +246,7 @@ export const AllIcons = [
   'ic-telegram-16',
   'ic-time-16',
   'ic-twitter-16',
+  'ic-unpin-16',
   'ic-verification-16',
   'ic-verification-secondary-16',
   'ic-xmark-circle-16',
@@ -406,6 +412,7 @@ export const IconSizes = {
   'ic-appearance-16': 16,
   'ic-arrow-down-16': 16,
   'ic-arrow-up-16': 16,
+  'ic-block-16': 16,
   'ic-chevron-16': 16,
   'ic-chevron-down-16': 16,
   'ic-chevron-left-16': 16,
@@ -426,6 +433,7 @@ export const IconSizes = {
   'ic-lock-16': 16,
   'ic-magnifying-glass-16': 16,
   'ic-pencil-16': 16,
+  'ic-pin-16': 16,
   'ic-sale-badge-16': 16,
   'ic-share-16': 16,
   'ic-sliders-16': 16,
@@ -434,6 +442,7 @@ export const IconSizes = {
   'ic-telegram-16': 16,
   'ic-time-16': 16,
   'ic-twitter-16': 16,
+  'ic-unpin-16': 16,
   'ic-verification-16': 16,
   'ic-verification-secondary-16': 16,
   'ic-xmark-circle-16': 16,

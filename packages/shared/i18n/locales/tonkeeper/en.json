@@ -1227,5 +1227,14 @@
     "all_assets": "All Assets",
     "sorted_by_price": "Sorted by Price",
     "manage": "Manage"
+  },
+  "jetton_actions": {
+    "view_on_explorer": "View on Tonviewer",
+    "unpin": "Unpin",
+    "pin": "Pin",
+    "hide": "Hide from Wallet",
+    "hidden": "Hidden",
+    "pinned": "Pinned",
+    "unpinned": "Unpinned"
   }
 }

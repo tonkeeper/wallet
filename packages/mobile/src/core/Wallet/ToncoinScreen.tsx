@@ -58,12 +58,13 @@ export const ToncoinScreen = memo(() => {
         title="Toncoin"
         rightContent={
           <PopupMenu
+            width={240}
             items={[
               <PopupMenuItem
                 waitForAnimationEnd
                 shouldCloseMenu
                 onPress={handleOpenExplorer}
-                text={t('jetton_open_explorer')}
+                text={t('jetton_actions.view_on_explorer')}
                 icon={<Icon name="ic-globe-16" color="accentBlue" />}
               />,
             ]}

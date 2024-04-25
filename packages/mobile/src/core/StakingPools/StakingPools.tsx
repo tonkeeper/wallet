@@ -18,11 +18,11 @@ import { RefreshControl } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as S from './StakingPools.style';
-import { logEvent } from '@amplitude/analytics-browser';
 import { t } from '@tonkeeper/shared/i18n';
 import { Address } from '@tonkeeper/shared/Address';
 import { useJettons, useStakingState } from '@tonkeeper/shared/hooks';
 import { StakingManager } from '$wallet/managers/StakingManager';
+import { trackEvent } from '$utils/stats';
 
 interface Props {
   route: RouteProp<MainStackParamList, MainStackRouteNames.StakingPools>;
@@ -79,7 +79,7 @@ export const StakingPools: FC<Props> = (props) => {
 
   const handlePoolPress = useCallback(
     (poolAddress: string, poolName: string) => {
-      logEvent('pool_open', { poolName, poolAddress });
+      trackEvent('pool_open', { poolName, poolAddress });
       nav.push(MainStackRouteNames.StakingPoolDetails, { poolAddress });
     },
     [nav],

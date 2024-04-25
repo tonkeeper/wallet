@@ -55,7 +55,7 @@ export function PopupMenuComponent(props: PopupMenuProps) {
   const popupAnimation = usePopupAnimation({
     anchor: 'top-right',
     height: popupHeight,
-    width: ns(160),
+    width: ns(props.width ?? 160),
   });
 
   const measure = useCallback((onDone: () => void) => {
@@ -109,7 +109,10 @@ export function PopupMenuComponent(props: PopupMenuProps) {
 
       <Modal animationType="none" transparent visible={visible}>
         <S.Overlay onPress={handleClose} />
-        <S.Wrap style={[{ top: offsetTop.current }, popupAnimation.style]}>
+        <S.Wrap
+          width={props.width}
+          style={[{ top: offsetTop.current }, popupAnimation.style]}
+        >
           <S.Content>
             {itemsPrepared.map((item, index, arr) => (
               <View key={index}>

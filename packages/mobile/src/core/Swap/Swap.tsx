@@ -6,7 +6,6 @@ import { useNavigation } from '@tonkeeper/router';
 import * as S from './Swap.style';
 import { Icon } from '$uikit';
 import { getCorrectUrl, getDomainFromURL } from '$utils';
-import { logEvent } from '@amplitude/analytics-browser';
 import { checkIsTimeSynced } from '$navigation/hooks/useDeeplinkingResolvers';
 import { useWebViewBridge } from '$hooks/jsBridge';
 import { useWallet } from '@tonkeeper/shared/hooks';
@@ -17,6 +16,7 @@ import { Linking } from 'react-native';
 import { useDeeplinking } from '$libs/deeplinking';
 import DeviceInfo from 'react-native-device-info';
 import { BatterySupportedTransaction } from '$wallet/managers/BatteryManager';
+import { trackEvent } from '$utils/stats';
 
 interface Props {
   jettonAddress?: string;
@@ -113,7 +113,7 @@ export const Swap: FC<Props> = (props) => {
   }, []);
 
   useEffect(() => {
-    logEvent('swap_open', { token: jettonAddress ?? 'TON' });
+    trackEvent('swap_open', { token: jettonAddress ?? 'TON' });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
