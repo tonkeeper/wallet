@@ -65,6 +65,10 @@ export class TokenApprovalManager {
     const { tokens } = this.state.data;
     const token = { ...tokens[identifier] };
 
+    if (status === TokenApprovalStatus.Declined) {
+      this.removePin(identifier);
+    }
+
     if (token) {
       token.current = status;
       token.updated_at = Date.now();
@@ -111,18 +115,27 @@ export class TokenApprovalManager {
     } catch {}
   }
 
+  public removePin(assetKey: string) {
+    const { pinnedOrder } = this.state.data;
+    const isPinned = pinnedOrder.includes(assetKey);
+
+    if (!isPinned) {
+      return;
+    }
+
+    this.state.set({ pinnedOrder: pinnedOrder.filter((item) => item !== assetKey) });
+  }
+
   public togglePinAsset(assetKey: string) {
     const { pinnedOrder } = this.state.data;
     const isPinned = pinnedOrder.includes(assetKey);
-    let pinnedCopy = [...pinnedOrder];
 
     if (isPinned) {
-      pinnedCopy = pinnedCopy.filter((item) => item !== assetKey);
-    } else {
-      pinnedCopy = [...pinnedCopy, assetKey];
+      return this.state.set({
+        pinnedOrder: pinnedOrder.filter((item) => item !== assetKey),
+      });
     }
-
-    this.state.set({ pinnedOrder: pinnedCopy });
+    this.state.set({ pinnedOrder: [...pinnedOrder, assetKey] });
   }
 
   public reorderPinnedAssets(pinnedOrder: string[]) {

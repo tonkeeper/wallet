@@ -76,9 +76,6 @@ export const WalletScreen = memo(({ navigation }) => {
   const isWatchOnly = wallet && wallet.isWatchOnly;
 
   const EditTokensButton = useMemo(() => {
-    if (isWatchOnly) {
-      return null;
-    }
     return (
       <View style={styles.manageButtonWrap}>
         <Button
@@ -89,7 +86,7 @@ export const WalletScreen = memo(({ navigation }) => {
         />
       </View>
     );
-  }, [isWatchOnly, nav]);
+  }, [nav]);
 
   const ListHeader = useMemo(
     () => (

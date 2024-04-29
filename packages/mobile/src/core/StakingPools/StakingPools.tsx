@@ -93,7 +93,7 @@ export const StakingPools: FC<Props> = (props) => {
           showsVerticalScrollIndicator={false}
         >
           <S.Content bottomInset={bottomInset}>
-            <List separator={false}>
+            <List separator>
               {list.map((pool, index) => (
                 <StakingListCell
                   key={pool.address}
@@ -105,7 +105,6 @@ export const StakingPools: FC<Props> = (props) => {
                   description={t('staking.staking_pool_desc', {
                     apy: pool.apy.toFixed(2),
                   })}
-                  separator={index < pools.length - 1}
                   iconSource={getPoolIcon(pool)}
                   onPress={handlePoolPress}
                 />

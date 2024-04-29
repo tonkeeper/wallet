@@ -104,7 +104,7 @@
     "details_token" : "Подробнее о токене",
     "id_collection" : "ID коллекции",
     "id_token" : "ID токена",
-    "manage_tokens" : "Настроить покупки",
+    "manage_tokens" : "Покупки",
     "move_to_accepted" : "Переместить в Принятые",
     "move_to_accepted_collection" : "Показывать коллекцию в кошельке",
     "move_to_accepted_token" : "Показывать токен в кошельке",
@@ -1031,7 +1031,7 @@
   "wallet_about" : "Подробнее",
   "wallet_buy" : "Купить",
   "wallet" : {
-    "buy_btn" : "Купить TON",
+    "buy_btn" : "Купить",
     "collectibles_tab_lable" : "Коллекции",
     "edit_tokens_btn" : "Настроить",
     "nft_tab_lable" : "Коллекции",

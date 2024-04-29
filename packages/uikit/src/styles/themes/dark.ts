@@ -39,8 +39,8 @@ export const DarkTheme = {
   buttonGreenForeground: '#FFFFFF',
 
   buttonTetherBackground: '#009393',
-  buttonTetherBackgroundDisabled: '#009393',
-  buttonTetherBackgroundHighlighted: '#009393',
+  buttonTetherBackgroundDisabled: '#006B6B',
+  buttonTetherBackgroundHighlighted: '#00ADAD',
 
   fieldBackground: '#1D2633',
   fieldActiveBorder: '#45AEF5',

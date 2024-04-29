@@ -128,7 +128,7 @@ const StakingListCellComponent: FC<Props> = (props) => {
                   </HideableAmount>
                 </>
               ) : (
-                <Icon name="ic-chevron-right-16" />
+                <Icon color="iconTertiary" name="ic-chevron-right-16" />
               )}
             </S.RightContainer>
           </S.Container>

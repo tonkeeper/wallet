@@ -310,8 +310,8 @@ export const Staking: FC<Props> = () => {
             ) : null}
             {data.otherList.length > 0 ? (
               <>
-                <List separator={false}>
-                  {data.otherList.map((provider, index) => (
+                <List separator>
+                  {data.otherList.map((provider) => (
                     <StakingListCell
                       key={provider.id}
                       id={provider.id}
@@ -321,7 +321,6 @@ export const Staking: FC<Props> = () => {
                       highestApy={
                         highestApyPool && highestApyPool.implementation === provider.id
                       }
-                      separator={index < data.otherList.length - 1}
                       onPress={handleProviderPress}
                     />
                   ))}
