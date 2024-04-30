@@ -79,7 +79,7 @@ export class Tonkeeper {
     wallets: [],
     selectedIdentifier: '',
     biometryEnabled: false,
-    lockEnabled: true,
+    lockEnabled: false,
   });
 
   public migrationStore = new State<MigrationState>({
