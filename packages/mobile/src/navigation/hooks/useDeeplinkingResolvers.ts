@@ -86,7 +86,9 @@ export function useDeeplinkingResolvers() {
       // legacy tonconnect
       pathname.startsWith('/ton-login');
 
-    if (tk.wallet.isWatchOnly && !isTonConnect) {
+    const isActionDeeplink = pathname.startsWith('/action');
+
+    if (tk.wallet.isWatchOnly && !isTonConnect && !isActionDeeplink) {
       return;
     }
 
