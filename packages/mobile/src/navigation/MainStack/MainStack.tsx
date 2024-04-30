@@ -24,7 +24,7 @@ import { withModalStack } from '@tonkeeper/router';
 import { ToncoinScreen } from '$core/Wallet/ToncoinScreen';
 import { InscriptionScreen } from '$core/InscriptionScreen';
 import { useDiamondsChecker } from '$hooks/useDiamondsChecker';
-import { useWallet } from '@tonkeeper/shared/hooks';
+import { useLockSettings, useWallet } from '@tonkeeper/shared/hooks';
 import {
   StartScreen,
   HoldersWebView,
@@ -61,7 +61,16 @@ export const MainStack: FC = () => {
 
   const hasWallet = !!wallet;
 
-  const showLockScreen = !isUnlocked && hasWallet && !attachedScreen.pathname;
+  const { lockEnabled } = useLockSettings();
+
+  const shouldObtainTonProof =
+    hasWallet && !wallet.isWatchOnly && !wallet.tonProof.tonProofToken;
+
+  const showLockScreen =
+    (lockEnabled || shouldObtainTonProof) &&
+    !isUnlocked &&
+    hasWallet &&
+    !attachedScreen.pathname;
 
   const isMigrated = useExternalState(tk.migrationStore, (state) => state.isMigrated);
 

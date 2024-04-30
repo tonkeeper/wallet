@@ -9,7 +9,7 @@ import { MainStackRouteNames, openChangePin } from '$navigation';
 import { getBiometryName, ns } from '$utils';
 import { Toast } from '$store';
 import { t } from '@tonkeeper/shared/i18n';
-import { useBiometrySettings, useWallet } from '@tonkeeper/shared/hooks';
+import { useBiometrySettings, useLockSettings, useWallet } from '@tonkeeper/shared/hooks';
 import { useNavigation } from '@tonkeeper/router';
 import { vault } from '$wallet';
 import { Haptics, Switch } from '@tonkeeper/uikit';
@@ -21,6 +21,8 @@ export const Security: FC = () => {
   const nav = useNavigation();
 
   const biometry = useBiometrySettings();
+
+  const { lockEnabled, toggleLock } = useLockSettings();
 
   const handleCopyLockupConfig = useCallback(() => {
     try {
@@ -98,6 +100,19 @@ export const Security: FC = () => {
           scrollEventThrottle={16}
         >
           {renderBiometryToggler()}
+          <CellSection>
+            <CellSectionItem
+              onPress={toggleLock}
+              indicator={<Switch value={lockEnabled} onChange={toggleLock} />}
+            >
+              {t('security_lock_screen_switch')}
+            </CellSectionItem>
+          </CellSection>
+          <S.BiometryTip>
+            <Text variant="body2" color="foregroundSecondary">
+              {t('security_lock_screen_tip')}
+            </Text>
+          </S.BiometryTip>
           <CellSection>
             <CellSectionItem onPress={handleChangePasscode} icon="ic-lock-28">
               {t('security_change_passcode')}
