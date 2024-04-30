@@ -63,8 +63,14 @@ export const MainStack: FC = () => {
 
   const { lockEnabled } = useLockSettings();
 
+  const shouldObtainTonProof =
+    hasWallet && !wallet.isWatchOnly && !wallet.tonProof.tonProofToken;
+
   const showLockScreen =
-    lockEnabled && !isUnlocked && hasWallet && !attachedScreen.pathname;
+    (lockEnabled || shouldObtainTonProof) &&
+    !isUnlocked &&
+    hasWallet &&
+    !attachedScreen.pathname;
 
   const isMigrated = useExternalState(tk.migrationStore, (state) => state.isMigrated);
 

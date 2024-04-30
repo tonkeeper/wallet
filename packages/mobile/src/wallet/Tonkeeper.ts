@@ -123,6 +123,10 @@ export class Tonkeeper {
   }
 
   public get walletForUnlock() {
+    if (this.wallet && !this.wallet.isWatchOnly) {
+      return this.wallet;
+    }
+
     return Array.from(this.wallets.values()).find((wallet) => !wallet.isWatchOnly)!;
   }
 
