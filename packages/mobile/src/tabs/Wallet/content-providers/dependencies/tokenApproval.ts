@@ -1,5 +1,4 @@
 import { DependencyPrototype } from './utils/prototype';
-import { tk } from '$wallet';
 
 import {
   TokenApprovalState,
@@ -11,18 +10,14 @@ import {
   JettonVerification,
 } from '$wallet/models/JettonBalanceModel';
 import { InscriptionBalance } from '@tonkeeper/core/src/TonAPI';
+import { Wallet } from '$wallet/Wallet';
 
 export class TokenApprovalDependency extends DependencyPrototype<
   TokenApprovalState,
   Pick<TokenApprovalState, 'tokens'>
 > {
-  constructor() {
-    super(tk.wallet.tokenApproval.state, (state) => ({ tokens: state.tokens }));
-  }
-
-  setWallet(wallet) {
-    this.dataProvider = wallet.tokenApproval.state;
-    super.setWallet(wallet);
+  constructor(wallet: Wallet) {
+    super(wallet.tokenApproval.state, (state) => ({ tokens: state.tokens }));
   }
 
   get filterInscriptionsFn(): (balance: InscriptionBalance) => boolean {

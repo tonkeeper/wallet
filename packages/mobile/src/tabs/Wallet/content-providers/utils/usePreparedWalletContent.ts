@@ -1,17 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { CellItemToRender } from './types';
-import { useInstance } from '$hooks/useInstance';
 import { WalletContentReceiver } from './receiver';
-import { tk } from '$wallet';
+import { useWallet } from '@tonkeeper/shared/hooks';
 
 export const usePreparedWalletContent = () => {
-  const providersReceiver = useInstance(() => new WalletContentReceiver());
+  const wallet = useWallet();
+  const providersReceiver = useMemo(() => new WalletContentReceiver(), [wallet]);
   const [preparedContent, setPreparedContent] = useState<CellItemToRender[]>([]);
 
   useEffect(() => {
-    return tk.onChangeWallet(() => {
-      providersReceiver.setWallet(tk.wallet);
-    });
+    return () => providersReceiver.destroy();
   }, [providersReceiver]);
 
   useEffect(() => {

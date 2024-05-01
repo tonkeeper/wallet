@@ -54,6 +54,7 @@ export type IconNames =
   | 'ic-backspace-bold-24'
   | 'ic-backup-24'
   | 'ic-battery-almost-empty-24'
+  | 'ic-information-circle-24'
   | 'ic-key-24'
   | 'ic-reset-24'
   | 'ic-ton-disabled-24'
@@ -242,6 +243,7 @@ export const AllIcons = [
   'ic-backspace-bold-24',
   'ic-backup-24',
   'ic-battery-almost-empty-24',
+  'ic-information-circle-24',
   'ic-key-24',
   'ic-reset-24',
   'ic-ton-disabled-24',
@@ -431,6 +433,7 @@ export const IconSizes = {
   'ic-backspace-bold-24': 24,
   'ic-backup-24': 24,
   'ic-battery-almost-empty-24': 24,
+  'ic-information-circle-24': 24,
   'ic-key-24': 24,
   'ic-reset-24': 24,
   'ic-ton-disabled-24': 24,

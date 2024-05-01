@@ -1,16 +1,16 @@
 import { DependencyPrototype } from './utils/prototype';
 import { PricesState } from '$wallet/managers/TonPriceManager';
-import { tk } from '$wallet';
 import { FiatRate } from '../utils/types';
 import { formatter } from '@tonkeeper/shared/formatter';
 import BigNumber from 'bignumber.js';
+import { State } from '@tonkeeper/core';
 
 export class TonPriceDependency extends DependencyPrototype<
   PricesState,
   Pick<PricesState, 'ton' | 'currency'>
 > {
-  constructor() {
-    super(tk.tonPrice.state, (state) => ({ ton: state.ton, currency: state.currency }));
+  constructor(state: State<PricesState>) {
+    super(state, (state) => ({ ton: state.ton, currency: state.currency }));
   }
 
   protected shouldEmit(
@@ -18,11 +18,6 @@ export class TonPriceDependency extends DependencyPrototype<
     cur: Pick<PricesState, 'ton' | 'currency'>,
   ) {
     return prev.ton !== cur.ton;
-  }
-
-  setWallet(wallet) {
-    this.dataProvider = wallet.tonPrice.state;
-    super.setWallet(wallet);
   }
 
   public getRawTotal(balance: string): string {
@@ -45,6 +40,7 @@ export class TonPriceDependency extends DependencyPrototype<
           ? 'positive'
           : 'negative',
       total: {
+        in_ton: balance,
         formatted: formatter.format(new BigNumber(balance).multipliedBy(rate.ton.fiat), {
           currency: rate.currency,
         }),

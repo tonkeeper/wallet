@@ -3,7 +3,7 @@ export const DarkTheme = {
   textSecondary: '#8994A3',
   textTertiary: '#556170',
   textAccent: '#45AEF5',
-  textPrimaryAlternate: '#10161F',
+  textPrimaryAlternate: '#000000',
 
   backgroundPage: '#10161F',
   backgroundTransparent: 'rgba(16, 22, 31, 0.96)',

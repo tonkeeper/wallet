@@ -5,6 +5,7 @@ import { TonIconProps } from '@tonkeeper/uikit';
 export type FiatRate = {
   total: {
     formatted: string;
+    in_ton: string;
     raw: string;
   };
   percent?: string;

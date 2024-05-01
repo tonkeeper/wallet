@@ -1168,6 +1168,7 @@
   },
   "backup_screen": {
     "title": "Backup",
+    "backup_warning": "Your balance is %{totalFiat}, and it's only protected by a recovery phrase you haven't written down yet. Backup the phrase to avoid losing funds in case of device issues.",
     "manual_title": "Manual",
     "manual_caption": "Back up your wallet manually by writing down the recovery phrase.",
     "manual_button": "Back Up Manually",
