@@ -444,8 +444,6 @@ export function* walletGetUnlockedVault(action?: WalletGetUnlockedVaultAction) {
       ? tk.wallets.get(action.payload.walletIdentifier)!
       : tk.wallet;
 
-    const generatedVault = yield select(walletGeneratedVaultSelector);
-
     let withoutBiometryOnOpen = false;
 
     if (tk.biometryEnabled) {
@@ -464,9 +462,7 @@ export function* walletGetUnlockedVault(action?: WalletGetUnlockedVaultAction) {
           mnemonic,
         );
 
-        if (generatedVault) {
-          setLastEnteredPasscode(passcode);
-        }
+        setLastEnteredPasscode(passcode);
 
         action?.payload?.onDone?.(unlockedVault);
         return unlockedVault;
