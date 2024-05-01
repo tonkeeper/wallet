@@ -69,10 +69,7 @@ export class DependencyPrototype<
     };
   }
 
-  public setWallet(wallet: Wallet) {
+  public destroy() {
     this.unsubscribe?.();
-    this.wallet = wallet;
-    this.subscribeToDataProvider();
-    this.onStateChanged();
   }
 }

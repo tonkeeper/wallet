@@ -13,6 +13,7 @@ export type IconColors =
   | 'constantWhite'
   | 'accentBlue'
   | 'accentOrange'
+  | 'accentRed'
   | 'accentGreen';
 
 export interface IconProps {

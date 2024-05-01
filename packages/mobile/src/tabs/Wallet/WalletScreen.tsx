@@ -92,7 +92,10 @@ export const WalletScreen = memo(({ navigation }) => {
         {shouldUpdate && <UpdatesCell />}
         <View style={styles.amount} pointerEvents="box-none">
           <View style={styles.balanceWithBattery}>
-            <ShowBalance amount={balance} />
+            <ShowBalance
+              dangerLevel={balance.dangerLevel}
+              amount={balance.inSelectedCurrency}
+            />
             {!isWatchOnly && <BatteryIcon />}
           </View>
           <View style={styles.addressContainer}>
