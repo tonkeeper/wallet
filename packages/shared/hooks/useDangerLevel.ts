@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js';
 import { useWalletSetup } from './useWalletSetup';
+import { useWallet } from './useWallet';
 
 export enum DangerLevel {
   Normal,
@@ -9,8 +10,9 @@ export enum DangerLevel {
 
 export const useDangerLevel = (inTonRaw: string): DangerLevel => {
   const { lastBackupAt } = useWalletSetup();
+  const wallet = useWallet();
 
-  if (lastBackupAt !== null) {
+  if (lastBackupAt !== null || wallet.isWatchOnly) {
     return DangerLevel.Normal;
   }
 
