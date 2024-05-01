@@ -1,9 +1,9 @@
 import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
 import Animated, {
+  FadeIn,
+  FadeOut,
   useAnimatedScrollHandler,
-  useAnimatedStyle,
   useSharedValue,
-  withTiming,
 } from 'react-native-reanimated';
 import { TapGestureHandler } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -39,7 +39,7 @@ export const ImportWalletForm: FC<ImportWalletFormProps> = (props) => {
   const [isConfigInputShown, setConfigInputShown] = useState(false);
   const [config, setConfig] = useState('');
   const [isRestoring, setRestoring] = useState(false);
-  const hasTouchedInputs = useSharedValue(false);
+  const [hasTextInAnyOfInputs, setHasTextInAnyOfInputs] = useState(false);
 
   const deferredScrollToInput = useRef<((offset: number) => void) | null>(null);
   const { keyboardHeight } = useReanimatedKeyboardHeight({
@@ -61,12 +61,16 @@ export const ImportWalletForm: FC<ImportWalletFormProps> = (props) => {
     setConfig(text);
   }, []);
 
-  const pasteButtonStyle = useAnimatedStyle(
-    () => ({
-      opacity: withTiming(hasTouchedInputs.value ? 0 : 1, { duration: 200 }),
-    }),
-    [],
-  );
+  const handleMultipleWords = useCallback(
+    (index: number, text: string) => {
+      if (!hasTextInAnyOfInputs) {
+        setHasTextInAnyOfInputs(true);
+      }
+      const words = text
+        .replace(/\r\n|\r|\n/g, ' ')
+        .split(' ')
+        .map((word) => word.trim())
+        .filter((word) => word.length > 0);
 
   const handleMultipleWords = useCallback((index: number, text: string) => {
     hasTouchedInputs.value = true;
@@ -83,7 +87,9 @@ export const ImportWalletForm: FC<ImportWalletFormProps> = (props) => {
       if (cursor === 24) {
         break;
       }
-    }
+    },
+    [hasTextInAnyOfInputs, inputsRegistry],
+  );
 
     if (cursor > 0) {
       inputsRegistry.getRef(cursor - 1)?.focus();
@@ -91,14 +97,14 @@ export const ImportWalletForm: FC<ImportWalletFormProps> = (props) => {
   }, []);
 
   const handlePasteButton = useCallback(async () => {
-    if (hasTouchedInputs.value) {
-      return;
+    if (!hasTextInAnyOfInputs) {
+      setHasTextInAnyOfInputs(true);
     }
     const maybePhrase = await Clipboard.getString();
     if (maybePhrase.replace(/\r\n|\r|\n/g, ' ').split(' ').length === 24) {
       handleMultipleWords(0, maybePhrase);
     }
-  }, [handleMultipleWords]);
+  }, [hasTextInAnyOfInputs, handleMultipleWords]);
 
   const handleSpace = useCallback((index: number) => {
     if (index === 24) {
@@ -208,7 +214,15 @@ export const ImportWalletForm: FC<ImportWalletFormProps> = (props) => {
 
   const handleChangeText = useCallback(
     (index: number) => (text: string) => {
-      hasTouchedInputs.value = true;
+      if (
+        !text &&
+        hasTextInAnyOfInputs &&
+        Object.values(inputsRegistry.refs).filter((val) => val.getValue()).length === 1
+      ) {
+        setHasTextInAnyOfInputs(false);
+      } else if (!hasTextInAnyOfInputs) {
+        setHasTextInAnyOfInputs(true);
+      }
       const overlap = 10;
       const offsetTop = inputsRegistry.getPosition(index) + S.INPUT_HEIGHT - overlap;
       const contentWidth = isAndroid ? 0 : inputsRegistry.getContentWidth(index);
@@ -225,7 +239,7 @@ export const ImportWalletForm: FC<ImportWalletFormProps> = (props) => {
         },
       });
     },
-    [],
+    [hasTextInAnyOfInputs],
   );
 
   const scrollHandler = useAnimatedScrollHandler({
@@ -294,20 +308,23 @@ export const ImportWalletForm: FC<ImportWalletFormProps> = (props) => {
         </S.ButtonWrap>
       </Animated.ScrollView>
       <KeyboardAvoidingView>
-        <Animated.View
-          style={[
-            styles.pasteButtonContainer.static,
-            { bottom: bottomInset + 16 },
-            pasteButtonStyle,
-          ]}
-        >
-          <ButtonNew
-            onPress={handlePasteButton}
-            color="tertiary"
-            size="medium"
-            title={t('paste')}
-          />
-        </Animated.View>
+        <View style={[styles.pasteButtonContainer, { bottom: bottomInset + 16 }]}>
+          <View style={styles.buttonContainer}>
+            {!hasTextInAnyOfInputs && (
+              <Animated.View
+                exiting={FadeOut.duration(200)}
+                entering={FadeIn.duration(200)}
+              >
+                <ButtonNew
+                  onPress={handlePasteButton}
+                  color="tertiary"
+                  size="medium"
+                  title={t('paste')}
+                />
+              </Animated.View>
+            )}
+          </View>
+        </View>
       </KeyboardAvoidingView>
     </>
   );
@@ -318,6 +335,6 @@ const styles = Steezy.create({
     position: 'absolute',
     left: 0,
     right: 0,
-    alignItems: 'center',
   },
+  buttonContainer: { height: 48, width: '100%', alignItems: 'center' },
 });

@@ -54,6 +54,7 @@ export class InscriptionsContentProvider extends ContentProviderPrototype<{
         },
         trend: 'negative',
         total: {
+          in_ton: '0',
           formatted: formatter.format(0, {
             currency: this.deps.tonPrice.state.currency,
           }),

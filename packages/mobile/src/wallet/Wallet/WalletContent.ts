@@ -26,6 +26,7 @@ import { TonProofManager } from '../managers/TonProofManager';
 import { JettonVerification } from '../models/JettonBalanceModel';
 import { CardsManager } from '$wallet/managers/CardsManager';
 import { JettonQuantity } from '@tonkeeper/core/src/TonAPI';
+import { WalletContentReceiver } from '../../tabs/Wallet/content-providers/utils/receiver';
 
 export interface WalletStatusState {
   isReloading: boolean;
@@ -191,6 +192,33 @@ export class WalletContent extends WalletBase {
       this.activityList.reload(),
       this.cards.load(),
     ]);
+  }
+
+  public get totalTon() {
+    const ton = new BigNumber(this.balances.state.data.ton).multipliedBy(
+      this.tonPrice.state.data.ton.fiat,
+    );
+    const jettons = this.jettons.state.data.jettonBalances.reduce((total, jetton) => {
+      const isBlacklisted = jetton.verification === JettonVerification.BLACKLIST;
+      const approvalStatus =
+        this.tokenApproval.state.data.tokens[Address.parse(jetton.jettonAddress).toRaw()];
+      if (
+        (isBlacklisted && !approvalStatus) ||
+        approvalStatus?.current === TokenApprovalStatus.Declined
+      ) {
+        return total;
+      }
+      const rate =
+        this.jettons.state.data.jettonRates[Address.parse(jetton.jettonAddress).toRaw()];
+
+      return rate
+        ? total.plus(new BigNumber(jetton.balance).multipliedBy(rate.ton))
+        : total;
+    }, new BigNumber(0));
+    const staking = new BigNumber(this.staking.state.data.stakingBalance).multipliedBy(
+      this.tonPrice.state.data.ton.fiat,
+    );
+    return ton.plus(jettons).plus(staking).toString();
   }
 
   public get totalFiat() {

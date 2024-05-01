@@ -54,6 +54,7 @@ export const IconList = {
   'ic-backspace-bold-24': require('../../../assets/icons/png/ic-backspace-bold-24.png'),
   'ic-backup-24': require('../../../assets/icons/png/ic-backup-24.png'),
   'ic-battery-almost-empty-24': require('../../../assets/icons/png/ic-battery-almost-empty-24.png'),
+  'ic-information-circle-24': require('../../../assets/icons/png/ic-information-circle-24.png'),
   'ic-key-24': require('../../../assets/icons/png/ic-key-24.png'),
   'ic-reset-24': require('../../../assets/icons/png/ic-reset-24.png'),
   'ic-ton-disabled-24': require('../../../assets/icons/png/ic-ton-disabled-24.png'),
