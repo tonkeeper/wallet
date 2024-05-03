@@ -83,7 +83,7 @@ export const SlideButton = memo<SlideButtonProps>((props) => {
       </Animated.View>
       <GestureDetector gesture={panGesture}>
         <Animated.View style={[buttonStyle, animatedButtonOffset]}>
-          <Icon name={'ic-arrow-right-outline-28'} />
+          <Icon name={'ic-arrow-right-outline-28'} color="buttonPrimaryForeground" />
         </Animated.View>
       </GestureDetector>
     </View>
