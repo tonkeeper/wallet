@@ -22,7 +22,7 @@ export const Security: FC = () => {
 
   const biometry = useBiometrySettings();
 
-  const { lockEnabled, toggleLock } = useLockSettings();
+  const { lockScreenEnabled, toggleLock } = useLockSettings();
 
   const handleCopyLockupConfig = useCallback(() => {
     try {
@@ -103,7 +103,7 @@ export const Security: FC = () => {
           <CellSection>
             <CellSectionItem
               onPress={toggleLock}
-              indicator={<Switch value={lockEnabled} onChange={toggleLock} />}
+              indicator={<Switch value={lockScreenEnabled} onChange={toggleLock} />}
             >
               {t('security_lock_screen_switch')}
             </CellSectionItem>
