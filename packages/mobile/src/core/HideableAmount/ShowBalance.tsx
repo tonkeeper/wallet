@@ -9,6 +9,7 @@ import { Icon, Text } from '@tonkeeper/uikit';
 import { DangerLevel } from '@tonkeeper/shared/hooks';
 import { useNavigation } from '@tonkeeper/router';
 import { SettingsStackRouteNames } from '$navigation';
+import { BatteryIcon } from '@tonkeeper/shared/components/BatteryIcon/BatteryIcon';
 
 const TouchableComponent = isAndroid ? Pressable : TouchableHighlight;
 
@@ -25,10 +26,11 @@ const getColorByDangerLevel = (
   }
 };
 
-export const ShowBalance: React.FC<{ amount: string; dangerLevel: DangerLevel }> = ({
-  amount,
-  dangerLevel,
-}) => {
+export const ShowBalance: React.FC<{
+  amount: string;
+  dangerLevel: DangerLevel;
+  isWatchOnly: boolean;
+}> = ({ amount, dangerLevel, isWatchOnly }) => {
   const hideAmounts = usePrivacyStore((state) => state.actions.toggleHiddenAmounts);
   const isHidden = usePrivacyStore((state) => state.hiddenAmounts);
   const nav = useNavigation();
@@ -61,6 +63,7 @@ export const ShowBalance: React.FC<{ amount: string; dangerLevel: DangerLevel }>
           </Text>
         </TouchableOpacity>
       )}
+      {!isWatchOnly && <BatteryIcon />}
       {dangerLevel !== DangerLevel.Normal && (
         <TouchableOpacity
           onPress={handleNavigateToBackup}

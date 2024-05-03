@@ -25,7 +25,7 @@ export interface SlideButtonProps {
   text: string;
 }
 
-const BUTTON_WIDTH = 76;
+const BUTTON_WIDTH = 92;
 
 const SPRING_CONFIG = {
   mass: 1.5,

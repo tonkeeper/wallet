@@ -91,13 +91,11 @@ export const WalletScreen = memo(({ navigation }) => {
         ))}
         {shouldUpdate && <UpdatesCell />}
         <View style={styles.amount} pointerEvents="box-none">
-          <View style={styles.balanceWithBattery}>
-            <ShowBalance
-              dangerLevel={balance.dangerLevel}
-              amount={balance.inSelectedCurrency}
-            />
-            {!isWatchOnly && <BatteryIcon />}
-          </View>
+          <ShowBalance
+            isWatchOnly={isWatchOnly}
+            dangerLevel={balance.dangerLevel}
+            amount={balance.inSelectedCurrency}
+          />
           <View style={styles.addressContainer}>
             {wallet && isConnected !== false ? (
               <TouchableOpacity
@@ -218,10 +216,6 @@ const styles = Steezy.create(({ isTablet }) => ({
     [isTablet]: {
       width: TabletMaxWidth,
     },
-  },
-  balanceWithBattery: {
-    flexDirection: 'row',
-    alignItems: 'center',
   },
   addressContainer: {
     marginBottom: 8,

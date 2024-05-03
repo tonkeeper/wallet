@@ -29,7 +29,6 @@ export const BatteryIcon = memo(() => {
 
   return (
     <>
-      <Spacer x={8} />
       <TouchableOpacity onPress={openRefillBatteryModal} hitSlop={hitSlop}>
         {getBatteryState(balance) === BatteryState.Empty ? (
           <Icon
