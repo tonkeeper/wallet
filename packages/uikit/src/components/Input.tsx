@@ -314,7 +314,7 @@ export const Input = forwardRef<InputRef, InputProps>((props, ref) => {
             placeholder={!hasLabel ? placeholder : undefined}
             placeholderTextColor={colors.textSecondary}
             onChangeText={handleChangeText}
-            keyboardAppearance="dark"
+            keyboardAppearance={colors.isDark ? 'dark' : 'light'}
             allowFontScaling={false}
             scrollEnabled={false}
             multiline={multiline}

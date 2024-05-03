@@ -2,7 +2,7 @@ import { useDeeplinking } from '$libs/deeplinking';
 import { openDAppsSearch } from '$navigation';
 import { getCorrectUrl, getSearchQuery, getUrlWithoutTonProxy } from '$utils';
 import React, { FC, memo, useCallback, useState } from 'react';
-import { Linking, useWindowDimensions } from 'react-native';
+import { Linking, StatusBar, useWindowDimensions } from 'react-native';
 import { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import {
   ShouldStartLoadRequest,
@@ -16,7 +16,7 @@ import { useDAppBridge } from './hooks/useDAppBridge';
 import { useWallet } from '@tonkeeper/shared/hooks';
 import { Address } from '@tonkeeper/shared/Address';
 import { config } from '$config';
-import { Screen } from '@tonkeeper/uikit';
+import { Screen, isIOS } from '@tonkeeper/uikit';
 
 export interface DAppBrowserProps {
   url: string;
@@ -146,6 +146,7 @@ const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
 
   return (
     <Screen alternateBackground>
+      {isIOS ? <StatusBar barStyle="dark-content" /> : null}
       <BrowserNavBar
         title={app?.name || title}
         url={currentUrl}
