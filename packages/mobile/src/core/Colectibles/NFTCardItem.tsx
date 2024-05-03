@@ -63,7 +63,7 @@ export const NFTCardItem = memo<NFTCardItemProps>((props) => {
         <S.Badges>
           {isTonDiamondsNft && !flags.disable_apperance ? (
             <S.AppearanceBadge>
-              <Icon name="ic-appearance-16" color="constantLight" />
+              <Icon name="ic-appearance-16" color="iconPrimary" />
             </S.AppearanceBadge>
           ) : null}
         </S.Badges>

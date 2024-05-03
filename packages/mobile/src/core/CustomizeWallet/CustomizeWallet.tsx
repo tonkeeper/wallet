@@ -40,6 +40,7 @@ import { RouteProp } from '@react-navigation/native';
 import { AppStackParamList } from '$navigation/AppStack';
 import { AppStackRouteNames } from '$navigation';
 import { convertHexToRGBA } from '$utils';
+import { useThemeName } from '$hooks/useThemeName';
 
 const COLORS_LIST = Object.values(WalletColor);
 
@@ -58,6 +59,7 @@ export const CustomizeWallet: FC<Props> = memo((props) => {
   const wallet = useWallet();
   const nav = useNavigation();
   const theme = useTheme();
+  const themeName = useThemeName();
 
   const [name, setName] = useState(
     identifiers.length > 1 ? wallet.config.name.slice(0, -5) : wallet.config.name,
@@ -162,7 +164,7 @@ export const CustomizeWallet: FC<Props> = memo((props) => {
               <View
                 style={[
                   styles.emojiContainer,
-                  { backgroundColor: getWalletColorHex(selectedColor) },
+                  { backgroundColor: getWalletColorHex(selectedColor, themeName) },
                 ]}
               >
                 <WalletIcon
@@ -195,7 +197,7 @@ export const CustomizeWallet: FC<Props> = memo((props) => {
                     <View
                       style={[
                         styles.colorContainer,
-                        { backgroundColor: getWalletColorHex(color) },
+                        { backgroundColor: getWalletColorHex(color, themeName) },
                       ]}
                     >
                       {color === selectedColor ? (

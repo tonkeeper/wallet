@@ -1,11 +1,22 @@
 import { ThemeOptions, useAppThemeStore } from '$store/zustand/appTheme';
 import { ThemeName } from '@tonkeeper/uikit';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useColorScheme } from 'react-native';
 
 export const useThemeName = (): ThemeName => {
   const { selectedTheme } = useAppThemeStore();
-  const systemAppearance = useColorScheme();
+  const colorScheme = useColorScheme();
+  const [systemAppearance, setSystemAppearance] = useState(colorScheme);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setSystemAppearance(colorScheme);
+    }, 300);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [colorScheme]);
 
   const themeName = useMemo(() => {
     if (selectedTheme === ThemeOptions.System) {

@@ -123,7 +123,7 @@ export const WalletContentList = memo<WalletContentListProps>((props) => {
         <RefreshControl
           onRefresh={props.handleRefresh}
           refreshing={props.isRefreshing && props.isFocused}
-          tintColor={theme.colors.foregroundPrimary}
+          tintColor={theme.colors.iconPrimary}
           progressBackgroundColor={theme.colors.foregroundPrimary}
         />
       }

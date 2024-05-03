@@ -39,7 +39,16 @@ export const Screen = memo<Props>((props) => {
   return (
     <ScreenScrollContext.Provider value={screenScroll}>
       {props.keyboardAvoiding ? (
-        <KeyboardAvoidingContainer>{props.children}</KeyboardAvoidingContainer>
+        <KeyboardAvoidingContainer>
+          <View
+            style={[
+              styles.container,
+              props.alternateBackground && styles.alternateBackground,
+            ]}
+          >
+            {props.children}
+          </View>
+        </KeyboardAvoidingContainer>
       ) : (
         <View
           style={[

@@ -17,11 +17,13 @@ import React, { FC, memo, useCallback } from 'react';
 import { useNavigation } from '@tonkeeper/router';
 import { FlashCountKeys, useFlashCount } from '$store';
 import { tk } from '$wallet';
+import { useThemeName } from '$hooks/useThemeName';
 
 const WalletSelectorComponent: FC = () => {
   const wallet = useWallet();
   const nav = useNavigation();
   const [flashShownCount, disableFlash] = useFlashCount(FlashCountKeys.MultiWallet);
+  const themeName = useThemeName();
 
   const handlePress = useCallback(() => {
     disableFlash();
@@ -35,7 +37,7 @@ const WalletSelectorComponent: FC = () => {
         <Flash
           style={[
             styles.selectorContainer.static,
-            { backgroundColor: getWalletColorHex(wallet.config.color) },
+            { backgroundColor: getWalletColorHex(wallet.config.color, themeName) },
           ]}
           disabled={!tk.migrationData || flashShownCount >= 3}
         >

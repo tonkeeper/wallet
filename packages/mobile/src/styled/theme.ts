@@ -20,7 +20,11 @@ export enum ThemeNames {
   dark = 'dark',
 }
 
-export type TonThemeColor = ThemeSpecificColor | ConstantColor | CommonColor;
+export type TonThemeColor =
+  | ThemeSpecificColor
+  | ConstantColor
+  | CommonColor
+  | keyof Theme;
 
 const CommonTheme = {
   font: FONT,
@@ -68,5 +72,5 @@ export type TonTheme = {
   radius: typeof RADIUS;
   colors: {
     [key in TonThemeColor]: string;
-  } & Theme;
+  };
 };

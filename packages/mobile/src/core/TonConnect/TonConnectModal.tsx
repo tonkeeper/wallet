@@ -281,7 +281,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
           <S.Logos>
             <S.Logo>
               <S.TonLogo>
-                <Icon name="ic-logo-48" color="accentBlue" />
+                <Icon name="ic-logo-48" colorHex="#45AEF5" />
               </S.TonLogo>
             </S.Logo>
             <S.AddressConatiner>

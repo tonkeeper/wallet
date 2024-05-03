@@ -4,7 +4,14 @@ import { Provider as StoreProvider, useSelector } from 'react-redux';
 import { ThemeProvider as StyledThemeProvider } from 'styled-components/native';
 
 import { store } from '$store';
-import { AppearanceAccents, BlueTheme, DarkTheme, LightTheme, TonTheme } from '$styled';
+import {
+  AccentKey,
+  AppearanceAccents,
+  BlueTheme,
+  DarkTheme,
+  LightTheme,
+  TonTheme,
+} from '$styled';
 import { AppNavigator } from '$navigation/AppNavigator';
 import { ScrollPositionProvider } from '$uikit';
 import { useMemo } from 'react';
@@ -41,9 +48,28 @@ const TonThemeProvider = ({ children }) => {
   const accent = useSelector(accentSelector);
   const themeName = useThemeName();
 
-  const accentColors = AppearanceAccents[accent].colors;
+  const accentColors =
+    accent !== AccentKey.default ? AppearanceAccents[accent].colors : undefined;
 
-  const uitheme = useMemo(() => getThemeByName(themeName), [themeName]);
+  const uiThemeAccentColors = useMemo(() => {
+    if (!accentColors) {
+      return {};
+    }
+    return {
+      textAccent: accentColors.accentPrimary,
+      buttonPrimaryBackground: accentColors.accentPrimary,
+      buttonPrimaryBackgroundDisabled: accentColors.accentPrimaryLight,
+      buttonPrimaryBackgroundHighlighted: accentColors.accentPrimaryDark,
+      fieldActiveBorder: accentColors.accentPrimary,
+      accentBlue: accentColors.accentPrimary,
+      tabBarActiveIcon: accentColors.accentPrimary,
+    };
+  }, [accentColors]);
+
+  const uitheme = useMemo(
+    () => ({ ...getThemeByName(themeName), ...uiThemeAccentColors }),
+    [themeName, uiThemeAccentColors],
+  );
 
   const legacyTheme = useMemo(() => getLegacyThemeByName(themeName), [themeName]);
 
@@ -51,11 +77,12 @@ const TonThemeProvider = ({ children }) => {
     (): TonTheme => ({
       ...legacyTheme,
       colors: {
-        ...accentColors,
         ...legacyTheme.colors,
+        ...accentColors,
+        ...uiThemeAccentColors,
       },
     }),
-    [accentColors, legacyTheme],
+    [accentColors, legacyTheme, uiThemeAccentColors],
   );
 
   return (

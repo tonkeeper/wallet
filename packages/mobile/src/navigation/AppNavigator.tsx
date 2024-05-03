@@ -7,7 +7,7 @@ import { setNavigationRef, onNavigationReady } from './imperative';
 import { AppStack } from './MainStack';
 import { mainSelector } from '$store/main';
 import { ProvidersWithoutNavigation } from './Providers';
-import { useTheme } from '@tonkeeper/uikit';
+import { isAndroid, useTheme } from '@tonkeeper/uikit';
 
 export const AppNavigator: FC = () => {
   const theme = useTheme();
@@ -40,7 +40,7 @@ export const AppNavigator: FC = () => {
     >
       <ProvidersWithoutNavigation>
         <StatusBar
-          barStyle={theme.isDark ? 'light-content' : 'dark-content'}
+          barStyle={theme.isDark || isAndroid ? 'light-content' : 'dark-content'}
           backgroundColor={theme.constantBlack}
         />
         <AppStack />
