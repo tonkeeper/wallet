@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { Button, Loader, Spacer, View } from '$uikit';
+import { Loader, Spacer, View } from '$uikit';
 import * as S from '../core/Exchange/Exchange.style';
 import { ExchangeItem } from '../core/Exchange/ExchangeItem/ExchangeItem';
 import { t } from '@tonkeeper/shared/i18n';
 import { LayoutAnimation } from 'react-native';
-import { Modal, SegmentedControl, Text } from '@tonkeeper/uikit';
+import { Button, Modal, SegmentedControl, Text } from '@tonkeeper/uikit';
 import { Steezy } from '$styles';
 import { useMethodsToBuyStore } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
 import { CategoryType } from '$store/zustand/methodsToBuy/types';
@@ -124,12 +124,13 @@ export const ExchangeModal = () => {
                     <View style={styles.otherWaysContainer}>
                       <Button
                         key={showAll ? 'hide' : 'show'}
-                        size="medium_rounded"
-                        mode="secondary"
+                        color="secondary"
+                        size="small"
+                        title={t(
+                          showAll ? 'exchange_modal.hide' : 'exchange_modal.show_all',
+                        )}
                         onPress={handleShowAll}
-                      >
-                        {t(showAll ? 'exchange_modal.hide' : 'exchange_modal.show_all')}
-                      </Button>
+                      />
                     </View>
                   ) : null}
                 </React.Fragment>

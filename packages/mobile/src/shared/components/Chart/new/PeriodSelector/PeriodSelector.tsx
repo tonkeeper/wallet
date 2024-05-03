@@ -25,7 +25,7 @@ export const Period: React.FC<{
 }> = (props) => {
   const theme = useTheme();
   const backgroundColor = props.selected
-    ? theme.colors.backgroundSecondary
+    ? theme.colors.buttonSecondaryBackground
     : 'transparent';
 
   return (

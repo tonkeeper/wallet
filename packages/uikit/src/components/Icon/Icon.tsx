@@ -14,7 +14,9 @@ export type IconColors =
   | 'accentBlue'
   | 'accentOrange'
   | 'accentRed'
-  | 'accentGreen';
+  | 'accentGreen'
+  | 'buttonSecondaryForeground'
+  | 'buttonPrimaryForeground';
 
 export interface IconProps {
   name: IconNames;

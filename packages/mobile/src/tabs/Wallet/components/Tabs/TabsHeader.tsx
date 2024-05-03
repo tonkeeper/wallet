@@ -1,13 +1,14 @@
 import { Steezy } from '$styles';
 import { AnimatedView, Icon, TouchableOpacity, View } from '$uikit';
 import { Style } from '@bogoslavskiy/react-native-steezy/dist/types';
-import { isAndroid } from '$utils';
+import { convertHexToRGBA, isAndroid } from '$utils';
 import * as React from 'react';
 import { useWindowDimensions } from 'react-native';
 import { useAnimatedStyle } from 'react-native-reanimated';
 import { useTabCtx } from './TabsContainer';
 import { goBack } from '$navigation/imperative';
 import LinearGradient from 'react-native-linear-gradient';
+import { useTheme } from '@tonkeeper/uikit';
 
 interface TabsHeaderProps {
   style?: Style;
@@ -19,6 +20,7 @@ interface TabsHeaderProps {
 export const TabsHeader: React.FC<TabsHeaderProps> = (props) => {
   const dimensions = useWindowDimensions();
   const { headerHeight, scrollY } = useTabCtx();
+  const theme = useTheme();
 
   const shouldRenderGoBackButton = props.withBackButton ?? false;
 
@@ -47,7 +49,7 @@ export const TabsHeader: React.FC<TabsHeaderProps> = (props) => {
                 style={styles.leftContentGradient.static}
                 start={{ x: 0, y: 1 }}
                 end={{ x: 1, y: 1 }}
-                colors={['rgba(16, 22, 31, 1)', 'rgba(16, 22, 31, 0)']}
+                colors={[theme.backgroundPage, convertHexToRGBA(theme.backgroundPage, 0)]}
                 pointerEvents="none"
               />
             </>
@@ -87,7 +89,7 @@ const styles = Steezy.create(({ colors, safeArea }) => ({
     position: 'absolute',
     top: 0,
     zIndex: isAndroid ? 1 : 4,
-    backgroundColor: colors.backgroundPrimary,
+    backgroundColor: colors.backgroundPage,
   },
   leftContent: {
     top: 16,
@@ -106,7 +108,7 @@ const styles = Steezy.create(({ colors, safeArea }) => ({
     zIndex: 2,
   },
   backButton: {
-    backgroundColor: colors.backgroundSecondary,
+    backgroundColor: colors.buttonSecondaryBackground,
     height: 32,
     width: 32,
     borderRadius: 16,

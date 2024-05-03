@@ -1,13 +1,11 @@
-import { DarkTheme } from './dark';
+import { BlueTheme } from './blue';
 
-type ThemeGradient =
-  | 'gradientBackgroundTop'
-  | 'gradientBackgroundBottom'
-  | 'gradientBlueTop'
-  | 'gradientBlueBottom'
-  | 'gradientGreen'
-  | 'gradientRed';
-
-export type Theme =  Omit<typeof DarkTheme, ThemeGradient>;
+export type Theme = typeof BlueTheme;
 
 export type ThemeKeys = keyof Theme;
+
+export enum ThemeName {
+  Dark = 'dark',
+  Light = 'light',
+  Blue = 'blue',
+}

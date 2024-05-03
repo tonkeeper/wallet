@@ -1,11 +1,11 @@
 import React, { memo, useCallback } from 'react';
 import { TextStyle, ViewStyle } from 'react-native';
 import { Steezy, StyleProp } from '$styles';
-import { View } from '@tonkeeper/uikit';
+import { View, useTheme } from '@tonkeeper/uikit';
 import { SText } from '../StyledNativeComponents';
 import { Icon } from '../Icon/Icon';
 import { Pressable } from '../Pressable';
-import { DarkTheme, TonThemeColor } from '$styled';
+import { TonThemeColor } from '$styled';
 import FastImage from 'react-native-fast-image';
 import Animated, {
   SharedValue,
@@ -128,9 +128,11 @@ export const ListItem = memo<ListItemProps>((props) => {
     );
   }, [props.title, props.label, props.subtitle, compact, titleProps]);
 
+  const theme = useTheme();
+
   return (
     <TouchableComponent
-      underlayColor={props.underlayColor ?? DarkTheme.colors.backgroundHighlighted}
+      underlayColor={props.underlayColor ?? theme.backgroundHighlighted}
       onPressOut={handlePressOut}
       onPressIn={handlePressIn}
       onPress={props.onPress}

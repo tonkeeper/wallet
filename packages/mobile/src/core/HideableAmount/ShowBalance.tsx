@@ -4,8 +4,7 @@ import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
 import { Steezy } from '$styles';
 import { Pressable, View } from '$uikit';
 import { Haptics, isAndroid } from '$utils';
-import { DarkTheme } from '$styled';
-import { Icon, Text } from '@tonkeeper/uikit';
+import { Icon, Text, useTheme } from '@tonkeeper/uikit';
 import { DangerLevel } from '@tonkeeper/shared/hooks';
 import { useNavigation } from '@tonkeeper/router';
 import { SettingsStackRouteNames } from '$navigation';
@@ -39,6 +38,7 @@ export const ShowBalance: React.FC<{ amount: string; dangerLevel: DangerLevel }>
   }, [hideAmounts]);
 
   const handleNavigateToBackup = () => nav.navigate(SettingsStackRouteNames.Backup);
+  const theme = useTheme();
 
   return (
     <View style={styles.container}>
@@ -46,7 +46,7 @@ export const ShowBalance: React.FC<{ amount: string; dangerLevel: DangerLevel }>
         <View style={styles.starsContainer}>
           <TouchableComponent
             style={styles.touchable.static}
-            underlayColor={DarkTheme.colors.backgroundHighlighted}
+            underlayColor={theme.backgroundHighlighted}
             onPress={handleToggleHideAmounts}
           >
             <Text type="num2" style={styles.stars.static}>

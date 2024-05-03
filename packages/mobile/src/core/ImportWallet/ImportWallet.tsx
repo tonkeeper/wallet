@@ -13,6 +13,7 @@ import { useImportWallet } from '$hooks/useImportWallet';
 import { tk } from '$wallet';
 import { ImportWalletInfo } from '$wallet/WalletTypes';
 import { DEFAULT_WALLET_VERSION } from '$wallet/constants';
+import { Screen } from '@tonkeeper/uikit';
 
 export const ImportWallet: FC<{
   route: RouteProp<ImportWalletStackParamList, ImportWalletStackRouteNames.ImportWallet>;
@@ -60,9 +61,11 @@ export const ImportWallet: FC<{
   );
 
   return (
-    <S.Wrap style={{ paddingBottom: keyboardHeight }}>
-      <NavBar isTransparent />
-      <ImportWalletForm onWordsFilled={handleWordsFilled} />
-    </S.Wrap>
+    <Screen alternateBackground>
+      <S.Wrap style={{ paddingBottom: keyboardHeight }}>
+        <NavBar isTransparent />
+        <ImportWalletForm onWordsFilled={handleWordsFilled} />
+      </S.Wrap>
+    </Screen>
   );
 };

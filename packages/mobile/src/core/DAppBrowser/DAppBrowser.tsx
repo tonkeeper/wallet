@@ -16,6 +16,7 @@ import { useDAppBridge } from './hooks/useDAppBridge';
 import { useWallet } from '@tonkeeper/shared/hooks';
 import { Address } from '@tonkeeper/shared/Address';
 import { config } from '$config';
+import { Screen } from '@tonkeeper/uikit';
 
 export interface DAppBrowserProps {
   url: string;
@@ -144,7 +145,7 @@ const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
   }, [currentUrl, initialUrl, openUrl]);
 
   return (
-    <S.Container>
+    <Screen alternateBackground>
       <BrowserNavBar
         title={app?.name || title}
         url={currentUrl}
@@ -184,7 +185,7 @@ const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
         />
         <S.LoadingBar style={loadingBarAnimatedStyle} />
       </S.DAppContainer>
-    </S.Container>
+    </Screen>
   );
 };
 

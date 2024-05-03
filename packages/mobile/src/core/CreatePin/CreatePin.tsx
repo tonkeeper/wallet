@@ -9,7 +9,7 @@ import { CreatePinForm } from '$shared/components';
 import { tk } from '$wallet';
 import { popToTop } from '$navigation/imperative';
 import { useParams } from '@tonkeeper/router/src/imperative';
-import { BlockingLoader } from '@tonkeeper/uikit';
+import { BlockingLoader, Screen } from '@tonkeeper/uikit';
 
 export const CreatePin: FC = () => {
   const params = useParams<{ isImport?: boolean }>();
@@ -44,9 +44,11 @@ export const CreatePin: FC = () => {
   );
 
   return (
-    <S.Wrap>
-      <NavBar onClosePress={popToTop} />
-      <CreatePinForm onPinCreated={handlePinCreated} />
-    </S.Wrap>
+    <Screen alternateBackground>
+      <S.Wrap>
+        <NavBar onClosePress={popToTop} />
+        <CreatePinForm onPinCreated={handlePinCreated} />
+      </S.Wrap>
+    </Screen>
   );
 };

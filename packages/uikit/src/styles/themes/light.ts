@@ -1,0 +1,68 @@
+export const LightTheme = {
+  isDark: false,
+
+  textPrimary: '#000000',
+  textSecondary: '#818C99',
+  textTertiary: '#95A0AD',
+  textAccent: '#007AFF',
+  textPrimaryAlternate: '#FFFFFF',
+
+  backgroundPage: '#EFEEF3',
+  backgroundPageAlternate: '#FFFFFF',
+  backgroundTransparent: 'rgba(255, 255, 255, 0.96)',
+  backgroundContent: '#FFFFFF',
+  backgroundContentAlternate: '#EFEEF3',
+  backgroundContentTint: '#F0F0F0',
+  backgroundContentAttention: '#F0F0F0',
+  backgroundHighlighted: 'rgba(0, 0, 0, 0.04)',
+  backgroundOverlayStrong: 'rgba(20, 20, 20, 0.72)',
+  backgroundOverlayLight: 'rgba(20, 20, 20, 0.48)',
+  backgroundOverlayExtraLight: 'rgba(20, 20, 20, 0.24)',
+  backgroundContentPlaceholder: 'rgba(0, 0, 0, 0.08)',
+
+  iconPrimary: '#000000',
+  iconSecondary: '#818C99',
+  iconTertiary: '#95A0AD',
+  iconPrimaryAlternate: '#FFFFFF',
+
+  buttonPrimaryBackground: '#007AFF',
+  buttonPrimaryForeground: '#FFFFFF',
+  buttonSecondaryBackground: 'rgba(129, 140, 153, 0.16)',
+  buttonSecondaryForeground: '#000000',
+  buttonTertiaryBackground: 'rgba(129, 140, 153, 0.12)',
+  buttonTertiaryForeground: '#000000',
+  buttonPrimaryBackgroundDisabled: '#3D9AFF',
+  buttonSecondaryBackgroundDisabled: 'rgba(129, 140, 153, 0.12)',
+  buttonTertiaryBackgroundDisabled: 'rgba(129, 140, 153, 0.08)',
+  buttonPrimaryBackgroundHighlighted: '#1F8AFF',
+  buttonSecondaryBackgroundHighlighted: 'rgba(129, 140, 153, 0.24)',
+  buttonTertiaryBackgroundHighlighted: 'rgba(129, 140, 153, 0.20)',
+
+  buttonPrimaryBackgroundGreen: '#25B86F',
+  buttonPrimaryBackgroundGreenDisabled: '#2B9962',
+  buttonPrimaryBackgroundGreenHighlighted: '#17C26D',
+  buttonGreenForeground: '#FFFFFF',
+
+  fieldBackground: 'rgba(129, 140, 153, 0.12)',
+  fieldActiveBorder: '#007AFF',
+  fieldErrorBorder: '#FF3B30',
+  fieldErrorBackground: 'rgba(255, 59, 48, 0.08)',
+
+  accentBlue: '#007AFF',
+  accentGreen: '#25B86F',
+  accentRed: '#FF3B30',
+  accentOrange: '#F5A73B',
+  accentPurple: '#7665E5',
+
+  tabBarActiveIcon: '#007AFF',
+  tabBarInactiveIcon: '#95A0AD',
+
+  separatorCommon: 'rgba(60, 60, 67, 0.08)',
+  separatorAlternate: 'rgba(60, 60, 67, 0.08)',
+  separatorActionButtons: '#E1E0E5',
+
+  constantBlack: '#000000',
+  constantWhite: '#FFFFFF',
+  constantBlue: '#0077FF',
+  constantRed: '#FF3B30',
+};

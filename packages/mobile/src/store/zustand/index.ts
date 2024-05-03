@@ -7,3 +7,4 @@ export * from './flash';
 export * from './notifications';
 export * from './encryptedComments';
 export * from './addressUpdate';
+export * from './appTheme';

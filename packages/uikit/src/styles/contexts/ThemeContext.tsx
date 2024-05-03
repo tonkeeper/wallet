@@ -1,14 +1,17 @@
 import { PropsWithChildren, createContext, memo, useContext } from 'react';
-import { DarkTheme } from '../themes/dark';
+import { BlueTheme } from '../themes/blue';
+import { Theme } from '../themes/theme.type';
 
-const ThemeContext = createContext(DarkTheme);
+const ThemeContext = createContext<Theme>(BlueTheme);
 
-export const ThemeProvider = memo<PropsWithChildren>((props) => {
+interface Props extends PropsWithChildren {
+  theme: Theme;
+}
+
+export const ThemeProvider = memo<Props>((props) => {
   return (
-    <ThemeContext.Provider value={DarkTheme}>
-      {props.children}
-    </ThemeContext.Provider>
-  )
+    <ThemeContext.Provider value={props.theme}>{props.children}</ThemeContext.Provider>
+  );
 });
 
 export const useTheme = () => {

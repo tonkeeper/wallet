@@ -45,7 +45,7 @@ export const SetupNotifications: React.FC<Props> = (props) => {
   }, [handleDone, identifiers]);
 
   return (
-    <Screen>
+    <Screen alternateBackground>
       <Screen.Header
         hideBackButton
         rightContent={
@@ -57,6 +57,7 @@ export const SetupNotifications: React.FC<Props> = (props) => {
             onPress={handleDone}
           />
         }
+        alternateBackground
       />
       <Screen.Content>
         <View style={styles.container}>

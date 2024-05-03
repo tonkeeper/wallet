@@ -45,6 +45,7 @@ const WalletListItemComponent: FC<Props> = (props) => {
             emojiStyle={styles.emoji.static}
             size={24}
             value={wallet.config.emoji}
+            color="constantWhite"
           />
         </View>
       }

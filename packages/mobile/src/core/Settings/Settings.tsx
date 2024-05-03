@@ -25,17 +25,11 @@ import {
   openRefillBatteryModal,
 } from '$navigation';
 import { walletActions } from '$store/wallet';
-import {
-  APPLE_STORE_ID,
-  GOOGLE_PACKAGE_NAME,
-  LargeNavBarHeight,
-  IsTablet,
-} from '$shared/constants';
-import { checkIsTonDiamondsNFT, hNs, ns, throttle } from '$utils';
-import { LargeNavBarInteractiveDistance } from '$uikit/LargeNavBar/LargeNavBar';
+import { APPLE_STORE_ID, GOOGLE_PACKAGE_NAME } from '$shared/constants';
+import { checkIsTonDiamondsNFT, throttle } from '$utils';
 import { CellSectionItem } from '$shared/components';
 import { useFlags } from '$utils/flags';
-import { SearchEngine, useBrowserStore } from '$store';
+import { SearchEngine, ThemeOptions, useAppThemeStore, useBrowserStore } from '$store';
 import AnimatedLottieView from 'lottie-react-native';
 import { Steezy } from '$styles';
 import { i18n, t } from '@tonkeeper/shared/i18n';
@@ -84,6 +78,9 @@ export const Settings: FC = () => {
 
   const searchEngine = useBrowserStore((state) => state.searchEngine);
   const setSearchEngine = useBrowserStore((state) => state.actions.setSearchEngine);
+
+  const selectedTheme = useAppThemeStore((state) => state.selectedTheme);
+  const setSelectedTheme = useAppThemeStore((state) => state.actions.setSelectedTheme);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleAnimateDiamond = useCallback(
@@ -151,6 +148,8 @@ export const Settings: FC = () => {
   }, []);
 
   const searchEngineVariants = Object.values(SearchEngine);
+
+  const themeVariants = Object.values(ThemeOptions);
 
   const handleSwitchLanguage = useCallback(() => {
     if (Platform.OS === 'android') {
@@ -374,6 +373,25 @@ export const Settings: FC = () => {
                 onPress={handleSecurity}
               />
             )}
+            <PopupSelect
+              items={themeVariants}
+              selected={selectedTheme}
+              onChange={setSelectedTheme}
+              keyExtractor={(item) => item}
+              width={176}
+              renderItem={(item) => (
+                <Text variant="label1">{t(`settings_theme_names.${item}`)}</Text>
+              )}
+            >
+              <List.Item
+                value={
+                  <Text variant="label1" color="accentPrimary">
+                    {t(`settings_theme_names.${selectedTheme}`)}
+                  </Text>
+                }
+                title={t('settings_theme')}
+              />
+            </PopupSelect>
             <PopupSelect
               items={searchEngineVariants}
               selected={searchEngine}

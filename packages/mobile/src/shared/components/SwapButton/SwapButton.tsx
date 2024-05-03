@@ -85,8 +85,8 @@ const SwapButtonComponent: FC<Props> = (props) => {
       hitSlop={HIT_SLOP_INSETS}
     >
       <S.Container style={containerStyle}>
-        <S.LeftArrow style={leftArrowStyle} />
-        <S.RightArrow style={rightArrowStyle} />
+        <S.LeftArrow style={leftArrowStyle} tintColor={theme.colors.iconPrimary} />
+        <S.RightArrow style={rightArrowStyle} tintColor={theme.colors.iconPrimary} />
       </S.Container>
     </S.Touchable>
   );

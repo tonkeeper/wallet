@@ -6,7 +6,7 @@ import React, {
   useReducer,
   useState,
 } from 'react';
-import { Steezy } from '@tonkeeper/uikit';
+import { Steezy, useTheme } from '@tonkeeper/uikit';
 import WebView from 'react-native-webview';
 import {
   DappMainButton,
@@ -14,7 +14,6 @@ import {
   reduceMainButton,
 } from './components/DAppMainButton';
 import { BackHandler, KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
-import { DarkTheme } from '@tonkeeper/uikit/src/styles/themes/dark';
 import {
   createInjectSource,
   dispatchMainButtonResponse,
@@ -49,11 +48,12 @@ export interface HoldersWebViewProps {
 export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
   const navigation = useNavigation();
   const safeAreaInsets = useSafeAreaInsets();
+  const theme = useTheme();
   const [mainButton, dispatchMainButton] = useReducer(reduceMainButton(), {
     text: '',
-    textColor: DarkTheme.buttonPrimaryForeground,
-    color: DarkTheme.buttonPrimaryBackground,
-    disabledColor: DarkTheme.buttonPrimaryBackgroundDisabled,
+    textColor: theme.buttonPrimaryForeground,
+    color: theme.buttonPrimaryBackground,
+    disabledColor: theme.buttonPrimaryBackgroundDisabled,
     isVisible: false,
     isActive: false,
     isProgressVisible: false,

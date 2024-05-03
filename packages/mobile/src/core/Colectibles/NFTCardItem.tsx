@@ -1,6 +1,6 @@
 import { t } from '@tonkeeper/shared/i18n';
 import { openNFT } from '$navigation';
-import { DarkTheme, Steezy } from '$styles';
+import { Steezy } from '$styles';
 import { Icon, Pressable, View } from '$uikit';
 import { checkIsTonDiamondsNFT } from '$utils';
 import { useFlags } from '$utils/flags';
@@ -12,6 +12,7 @@ import { AnimationDirection, HideableAmount } from '$core/HideableAmount/Hideabl
 import { HideableImage } from '$core/HideableAmount/HideableImage';
 import { Address } from '@tonkeeper/shared/Address';
 import { DNS, KnownTLDs } from '@tonkeeper/core';
+import { useTheme } from '@tonkeeper/uikit';
 
 interface NFTCardItemProps {
   item: any;
@@ -46,10 +47,12 @@ export const NFTCardItem = memo<NFTCardItemProps>((props) => {
 
   const nftRawAddress = useMemo(() => Address.parse(item.address).toRaw(), []);
 
+  const theme = useTheme();
+
   return (
     <Pressable
-      underlayColor={DarkTheme.backgroundContentTint}
-      backgroundColor={DarkTheme.backgroundContent}
+      underlayColor={theme.backgroundContentTint}
+      backgroundColor={theme.backgroundContent}
       style={styles.container}
       onPress={handleOpenNftItem}
     >
@@ -122,6 +125,6 @@ const styles = Steezy.create(({ colors, corners }) => ({
     height: '100%',
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
-    background: DarkTheme.backgroundTertiary,
+    background: colors.backgroundTertiary,
   },
 }));

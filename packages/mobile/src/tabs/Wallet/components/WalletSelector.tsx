@@ -43,15 +43,20 @@ const WalletSelectorComponent: FC = () => {
             emojiStyle={styles.emoji.static}
             size={20}
             value={wallet.config.emoji}
+            color="constantWhite"
           />
           <Spacer x={4} />
           <View style={styles.nameContainer}>
-            <Text type="label2" numberOfLines={1}>
+            <Text type="label2" color="constantWhite" numberOfLines={1}>
               {wallet.config.name}
             </Text>
           </View>
           <Spacer x={6} />
-          <Icon name="ic-chevron-down-16" style={styles.icon.static} />
+          <Icon
+            name="ic-chevron-down-16"
+            color="constantWhite"
+            style={styles.icon.static}
+          />
         </Flash>
       </TouchableOpacity>
     </View>

@@ -3,8 +3,7 @@ import { Spacer } from '$uikit';
 import { Address } from '@tonkeeper/core';
 import { t } from '@tonkeeper/shared/i18n';
 import { tk } from '$wallet';
-import { Pressable, Screen, Steezy, Text, View } from '@tonkeeper/uikit';
-import { DarkTheme } from '@tonkeeper/uikit/src/styles/themes/dark';
+import { Pressable, Screen, Steezy, Text, View, useTheme } from '@tonkeeper/uikit';
 import React, { FC } from 'react';
 import { Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -34,9 +33,11 @@ export const AddressUpdateInfo: FC = () => {
   const oldStyle = splitAddress(oldAddress);
   const newStyle = splitAddress(newAddress);
 
+  const theme = useTheme();
+
   return (
-    <Screen>
-      <Screen.Header title={t('address_update.title')} />
+    <Screen alternateBackground>
+      <Screen.Header title={t('address_update.title')} alternateBackground />
       <Screen.ScrollView>
         <View style={styles.content}>
           <Text type="body2" color="textSecondary">
@@ -51,8 +52,8 @@ export const AddressUpdateInfo: FC = () => {
             <Text type="label1">{t('address_update.your_wallet')}</Text>
           </View>
           <Pressable
-            underlayColor={DarkTheme.backgroundContentTint}
-            backgroundColor={DarkTheme.fieldBackground}
+            underlayColor={theme.backgroundContentTint}
+            backgroundColor={theme.fieldBackground}
             style={styles.addressContainer}
             onPress={() => copyText(oldAddress)}
           >
@@ -71,8 +72,8 @@ export const AddressUpdateInfo: FC = () => {
           </Pressable>
           <Spacer y={16} />
           <Pressable
-            underlayColor={DarkTheme.backgroundContentTint}
-            backgroundColor={DarkTheme.fieldBackground}
+            underlayColor={theme.backgroundContentTint}
+            backgroundColor={theme.fieldBackground}
             style={styles.addressContainer}
             onPress={() => copyText(newAddress)}
           >

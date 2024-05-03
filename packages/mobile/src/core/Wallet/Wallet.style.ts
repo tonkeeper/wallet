@@ -77,7 +77,7 @@ export const IconWrapper = styled.View`
 export const Divider = styled.View`
   height: ${ns(0.5)}px;
   width: ${deviceWidth}px;
-  background: rgba(79, 90, 112, 0.24);
+  background: ${({ theme }) => theme.colors.separatorCommon};
   margin-bottom: ${ns(24)}px;
 `;
 
@@ -133,5 +133,5 @@ export const HeaderViewDetailsButton = styled(TouchableOpacity).attrs({
   border-radius: ${ns(32 / 2)}px;
   align-items: center;
   justify-content: center;
-  background: ${({ theme }) => theme.colors.backgroundSecondary};
+  background: ${({ theme }) => theme.colors.buttonSecondaryBackground};
 `;

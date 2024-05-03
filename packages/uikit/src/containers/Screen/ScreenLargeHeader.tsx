@@ -1,5 +1,14 @@
-import { ScreenHeaderHeight, ScreenLargeHeaderDistance, ScreenLargeHeaderHeight } from './utils/constants';
-import Animated, { useAnimatedStyle, interpolate, SharedValue, Extrapolate } from 'react-native-reanimated';
+import {
+  ScreenHeaderHeight,
+  ScreenLargeHeaderDistance,
+  ScreenLargeHeaderHeight,
+} from './utils/constants';
+import Animated, {
+  useAnimatedStyle,
+  interpolate,
+  SharedValue,
+  Extrapolate,
+} from 'react-native-reanimated';
 import { TouchableOpacity, Insets, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { deviceHeight, deviceWidth, ns } from '../../utils';
@@ -17,6 +26,7 @@ interface ScreenLargeHeaderProps {
   safeArea?: boolean;
   border?: boolean;
   opacity?: SharedValue<number>;
+  alternateBackground?: boolean;
 }
 
 export const ScreenLargeHeader = memo<ScreenLargeHeaderProps>((props) => {
@@ -29,12 +39,13 @@ export const ScreenLargeHeader = memo<ScreenLargeHeaderProps>((props) => {
     safeArea = true,
     border = true,
     opacity,
+    alternateBackground,
   } = props;
 
   const { scrollY, headerEjectionPoint } = useScreenScroll();
   const { top: topInset } = useSafeAreaInsets();
   const theme = useTheme();
-  
+
   const backgroundStyle = useAnimatedStyle(() => {
     return {
       opacity: scrollY.value > 0 ? 1 : 0,
@@ -162,7 +173,9 @@ export const ScreenLargeHeader = memo<ScreenLargeHeaderProps>((props) => {
             styles.background,
             {
               height: ScreenHeaderHeight + topInset,
-              backgroundColor: theme.backgroundPage,
+              backgroundColor: alternateBackground
+                ? theme.backgroundPageAlternate
+                : theme.backgroundPage,
             },
           ]}
         />

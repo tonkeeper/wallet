@@ -1,7 +1,7 @@
 import React, { FC, ReactNode } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { ns } from '$utils';
+import { convertHexToRGBA, ns } from '$utils';
 import * as S from './BottomButtonWrap.style';
 import { useTheme } from '$hooks/useTheme';
 
@@ -28,7 +28,10 @@ export const BottomButtonWrap: FC<{ children: ReactNode }> = ({ children }) => {
       }}
     >
       <S.Gradient
-        colors={['rgba(21, 28, 41, 0)', theme.colors.backgroundPrimary]}
+        colors={[
+          convertHexToRGBA(theme.colors.backgroundPrimary, 0),
+          theme.colors.backgroundPrimary,
+        ]}
         locations={[0, 1]}
       />
       <S.Content>{children}</S.Content>

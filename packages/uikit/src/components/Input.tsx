@@ -197,7 +197,7 @@ export const Input = forwardRef<InputRef, InputProps>((props, ref) => {
   const containerStaticStyle = {
     backgroundColor: colors.fieldBackground,
     borderRadius: corners.medium,
-    borderColor: colors.fieldBackground,
+    borderColor: 'transparent',
   };
 
   const inputStyle = useMemo(
@@ -224,7 +224,7 @@ export const Input = forwardRef<InputRef, InputProps>((props, ref) => {
     borderColor: interpolateColor(
       state.value,
       [InputState.Unfocused, InputState.Focused, InputState.Invalid],
-      [colors.fieldBackground, colors.fieldActiveBorder, colors.fieldErrorBorder],
+      ['transparent', colors.fieldActiveBorder, colors.fieldErrorBorder],
     ),
   }));
 

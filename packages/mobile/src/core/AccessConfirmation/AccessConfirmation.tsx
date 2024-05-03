@@ -24,6 +24,7 @@ import { t } from '@tonkeeper/shared/i18n';
 import { tk, vault } from '$wallet';
 import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
 import { useBiometrySettings, useWallet } from '@tonkeeper/shared/hooks';
+import { Screen } from '@tonkeeper/uikit';
 
 export const AccessConfirmation: FC = () => {
   const route = useRoute();
@@ -215,7 +216,7 @@ export const AccessConfirmation: FC = () => {
   }
 
   return (
-    <S.Wrap>
+    <Screen alternateBackground>
       <NavBar
         hideBackButton={isUnlock}
         isCancelButton={!isUnlock}
@@ -239,6 +240,6 @@ export const AccessConfirmation: FC = () => {
           onBiometryPress={handleBiometry}
         />
       </S.Content>
-    </S.Wrap>
+    </Screen>
   );
 };

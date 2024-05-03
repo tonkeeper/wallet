@@ -6,8 +6,8 @@ import { StatusBar } from 'react-native';
 import { setNavigationRef, onNavigationReady } from './imperative';
 import { AppStack } from './MainStack';
 import { mainSelector } from '$store/main';
-import { useTheme } from '$hooks/useTheme';
 import { ProvidersWithoutNavigation } from './Providers';
+import { useTheme } from '@tonkeeper/uikit';
 
 export const AppNavigator: FC = () => {
   const theme = useTheme();
@@ -17,11 +17,11 @@ export const AppNavigator: FC = () => {
     () => ({
       dark: true,
       colors: {
-        primary: theme.colors.accentPrimary,
-        background: theme.colors.backgroundPrimary,
-        card: theme.colors.backgroundPrimary,
-        text: theme.colors.constantLight,
-        notification: theme.colors.backgroundPrimary,
+        primary: theme.accentBlue,
+        background: theme.backgroundPage,
+        card: theme.backgroundPage,
+        text: theme.textPrimary,
+        notification: theme.backgroundPage,
         border: 'none',
       },
     }),
@@ -41,7 +41,7 @@ export const AppNavigator: FC = () => {
       <ProvidersWithoutNavigation>
         <StatusBar
           barStyle={theme.isDark ? 'light-content' : 'dark-content'}
-          backgroundColor={theme?.colors.constantDark}
+          backgroundColor={theme.constantBlack}
         />
         <AppStack />
       </ProvidersWithoutNavigation>

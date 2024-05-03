@@ -21,7 +21,8 @@ export type TextColors =
   | 'accentGreen'
   | 'accentBlue'
   | 'constantWhite'
-  | 'constantBlack';
+  | 'constantBlack'
+  | 'buttonPrimaryForeground';
 
 export interface TextProps extends AnimateProps<NativeTextProps> {
   type?: TTextTypes;

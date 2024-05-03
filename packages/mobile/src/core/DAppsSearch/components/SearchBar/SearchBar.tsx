@@ -51,6 +51,7 @@ const SearchBarComponent: FC<Props> = (props) => {
           onSubmitEditing={handleSubmit}
           selectTextOnFocus={true}
           selectionColor={theme.colors.accentPrimary}
+          keyboardAppearance={theme.isDark ? 'dark' : 'light'}
         />
         <S.IconContainer>
           <Icon name={isUrl ? 'ic-globe-16' : 'ic-magnifying-glass-16'} />

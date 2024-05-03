@@ -17,7 +17,7 @@ export const CreateWalletStack = memo(() => {
         headerShown: false,
         gestureEnabled: true,
         contentStyle: {
-          backgroundColor: theme.colors.backgroundPrimary,
+          backgroundColor: theme.colors.backgroundPage,
         },
         fullScreenGestureEnabled: true,
       }}

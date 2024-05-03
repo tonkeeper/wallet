@@ -100,7 +100,7 @@ export const WebView: FC<WebViewProps> = ({ route }) => {
           hideKeyboardAccessoryView
           thirdPartyCookiesEnabled={true}
           allowFileAccess
-          forceDarkOn
+          forceDarkOn={theme.isDark}
           allowsInlineMediaPlayback
           allowsFullscreenVideo
           keyboardDisplayRequiresUserAction={false}
