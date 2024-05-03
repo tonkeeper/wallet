@@ -301,21 +301,16 @@ export const ImportWalletForm: FC<ImportWalletFormProps> = (props) => {
       </Animated.ScrollView>
       <KeyboardAvoidingView>
         <View style={[styles.pasteButtonContainer, { bottom: bottomInset + 16 }]}>
-          <View style={styles.buttonContainer}>
-            {!hasTextInAnyOfInputs && (
-              <Animated.View
-                exiting={FadeOut.duration(200)}
-                entering={FadeIn.duration(200)}
-              >
-                <ButtonNew
-                  onPress={handlePasteButton}
-                  color="tertiary"
-                  size="medium"
-                  title={t('paste')}
-                />
-              </Animated.View>
-            )}
-          </View>
+          {!hasTextInAnyOfInputs && (
+            <Animated.View entering={FadeIn.duration(200)}>
+              <ButtonNew
+                onPress={handlePasteButton}
+                color="tertiary"
+                size="medium"
+                title={t('paste')}
+              />
+            </Animated.View>
+          )}
         </View>
       </KeyboardAvoidingView>
     </>
@@ -325,8 +320,8 @@ export const ImportWalletForm: FC<ImportWalletFormProps> = (props) => {
 const styles = Steezy.create({
   pasteButtonContainer: {
     position: 'absolute',
+    alignItems: 'center',
     left: 0,
     right: 0,
   },
-  buttonContainer: { height: 48, width: '100%', alignItems: 'center' },
 });
