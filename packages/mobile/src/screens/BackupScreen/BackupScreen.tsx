@@ -29,8 +29,8 @@ export const BackupScreen = memo(() => {
             <View
               style={[
                 styles.dangerBanner,
-                DangerLevel.Medium && styles.dangerBannerYellow,
-                DangerLevel.High && styles.dangerBannerRed,
+                dangerLevel === DangerLevel.Medium && styles.dangerBannerYellow,
+                dangerLevel === DangerLevel.High && styles.dangerBannerRed,
               ]}
             >
               <Text
