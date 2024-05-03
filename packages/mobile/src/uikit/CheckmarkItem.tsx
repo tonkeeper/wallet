@@ -12,43 +12,39 @@ interface RadioItemProps {
   selected: boolean;
 }
 
-export const CheckmarkItem = React.memo<RadioItemProps>(({ label, selected, onChange }) => (
-  <TouchableOpacity 
-    onPress={() => onChange?.(!selected)}
-    activeOpacity={0.6}
-  >
-    <View style={styles.checkmarkItem}>
-      <Checkmark checked={selected} />
-      <Text 
-        style={styles.checkmarkLabelText}
-        color="foregroundSecondary"
-        variant="body1" 
-      >
-        {label}
-      </Text>
-    </View>
-  </TouchableOpacity>
-));
+export const CheckmarkItem = React.memo<RadioItemProps>(
+  ({ label, selected, onChange }) => (
+    <TouchableOpacity onPress={() => onChange?.(!selected)} activeOpacity={0.6}>
+      <View style={styles.checkmarkItem}>
+        <Checkmark checked={selected} />
+        <Text
+          style={styles.checkmarkLabelText}
+          color="foregroundSecondary"
+          variant="body1"
+        >
+          {label}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  ),
+);
 
 export const Checkmark = ({ checked }: { checked: boolean }) => {
   const theme = useTheme();
 
   return (
-    <View 
+    <View
       style={[
         styles.checkmarkContainer,
-        { 
-          borderColor: checked ? theme.colors.accentPrimary : theme.colors.backgroundTertiary,
-          backgroundColor: checked ? theme.colors.accentPrimary : 'transparent'
-        }
+        {
+          borderColor: checked ? theme.colors.accentPrimary : theme.colors.iconTertiary,
+          backgroundColor: checked ? theme.colors.accentPrimary : 'transparent',
+        },
       ]}
     >
       {checked && (
         <View style={styles.checkmark}>
-          <Icon 
-            name="ic-done-bold-16"
-            color="foregroundPrimary"
-          />
+          <Icon name="ic-done-bold-16" color="buttonPrimaryForeground" />
         </View>
       )}
     </View>
@@ -65,19 +61,19 @@ const styles = StyleSheet.create({
     borderWidth: ns(2),
   },
   checkmark: {
-    width: 22, 
-    height: 22, 
-    justifyContent: 'center', 
-    alignItems: 'center' 
+    width: 22,
+    height: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   checkmarkItem: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    marginLeft: 3
+    marginLeft: 3,
   },
   checkmarkLabelText: {
-    marginLeft: 11
-  }
+    marginLeft: 11,
+  },
 });

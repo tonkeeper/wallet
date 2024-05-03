@@ -47,7 +47,7 @@ export const CheckboxView: React.FC<CheckboxViewProps> = (props) => {
       borderColor: interpolateColor(
         colorProgress.value,
         [0, 1],
-        [colors.backgroundTertiary, 'transparent'],
+        [colors.iconTertiary, 'transparent'],
       ),
     };
   });
@@ -98,7 +98,7 @@ const styles = Steezy.create(({ colors }) => ({
     width: 22,
     height: 22,
     borderRadius: 6,
-    borderColor: colors.backgroundContentTint,
+    borderColor: colors.iconTertiary,
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',

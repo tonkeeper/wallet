@@ -122,5 +122,5 @@ export const HeaderViewDetailsButton = styled(TouchableOpacity).attrs({
   border-radius: ${ns(32 / 2)}px;
   align-items: center;
   justify-content: center;
-  background: ${({ theme }) => theme.colors.backgroundSecondary};
+  background: ${({ theme }) => theme.colors.buttonSecondaryBackground};
 `;

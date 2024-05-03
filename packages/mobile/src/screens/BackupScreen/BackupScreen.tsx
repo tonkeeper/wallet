@@ -83,7 +83,7 @@ export const BackupScreen = memo(() => {
                 })}
                 leftContent={
                   <View style={styles.checkmarkIcon}>
-                    <Icon name="ic-donemark-28" />
+                    <Icon name="ic-donemark-28" color="buttonPrimaryForeground" />
                   </View>
                 }
               />
