@@ -72,7 +72,7 @@ export const ActivityScreen = memo(() => {
       activityList.error === null)
   ) {
     return (
-      <Screen>
+      <Screen alternateBackground>
         <View style={styles.emptyContainer}>
           <Text type="h2" textAlign="center">
             {t('activity.empty_transaction_title')}

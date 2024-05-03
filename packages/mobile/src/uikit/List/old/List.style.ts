@@ -4,7 +4,6 @@ import { Highlight } from '../../Highlight/Highlight';
 import { Text } from '../../Text/Text';
 
 export const Wrap = styled.View`
-  background: ${({ theme }) => theme.colors.backgroundSecondary};
   border-radius: ${({ theme }) => ns(theme.radius.normal)}px;
   overflow: hidden;
 `;

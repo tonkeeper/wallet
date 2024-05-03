@@ -8,7 +8,7 @@ import {
   request,
   openSettings,
 } from 'react-native-permissions';
-import { Platform } from 'react-native';
+import { Platform, StatusBar } from 'react-native';
 import { ScanQRProps } from './ScanQR.interface';
 import * as S from './ScanQR.style';
 import { Button, Icon, NavBar, Text } from '$uikit';
@@ -32,7 +32,6 @@ export const ScanQR: FC<ScanQRProps> = ({ route }) => {
   const scannerRef = useRef<QRCodeScanner>(null);
 
   const theme = useTheme();
-  
 
   const [isFlashlightOn, setFlashlightOn] = useState(false);
   const [isCameraBlocked, setCameraBlocked] = useState(false);
@@ -122,14 +121,11 @@ export const ScanQR: FC<ScanQRProps> = ({ route }) => {
 
     return (
       <S.Wrap>
+        {isIOS ? <StatusBar barStyle="light-content" /> : null}
         <S.CloseButtonWrap onPress={handleBack}>
           <S.CloseButton>
             {isIOS && <S.BlurNode />}
-            <Icon
-              name="ic-chevron-down-16"
-              color="foregroundPrimary"
-              style={{ zIndex: 2 }}
-            />
+            <Icon name="ic-chevron-down-16" color="constantLight" style={{ zIndex: 2 }} />
           </S.CloseButton>
         </S.CloseButtonWrap>
         {isHasPermission && (
@@ -160,7 +156,7 @@ export const ScanQR: FC<ScanQRProps> = ({ route }) => {
               textAlign="center"
               numberOfLines={1}
               allowFontScaling={false}
-              color="foregroundPrimary"
+              color="constantLight"
               variant="h2"
             >
               {t('scan_qr_title')}
@@ -207,7 +203,7 @@ export const ScanQR: FC<ScanQRProps> = ({ route }) => {
                 {isIOS && <S.BlurNode />}
                 <Icon
                   name="ic-flashlight-on-56"
-                  color="foregroundPrimary"
+                  color="constantLight"
                   style={{ zIndex: 2 }}
                 />
               </S.FlashlightButtonContBlur>

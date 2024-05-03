@@ -72,8 +72,8 @@ export const BackupCheckPhraseScreen = memo(() => {
   );
 
   return (
-    <Screen keyboardAvoiding>
-      <Screen.Header gradient />
+    <Screen keyboardAvoiding alternateBackground>
+      <Screen.Header gradient alternateBackground />
       <Screen.ScrollView
         ref={inputs.scrollViewRef}
         contentContainerStyle={styles.contentContainer.static}

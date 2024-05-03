@@ -4,6 +4,7 @@ import * as S from './List.style';
 import { ListCellProps, ListProps } from './List.interface';
 import { Separator } from '../../Separator/Separator';
 import { View } from '../../StyledNativeComponents';
+import { useTheme } from '@tonkeeper/uikit';
 
 export const ListCell: FC<ListCellProps> = ({
   label,
@@ -57,5 +58,11 @@ export const List: FC<ListProps> = ({
     });
   }, [align, children, separator]);
 
-  return <S.Wrap {...viewProps}>{content}</S.Wrap>;
+  const theme = useTheme();
+
+  return (
+    <S.Wrap style={{ backgroundColor: theme.backgroundContent }} {...viewProps}>
+      {content}
+    </S.Wrap>
+  );
 };

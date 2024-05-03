@@ -44,7 +44,7 @@ export interface WalletsStoreState {
   wallets: WalletConfig[];
   selectedIdentifier: string;
   biometryEnabled: boolean;
-  lockEnabled: boolean;
+  lockScreenEnabled: boolean;
 }
 
 export interface MigrationState {
@@ -79,7 +79,7 @@ export class Tonkeeper {
     wallets: [],
     selectedIdentifier: '',
     biometryEnabled: false,
-    lockEnabled: false,
+    lockScreenEnabled: false,
   });
 
   public migrationStore = new State<MigrationState>({
@@ -134,8 +134,8 @@ export class Tonkeeper {
     return this.walletsStore.data.biometryEnabled;
   }
 
-  public get lockEnabled() {
-    return this.walletsStore.data.lockEnabled;
+  public get lockScreenEnabled() {
+    return this.walletsStore.data.lockScreenEnabled;
   }
 
   public async init() {
@@ -563,10 +563,10 @@ export class Tonkeeper {
   }
 
   public async enableLock() {
-    await this.walletsStore.setAsync({ lockEnabled: true });
+    await this.walletsStore.setAsync({ lockScreenEnabled: true });
   }
 
   public async disableLock() {
-    await this.walletsStore.setAsync({ lockEnabled: false });
+    await this.walletsStore.setAsync({ lockScreenEnabled: false });
   }
 }

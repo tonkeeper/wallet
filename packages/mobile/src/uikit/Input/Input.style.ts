@@ -13,9 +13,7 @@ export const InputWrapper = styled.View<{
   overflow: hidden;
   border-radius: ${({ theme }) => ns(theme.radius.normal)}px;
   background-color: ${({ theme, isFailed }) =>
-    isFailed
-      ? changeAlphaValue(convertHexToRGBA(theme.colors.accentNegative), 0.08)
-      : theme.colors.backgroundSecondary};
+    isFailed ? theme.colors.fieldErrorBackground : theme.colors.fieldBackground};
   padding-horizontal: ${ns(16)}px;
   padding-right: ${({ withClearButton }) => ns(withClearButton ? 52 : 16)}px;
 

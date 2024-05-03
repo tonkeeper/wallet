@@ -15,6 +15,7 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
 } from 'react-native-reanimated';
+import { convertHexToRGBA } from '@tonkeeper/mobile/src/utils';
 
 type BackButtonIcon = 'back' | 'close' | 'down';
 
@@ -38,6 +39,7 @@ export interface ScreenHeaderProps {
   onBackPress?: () => void;
   onGoBack?: () => void;
   showCloseButton?: boolean;
+  alternateBackground?: boolean;
 }
 
 export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
@@ -55,6 +57,7 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
     onBackPress,
     onGoBack,
     subtitle,
+    alternateBackground,
   } = props;
 
   const { scrollY, headerEjectionPoint } = useScreenScroll();
@@ -134,7 +137,7 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
         style={[
           styles.backButton,
           backButtonAnimatedStyle,
-          { backgroundColor: theme.backgroundContent },
+          { backgroundColor: theme.buttonSecondaryBackground },
         ]}
       >
         <Icon name={backButtonIconName} />
@@ -154,14 +157,18 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
           { height: headerHeight },
           styles.container,
           ejectionShiftStyle,
-          !gradient && { backgroundColor: theme.backgroundPage },
+          !gradient && {
+            backgroundColor: alternateBackground
+              ? theme.backgroundPageAlternate
+              : theme.backgroundPage,
+          },
           !isModal && { paddingTop: safeArea.top },
           styles.absolute,
         ]}
       >
         {gradient && (
           <LinearGradient
-            colors={[theme.backgroundPage, 'rgba(21, 28, 41, 0)']}
+            colors={[theme.backgroundPage, convertHexToRGBA(theme.backgroundPage, 0)]}
             style={styles.gradient}
             locations={[0, 1]}
           />

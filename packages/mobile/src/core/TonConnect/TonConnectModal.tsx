@@ -6,6 +6,7 @@ import { Linking, StyleSheet } from 'react-native';
 import { useTheme } from '$hooks/useTheme';
 import { Button, List, Loader, Spacer, Text, TransitionOpacity } from '$uikit';
 import {
+  convertHexToRGBA,
   delay,
   getDomainFromURL,
   triggerNotificationSuccess,
@@ -280,12 +281,15 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
           <S.Logos>
             <S.Logo>
               <S.TonLogo>
-                <Icon name="ic-logo-48" color="accentBlue" />
+                <Icon name="ic-logo-48" colorHex="#45AEF5" />
               </S.TonLogo>
             </S.Logo>
             <S.AddressConatiner>
               <S.AddressLeftGradient
-                colors={[theme.colors.backgroundPrimary, 'rgba(16, 22, 31, 0)']}
+                colors={[
+                  theme.colors.backgroundPrimary,
+                  convertHexToRGBA(theme.colors.backgroundPrimary, 0),
+                ]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
               />
@@ -308,7 +312,10 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
                 </S.AddressText>
               </S.Address>
               <S.AddressRightGradient
-                colors={[theme.colors.backgroundPrimary, 'rgba(16, 22, 31, 0)']}
+                colors={[
+                  theme.colors.backgroundPrimary,
+                  convertHexToRGBA(theme.colors.backgroundPrimary, 0),
+                ]}
                 start={{ x: 1, y: 0 }}
                 end={{ x: 0, y: 0 }}
               />

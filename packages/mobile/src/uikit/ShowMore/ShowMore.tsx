@@ -4,22 +4,14 @@ import { TouchableOpacity, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { changeAlphaValue, convertHexToRGBA, ns } from '$utils';
 import { t } from '@tonkeeper/shared/i18n';
+import { useTheme } from '$hooks/useTheme';
 
 export interface ShowMoreProps {
   maxLines: number;
   text: string;
-  /**
-   * Background color for ellipsize button
-   */
-  backgroundColor?: string;
 }
 
-export const ShowMore: React.FC<ShowMoreProps> = ({
-  maxLines,
-  text,
-  backgroundColor = '#1D2633',
-}) => {
-
+export const ShowMore: React.FC<ShowMoreProps> = ({ maxLines, text }) => {
   const [showEllipsize, setShowEllipsize] = useState(false);
   const onTextLayout = useCallback(
     (e) => {
@@ -33,6 +25,8 @@ export const ShowMore: React.FC<ShowMoreProps> = ({
   const [shouldShowAll, setShouldShowAll] = useState(false);
 
   const handleShowAll = useCallback(() => setShouldShowAll(true), [setShouldShowAll]);
+
+  const theme = useTheme();
 
   function Ellipsize() {
     return (
@@ -49,12 +43,12 @@ export const ShowMore: React.FC<ShowMoreProps> = ({
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           colors={[
-            changeAlphaValue(convertHexToRGBA(backgroundColor), 0),
-            convertHexToRGBA(backgroundColor),
+            changeAlphaValue(convertHexToRGBA(theme.colors.backgroundSecondary), 0),
+            convertHexToRGBA(theme.colors.backgroundSecondary),
           ]}
           style={{ width: ns(24), height: ns(20) }}
         />
-        <View style={{ backgroundColor }}>
+        <View style={{ backgroundColor: theme.colors.backgroundSecondary }}>
           <TouchableOpacity activeOpacity={0.6} onPress={handleShowAll}>
             <Text variant="body2" color="accentPrimary">
               {t('nft_more')}

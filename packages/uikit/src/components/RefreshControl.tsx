@@ -11,7 +11,7 @@ export const RefreshControl = memo<RefreshControlProps>((props) => {
     <NativeRefreshControl
       {...props}
       progressBackgroundColor={theme.constantWhite}
-      tintColor={theme.constantWhite}
+      tintColor={theme.iconPrimary}
     />
   );
 });

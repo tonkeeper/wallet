@@ -85,8 +85,8 @@ export const BackupPhraseScreen = memo(() => {
   }, [phrase]);
 
   return (
-    <Screen>
-      <Screen.Header />
+    <Screen alternateBackground>
+      <Screen.Header alternateBackground />
       <Screen.ScrollView>
         <View style={styles.container}>
           <Text type={sizesConfig.title} textAlign="center">

@@ -104,7 +104,7 @@ export const ToastComponent = memo(() => {
             {
               backgroundColor: toast.warning
                 ? theme.colors.accentOrange
-                : theme.colors.backgroundTertiary,
+                : theme.colors.backgroundContentTint,
             },
           ]}
         >

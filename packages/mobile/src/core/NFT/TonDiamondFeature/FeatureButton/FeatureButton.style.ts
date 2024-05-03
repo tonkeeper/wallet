@@ -1,5 +1,5 @@
 import styled from '$styled';
-import { Highlight, Text } from '$uikit';
+import { Highlight } from '$uikit';
 import { nfs, ns } from '$utils';
 
 export const Wrap = styled.View`
@@ -22,8 +22,4 @@ export const InnerContainer = styled.View<{ withIcon?: boolean }>`
 
 export const IconContainer = styled.View`
   margin-right: ${ns(8)}px;
-`;
-
-export const Title = styled(Text).attrs({ variant: 'label2' })`
-  color: ${({ theme }) => theme.colors.foregroundPrimary};
 `;

@@ -61,13 +61,13 @@ export const MainStack: FC = () => {
 
   const hasWallet = !!wallet;
 
-  const { lockEnabled } = useLockSettings();
+  const { lockScreenEnabled } = useLockSettings();
 
   const shouldObtainTonProof =
     hasWallet && !wallet.isWatchOnly && !wallet.tonProof.tonProofToken;
 
   const showLockScreen =
-    (lockEnabled || shouldObtainTonProof) &&
+    (lockScreenEnabled || shouldObtainTonProof) &&
     !isUnlocked &&
     hasWallet &&
     !attachedScreen.pathname;

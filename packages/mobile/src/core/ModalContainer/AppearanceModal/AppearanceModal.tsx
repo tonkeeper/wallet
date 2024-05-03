@@ -1,6 +1,5 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDimensions } from '$hooks/useDimensions';
-import { accentSelector } from '$store/main';
 import { NFTModel, TonDiamondMetadata } from '$store/models';
 import {
   AccentKey,
@@ -179,7 +178,6 @@ const AppearanceModal = memo<AppearanceModalProps>((props) => {
           />
           <S.ButtonContainer>
             <CustomButton
-              isUnavailableAccent={!isReadyToChange}
               accents={accents}
               selectedAccentIndex={selectedAccentIndex}
               onPress={isReadyToChange ? changeAccent : openDiamondsNFTCollection}

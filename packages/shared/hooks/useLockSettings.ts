@@ -2,10 +2,13 @@ import { tk } from '@tonkeeper/mobile/src/wallet';
 import { useExternalState } from './useExternalState';
 
 export const useLockSettings = () => {
-  const lockEnabled = useExternalState(tk.walletsStore, (state) => state.lockEnabled);
+  const lockScreenEnabled = useExternalState(
+    tk.walletsStore,
+    (state) => state.lockScreenEnabled,
+  );
 
   return {
-    lockEnabled,
-    toggleLock: () => (tk.lockEnabled ? tk.disableLock() : tk.enableLock()),
+    lockScreenEnabled,
+    toggleLock: () => (tk.lockScreenEnabled ? tk.disableLock() : tk.enableLock()),
   };
 };

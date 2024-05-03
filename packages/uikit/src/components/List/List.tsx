@@ -31,17 +31,14 @@ export const List = memo<ListProps>((props) => {
     });
   }, [props.children]);
 
-
   return (
     <>
-      {props.headerTitle && (
-        <ListHeader title={props.headerTitle} />
-      )}
+      {props.headerTitle && <ListHeader title={props.headerTitle} />}
       <View style={[styles.container, style, indent && styles.indentHorizontal]}>
         {items}
       </View>
     </>
-  )
+  );
 });
 
 const styles = Steezy.create(({ corners, colors }) => ({
@@ -49,9 +46,9 @@ const styles = Steezy.create(({ corners, colors }) => ({
     marginBottom: 16,
     overflow: 'hidden',
     borderRadius: corners.medium,
-    backgroundColor: colors.backgroundContent
+    backgroundColor: colors.backgroundContent,
   },
   indentHorizontal: {
-    marginHorizontal: 16
-  }
+    marginHorizontal: 16,
+  },
 }));

@@ -76,7 +76,7 @@ export const ActionsContainer = styled.View`
   flex-direction: row;
   flex: 1;
   height: ${ns(32)}px;
-  background: ${({ theme }) => theme.colors.backgroundSecondary};
+  background: ${({ theme }) => theme.colors.buttonSecondaryBackground};
   border-radius: ${ns(16)}px;
   overflow: hidden;
 `;
@@ -101,7 +101,7 @@ export const ActionItemContent = styled.View`
 export const ActionsDivider = styled.View`
   width: 1px;
   margin: ${ns(8)}px 0;
-  background: ${({ theme }) => theme.colors.backgroundTertiary};
+  background: ${({ theme }) => theme.colors.separatorCommon};
 `;
 
 export const BackButtonTouchable = styled.TouchableOpacity.attrs({
@@ -109,7 +109,7 @@ export const BackButtonTouchable = styled.TouchableOpacity.attrs({
 })``;
 
 export const BackButton = styled.View`
-  background: ${({ theme }) => theme.colors.backgroundSecondary};
+  background: ${({ theme }) => theme.colors.buttonSecondaryBackground};
   width: ${ns(32)}px;
   height: ${ns(32)}px;
   border-radius: ${ns(32 / 2)}px;

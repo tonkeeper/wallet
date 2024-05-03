@@ -1,5 +1,4 @@
 import React from 'react';
-import { Icon } from '../Icon/Icon';
 import { Steezy } from '$styles';
 import Animated, {
   interpolateColor,
@@ -12,6 +11,7 @@ import { useTheme } from '$hooks/useTheme';
 import { useEffect } from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Platform, TouchableOpacity as NTouchableOpacity } from 'react-native';
+import { Icon } from '@tonkeeper/uikit';
 
 export interface CheckboxViewProps {
   checked: boolean;
@@ -69,7 +69,7 @@ export const CheckboxView: React.FC<CheckboxViewProps> = (props) => {
   return (
     <Animated.View style={[styles.checkbox.static, opacityStyle, animatedStyle]}>
       <Animated.View style={iconStyle}>
-        <Icon name="ic-done-bold-16" color="foregroundPrimary" />
+        <Icon name="ic-done-bold-16" color="buttonPrimaryForeground" />
       </Animated.View>
     </Animated.View>
   );

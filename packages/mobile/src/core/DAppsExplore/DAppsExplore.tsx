@@ -19,7 +19,7 @@ import {
   AppsCategory,
 } from './components';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Screen, SegmentedControl, Steezy, View } from '@tonkeeper/uikit';
+import { Screen, SegmentedControl, Spacer, Steezy, View } from '@tonkeeper/uikit';
 import { shallow } from 'zustand/shallow';
 import { BrowserStackParamList } from '$navigation/BrowserStack/BrowserStack.interface';
 import { t } from '@tonkeeper/shared/i18n';
@@ -109,7 +109,7 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = () => {
   });
 
   return (
-    <Screen>
+    <Screen alternateBackground={segmentIndex === 1}>
       <Screen.Header
         rightContent={
           <View style={styles.countryButtonContainer}>
@@ -119,6 +119,7 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = () => {
             />
           </View>
         }
+        alternateBackground={segmentIndex === 1}
       >
         <SegmentedControl
           onChange={(segment) => setSegmentIndex(segment)}
@@ -147,8 +148,9 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = () => {
         <View style={!showConnected && styles.hidden}>
           <ConnectedApps connectedApps={connectedApps} />
         </View>
+        <Spacer y={16} />
       </Screen.ScrollView>
-      <View style={[styles.searchBarContainer, { marginBottom: tabBarHeight }]}>
+      <View style={[styles.searchBarContainer, { marginBottom: tabBarHeight - 1 }]}>
         <SearchButton onPress={handleSearchPress} />
       </View>
     </Screen>
@@ -182,6 +184,7 @@ const styles = Steezy.create(({ colors }) => ({
     overflow: 'hidden',
   },
   searchBarContainer: {
+    backgroundColor: colors.backgroundPageAlternate,
     padding: 16,
     position: 'relative',
   },

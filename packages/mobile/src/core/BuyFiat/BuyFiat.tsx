@@ -16,6 +16,7 @@ import { trackEvent } from '$utils/stats';
 import { useWallet, useWalletCurrency } from '@tonkeeper/shared/hooks';
 import { config } from '$config';
 import { tk } from '$wallet';
+import { useTheme } from '@tonkeeper/uikit';
 
 export const BuyFiat: FC<BuyFiatProps> = ({ route }) => {
   const currency = route.params.currency;
@@ -141,6 +142,8 @@ export const BuyFiat: FC<BuyFiatProps> = ({ route }) => {
     }, 500);
   }, []);
 
+  const theme = useTheme();
+
   return (
     <S.Wrap>
       {renderHeader()}
@@ -163,7 +166,7 @@ export const BuyFiat: FC<BuyFiatProps> = ({ route }) => {
         thirdPartyCookiesEnabled={true}
         onNavigationStateChange={handleNavigationChange}
         allowFileAccess
-        forceDarkOn={methodId !== 'onramp'}
+        forceDarkOn={theme.isDark && methodId !== 'onramp'}
         allowsInlineMediaPlayback
         allowsFullscreenVideo
         keyboardDisplayRequiresUserAction={false}

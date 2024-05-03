@@ -37,6 +37,7 @@ const CarouselItem = memo<ItemProps>(({ metadata }) => {
               <Text
                 type="label2"
                 numberOfLines={1}
+                color="constantWhite"
                 style={!!metadata.textColor && { color: metadata.textColor }}
               >
                 {metadata.name}
@@ -44,6 +45,7 @@ const CarouselItem = memo<ItemProps>(({ metadata }) => {
               <Text
                 type="body3Alt"
                 numberOfLines={2}
+                color="constantWhite"
                 style={[
                   styles.description.static,
                   !!metadata.textColor && { color: metadata.textColor },

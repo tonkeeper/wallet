@@ -1,6 +1,6 @@
-import { isAndroid } from '$utils';
+import { changeAlphaValue, convertHexToRGBA, isAndroid } from '$utils';
 import { FlashList } from '@shopify/flash-list';
-import { Steezy, View, WalletIcon, ns } from '@tonkeeper/uikit';
+import { Steezy, View, WalletIcon, ns, useTheme } from '@tonkeeper/uikit';
 import { WALLET_ICONS } from '@tonkeeper/uikit/src/utils/walletIcons';
 import React, { memo, useCallback } from 'react';
 import { TouchableOpacity } from 'react-native';
@@ -36,6 +36,10 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = memo(({ onChange }) => {
     [onChange],
   );
 
+  const theme = useTheme();
+
+  const rgbaColor = convertHexToRGBA(theme.backgroundPageAlternate);
+
   return (
     <View style={styles.container}>
       <FlashList
@@ -49,47 +53,13 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = memo(({ onChange }) => {
       />
       <LinearGradient
         pointerEvents="none"
-        colors={[
-          '#10161F',
-          'rgba(16, 22, 31, 0.991353)',
-          'rgba(16, 22, 31, 0.96449)',
-          'rgba(16, 22, 31, 0.91834)',
-          'rgba(16, 22, 31, 0.852589)',
-          'rgba(16, 22, 31, 0.768225)',
-          'rgba(16, 22, 31, 0.668116)',
-          'rgba(16, 22, 31, 0.557309)',
-          'rgba(16, 22, 31, 0.442691)',
-          'rgba(16, 22, 31, 0.331884)',
-          'rgba(16, 22, 31, 0.231775)',
-          'rgba(16, 22, 31, 0.147411)',
-          'rgba(16, 22, 31, 0.0816599)',
-          'rgba(16, 22, 31, 0.03551)',
-          'rgba(16, 22, 31, 0.0086472)',
-          'rgba(16, 22, 31, 0)',
-        ]}
+        colors={[theme.backgroundPageAlternate, changeAlphaValue(rgbaColor, 0)]}
         style={styles.topGradient.static}
       />
       <View style={styles.bottomCover} pointerEvents="none" />
       <LinearGradient
         pointerEvents="none"
-        colors={[
-          'rgba(16, 22, 31, 0)',
-          'rgba(16, 22, 31, 0.0086472)',
-          'rgba(16, 22, 31, 0.03551)',
-          'rgba(16, 22, 31, 0.0816599)',
-          'rgba(16, 22, 31, 0.147411)',
-          'rgba(16, 22, 31, 0.231775)',
-          'rgba(16, 22, 31, 0.331884)',
-          'rgba(16, 22, 31, 0.442691)',
-          'rgba(16, 22, 31, 0.557309)',
-          'rgba(16, 22, 31, 0.668116)',
-          'rgba(16, 22, 31, 0.768225)',
-          'rgba(16, 22, 31, 0.852589)',
-          'rgba(16, 22, 31, 0.91834)',
-          'rgba(16, 22, 31, 0.96449)',
-          'rgba(16, 22, 31, 0.991353)',
-          '#10161F',
-        ]}
+        colors={[changeAlphaValue(rgbaColor, 0), theme.backgroundPageAlternate]}
         style={styles.bottomGradient.static}
       />
     </View>
@@ -136,6 +106,6 @@ const styles = Steezy.create(({ colors }) => ({
     left: 0,
     right: 0,
     height: 20,
-    backgroundColor: colors.backgroundPage,
+    backgroundColor: colors.backgroundPageAlternate,
   },
 }));
