@@ -1,7 +1,15 @@
-import { DARK_COLORS, COMMON_COLORS, CONSTANT_COLORS } from './colors';
+import { Theme, ThemeName } from '@tonkeeper/uikit';
+import {
+  DARK_COLORS,
+  COMMON_COLORS,
+  CONSTANT_COLORS,
+  BLUE_COLORS,
+  LIGHT_COLORS,
+} from './colors';
 import { FONT } from './fonts';
 import { DARK_GRADIENTS } from './gradients';
 import { RADIUS } from './radius';
+import { getThemeByName } from '@tonkeeper/uikit/src/styles/utils';
 
 type ThemeSpecificColor = keyof typeof DARK_COLORS;
 type ConstantColor = keyof typeof CONSTANT_COLORS;
@@ -12,7 +20,11 @@ export enum ThemeNames {
   dark = 'dark',
 }
 
-export type TonThemeColor = ThemeSpecificColor | ConstantColor | CommonColor;
+export type TonThemeColor =
+  | ThemeSpecificColor
+  | ConstantColor
+  | CommonColor
+  | keyof Theme;
 
 const CommonTheme = {
   font: FONT,
@@ -29,7 +41,17 @@ export const LightTheme = {
   gradients: DARK_GRADIENTS,
   colors: {
     ...CommonTheme.colors,
-    ...DARK_COLORS,
+    ...LIGHT_COLORS,
+  },
+};
+
+export const BlueTheme = {
+  ...CommonTheme,
+  isDark: true,
+  gradients: DARK_GRADIENTS,
+  colors: {
+    ...CommonTheme.colors,
+    ...BLUE_COLORS,
   },
 };
 

@@ -1,8 +1,7 @@
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { Dimensions } from 'react-native';
 import React from 'react';
-import { DarkTheme } from '@tonkeeper/uikit/src/styles/themes/dark';
-import { Steezy } from '../../styles';
+import { Steezy, useTheme } from '../../styles';
 import { View } from '../View';
 
 const svgWidth = Dimensions.get('window').width - 32;
@@ -54,31 +53,33 @@ let stopPoints = [
   0.733333, 0.8, 0.866667, 0.933333, 1,
 ];
 
-const stopPointsJSX = stopPoints.map((offset, index) => (
-  <Stop
-    key={index}
-    offset={offset}
-    stopColor={DarkTheme.backgroundContent}
-    stopOpacity={1 - index * 0.0625}
-  />
-));
-
-const Gradients = () => (
-  <Defs>
-    {[
-      'gradientHorizontal',
-      'gradientHorizontalReversed',
-      'gradientVertical',
-      'gradientVerticalReversed',
-    ].map((id) => (
-      <LinearGradient key={id} id={id} {...getLinearGradientProps(id)}>
-        {stopPointsJSX}
-      </LinearGradient>
-    ))}
-  </Defs>
-);
+const Gradients = () => {
+  const theme = useTheme();
+  return (
+    <Defs>
+      {[
+        'gradientHorizontal',
+        'gradientHorizontalReversed',
+        'gradientVertical',
+        'gradientVerticalReversed',
+      ].map((id) => (
+        <LinearGradient key={id} id={id} {...getLinearGradientProps(id)}>
+          {stopPoints.map((offset, index) => (
+            <Stop
+              key={index}
+              offset={offset}
+              stopColor={theme.separatorActionButtons}
+              stopOpacity={1 - index * 0.0625}
+            />
+          ))}
+        </LinearGradient>
+      ))}
+    </Defs>
+  );
+};
 
 function SeparatorsTwoRows() {
+  const theme = useTheme();
   return (
     <Svg width={svgWidth} height="112" viewBox={`0 0 ${svgWidth} 112`} fill="none">
       <Rect
@@ -93,7 +94,7 @@ function SeparatorsTwoRows() {
         y="24"
         width="0.5"
         height="32"
-        fill={DarkTheme.backgroundContent}
+        fill={theme.separatorActionButtons}
       />
       <Rect
         x={verticalLinesXOffset * 2}
@@ -107,14 +108,14 @@ function SeparatorsTwoRows() {
         y="24"
         width="0.5"
         height="32"
-        fill={DarkTheme.backgroundContent}
+        fill={theme.separatorActionButtons}
       />
       <Rect
         x={verticalLinesXOffset}
         y="56"
         width="0.5"
         height="32"
-        fill={DarkTheme.backgroundContent}
+        fill={theme.separatorActionButtons}
       />
       <Rect
         x={verticalLinesXOffset}
@@ -123,7 +124,13 @@ function SeparatorsTwoRows() {
         height="24"
         fill={'url(#gradientVerticalReversed)'}
       />
-      <Rect x={verticalLinesXOffset * 2} y="56" width="0.5" height="32" fill="#1D2633" />
+      <Rect
+        x={verticalLinesXOffset * 2}
+        y="56"
+        width="0.5"
+        height="32"
+        fill={theme.separatorActionButtons}
+      />
       <Rect
         x={verticalLinesXOffset * 2}
         y="88"
@@ -137,7 +144,7 @@ function SeparatorsTwoRows() {
         y="56"
         width={lineWidth}
         height="0.5"
-        fill={DarkTheme.backgroundContent}
+        fill={theme.separatorActionButtons}
       />
       <Rect
         x={56 + lineWidth}
@@ -152,6 +159,7 @@ function SeparatorsTwoRows() {
 }
 
 function SeparatorsTwoActions() {
+  const theme = useTheme();
   return (
     <Svg width={svgWidth} height="56" viewBox={`0 0 ${svgWidth} 56`} fill="none">
       <Rect
@@ -166,7 +174,7 @@ function SeparatorsTwoActions() {
         y="24"
         width="0.5"
         height="8"
-        fill={DarkTheme.backgroundContent}
+        fill={theme.separatorActionButtons}
       />
       <Rect
         fill={'url(#gradientVerticalReversed)'}
@@ -181,6 +189,7 @@ function SeparatorsTwoActions() {
 }
 
 function SeparatorsOneRow() {
+  const theme = useTheme();
   return (
     <Svg width={svgWidth} height="56" viewBox={`0 0 ${svgWidth} 56`} fill="none">
       <Rect
@@ -195,7 +204,7 @@ function SeparatorsOneRow() {
         y="24"
         width="0.5"
         height="8"
-        fill={DarkTheme.backgroundContent}
+        fill={theme.separatorActionButtons}
       />
       <Rect
         fill={'url(#gradientVerticalReversed)'}
@@ -216,7 +225,7 @@ function SeparatorsOneRow() {
         y="24"
         width="0.5"
         height="8"
-        fill={DarkTheme.backgroundContent}
+        fill={theme.separatorActionButtons}
       />
       <Rect
         fill={'url(#gradientVerticalReversed)'}

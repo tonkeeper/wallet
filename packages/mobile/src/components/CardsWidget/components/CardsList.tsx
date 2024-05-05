@@ -5,7 +5,7 @@ import { formatter } from '@tonkeeper/shared/formatter';
 import { MainStackRouteNames } from '$navigation';
 import { useNavigation } from '@tonkeeper/router';
 import { Platform, Text } from 'react-native';
-import { DarkTheme } from '@tonkeeper/uikit/src/styles/themes/dark';
+import { BlueTheme } from '@tonkeeper/uikit/src/styles/themes/blue';
 import { CryptoCurrencies } from '$shared/constants';
 import { useGetTokenPrice } from '$hooks/useTokenPrice';
 import { capitalizeFirstLetter } from '@tonkeeper/shared/utils/date';
@@ -15,11 +15,11 @@ export interface CardsListProps {
 }
 
 const colorsForCardIconBackground = [
-  DarkTheme.accentGreen,
-  DarkTheme.accentOrange,
-  DarkTheme.accentBlue,
-  DarkTheme.accentRed,
-  DarkTheme.accentPurple,
+  BlueTheme.accentGreen,
+  BlueTheme.accentOrange,
+  BlueTheme.accentBlue,
+  BlueTheme.accentRed,
+  BlueTheme.accentPurple,
 ];
 
 function getColorByFourDigits(fourDigits: string | null | undefined) {

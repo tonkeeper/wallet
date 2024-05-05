@@ -84,7 +84,11 @@ export const TabStack: FC = () => {
               ]}
             />
           ) : (
-            <BlurView tint="dark" intensity={48} style={StyleSheet.absoluteFill}>
+            <BlurView
+              tint={theme.isDark ? 'dark' : 'light'}
+              intensity={48}
+              style={StyleSheet.absoluteFill}
+            >
               <View
                 style={[
                   styles.tabBarBlurBackground,

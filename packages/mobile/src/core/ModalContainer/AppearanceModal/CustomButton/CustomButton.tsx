@@ -17,7 +17,6 @@ const ANIMATION_DURATION = 150;
 interface Props extends ButtonProps {
   accents: AccentModel[];
   selectedAccentIndex: number;
-  isUnavailableAccent: boolean;
   children: ReactNode;
 }
 
@@ -45,9 +44,7 @@ const Background: FC<{
 };
 
 const CustomButtonComponent: FC<Props> = (props) => {
-  const { accents, selectedAccentIndex, isUnavailableAccent, ...buttonProps } = props;
-
-  const theme = useTheme();
+  const { accents, selectedAccentIndex, ...buttonProps } = props;
 
   const colors = useMemo(
     () => [
@@ -55,16 +52,12 @@ const CustomButtonComponent: FC<Props> = (props) => {
         default: accent.colors.accentPrimary,
         pressed: accent.colors.accentPrimaryLight,
       })),
-      {
-        default: theme.colors.backgroundSecondary,
-        pressed: theme.colors.backgroundTertiary,
-      },
     ],
-    [accents, theme.colors],
+    [accents],
   );
 
   const animation = useDerivedValue(
-    () => [...accents.map((_, i) => i === selectedAccentIndex), isUnavailableAccent],
+    () => [...accents.map((_, i) => i === selectedAccentIndex)],
     [selectedAccentIndex],
   );
   const [isPressed, setPressed] = useState(false);

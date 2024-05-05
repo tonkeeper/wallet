@@ -137,7 +137,7 @@ export const Input: FC<InputProps> = (props) => {
       borderColor: interpolateColor(
         focusAnimation.value,
         [0, 1],
-        [colors.backgroundSecondary, colors.accentPrimary],
+        ['transparent', colors.accentPrimary],
       ),
     };
   });
@@ -149,7 +149,7 @@ export const Input: FC<InputProps> = (props) => {
       borderColor: interpolateColor(
         failAnimation.value,
         [0, 1],
-        [colors.backgroundSecondary, colors.accentNegative],
+        ['transparent', colors.accentNegative],
       ),
       backgroundColor: `rgba(255,71,102, ${bgAlpha})`,
     };
@@ -165,7 +165,7 @@ export const Input: FC<InputProps> = (props) => {
       borderColor: interpolateColor(
         successAnimation.value,
         [0, 1],
-        [colors.backgroundSecondary, colors.accentPositive],
+        ['transparent', colors.accentPositive],
       ),
     };
   });

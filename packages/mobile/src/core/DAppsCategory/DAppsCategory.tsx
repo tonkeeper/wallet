@@ -58,11 +58,12 @@ const DAppsCategoryComponent: FC<DAppsExploreProps> = (props) => {
 
 export const DAppsCategory = memo(DAppsCategoryComponent);
 
-const styles = Steezy.create(() => ({
+const styles = Steezy.create(({ colors }) => ({
   contentContainerStyle: {
     paddingBottom: 0,
   },
   searchBarContainer: {
+    backgroundColor: colors.backgroundPageAlternate,
     padding: 16,
     position: 'relative',
   },

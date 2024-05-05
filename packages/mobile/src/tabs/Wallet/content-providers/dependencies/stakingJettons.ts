@@ -1,21 +1,16 @@
 import { DependencyPrototype } from './utils/prototype';
-import { tk } from '$wallet';
 
 import { Address } from '@tonkeeper/shared/Address';
 import { StakingState } from '$wallet/managers/StakingManager';
 import { JettonBalanceModel } from '$wallet/models/JettonBalanceModel';
+import { Wallet } from '$wallet/Wallet';
 
 export class StakingJettonsDependency extends DependencyPrototype<
   StakingState,
   Pick<StakingState, 'stakingJettons'>
 > {
-  constructor() {
-    super(tk.wallet.staking.state, (state) => ({ stakingJettons: state.stakingJettons }));
-  }
-
-  setWallet(wallet) {
-    this.dataProvider = wallet.staking.state;
-    super.setWallet(wallet);
+  constructor(wallet: Wallet) {
+    super(wallet.staking.state, (state) => ({ stakingJettons: state.stakingJettons }));
   }
 
   get filterTokensBalancesFn(): (balance: JettonBalanceModel) => boolean {

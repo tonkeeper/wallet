@@ -65,7 +65,7 @@ export const BackButtonContainer = styled.TouchableOpacity.attrs({
 `;
 
 export const BackButton = styled(Animated.View)`
-  background: ${({ theme }) => theme.colors.backgroundSecondary};
+  background: ${({ theme }) => theme.colors.buttonSecondaryBackground};
   height: ${hNs(32)}px;
   width: ${ns(32)}px;
   border-radius: ${ns(32 / 2)}px;

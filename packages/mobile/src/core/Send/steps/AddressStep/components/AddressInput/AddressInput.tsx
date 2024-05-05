@@ -192,7 +192,9 @@ const AddressInputComponent: FC<Props> = (props) => {
 
   const preparedAddress =
     recipient && (recipient.name || recipient.domain)
-      ? Address.parse(recipient.address, { bounceable: false }).toShort()
+      ? Address.parse(recipient.address, {
+          bounceable: Address.isBounceable(recipient.address),
+        }).toShort()
       : '';
 
   const isFirstRender = useRef(true);

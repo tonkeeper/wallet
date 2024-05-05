@@ -25,7 +25,7 @@ export interface SlideButtonProps {
   text: string;
 }
 
-const BUTTON_WIDTH = 76;
+const BUTTON_WIDTH = 92;
 
 const SPRING_CONFIG = {
   mass: 1.5,
@@ -83,7 +83,7 @@ export const SlideButton = memo<SlideButtonProps>((props) => {
       </Animated.View>
       <GestureDetector gesture={panGesture}>
         <Animated.View style={[buttonStyle, animatedButtonOffset]}>
-          <Icon name={'ic-arrow-right-outline-28'} />
+          <Icon name={'ic-arrow-right-outline-28'} color="buttonPrimaryForeground" />
         </Animated.View>
       </GestureDetector>
     </View>

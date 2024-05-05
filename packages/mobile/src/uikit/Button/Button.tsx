@@ -2,8 +2,8 @@ import React, { FC, useCallback, useState } from 'react';
 
 import * as S from './Button.style';
 import { ButtonProps } from './Button.interface';
-import { Loader } from '../Loader/Loader';
 import { TouchableWithoutFeedback } from 'react-native';
+import { Loader } from '@tonkeeper/uikit';
 
 export const Button: FC<ButtonProps> = (props) => {
   const {
@@ -37,7 +37,7 @@ export const Button: FC<ButtonProps> = (props) => {
 
   function renderContent() {
     if (isLoading) {
-      return <Loader size="medium" color="foregroundPrimary" />;
+      return <Loader size="medium" color="buttonPrimaryForeground" />;
     }
 
     return (

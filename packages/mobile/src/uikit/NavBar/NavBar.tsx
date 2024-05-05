@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useMemo } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { LayoutChangeEvent, View } from 'react-native';
+import { LayoutChangeEvent, StatusBar, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -10,12 +10,11 @@ import Animated, {
 import * as S from './NavBar.style';
 import { NavBarProps } from './NavBar.interface';
 import { goBack } from '$navigation/imperative';
-import { Icon } from '../Icon/Icon';
 import { useTheme } from '$hooks/useTheme';
 import { NavBarHeight } from '$shared/constants';
-import { hNs } from '$utils';
+import { convertHexToRGBA, hNs } from '$utils';
 import { Text } from '../Text/Text';
-import { Steezy } from '@tonkeeper/uikit';
+import { Icon, Steezy, isIOS } from '@tonkeeper/uikit';
 
 export const NavBarHelper: FC = () => {
   const { top } = useSafeAreaInsets();
@@ -101,7 +100,7 @@ export const NavBar: FC<NavBarProps> = (props) => {
         <S.RightContent>
           <S.BackButtonContainer onPress={onClosePress ?? handleBack}>
             <S.BackButton>
-              <Icon name="ic-close-16" color="foregroundPrimary" />
+              <Icon name="ic-close-16" color="buttonSecondaryForeground" />
             </S.BackButton>
           </S.BackButtonContainer>
         </S.RightContent>
@@ -152,9 +151,13 @@ export const NavBar: FC<NavBarProps> = (props) => {
       isTransparent={isTransparent}
       isBackground={fillBackground}
     >
+      {isModal && isIOS ? <StatusBar barStyle="light-content" /> : null}
       {isTransparent && (
         <S.Gradient
-          colors={[theme.colors.backgroundPrimary, 'rgba(21, 28, 41, 0)']}
+          colors={[
+            theme.colors.backgroundPrimary,
+            convertHexToRGBA(theme.colors.backgroundPrimary, 0),
+          ]}
           locations={[0, 1]}
         />
       )}
@@ -165,7 +168,7 @@ export const NavBar: FC<NavBarProps> = (props) => {
             disabled={hideBackButton}
           >
             <S.BackButton style={backButtonAnimatedStyle}>
-              <Icon name={iconName} color="foregroundPrimary" />
+              <Icon name={iconName} color="buttonSecondaryForeground" />
             </S.BackButton>
           </S.BackButtonContainer>
           <S.CenterContent style={titleAnimatedStyle}>

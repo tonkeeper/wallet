@@ -47,16 +47,14 @@ export const RefillBattery = memo<RefillBatteryProps>((props) => {
       contentContainerStyle={{ paddingBottom: bottomInsets + 16 }}
     >
       <View style={styles.contentContainer}>
-        {batteryState === BatteryState.Empty ? (
-          <Icon colorless name={'ic-empty-battery-128'} />
-        ) : (
-          <View style={styles.animatedBatteryContainer}>
-            <AnimatedBatteryIcon
-              progress={parseFloat(balance)}
-              size={AnimatedBatterySize.Large}
-            />
-          </View>
-        )}
+        <View style={styles.animatedBatteryContainer}>
+          <AnimatedBatteryIcon
+            progress={parseFloat(balance)}
+            size={AnimatedBatterySize.Large}
+            empty={batteryState === BatteryState.Empty}
+            emptyAccent
+          />
+        </View>
         <Spacer y={16} />
         {config.get('battery_beta') && (
           <>

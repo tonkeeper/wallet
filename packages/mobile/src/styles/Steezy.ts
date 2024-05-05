@@ -1,8 +1,11 @@
-import { createSteezy, createDynamicStyleVars, createMediaStyleVars } from "@bogoslavskiy/react-native-steezy";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { ns } from "$utils";
-import { DarkTheme } from "./DarkTheme";
-import { RADIUS } from "$styled";
+import {
+  createSteezy,
+  createDynamicStyleVars,
+  createMediaStyleVars,
+} from '@bogoslavskiy/react-native-steezy';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ns } from '$utils';
+import { useTheme } from '@tonkeeper/uikit';
 
 export const media = createMediaStyleVars({
   isTablet: {
@@ -16,17 +19,18 @@ const corners = {
   small: 12,
   medium: 16,
   large: 20,
-  full: (size: number) => size / 2, 
-}
+  full: (size: number) => size / 2,
+};
 
 export const variables = createDynamicStyleVars(() => {
   const safeArea = useSafeAreaInsets();
+  const theme = useTheme();
 
   return {
     safeArea,
-    colors: DarkTheme,
+    colors: theme,
     radius: corners,
-    corners
+    corners,
   };
 });
 

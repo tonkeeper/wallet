@@ -1,22 +1,29 @@
-export const DarkTheme = {
+export const BlueTheme = {
+  isDark: true,
+
   textPrimary: '#FFFFFF',
   textSecondary: '#8994A3',
   textTertiary: '#556170',
-  textLink: '#45AEF5',
+  textAccent: '#45AEF5',
+  textPrimaryAlternate: '#10161F',
 
   backgroundPage: '#10161F',
-  backgroundTransparent: 'rgba(16, 22, 31, 0.92)',
+  backgroundPageAlternate: '#10161F',
+  backgroundTransparent: 'rgba(16, 22, 31, 0.96)',
   backgroundContent: '#1D2633',
+  backgroundContentAlternate: '#1D2633',
   backgroundContentTint: '#2E3847',
+  backgroundContentAttention: '#424C5C',
+  backgroundHighlighted: 'rgba(79, 90, 112, 0.24)',
   backgroundOverlayStrong: 'rgba(0, 0, 0, 0.72)',
   backgroundOverlayLight: 'rgba(0, 0, 0, 0.48)',
-  backgroundSecondary: '#1D2633',
-  backgroundPrimary: '#10161F',
-  backgroundTertiary: '#2E3847',
+  backgroundOverlayExtraLight: 'rgba(0, 0, 0, 0.24)',
+  backgroundContentPlaceholder: 'rgba(255, 255, 255, 0.08)',
 
   iconPrimary: '#FFFFFF',
   iconSecondary: '#8994A3',
   iconTertiary: '#556170',
+  iconPrimaryAlternate: '#10161F',
 
   buttonPrimaryBackground: '#45AEF5',
   buttonPrimaryForeground: '#FFFFFF',
@@ -27,7 +34,14 @@ export const DarkTheme = {
   buttonPrimaryBackgroundDisabled: '#378AC2',
   buttonSecondaryBackgroundDisabled: '#171F29',
   buttonTertiaryBackgroundDisabled: '#28303D',
-  backgroundContentAttention: '#424C5C',
+  buttonPrimaryBackgroundHighlighted: '#5BB8F6',
+  buttonSecondaryBackgroundHighlighted: '#222C3B',
+  buttonTertiaryBackgroundHighlighted: '#364052',
+
+  buttonPrimaryBackgroundGreen: '#39CC83',
+  buttonPrimaryBackgroundGreenDisabled: '#2B9962',
+  buttonPrimaryBackgroundGreenHighlighted: '#49CC8B',
+  buttonGreenForeground: '#FFFFFF',
 
   fieldBackground: '#1D2633',
   fieldActiveBorder: '#45AEF5',
@@ -43,5 +57,12 @@ export const DarkTheme = {
   tabBarActiveIcon: '#45AEF5',
   tabBarInactiveIcon: '#8994A3',
 
-  separatorCommon: 'rgba(194, 218, 255, 0.08)',
+  separatorCommon: 'rgba(79, 90, 112, 0.24)',
+  separatorAlternate: 'rgba(255, 255, 255, 0.08)',
+  separatorActionButtons: '#1F2632',
+
+  constantBlack: '#000000',
+  constantWhite: '#FFFFFF',
+  constantBlue: '#0077FF',
+  constantRed: '#FF3B30',
 };

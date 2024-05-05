@@ -4,14 +4,16 @@ import {
   useScreenScrollHandler,
 } from './hooks/useScreenScroll';
 import React, { isValidElement, memo, useMemo } from 'react';
-import { View, StyleSheet } from 'react-native';
 import { ScreenLargeHeader } from './ScreenLargeHeader';
 import { ScreenHeader } from './ScreenHeader';
 import { KeyboardAvoidingContainer } from './KeyboardAvoidingContainer';
+import { Steezy } from '../../styles';
+import { View } from '../../components/View';
 
 interface Props {
   children: React.ReactNode;
   keyboardAvoiding?: boolean;
+  alternateBackground?: boolean;
 }
 
 export const Screen = memo<Props>((props) => {
@@ -37,16 +39,35 @@ export const Screen = memo<Props>((props) => {
   return (
     <ScreenScrollContext.Provider value={screenScroll}>
       {props.keyboardAvoiding ? (
-        <KeyboardAvoidingContainer>{props.children}</KeyboardAvoidingContainer>
+        <KeyboardAvoidingContainer>
+          <View
+            style={[
+              styles.container,
+              props.alternateBackground && styles.alternateBackground,
+            ]}
+          >
+            {props.children}
+          </View>
+        </KeyboardAvoidingContainer>
       ) : (
-        <View style={styles.container}>{props.children}</View>
+        <View
+          style={[
+            styles.container,
+            props.alternateBackground && styles.alternateBackground,
+          ]}
+        >
+          {props.children}
+        </View>
       )}
     </ScreenScrollContext.Provider>
   );
 });
 
-const styles = StyleSheet.create({
+const styles = Steezy.create(({ colors }) => ({
   container: {
     flex: 1,
   },
-});
+  alternateBackground: {
+    backgroundColor: colors.backgroundPageAlternate,
+  },
+}));

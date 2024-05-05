@@ -5,6 +5,7 @@ import { Steezy, useTheme } from '../../styles';
 import { View } from '../../components/View';
 import { LinearGradient } from 'expo-linear-gradient';
 import { KeyboardAvoidingContainer } from './KeyboardAvoidingContainer';
+import { convertHexToRGBA } from '@tonkeeper/mobile/src/utils';
 
 interface Props extends WithStyleProp<ViewStyle> {
   children: ReactNode;
@@ -27,7 +28,7 @@ export const ScreenButtonContainer: FC<Props> = memo(
     return (
       <View style={styles.container}>
         <LinearGradient
-          colors={['rgba(21, 28, 41, 0)', theme.backgroundPage]}
+          colors={[convertHexToRGBA(theme.backgroundPage, 0), theme.backgroundPage]}
           locations={[0, 1]}
           style={styles.buttonGradient.static}
           pointerEvents="none"

@@ -1,5 +1,7 @@
 import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
 import Animated, {
+  FadeIn,
+  FadeOut,
   useAnimatedScrollHandler,
   useSharedValue,
 } from 'react-native-reanimated';
@@ -9,21 +11,22 @@ import { useDispatch } from 'react-redux';
 
 import { deviceHeight, isAndroid, ns, parseLockupConfig } from '$utils';
 import { InputItem } from './InputItem';
-import { Button, Input, NavBarHelper, Text } from '$uikit';
+import { Input, NavBarHelper, Text, Button } from '$uikit';
 import * as S from './ImportWalletForm.style';
 import { useReanimatedKeyboardHeight } from '$hooks/useKeyboardHeight';
 import { ImportWalletFormProps } from './ImportWalletForm.interface';
 import { useInputsRegistry } from './useInputRegistry';
 import { WordHintsPopup, WordHintsPopupRef } from './WordHintsPopup';
-import { Keyboard } from 'react-native';
+import { Keyboard, KeyboardAvoidingView } from 'react-native';
 import { wordlist } from '$libs/Ton/mnemonic/wordlist';
 import { Toast } from '$store';
 import { t } from '@tonkeeper/shared/i18n';
+import { Steezy, Button as ButtonNew, View } from '@tonkeeper/uikit';
+import Clipboard from '@react-native-community/clipboard';
 
 export const ImportWalletForm: FC<ImportWalletFormProps> = (props) => {
   const { onWordsFilled } = props;
 
-  
   const { bottom: bottomInset } = useSafeAreaInsets();
   const dispatch = useDispatch();
   const inputsRegistry = useInputsRegistry();
@@ -36,6 +39,7 @@ export const ImportWalletForm: FC<ImportWalletFormProps> = (props) => {
   const [isConfigInputShown, setConfigInputShown] = useState(false);
   const [config, setConfig] = useState('');
   const [isRestoring, setRestoring] = useState(false);
+  const [hasTextInAnyOfInputs, setHasTextInAnyOfInputs] = useState(false);
 
   const deferredScrollToInput = useRef<((offset: number) => void) | null>(null);
   const { keyboardHeight } = useReanimatedKeyboardHeight({
@@ -57,25 +61,42 @@ export const ImportWalletForm: FC<ImportWalletFormProps> = (props) => {
     setConfig(text);
   }, []);
 
-  const handleMultipleWords = useCallback((index: number, text: string) => {
-    const words = text
-      .split(' ')
-      .map((word) => word.trim())
-      .filter((word) => word.length > 0);
-
-    let cursor = index;
-    for (const word of words) {
-      inputsRegistry.getRef(cursor)?.setValue(word);
-      cursor += 1;
-      if (cursor === 24) {
-        break;
+  const handleMultipleWords = useCallback(
+    (index: number, text: string) => {
+      if (!hasTextInAnyOfInputs) {
+        setHasTextInAnyOfInputs(true);
       }
-    }
+      const words = text
+        .replace(/\r\n|\r|\n/g, ' ')
+        .split(' ')
+        .map((word) => word.trim())
+        .filter((word) => word.length > 0);
 
-    if (cursor > 0) {
-      inputsRegistry.getRef(cursor - 1)?.focus();
+      let cursor = index;
+      for (const word of words) {
+        inputsRegistry.getRef(cursor)?.setValue(word);
+        cursor += 1;
+        if (cursor === 24) {
+          break;
+        }
+      }
+
+      if (cursor > 0) {
+        inputsRegistry.getRef(cursor - 1)?.focus();
+      }
+    },
+    [hasTextInAnyOfInputs, inputsRegistry],
+  );
+
+  const handlePasteButton = useCallback(async () => {
+    if (!hasTextInAnyOfInputs) {
+      setHasTextInAnyOfInputs(true);
     }
-  }, []);
+    const maybePhrase = await Clipboard.getString();
+    if (maybePhrase.replace(/\r\n|\r|\n/g, ' ').split(' ').length === 24) {
+      handleMultipleWords(0, maybePhrase);
+    }
+  }, [hasTextInAnyOfInputs, handleMultipleWords]);
 
   const handleSpace = useCallback((index: number) => {
     if (index === 24) {
@@ -185,6 +206,15 @@ export const ImportWalletForm: FC<ImportWalletFormProps> = (props) => {
 
   const handleChangeText = useCallback(
     (index: number) => (text: string) => {
+      if (
+        !text &&
+        hasTextInAnyOfInputs &&
+        Object.values(inputsRegistry.refs).filter((val) => val.getValue()).length === 1
+      ) {
+        setHasTextInAnyOfInputs(false);
+      } else if (!hasTextInAnyOfInputs) {
+        setHasTextInAnyOfInputs(true);
+      }
       const overlap = 10;
       const offsetTop = inputsRegistry.getPosition(index) + S.INPUT_HEIGHT - overlap;
       const contentWidth = isAndroid ? 0 : inputsRegistry.getContentWidth(index);
@@ -201,7 +231,7 @@ export const ImportWalletForm: FC<ImportWalletFormProps> = (props) => {
         },
       });
     },
-    [],
+    [hasTextInAnyOfInputs],
   );
 
   const scrollHandler = useAnimatedScrollHandler({
@@ -269,6 +299,29 @@ export const ImportWalletForm: FC<ImportWalletFormProps> = (props) => {
           </Button>
         </S.ButtonWrap>
       </Animated.ScrollView>
+      <KeyboardAvoidingView>
+        <View style={[styles.pasteButtonContainer, { bottom: bottomInset + 16 }]}>
+          {!hasTextInAnyOfInputs && (
+            <Animated.View entering={FadeIn.duration(200)}>
+              <ButtonNew
+                onPress={handlePasteButton}
+                color="tertiary"
+                size="medium"
+                title={t('paste')}
+              />
+            </Animated.View>
+          )}
+        </View>
+      </KeyboardAvoidingView>
     </>
   );
 };
+
+const styles = Steezy.create({
+  pasteButtonContainer: {
+    position: 'absolute',
+    alignItems: 'center',
+    left: 0,
+    right: 0,
+  },
+});

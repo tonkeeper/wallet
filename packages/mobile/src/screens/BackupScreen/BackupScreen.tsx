@@ -4,16 +4,51 @@ import { memo } from 'react';
 import { format } from 'date-fns';
 import { getLocale } from '$utils/date';
 import { i18n, t } from '@tonkeeper/shared/i18n';
-import { useWalletSetup } from '@tonkeeper/shared/hooks';
+import {
+  DangerLevel,
+  useDangerLevel,
+  useWalletCurrency,
+  useWalletSetup,
+} from '@tonkeeper/shared/hooks';
+import { tk } from '$wallet';
+import { formatter } from '@tonkeeper/shared/formatter';
 
 export const BackupScreen = memo(() => {
   const { lastBackupAt } = useWalletSetup();
   const nav = useNavigation();
 
+  const currency = useWalletCurrency();
+  const dangerLevel = useDangerLevel(tk.wallet.totalTon);
+
   return (
     <Screen>
       <Screen.Header title={t('backup_screen.title')} />
       <Screen.ScrollView>
+        {dangerLevel !== DangerLevel.Normal && (
+          <>
+            <View
+              style={[
+                styles.dangerBanner,
+                dangerLevel === DangerLevel.Medium && styles.dangerBannerYellow,
+                dangerLevel === DangerLevel.High && styles.dangerBannerRed,
+              ]}
+            >
+              <Text
+                type="body2"
+                color={
+                  dangerLevel === DangerLevel.Medium
+                    ? 'textPrimaryAlternate'
+                    : 'textPrimary'
+                }
+              >
+                {t('backup_screen.backup_warning', {
+                  totalFiat: formatter.format(tk.wallet.totalFiat, { currency }),
+                })}
+              </Text>
+            </View>
+            <Spacer y={16} />
+          </>
+        )}
         <View style={styles.info}>
           <Text type="h3">{t('backup_screen.manual_title')}</Text>
           <Spacer y={4} />
@@ -27,7 +62,7 @@ export const BackupScreen = memo(() => {
             <Button
               onPress={() => nav.navigate('/backup-warning')}
               title={t('backup_screen.manual_button')}
-              color="secondary"
+              color={dangerLevel === DangerLevel.Normal ? 'secondary' : 'primary'}
             />
           </View>
         ) : (
@@ -48,7 +83,7 @@ export const BackupScreen = memo(() => {
                 })}
                 leftContent={
                   <View style={styles.checkmarkIcon}>
-                    <Icon name="ic-donemark-28" />
+                    <Icon name="ic-donemark-28" color="buttonPrimaryForeground" />
                   </View>
                 }
               />
@@ -91,5 +126,17 @@ const styles = Steezy.create(({ colors }) => ({
   keyIcon: {
     position: 'absolute',
     right: 16,
+  },
+  dangerBanner: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    marginHorizontal: 16,
+    borderRadius: 16,
+  },
+  dangerBannerYellow: {
+    backgroundColor: colors.accentOrange,
+  },
+  dangerBannerRed: {
+    backgroundColor: colors.accentRed,
   },
 }));

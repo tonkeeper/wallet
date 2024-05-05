@@ -62,7 +62,7 @@ export const VerticalDivider = styled.View`
 `;
 
 export const Logo = styled.View`
-  background-color: ${({ theme }) => theme.colors.backgroundSecondary};
+  background-color: #1d2633;
   border-radius: ${({ theme }) => theme.radius.large}px;
   width: ${ns(72)}px;
   height: ${ns(72)}px;

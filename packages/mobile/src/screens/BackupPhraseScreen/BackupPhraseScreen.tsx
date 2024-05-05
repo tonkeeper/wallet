@@ -1,12 +1,59 @@
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Button, Screen, Spacer, Text, copyText } from '@tonkeeper/uikit';
+import { Button, Screen, Spacer, Text, copyText, Steezy } from '@tonkeeper/uikit';
 import { useParams } from '@tonkeeper/router/src/imperative';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ViewStyle } from 'react-native';
 import { memo, useCallback, useMemo } from 'react';
 import { useNavigation } from '@tonkeeper/router';
 import { t } from '@tonkeeper/shared/i18n';
 import { useWalletSetup } from '@tonkeeper/shared/hooks';
 import { MainStackRouteNames } from '$navigation';
+import { deviceHeight } from '@tonkeeper/uikit';
+import { TTextTypes } from '@tonkeeper/uikit/src/components/Text/TextStyles';
+import {
+  CreatedStyles,
+  ExtractMediaVars,
+} from '@bogoslavskiy/react-native-steezy/dist/types';
+
+export interface Sizes {
+  title: TTextTypes;
+  caption: TTextTypes;
+  index: TTextTypes;
+  word: TTextTypes;
+  styles: CreatedStyles<
+    StyleSheet.NamedStyles<{ line: ViewStyle }> & ExtractMediaVars<{ isTablet: unknown }>
+  >;
+}
+
+const defaultSizes: Sizes = {
+  title: 'h2',
+  caption: 'body1',
+  index: 'body2',
+  word: 'body1',
+  styles: Steezy.create({
+    line: {
+      width: 151,
+      flexDirection: 'row',
+      marginBottom: 8,
+      height: 24,
+    },
+  }),
+};
+
+const smallSizes: Sizes = {
+  title: 'h3',
+  caption: 'body2',
+  index: 'body3',
+  word: 'body2',
+  styles: Steezy.create({
+    line: {
+      width: 151,
+      flexDirection: 'row',
+      marginBottom: 4,
+      height: 18,
+    },
+  }),
+};
+
+const sizesConfig = deviceHeight >= 650 ? defaultSizes : smallSizes;
 
 function getRandIndexes(length: number, indexes: number[] = []) {
   if (indexes.length === length) {
@@ -23,7 +70,6 @@ function getRandIndexes(length: number, indexes: number[] = []) {
 
 export const BackupPhraseScreen = memo(() => {
   const params = useParams<{ mnemonic: string; isBackupAgain?: boolean }>();
-  const safeArea = useSafeAreaInsets();
   const nav = useNavigation();
 
   const mnemonic = params.mnemonic!;
@@ -39,15 +85,15 @@ export const BackupPhraseScreen = memo(() => {
   }, [phrase]);
 
   return (
-    <Screen>
-      <Screen.Header />
+    <Screen alternateBackground>
+      <Screen.Header alternateBackground />
       <Screen.ScrollView>
         <View style={styles.container}>
-          <Text type="h2" textAlign="center">
+          <Text type={sizesConfig.title} textAlign="center">
             {t('recovery_phrase.title')}
           </Text>
           <Spacer y={4} />
-          <Text type="body1" color="textSecondary" textAlign="center">
+          <Text type={sizesConfig.caption} color="textSecondary" textAlign="center">
             {t('recovery_phrase.caption')}
           </Text>
           <Spacer y={16} />
@@ -56,21 +102,32 @@ export const BackupPhraseScreen = memo(() => {
             <View style={styles.columns}>
               <View style={styles.leftColumn}>
                 {leftColumn.map((word, index) => (
-                  <View style={styles.line} key={`${word}-${index}`}>
-                    <Text type="body2" color="textSecondary" style={styles.num}>
+                  <View style={sizesConfig.styles.line.static} key={`${word}-${index}`}>
+                    <Text
+                      type={sizesConfig.index}
+                      color="textSecondary"
+                      style={styles.num}
+                    >
                       {index + 1}.
                     </Text>
-                    <Text type="body1">{word}</Text>
+                    <Text type={sizesConfig.word}>{word}</Text>
                   </View>
                 ))}
               </View>
               <View>
                 {rightColumn.map((word, index) => (
-                  <View style={styles.line} key={`${word}-${index + 1 + 12}`}>
-                    <Text type="body2" color="textSecondary" style={styles.num}>
+                  <View
+                    style={sizesConfig.styles.line.static}
+                    key={`${word}-${index + 1 + 12}`}
+                  >
+                    <Text
+                      type={sizesConfig.index}
+                      color="textSecondary"
+                      style={styles.num}
+                    >
                       {index + 1 + 12}.
                     </Text>
-                    <Text type="body1">{word}</Text>
+                    <Text type={sizesConfig.word}>{word}</Text>
                   </View>
                 ))}
               </View>

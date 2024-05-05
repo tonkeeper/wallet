@@ -1,3 +1,5 @@
+import { ThemeName } from '../styles';
+
 export enum WalletColor {
   SteelGray = 'SteelGray',
   LightSteelGray = 'LightSteelGray',
@@ -24,7 +26,7 @@ export enum WalletColor {
   FireOrange = 'FireOrange',
 }
 
-const DARK_THEME_COLORS = {
+const BLUE_THEME_COLORS = {
   [WalletColor.SteelGray]: '#293342',
   [WalletColor.LightSteelGray]: '#424C5C',
   [WalletColor.Gray]: '#9DA2A4',
@@ -50,6 +52,26 @@ const DARK_THEME_COLORS = {
   [WalletColor.FireOrange]: '#FF525D',
 };
 
-export const getWalletColorHex = (color: WalletColor) => {
-  return DARK_THEME_COLORS[color];
+const DARK_THEME_COLORS = {
+  ...BLUE_THEME_COLORS,
+  [WalletColor.SteelGray]: '#2F2F33',
+  [WalletColor.LightSteelGray]: '#4E4E52',
+  [WalletColor.Gray]: '#8D8D93',
+};
+
+const LIGHT_THEME_COLORS = {
+  ...BLUE_THEME_COLORS,
+  [WalletColor.SteelGray]: '#818C99',
+  [WalletColor.LightSteelGray]: '#95A0AD',
+  [WalletColor.Gray]: '#B6BBC2',
+};
+
+export const getWalletColorHex = (color: WalletColor, themeName: ThemeName) => {
+  if (themeName === ThemeName.Dark) {
+    return DARK_THEME_COLORS[color];
+  }
+  if (themeName === ThemeName.Light) {
+    return LIGHT_THEME_COLORS[color];
+  }
+  return BLUE_THEME_COLORS[color];
 };

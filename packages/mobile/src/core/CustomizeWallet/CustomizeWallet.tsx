@@ -39,6 +39,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import { RouteProp } from '@react-navigation/native';
 import { AppStackParamList } from '$navigation/AppStack';
 import { AppStackRouteNames } from '$navigation';
+import { convertHexToRGBA } from '$utils';
+import { useThemeName } from '$hooks/useThemeName';
 
 const COLORS_LIST = Object.values(WalletColor);
 
@@ -57,6 +59,7 @@ export const CustomizeWallet: FC<Props> = memo((props) => {
   const wallet = useWallet();
   const nav = useNavigation();
   const theme = useTheme();
+  const themeName = useThemeName();
 
   const [name, setName] = useState(
     identifiers.length > 1 ? wallet.config.name.slice(0, -5) : wallet.config.name,
@@ -133,7 +136,7 @@ export const CustomizeWallet: FC<Props> = memo((props) => {
   }, []);
 
   return (
-    <Modal blurOnBackgroundPress>
+    <Modal blurOnBackgroundPress alternateBackground>
       <NavBar isModal isClosedButton isForceBackIcon hideBackButton />
       <View style={styles.container}>
         <View style={styles.topContainer} onLayout={handleLayout}>
@@ -161,10 +164,15 @@ export const CustomizeWallet: FC<Props> = memo((props) => {
               <View
                 style={[
                   styles.emojiContainer,
-                  { backgroundColor: getWalletColorHex(selectedColor) },
+                  { backgroundColor: getWalletColorHex(selectedColor, themeName) },
                 ]}
               >
-                <WalletIcon emojiStyle={styles.emoji.static} size={28} value={emoji} />
+                <WalletIcon
+                  emojiStyle={styles.emoji.static}
+                  size={28}
+                  value={emoji}
+                  color="constantWhite"
+                />
               </View>
             </View>
           </View>
@@ -189,7 +197,7 @@ export const CustomizeWallet: FC<Props> = memo((props) => {
                     <View
                       style={[
                         styles.colorContainer,
-                        { backgroundColor: getWalletColorHex(color) },
+                        { backgroundColor: getWalletColorHex(color, themeName) },
                       ]}
                     >
                       {color === selectedColor ? (
@@ -207,7 +215,10 @@ export const CustomizeWallet: FC<Props> = memo((props) => {
       </View>
       <View style={styles.buttonContainer}>
         <LinearGradient
-          colors={['rgba(21, 28, 41, 0)', theme.backgroundPage]}
+          colors={[
+            convertHexToRGBA(theme.backgroundPageAlternate, 0),
+            theme.backgroundPageAlternate,
+          ]}
           locations={[0, 1]}
           style={styles.buttonGradient.static}
           pointerEvents="none"
@@ -271,7 +282,7 @@ const styles = Steezy.create(({ colors, safeArea, corners }) => ({
     width: 30,
     height: 30,
     borderRadius: 30 / 2,
-    borderColor: colors.backgroundPage,
+    borderColor: colors.backgroundPageAlternate,
     borderWidth: 5,
   },
   buttonContainer: {

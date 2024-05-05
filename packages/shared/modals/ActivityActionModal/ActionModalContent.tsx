@@ -197,7 +197,7 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
       )}
       <View style={styles.footer}>
         <Button onPress={handlePressHash} size="small" color="secondary">
-          <Icon name="ic-globe-16" color="constantWhite" />
+          <Icon name="ic-globe-16" />
           <Text type="label2" style={styles.buttonText}>
             {t('transactionDetails.transaction')}
           </Text>

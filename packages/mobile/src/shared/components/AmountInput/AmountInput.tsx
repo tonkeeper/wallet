@@ -1,8 +1,6 @@
 import { SendAmount } from '$core/Send/Send.interface';
-import { walletWalletSelector } from '$store/wallet';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { TextInput } from 'react-native-gesture-handler';
-import { useSelector } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { formatInputAmount, parseLocaleNumber } from '$utils';
 import { cryptoToFiat, fiatToCrypto, trimZeroDecimals } from '$utils/currency';
@@ -243,6 +241,7 @@ const AmountInputComponent: React.FC<Props> = (props) => {
                 onChangeText={handleChangeAmount}
                 onLayout={handleInputLayout}
                 returnKeyType="next"
+                keyboardAppearance={theme.isDark ? 'dark' : 'light'}
               />
               <View pointerEvents="none">
                 <S.FakeInput style={fakeInputStyle}>{value}</S.FakeInput>

@@ -18,7 +18,7 @@ import { t } from '@tonkeeper/shared/i18n';
 import { Address } from '@tonkeeper/shared/Address';
 import { PoolImplementationType } from '@tonkeeper/core/src/TonAPI';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
-import { Flash } from '@tonkeeper/uikit';
+import { Flash, Screen } from '@tonkeeper/uikit';
 import { Ton } from '$libs/Ton';
 import { useBalancesState, useJettons, useStakingState } from '@tonkeeper/shared/hooks';
 import { StakingManager, StakingProvider } from '$wallet/managers/StakingManager';
@@ -205,11 +205,10 @@ export const Staking: FC<Props> = () => {
   );
 
   return (
-    <S.Wrap>
-      <ScrollHandler
-        isLargeNavBar={false}
-        navBarTitle={hasActivePools ? t('staking.title') : ' '}
-        navBarRight={
+    <Screen>
+      <Screen.Header
+        title={hasActivePools ? t('staking.title') : ' '}
+        rightContent={
           hasActivePools ? (
             <Button
               onPress={handleLearnMorePress}
@@ -219,101 +218,78 @@ export const Staking: FC<Props> = () => {
             />
           ) : null
         }
+      />
+      <Screen.ScrollView
+        refreshControl={<RefreshControl {...refreshControl} />}
+        showsVerticalScrollIndicator={false}
       >
-        <Animated.ScrollView
-          refreshControl={<RefreshControl {...refreshControl} />}
-          showsVerticalScrollIndicator={false}
-        >
-          <S.Content bottomInset={bottomInset}>
-            {notificationsStore?.showRestakeBanner &&
-              notificationsStore?.stakingAddressToMigrateFrom && (
-                <>
-                  <RestakeBanner
-                    bypassUnstakeStep={notificationsStore?.bypassUnstakeStep}
-                    migrateFrom={notificationsStore?.stakingAddressToMigrateFrom}
-                    poolsList={poolsList}
-                  />
-                  <Spacer y={16} />
-                </>
-              )}
-            {!hasActivePools ? (
-              <S.LargeTitleContainer>
-                <Text variant="h2">{t('staking.title_large')}</Text>
-                <Spacer y={4} />
-                <Text textAlign="center" color="textSecondary" variant="body2">
-                  {t('staking.desc_large')}{' '}
-                  <Text
-                    color="accentPrimary"
-                    variant="body2"
-                    onPress={handleLearnMorePress}
-                    suppressHighlighting
-                  >
-                    {t('staking.learn_more')}
-                  </Text>
+        <S.Content bottomInset={bottomInset}>
+          {notificationsStore?.showRestakeBanner &&
+            notificationsStore?.stakingAddressToMigrateFrom && (
+              <>
+                <RestakeBanner
+                  bypassUnstakeStep={notificationsStore?.bypassUnstakeStep}
+                  migrateFrom={notificationsStore?.stakingAddressToMigrateFrom}
+                  poolsList={poolsList}
+                />
+                <Spacer y={16} />
+              </>
+            )}
+          {!hasActivePools ? (
+            <S.LargeTitleContainer>
+              <Text variant="h2">{t('staking.title_large')}</Text>
+              <Spacer y={4} />
+              <Text textAlign="center" color="textSecondary" variant="body2">
+                {t('staking.desc_large')}{' '}
+                <Text
+                  color="accentPrimary"
+                  variant="body2"
+                  onPress={handleLearnMorePress}
+                  suppressHighlighting
+                >
+                  {t('staking.learn_more')}
                 </Text>
-                <Spacer y={32} />
-              </S.LargeTitleContainer>
-            ) : null}
-            {hasActivePools ? (
-              <>
-                <S.TitleContainer>
-                  <Text variant="h3">{t('staking.active')}</Text>
-                </S.TitleContainer>
-                <List separator={false}>
-                  {activePools.map((pool, index) => (
-                    <StakingListCell
-                      key={pool.address}
-                      id={pool.address}
-                      name={pool.name}
-                      balance={pool.balance}
-                      isWithdrawal={pool.isWithdrawal}
-                      stakingJetton={pool.stakingJetton}
-                      description={t('staking.staking_pool_desc', {
-                        apy: pool.apy.toFixed(2),
-                      })}
-                      separator={index < activePools.length - 1}
-                      iconSource={getPoolIcon(pool)}
-                      onPress={handlePoolPress}
-                    />
-                  ))}
-                </List>
-                <Spacer y={16} />
-              </>
-            ) : null}
-            {hasActivePools ? (
+              </Text>
+              <Spacer y={32} />
+            </S.LargeTitleContainer>
+          ) : null}
+          {hasActivePools ? (
+            <>
               <S.TitleContainer>
-                <Text variant="h3">{t('staking.other')}</Text>
+                <Text variant="h3">{t('staking.active')}</Text>
               </S.TitleContainer>
-            ) : null}
-            {data.recommendedList.length > 0 ? (
-              <>
-                <List separator={false}>
-                  {data.recommendedList.map((provider, index) => (
-                    <Flash key={provider.id} disabled={flashShownCount >= 2}>
-                      <StakingListCell
-                        id={provider.id}
-                        name={provider.name}
-                        iconSource={getImplementationIcon(provider.id)}
-                        description={provider.description}
-                        highestApy={
-                          highestApyPool && highestApyPool.implementation === provider.id
-                        }
-                        message={getEstimateProfitMessage(provider)}
-                        separator={index < data.recommendedList.length - 1}
-                        onPress={handleProviderPress}
-                      />
-                    </Flash>
-                  ))}
-                </List>
-                <Spacer y={16} />
-              </>
-            ) : null}
-            {data.otherList.length > 0 ? (
-              <>
-                <List separator={false}>
-                  {data.otherList.map((provider, index) => (
+              <List separator={false}>
+                {activePools.map((pool, index) => (
+                  <StakingListCell
+                    key={pool.address}
+                    id={pool.address}
+                    name={pool.name}
+                    balance={pool.balance}
+                    isWithdrawal={pool.isWithdrawal}
+                    stakingJetton={pool.stakingJetton}
+                    description={t('staking.staking_pool_desc', {
+                      apy: pool.apy.toFixed(2),
+                    })}
+                    separator={index < activePools.length - 1}
+                    iconSource={getPoolIcon(pool)}
+                    onPress={handlePoolPress}
+                  />
+                ))}
+              </List>
+              <Spacer y={16} />
+            </>
+          ) : null}
+          {hasActivePools ? (
+            <S.TitleContainer>
+              <Text variant="h3">{t('staking.other')}</Text>
+            </S.TitleContainer>
+          ) : null}
+          {data.recommendedList.length > 0 ? (
+            <>
+              <List separator={false}>
+                {data.recommendedList.map((provider, index) => (
+                  <Flash key={provider.id} disabled={flashShownCount >= 2}>
                     <StakingListCell
-                      key={provider.id}
                       id={provider.id}
                       name={provider.name}
                       iconSource={getImplementationIcon(provider.id)}
@@ -321,17 +297,39 @@ export const Staking: FC<Props> = () => {
                       highestApy={
                         highestApyPool && highestApyPool.implementation === provider.id
                       }
-                      separator={index < data.otherList.length - 1}
+                      message={getEstimateProfitMessage(provider)}
+                      separator={index < data.recommendedList.length - 1}
                       onPress={handleProviderPress}
                     />
-                  ))}
-                </List>
-                <Spacer y={16} />
-              </>
-            ) : null}
-          </S.Content>
-        </Animated.ScrollView>
-      </ScrollHandler>
-    </S.Wrap>
+                  </Flash>
+                ))}
+              </List>
+              <Spacer y={16} />
+            </>
+          ) : null}
+          {data.otherList.length > 0 ? (
+            <>
+              <List separator={false}>
+                {data.otherList.map((provider, index) => (
+                  <StakingListCell
+                    key={provider.id}
+                    id={provider.id}
+                    name={provider.name}
+                    iconSource={getImplementationIcon(provider.id)}
+                    description={provider.description}
+                    highestApy={
+                      highestApyPool && highestApyPool.implementation === provider.id
+                    }
+                    separator={index < data.otherList.length - 1}
+                    onPress={handleProviderPress}
+                  />
+                ))}
+              </List>
+              <Spacer y={16} />
+            </>
+          ) : null}
+        </S.Content>
+      </Screen.ScrollView>
+    </Screen>
   );
 };

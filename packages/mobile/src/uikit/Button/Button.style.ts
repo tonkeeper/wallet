@@ -21,8 +21,16 @@ export const Button = styled(Animated.View)<{
       return `
         background: ${
           inverted
-            ? theme.colors[isPressed ? 'backgroundSecondary' : 'backgroundTertiary']
-            : theme.colors[isPressed ? 'backgroundTertiary' : 'backgroundSecondary']
+            ? theme.colors[
+                isPressed
+                  ? 'buttonSecondaryBackground'
+                  : 'buttonSecondaryBackgroundHighlighted'
+              ]
+            : theme.colors[
+                isPressed
+                  ? 'buttonSecondaryBackgroundHighlighted'
+                  : 'buttonSecondaryBackground'
+              ]
         };
       `;
     } else if (mode === 'tertiary') {
@@ -39,10 +47,10 @@ export const Button = styled(Animated.View)<{
       return `
         background: ${
           disabled
-            ? theme.colors.accentPrimaryDark
+            ? theme.colors.buttonPrimaryBackgroundDisabled
             : isPressed
-            ? theme.colors.accentPrimaryLight
-            : theme.colors.accentPrimary
+            ? theme.colors.buttonPrimaryBackgroundHighlighted
+            : theme.colors.buttonPrimaryBackground
         };
       `;
     }
@@ -110,9 +118,13 @@ export const Title = styled(Text).attrs({ allowFontScaling: false })<{
       return `
         color: ${theme.colors.backgroundPrimary};
       `;
+    } else if (mode === 'secondary') {
+      return `
+        color: ${theme.colors.buttonSecondaryForeground};
+      `;
     } else {
       return `
-        color: ${theme.colors.foregroundPrimary};
+        color: ${theme.colors.buttonPrimaryForeground};
       `;
     }
   }}

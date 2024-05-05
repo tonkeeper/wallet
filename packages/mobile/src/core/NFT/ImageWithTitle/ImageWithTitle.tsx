@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import * as S from './ImageWithTitle.style';
 import { ImageWithTitleProps } from '$core/NFT/ImageWithTitle/ImageWithTitle.interface';
-import { Badge, Icon, Separator, ShowMore, Spacer, Text, View } from '$uikit';
+import { Badge, Separator, ShowMore, Spacer, Text, View } from '$uikit';
 import { t } from '@tonkeeper/shared/i18n';
 import { isIOS, ns } from '$utils';
 import Clipboard from '@react-native-community/clipboard';
@@ -9,6 +9,7 @@ import { Toast } from '$store';
 import { HideableImage } from '$core/HideableAmount/HideableImage';
 import { Steezy } from '$styles';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
+import { Icon } from '@tonkeeper/uikit';
 
 export const ImageWithTitle: React.FC<ImageWithTitleProps> = ({
   uri,
@@ -108,7 +109,7 @@ export const ImageWithTitle: React.FC<ImageWithTitleProps> = ({
                 : collection || t('nft_unnamed_collection')}
             </HideableAmount>
           </S.CollectionWrapper>
-          {isVerified && <Icon name="ic-verification-16" colorless />}
+          {isVerified && <Icon name="ic-verification-16" color="accentBlue" />}
         </S.Row>
         {description ? (
           <S.DescriptionWrap>

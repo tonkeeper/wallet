@@ -16,6 +16,7 @@ import { Base64 } from '$utils';
 import { Address } from '@tonkeeper/core';
 import { useWallet } from '@tonkeeper/shared/hooks';
 import { tk } from '$wallet';
+import { Spacer } from '@tonkeeper/uikit';
 
 export type RenewDomainButtonRef = {
   renewUpdated: () => void;
@@ -121,6 +122,7 @@ export const RenewDomainButton = forwardRef<RenewDomainButtonRef, RenewDomainBut
         >
           {t('dns_renew_valid_caption', { count: days })}
         </Text>
+        <Spacer y={8} />
       </View>
     );
   },

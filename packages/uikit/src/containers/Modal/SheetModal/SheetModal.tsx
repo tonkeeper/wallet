@@ -25,6 +25,7 @@ export type SheetModalRef = BottomSheetModal;
 
 export type SheetModalProps = Omit<DefaultBottomSheetProps, 'snapPoints'> & {
   children?: React.ReactNode;
+  alternateBackground?: boolean;
 };
 
 const ANIMATION_CONFIGS = isIOS
@@ -121,7 +122,9 @@ export const SheetModal = memo(
         ref={setRef}
         backgroundStyle={{
           borderRadius: 18,
-          backgroundColor: theme.backgroundPage,
+          backgroundColor: props.alternateBackground
+            ? theme.backgroundPageAlternate
+            : theme.backgroundPage,
         }}
       >
         {props.children}

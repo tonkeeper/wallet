@@ -8,13 +8,14 @@ import { TokensContentProvider } from '../tokens';
 import { StakingJettonsDependency } from '../dependencies/stakingJettons';
 import { TokenApprovalDependency } from '../dependencies/tokenApproval';
 import { JettonBalancesDependency } from '../dependencies/jettons';
-import { Wallet } from '$wallet/Wallet';
 import { StakingContentProvider } from '../staking';
 import { StakingDependency } from '../dependencies/staking';
 import { InscriptionsContentProvider } from '../inscriptions';
 import { InscriptionsDependency } from '../dependencies/inscriptions';
 import { NamespacedLogger, logger } from '$logger';
 import BigNumber from 'bignumber.js';
+import { Wallet } from '$wallet/Wallet';
+import { tk } from '$wallet';
 
 type Subscriber = (cells: CellItemToRender[]) => void;
 
@@ -23,14 +24,15 @@ export class WalletContentReceiver {
   private subscribers = new Set<Subscriber>();
 
   private logger: NamespacedLogger;
+  private wallet: Wallet = tk.wallet;
 
-  private tonPrice = new TonPriceDependency();
-  private tonBalances = new TonBalancesDependency();
-  private stakingJettons = new StakingJettonsDependency();
-  private tokenApproval = new TokenApprovalDependency();
-  private jettonBalances = new JettonBalancesDependency();
-  private staking = new StakingDependency();
-  private inscriptions = new InscriptionsDependency();
+  private tonPrice = new TonPriceDependency(tk.tonPrice.state);
+  private tonBalances = new TonBalancesDependency(this.wallet);
+  private stakingJettons = new StakingJettonsDependency(this.wallet);
+  private tokenApproval = new TokenApprovalDependency(this.wallet);
+  private jettonBalances = new JettonBalancesDependency(this.wallet);
+  private staking = new StakingDependency(this.wallet);
+  private inscriptions = new InscriptionsDependency(this.wallet);
 
   private memoizedCells = new Map<string, CellItemToRender[] | false>();
 
@@ -44,6 +46,11 @@ export class WalletContentReceiver {
     this.inscriptions,
   ];
 
+  constructor() {
+    this.subscribeToProvidersChanges(this.providersList);
+    this.logger = logger.extend('WalletListContent');
+  }
+
   private providersList: ContentProviderPrototype<any>[] = [
     new TONContentProvider(this.tonPrice, this.tonBalances),
     new TokensContentProvider(
@@ -56,15 +63,10 @@ export class WalletContentReceiver {
     new InscriptionsContentProvider(this.tonPrice, this.inscriptions, this.tokenApproval),
   ];
 
-  constructor() {
-    this.subscribeToProvidersChanges(this.providersList);
-    this.logger = logger.extend('WalletListContent');
-  }
-
-  public setWallet(wallet: Wallet) {
-    this.logger.debug('provide wallet to deps');
+  public destroy() {
+    this.logger.warn('Destroy');
     this.depsList.forEach((provider) => {
-      provider.setWallet(wallet);
+      provider.destroy();
     });
   }
 

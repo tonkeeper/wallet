@@ -17,11 +17,13 @@ import React, { FC, memo, useCallback } from 'react';
 import { useNavigation } from '@tonkeeper/router';
 import { FlashCountKeys, useFlashCount } from '$store';
 import { tk } from '$wallet';
+import { useThemeName } from '$hooks/useThemeName';
 
 const WalletSelectorComponent: FC = () => {
   const wallet = useWallet();
   const nav = useNavigation();
   const [flashShownCount, disableFlash] = useFlashCount(FlashCountKeys.MultiWallet);
+  const themeName = useThemeName();
 
   const handlePress = useCallback(() => {
     disableFlash();
@@ -35,7 +37,7 @@ const WalletSelectorComponent: FC = () => {
         <Flash
           style={[
             styles.selectorContainer.static,
-            { backgroundColor: getWalletColorHex(wallet.config.color) },
+            { backgroundColor: getWalletColorHex(wallet.config.color, themeName) },
           ]}
           disabled={!tk.migrationData || flashShownCount >= 3}
         >
@@ -43,15 +45,20 @@ const WalletSelectorComponent: FC = () => {
             emojiStyle={styles.emoji.static}
             size={20}
             value={wallet.config.emoji}
+            color="constantWhite"
           />
           <Spacer x={4} />
           <View style={styles.nameContainer}>
-            <Text type="label2" numberOfLines={1}>
+            <Text type="label2" color="constantWhite" numberOfLines={1}>
               {wallet.config.name}
             </Text>
           </View>
           <Spacer x={6} />
-          <Icon name="ic-chevron-down-16" style={styles.icon.static} />
+          <Icon
+            name="ic-chevron-down-16"
+            color="constantWhite"
+            style={styles.icon.static}
+          />
         </Flash>
       </TouchableOpacity>
     </View>

@@ -152,8 +152,8 @@ export const AddWatchOnly: FC = () => {
   const { spacerStyle } = useReanimatedKeyboardHeight();
 
   return (
-    <Screen>
-      <Screen.Header />
+    <Screen alternateBackground>
+      <Screen.Header alternateBackground />
       <Screen.Content>
         <View style={styles.container}>
           <Spacer y={24} />

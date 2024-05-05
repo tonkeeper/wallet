@@ -97,10 +97,11 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
           if (resolvedDomain === 'aborted') {
             return 'aborted';
           } else if (resolvedDomain?.wallet?.address) {
+            const isWallet = !!resolvedDomain?.wallet?.account?.is_wallet;
             return new TonWeb.Address(resolvedDomain.wallet.address).toString(
               true,
               true,
-              false,
+              !isWallet,
             ) as string;
           }
 

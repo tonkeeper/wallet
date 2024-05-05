@@ -11,6 +11,7 @@ import {
   isAndroid,
 } from '@tonkeeper/uikit';
 import { ListItemProps } from '@tonkeeper/uikit/src/components/List/ListItem';
+import { useThemeName } from '@tonkeeper/mobile/src/hooks/useThemeName';
 import { FC, memo } from 'react';
 import { t } from '../../i18n';
 
@@ -20,6 +21,8 @@ interface Props extends ListItemProps {
 
 const WalletListItemComponent: FC<Props> = (props) => {
   const { wallet, ...listItemProps } = props;
+
+  const themeName = useThemeName();
 
   const titleWithTag = wallet.isTestnet || wallet.isWatchOnly;
 
@@ -38,13 +41,14 @@ const WalletListItemComponent: FC<Props> = (props) => {
         <View
           style={[
             styles.iconContainer,
-            { backgroundColor: getWalletColorHex(wallet.config.color) },
+            { backgroundColor: getWalletColorHex(wallet.config.color, themeName) },
           ]}
         >
           <WalletIcon
             emojiStyle={styles.emoji.static}
             size={24}
             value={wallet.config.emoji}
+            color="constantWhite"
           />
         </View>
       }

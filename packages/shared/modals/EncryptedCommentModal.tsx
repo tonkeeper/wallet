@@ -37,7 +37,7 @@ export const EncryptedCommentModal = memo<EncryptedCommentModalProps>((props) =>
   }, [nav, doNotShowAgain]);
 
   return (
-    <Modal>
+    <Modal alternateBackground>
       <Modal.Header />
       <Modal.Content>
         <View style={styles.wrap}>
@@ -72,7 +72,7 @@ export const EncryptedCommentModal = memo<EncryptedCommentModalProps>((props) =>
           </TouchableOpacity>
         </View>
       </Modal.Content>
-      <Modal.Footer>
+      <Modal.Footer alternateBackground>
         <Spacer y={16} />
       </Modal.Footer>
     </Modal>

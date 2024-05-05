@@ -13,7 +13,7 @@ import Animated, {
   useDerivedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { DarkTheme } from '@tonkeeper/uikit/src/styles/themes/dark';
+import { useTheme } from '@tonkeeper/uikit';
 
 export function processMainButtonMessage(
   parsed: any,
@@ -134,21 +134,22 @@ export type MainButtonProps = {
 
 export const DappMainButton = React.memo(
   (props: { style?: StyleProp<ViewStyle> } & Omit<MainButtonProps, 'isVisible'>) => {
+    const theme = useTheme();
     const bgColor = useDerivedValue(() => {
       return withTiming(
         props.isProgressVisible
-          ? DarkTheme.buttonPrimaryBackground
+          ? theme.buttonPrimaryBackground
           : props.isActive
           ? props.color
-          : props.disabledColor ?? DarkTheme.buttonPrimaryBackground,
+          : props.disabledColor ?? theme.buttonPrimaryBackground,
       );
-    }, [props.color, props.disabledColor, props.isActive]);
+    }, [props.color, props.disabledColor, props.isActive, theme]);
 
     const textColor = useDerivedValue(() => {
       return withTiming(
-        props.isProgressVisible ? DarkTheme.buttonPrimaryForeground : props.textColor,
+        props.isProgressVisible ? theme.buttonPrimaryForeground : props.textColor,
       );
-    }, [props.textColor]);
+    }, [props.textColor, theme]);
 
     const animatedBgStyle = useAnimatedStyle(() => {
       return { backgroundColor: bgColor.value };

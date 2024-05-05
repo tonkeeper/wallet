@@ -12,10 +12,11 @@ export type SheetModalFooterProps = {
   relative?: boolean;
   style?: ViewStyle;
   height?: number;
+  alternateBackground?: boolean;
 };
 
 export const SheetModalFooter = React.memo((props: SheetModalFooterProps) => {
-  const { style, children, height, relative } = props;
+  const { style, children, height, relative, alternateBackground } = props;
   const safeArea = useSafeAreaInsets();
   const theme = useTheme();
 
@@ -47,7 +48,9 @@ export const SheetModalFooter = React.memo((props: SheetModalFooterProps) => {
 
   const contentStyle = {
     paddingBottom: safeArea.bottom,
-    backgroundColor: theme.backgroundPage,
+    backgroundColor: alternateBackground
+      ? theme.backgroundPageAlternate
+      : theme.backgroundPage,
     height,
   };
 

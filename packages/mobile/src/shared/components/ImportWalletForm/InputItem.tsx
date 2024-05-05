@@ -52,6 +52,8 @@ export const InputItem = forwardRef<InputItemRef, InputItemProps>((props, ref) =
   const handleChangeText = useCallback(
     (text) => {
       let newText = text.trim();
+      newText = newText.replace(/\r\n|\r|\n/g, ' ');
+
       if (newText.split(' ').length > 1) {
         onMultipleWords(index, newText);
       } else if (text.slice(-1) === ' ') {

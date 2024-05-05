@@ -99,7 +99,14 @@ export const Button = memo<ButtonProps>((props) => {
     <View style={[containerStyle, style]}>
       <Pressable disabled={disabled || loading} onPress={handlePress} style={buttonStyle}>
         {loading ? (
-          <Loader size="medium" color="iconPrimary" />
+          <Loader
+            size="medium"
+            color={
+              ['primary', 'green'].includes(color)
+                ? 'buttonPrimaryForeground'
+                : 'textPrimary'
+            }
+          />
         ) : !!children ? (
           <View style={styles.content}>{children}</View>
         ) : (
@@ -111,6 +118,11 @@ export const Button = memo<ButtonProps>((props) => {
                 ellipsizeMode="tail"
                 style={titleStyle}
                 type={textType}
+                color={
+                  ['primary', 'green'].includes(color)
+                    ? 'buttonPrimaryForeground'
+                    : 'textPrimary'
+                }
               >
                 {title}
               </Text>

@@ -609,7 +609,14 @@
   "send_sending_wrong_time_description" : "Включите автоматическое время и дату в настройках своего устройства. После этого повторите перевод.",
   "send_sending_wrong_time_title" : "Произошла ошибка",
   "send_title" : "Отправить %{currency}",
-  "settings_appearance" : "Тема",
+  "settings_appearance" : "Оформление",
+  "settings_theme" : "Тема",
+  "settings_theme_names": {
+    "blue": "Темно-синяя",
+    "dark": "Тёмная",
+    "light": "Светлая",
+    "system": "Системная"
+  },
   "settings_backup_seed" : "Резервная копия",
   "settings_contact_support" : "Написать команде",
   "settings_delete_account" : "Удалить аккаунт",
@@ -845,7 +852,7 @@
   "swap_title" : "Обмен",
   "tab_browser" : "Браузер",
   "tab_nft" : "NFT",
-  "tab_collectibles": "Покупки",
+  "tab_collectibles": "Коллекции",
   "tab_settings" : "Настройки",
   "tab_swap" : "Обмен",
   "tab_wallet" : "Кошелёк",
@@ -1232,6 +1239,7 @@
   },
   "backup_screen": {
     "title": "Резервная копия",
+    "backup_warning": "На вашем балансе %{totalFiat} и он защищён только секретным ключом, который вы ещё не записали. Сделайте резервную копию ключа, чтобы не потерять средства в случае проблем с устройством.",
     "manual_title": "Вручную",
     "manual_caption": "Создайте резервную копию своего кошелька вручную, записав секретный ключ.",
     "manual_button": "Сделать копию вручную",

@@ -7,6 +7,7 @@ import { Icon } from '../../../components/Icon';
 import { memo, useLayoutEffect } from 'react';
 import { useTheme } from '../../../styles';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import { convertHexToRGBA } from '@tonkeeper/mobile/src/utils';
 
 export interface SheetModalHeaderProps {
   onIconLeftPress?: () => void;
@@ -75,7 +76,7 @@ export const SheetModalHeader = memo<SheetModalHeaderProps>((props) => {
     >
       {gradient && (
         <LinearGradient
-          colors={[theme.backgroundContent, 'rgba(16, 22, 31, 0)']}
+          colors={[theme.backgroundContent, convertHexToRGBA(theme.backgroundContent, 0)]}
           style={styles.gradient}
           locations={[0, 1]}
         />
@@ -129,8 +130,10 @@ export const SheetModalHeader = memo<SheetModalHeaderProps>((props) => {
             onClose?.();
           }}
         >
-          <View style={[styles.close, { backgroundColor: theme.backgroundContent }]}>
-            <Icon name="ic-close-16" color="constantWhite" />
+          <View
+            style={[styles.close, { backgroundColor: theme.buttonSecondaryBackground }]}
+          >
+            <Icon name="ic-close-16" />
           </View>
         </TouchableOpacity>
       </View>

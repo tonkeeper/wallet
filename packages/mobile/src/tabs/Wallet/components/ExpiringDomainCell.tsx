@@ -53,7 +53,7 @@ export const ExpiringDomainCell = memo<ApprovalCellProps>(({ withoutSpacer, styl
           onPress={() => openRenewAllDomainModal()}
           leftContent={
             <View style={styles.iconContainer}>
-              <Icon color="constantWhite" name="ic-globe-28" />
+              <Icon name="ic-globe-28" />
             </View>
           }
           title={
