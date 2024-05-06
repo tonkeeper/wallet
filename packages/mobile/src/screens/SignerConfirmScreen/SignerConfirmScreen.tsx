@@ -26,6 +26,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
+const NEXT_DELAY = 185;
+
 function getChunks(input: string, chunkSize: number): string[] {
   const chunks: string[] = [];
   for (let i = 0; i < input.length; i += chunkSize) {
@@ -89,7 +91,9 @@ export const SignerConfirmScreen = () => {
     if (chunks.length > 0) {
       currentChunkIndex.value = withRepeat(
         withSequence(
-          ...chunks.map((_, index) => withDelay(100, withTiming(index, { duration: 0 }))),
+          ...chunks.map((_, index) =>
+            withDelay(NEXT_DELAY, withTiming(index, { duration: 0 })),
+          ),
         ),
         -1,
       );
