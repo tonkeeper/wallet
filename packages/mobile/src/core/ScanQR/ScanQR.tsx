@@ -22,9 +22,11 @@ import {
   triggerSelection,
 } from '$utils';
 import { BottomButtonWrap, BottomButtonWrapHelper } from '$shared/components';
-import { useTheme } from '$hooks/useTheme';
 import { useNavigation } from '@tonkeeper/router';
 import { t } from '@tonkeeper/shared/i18n';
+import SystemNavigationBar from 'react-native-system-navigation-bar';
+import { DarkTheme } from '@tonkeeper/uikit/src/styles/themes/dark';
+import { useTheme } from '@tonkeeper/uikit';
 
 export const ScanQR: FC<ScanQRProps> = ({ route }) => {
   const nav = useNavigation();
@@ -36,6 +38,22 @@ export const ScanQR: FC<ScanQRProps> = ({ route }) => {
   const [isFlashlightOn, setFlashlightOn] = useState(false);
   const [isCameraBlocked, setCameraBlocked] = useState(false);
   const [isHasPermission, setHasPermissions] = useState(false);
+
+  useEffect(() => {
+    SystemNavigationBar.setNavigationColor(
+      DarkTheme.backgroundPageAlternate,
+      'light',
+      'navigation',
+    );
+
+    return () => {
+      SystemNavigationBar.setNavigationColor(
+        theme.backgroundPageAlternate,
+        theme.isDark ? 'light' : 'dark',
+        'navigation',
+      );
+    };
+  }, [theme.backgroundPageAlternate, theme.isDark]);
 
   useEffect(() => {
     const permissionName = Platform.select({

@@ -23,4 +23,9 @@
         <item name="android:textColor">@color/alert_text</item>
         <item name="android:textColorPrimary">@color/alert_text</item>
     </style>
+    <style name="Theme.FullScreenDialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
 </resources>

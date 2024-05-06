@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useEffect } from 'react';
 import { createModalStackNavigator } from '@tonkeeper/router';
 import { NFT } from '$core/NFT/NFT';
 import { SignRawModal } from '$core/ModalContainer/NFTOperations/Modals/SignRawModal';
@@ -33,8 +33,37 @@ import { ReceiveInscriptionModal } from '@tonkeeper/shared/modals/ReceiveInscrip
 import { CustomizeWallet } from '$core/CustomizeWallet/CustomizeWallet';
 import { TokenDetails } from '../components/TokenDetails/TokenDetails';
 import { BackupWarningModal, ExchangeModal, LogoutWarningModal } from '$modals';
+import { ThemeProvider, useTheme } from '@tonkeeper/uikit';
+import { BlueTheme } from '@tonkeeper/uikit/src/styles/themes/blue';
+import SystemNavigationBar from 'react-native-system-navigation-bar';
 
 const Stack = createModalStackNavigator(ProvidersWithNavigation);
+
+const SwapWithTheme = memo(() => {
+  const theme = useTheme();
+
+  useEffect(() => {
+    SystemNavigationBar.setNavigationColor(
+      BlueTheme.backgroundPageAlternate,
+      'light',
+      'navigation',
+    );
+
+    return () => {
+      SystemNavigationBar.setNavigationColor(
+        theme.backgroundPageAlternate,
+        theme.isDark ? 'light' : 'dark',
+        'navigation',
+      );
+    };
+  }, [theme.backgroundPageAlternate, theme.isDark]);
+
+  return (
+    <ThemeProvider theme={BlueTheme}>
+      <Swap />
+    </ThemeProvider>
+  );
+});
 
 export const ModalStack = React.memo(() => (
   <Stack.Navigator>
@@ -71,7 +100,7 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={StakingSend} path={AppStackRouteNames.StakingSend} />
       <Stack.Modal component={NFTSend} path={AppStackRouteNames.NFTSend} />
       <Stack.Modal component={ScanQR} path={AppStackRouteNames.ScanQR} />
-      <Stack.Modal component={Swap} path={AppStackRouteNames.Swap} />
+      <Stack.Modal component={SwapWithTheme} path={AppStackRouteNames.Swap} />
       <Stack.Modal
         component={CustomizeWallet}
         path={AppStackRouteNames.CustomizeWallet}

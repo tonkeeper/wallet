@@ -125,6 +125,7 @@
     "react-native-sse": "^1.1.0",
     "react-native-svg": "^13.10.0",
     "react-native-svg-transformer": "^0.14.3",
+    "react-native-system-navigation-bar": "^2.6.4",
     "react-native-tweetnacl": "^1.0.5",
     "react-native-url-polyfill": "^2.0.0",
     "react-native-video": "^5.2.0",

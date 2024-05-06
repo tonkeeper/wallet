@@ -7,7 +7,7 @@ import { memo } from 'react';
 import { isString } from '../../../utils/strings';
 import { useNavigation } from '@tonkeeper/router';
 import { StatusBar } from 'react-native';
-import { isIOS } from '../../../utils';
+import { isAndroid, isIOS } from '../../../utils';
 
 export interface ScreenModalHeaderProps {
   children?: React.ReactNode;
@@ -43,8 +43,9 @@ export const ScreenModalHeader = memo<ScreenModalHeaderProps>((props) => {
   );
 });
 
-const styles = Steezy.create(({ colors }) => ({
+const styles = Steezy.create(({ colors, safeArea }) => ({
   container: {
+    marginTop: isAndroid ? safeArea.top : 0,
     height: 64,
     justifyContent: 'center',
     alignItems: 'center',

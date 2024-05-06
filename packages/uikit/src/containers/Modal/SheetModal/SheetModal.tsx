@@ -78,7 +78,7 @@ export const SheetModal = memo(
       });
     }, []);
 
-    const topInset = !isAndroid ? StatusBarHeight + safeArea.top : 0;
+    const topInset = !isAndroid ? StatusBarHeight + safeArea.top : safeArea.top;
 
     const handleIndexChange = useCallback(
       (index: number) => {
