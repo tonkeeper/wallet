@@ -5,7 +5,7 @@ import styled, { css } from '$styled';
 import { deviceWidth, ns } from '$utils';
 import { IsTablet, Opacity, TabletMaxWidth } from '$shared/constants';
 
-const BorderHorizontalWidth = ns(48);
+const BorderHorizontalWidth = ns(56);
 const RectSize =
   (IsTablet ? TabletMaxWidth / 1.5 : deviceWidth) - BorderHorizontalWidth * 2;
 

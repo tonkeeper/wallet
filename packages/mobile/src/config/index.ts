@@ -43,6 +43,7 @@ export type AppConfigVars = {
   tonapiTestnetHost: string;
   tronapiHost: string;
   tronapiTestnetHost: string;
+  signerStoreUrl: string;
 
   batteryHost: string;
   batteryTestnetHost: string;
@@ -88,6 +89,7 @@ const defaultConfig: Partial<AppConfigVars> = {
   holdersService: 'https://card-dev.whales-api.com',
   tronapiHost: 'https://tron.tonkeeper.com',
   tronapiTestnetHost: 'https://testnet-tron.tonkeeper.com',
+  signerStoreUrl: 'https://play.google.com/store/apps/details?id=com.tonapps.signer',
 
   batteryHost: 'https://battery.tonkeeper.com',
   batteryTestnetHost: 'https://testnet-battery.tonkeeper.com',

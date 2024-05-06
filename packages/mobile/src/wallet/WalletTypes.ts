@@ -20,6 +20,8 @@ export enum WalletType {
   Regular = 'Regular',
   Lockup = 'Lockup',
   WatchOnly = 'WatchOnly',
+  Signer = 'Signer',
+  SignerDeeplink = 'SignerDeeplink',
 }
 
 export enum WalletContractVersion {

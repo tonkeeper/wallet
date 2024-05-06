@@ -74,7 +74,7 @@ export const Settings: FC = () => {
   const { lastBackupAt } = useWalletSetup();
 
   const isBatteryVisible =
-    !!wallet && !wallet.isWatchOnly && !config.get('disable_battery');
+    !!wallet && !wallet.isWatchOnly && !wallet.isSigner && !config.get('disable_battery');
 
   const searchEngine = useBrowserStore((state) => state.searchEngine);
   const setSearchEngine = useBrowserStore((state) => state.actions.setSearchEngine);
@@ -120,8 +120,24 @@ export const Settings: FC = () => {
   }, []);
 
   const handleResetWallet = useCallback(() => {
-    nav.navigate('/logout-warning');
-  }, [nav]);
+    if (wallet.isSigner) {
+      Alert.alert(t('settings_delete_signer_account'), undefined, [
+        {
+          text: t('cancel'),
+          style: 'cancel',
+        },
+        {
+          text: t('settings_delete_watch_account_button'),
+          style: 'destructive',
+          onPress: () => {
+            dispatch(walletActions.cleanWallet());
+          },
+        },
+      ]);
+    } else {
+      nav.navigate('/logout-warning');
+    }
+  }, [dispatch, nav, wallet.isSigner]);
 
   const handleStopWatchWallet = useCallback(() => {
     Alert.alert(t('settings_delete_watch_account'), undefined, [
@@ -256,7 +272,7 @@ export const Settings: FC = () => {
             </>
           ) : null}
           <List>
-            {!!wallet && !wallet.isWatchOnly && (
+            {!!wallet && !wallet.isWatchOnly && !wallet.isSigner && (
               <List.Item
                 value={
                   <Icon
@@ -480,7 +496,7 @@ export const Settings: FC = () => {
               }
               title={t('settings_rate')}
             />
-            {!!wallet && !wallet.isWatchOnly && (
+            {!!wallet && !wallet.isWatchOnly && !wallet.isSigner && (
               <List.Item
                 onPress={handleDeleteAccount}
                 value={

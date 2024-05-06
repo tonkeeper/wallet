@@ -36,6 +36,7 @@ import { BackupWarningModal, ExchangeModal, LogoutWarningModal } from '$modals';
 import { ThemeProvider, useTheme } from '@tonkeeper/uikit';
 import { BlueTheme } from '@tonkeeper/uikit/src/styles/themes/blue';
 import SystemNavigationBar from 'react-native-system-navigation-bar';
+import { SignerConfirmScreen } from '../screens';
 
 const Stack = createModalStackNavigator(ProvidersWithNavigation);
 
@@ -105,6 +106,7 @@ export const ModalStack = React.memo(() => (
         component={CustomizeWallet}
         path={AppStackRouteNames.CustomizeWallet}
       />
+      <Stack.Modal component={SignerConfirmScreen} path="/signer-confirm" />
     </Stack.Group>
     <Stack.Group behavior="fullScreenModal">
       <Stack.Modal

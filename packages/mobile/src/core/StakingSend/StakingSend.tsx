@@ -1,8 +1,5 @@
-import { NFTOperations } from '$core/ModalContainer/NFTOperations/NFTOperations';
-import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
 import { SendAmount, TokenType } from '$core/Send/Send.interface';
 import { useFiatValue } from '$hooks/useFiatValue';
-import { useInstance } from '$hooks/useInstance';
 import { usePoolInfo } from '$hooks/usePoolInfo';
 import { Ton } from '$libs/Ton';
 import { AppStackRouteNames } from '$navigation';
@@ -11,16 +8,13 @@ import { StepView, StepViewItem, StepViewRef } from '$shared/components';
 import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { Toast, useNotificationsStore } from '$store';
 import { getStakingPoolByAddress } from '@tonkeeper/shared/utils/staking';
-import { walletWalletSelector } from '$store/wallet';
 import { NavBar } from '$uikit';
 import { calculateMessageTransferAmount, delay, parseLocaleNumber } from '$utils';
-import { getTimeSec } from '$utils/getTimeSec';
 import { RouteProp } from '@react-navigation/native';
 import axios from 'axios';
 import BigNumber from 'bignumber.js';
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDerivedValue, useSharedValue } from 'react-native-reanimated';
-import { useSelector } from 'react-redux';
 import { AmountStep, ConfirmStep } from './steps';
 import { StakingSendSteps, StakingTransactionType } from './types';
 import { getStakeSignRawMessage, getWithdrawalAlertFee, getWithdrawalFee } from './utils';
@@ -39,6 +33,13 @@ import { useStakingState, useWallet } from '@tonkeeper/shared/hooks';
 import { tk } from '$wallet';
 import { Address } from '@tonkeeper/shared/Address';
 import { shallow } from 'zustand/shallow';
+import {
+  ContractService,
+  TransactionService,
+  contractVersionsMap,
+} from '@tonkeeper/core';
+import { getWalletSeqno } from '@tonkeeper/shared/utils/wallet';
+import { sendBoc } from '@tonkeeper/shared/utils/blockchain';
 
 interface Props {
   route: RouteProp<AppStackParamList, AppStackRouteNames.StakingSend>;
@@ -67,8 +68,6 @@ export const StakingSend: FC<Props> = (props) => {
   const isWithdrawal = transactionType === StakingTransactionType.WITHDRAWAL;
   const isWithdrawalConfrim =
     transactionType === StakingTransactionType.WITHDRAWAL_CONFIRM;
-
-  const unlockVault = useUnlockVault();
 
   const pool = useStakingState(
     (s) => getStakingPoolByAddress(s, poolAddress),
@@ -121,8 +120,6 @@ export const StakingSend: FC<Props> = (props) => {
 
   const wallet = useWallet();
   const walletAddress = wallet.address.ton.raw;
-  const walletLegacy = useSelector(walletWalletSelector)!;
-  const operations = useInstance(() => new NFTOperations(walletLegacy));
 
   const [amount, setAmount] = useState<SendAmount>({
     value: isWithdrawalConfrim
@@ -173,8 +170,6 @@ export const StakingSend: FC<Props> = (props) => {
 
   const hideTitle = currentStep.id === StakingSendSteps.CONFIRM;
 
-  const actionRef = useRef<Awaited<ReturnType<typeof operations.signRaw>> | null>(null);
-
   const messages = useRef<SignRawMessage[]>([]);
 
   const rawAddress = wallet.address.ton.raw ?? '';
@@ -220,19 +215,21 @@ export const StakingSend: FC<Props> = (props) => {
         poolInfo.stakingJetton,
       );
 
-      const action = await operations.signRaw(
-        {
-          source: walletAddress,
-          valid_until: getTimeSec() + 10 * 60,
-          messages: [message],
-        },
-        transactionType === StakingTransactionType.DEPOSIT && amount.all ? 128 : 3,
+      messages.current = [message];
+
+      const contract = ContractService.getWalletContract(
+        contractVersionsMap[wallet.config.version],
+        Buffer.from(wallet.pubkey, 'hex'),
+        wallet.config.workchain,
       );
 
-      messages.current = [message];
-      actionRef.current = action;
+      const signer = await wallet.signer.getSigner(true);
 
-      const boc = await action.getBoc();
+      const boc = await TransactionService.createTransfer(contract, signer, {
+        messages: TransactionService.parseSignRawMessages(messages.current),
+        seqno: await getWalletSeqno(wallet),
+      });
+
       const response = await tk.wallet.tonapi.wallet.emulateMessageToWallet({ boc });
 
       setConsequences(response);
@@ -253,11 +250,11 @@ export const StakingSend: FC<Props> = (props) => {
     }
   }, [
     amount.all,
-    operations,
     parsedAmount,
     pool,
     poolInfo.stakingJetton,
     transactionType,
+    wallet,
     walletAddress,
   ]);
 
@@ -280,7 +277,7 @@ export const StakingSend: FC<Props> = (props) => {
   }, [consequences?.event.extra, pool]);
 
   const sendTx = useCallback(async () => {
-    if (!actionRef.current) {
+    if (!messages.current) {
       return Promise.reject();
     }
     try {
@@ -347,10 +344,20 @@ export const StakingSend: FC<Props> = (props) => {
         }
       }
 
-      const vault = await unlockVault();
-      const privateKey = await vault.getTonPrivateKey();
+      const contract = ContractService.getWalletContract(
+        contractVersionsMap[wallet.config.version],
+        Buffer.from(wallet.pubkey, 'hex'),
+        wallet.config.workchain,
+      );
 
-      await actionRef.current.send(privateKey);
+      const signer = await wallet.signer.getSigner();
+
+      const boc = await TransactionService.createTransfer(contract, signer, {
+        messages: TransactionService.parseSignRawMessages(messages.current),
+        seqno: await getWalletSeqno(wallet),
+      });
+
+      await sendBoc(boc, false);
 
       const endTimestamp = pool.cycle_end * 1000;
       const isCooldown = Date.now() > endTimestamp;
@@ -375,7 +382,7 @@ export const StakingSend: FC<Props> = (props) => {
     rawAddress,
     stakingAddressToMigrateFrom,
     totalFee,
-    unlockVault,
+    wallet,
   ]);
 
   useEffect(() => {

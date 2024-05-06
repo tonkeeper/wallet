@@ -12,7 +12,7 @@ export const useDangerLevel = (inTonRaw: string): DangerLevel => {
   const { lastBackupAt } = useWalletSetup();
   const wallet = useWallet();
 
-  if (lastBackupAt !== null || wallet.isWatchOnly) {
+  if (lastBackupAt !== null || wallet.isWatchOnly || wallet.isSigner) {
     return DangerLevel.Normal;
   }
 

@@ -13,7 +13,13 @@ import {
   createTronApiInstance,
 } from '../utils';
 import { BatteryAPI } from '@tonkeeper/core/src/BatteryAPI';
-import { Storage, TronAPI } from '@tonkeeper/core';
+import {
+  ContractService,
+  Storage,
+  TronAPI,
+  WalletContract,
+  contractVersionsMap,
+} from '@tonkeeper/core';
 import { TronService } from '@tonkeeper/core/src/TronService';
 import { NamespacedLogger, logger } from '$logger';
 
@@ -31,6 +37,8 @@ export class WalletBase {
 
   protected logger: NamespacedLogger;
 
+  public contract: WalletContract;
+
   constructor(
     public config: WalletConfig,
     public tonAllAddresses: AddressesByVersion,
@@ -39,6 +47,16 @@ export class WalletBase {
     this.identifier = config.identifier;
     this.persistPath = this.identifier;
     this.pubkey = config.pubkey;
+
+    this.contract = ContractService.getWalletContract(
+      contractVersionsMap[config.version],
+      Buffer.from(this.pubkey, 'hex'),
+      config.workchain,
+      {
+        lockupPubKey: config.configPubKey,
+        allowedDestinations: config.allowedDestinations,
+      },
+    );
 
     const tonAddress = Address.parse(this.tonAllAddresses[config.version].raw, {
       bounceable: false,
@@ -78,6 +96,13 @@ export class WalletBase {
 
   public get isWatchOnly() {
     return this.config.type === WalletType.WatchOnly;
+  }
+
+  public get isSigner() {
+    return (
+      this.config.type === WalletType.Signer ||
+      this.config.type === WalletType.SignerDeeplink
+    );
   }
 
   public getLockupConfig() {

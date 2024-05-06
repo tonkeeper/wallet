@@ -11,7 +11,15 @@ import {
   SendMode,
 } from '@ton/core';
 import { Maybe } from '@ton/ton/dist/utils/maybe';
+import {
+  ExternallySingedAuthWallet4SendArgs,
+  SingedAuthWallet4SendArgs,
+} from '@ton/ton/dist/wallets/WalletContractV4';
 import { createWalletTransferV4 } from '@ton/ton/dist/wallets/signing/createWalletTransfer';
+import {
+  ExternallySingedAuthSendArgs,
+  SingedAuthSendArgs,
+} from '@ton/ton/dist/wallets/signing/singer';
 
 export class WalletContractV4R1 implements Contract {
   static create(args: {
@@ -120,6 +128,21 @@ export class WalletContractV4R1 implements Contract {
       messages: args.messages,
       timeout: args.timeout,
       walletId: this.walletId,
+    });
+  }
+
+  /**
+   * Create signed transfer
+   */
+  createTransferAndSignRequestAsync(args: ExternallySingedAuthWallet4SendArgs) {
+    let sendMode = SendMode.PAY_GAS_SEPARATELY;
+    if (args.sendMode !== null && args.sendMode !== undefined) {
+      sendMode = args.sendMode;
+    }
+    return createWalletTransferV4({
+      ...args,
+      walletId: this.walletId,
+      sendMode,
     });
   }
 

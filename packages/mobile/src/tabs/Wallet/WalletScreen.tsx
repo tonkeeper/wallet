@@ -93,7 +93,7 @@ export const WalletScreen = memo(({ navigation }) => {
         {shouldUpdate && <UpdatesCell />}
         <View style={styles.amount} pointerEvents="box-none">
           <ShowBalance
-            isWatchOnly={isWatchOnly}
+            isWatchOnly={isWatchOnly || wallet.isSigner}
             dangerLevel={balance.dangerLevel}
             amount={balance.inSelectedCurrency}
           />
@@ -131,13 +131,18 @@ export const WalletScreen = memo(({ navigation }) => {
                 <Tag type="warning">{t('watch_only')}</Tag>
               </>
             ) : null}
+            {wallet && wallet.isSigner ? (
+              <>
+                <Tag>Signer</Tag>
+              </>
+            ) : null}
           </View>
         </View>
         <WalletActionButtons />
         {wallet && !wallet.isWatchOnly && (
           <>
             <ExpiringDomainCell />
-            <FinishSetupList />
+            {!wallet.isSigner ? <FinishSetupList /> : null}
           </>
         )}
       </View>
@@ -167,7 +172,7 @@ export const WalletScreen = memo(({ navigation }) => {
             activeOpacity={0.6}
             onPress={handleNavigateToSettingsStack}
           >
-            {!isWatchOnly ? <BackupIndicator /> : null}
+            {!isWatchOnly && !wallet.isSigner ? <BackupIndicator /> : null}
             <Icon color="iconSecondary" name={'ic-gear-outline-28'} />
           </TouchableOpacity>
         }

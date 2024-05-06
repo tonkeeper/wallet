@@ -11,7 +11,6 @@ import {
 } from '@tonkeeper/uikit';
 import { memo, useCallback } from 'react';
 import { t } from '../i18n';
-import { DevFeature, useDevFeaturesToggle } from '@tonkeeper/mobile/src/store';
 import { tk } from '@tonkeeper/mobile/src/wallet';
 import { useUnlockVault } from '@tonkeeper/mobile/src/core/ModalContainer/NFTOperations/useUnlockVault';
 import { getLastEnteredPasscode } from '@tonkeeper/mobile/src/store/wallet/sagas';
@@ -20,13 +19,12 @@ import { InteractionManager } from 'react-native';
 
 interface AddWalletModalProps {
   isTonConnect?: boolean;
+  isImport?: boolean;
 }
 
-export const AddWalletModal = memo<AddWalletModalProps>(({ isTonConnect }) => {
+export const AddWalletModal = memo<AddWalletModalProps>(({ isTonConnect, isImport }) => {
   const nav = useNavigation();
   const unlockVault = useUnlockVault();
-
-  const { devFeatures } = useDevFeaturesToggle();
 
   const handleCreatePress = useCallback(async () => {
     if (tk.walletForUnlock) {
@@ -67,25 +65,29 @@ export const AddWalletModal = memo<AddWalletModalProps>(({ isTonConnect }) => {
       <Modal.Content safeArea>
         <View style={styles.caption}>
           <Text type="h2" textAlign="center">
-            {t('add_wallet_modal.title')}
+            {isImport ? t('add_wallet_modal.import_title') : t('add_wallet_modal.title')}
           </Text>
           <Spacer y={4} />
           <Text type="body1" color="textSecondary" textAlign="center">
-            {t('add_wallet_modal.subtitle')}
+            {isImport
+              ? t('add_wallet_modal.import_subtitle')
+              : t('add_wallet_modal.subtitle')}
           </Text>
         </View>
         <View style={styles.listContainer}>
-          <List>
-            <List.Item
-              onPress={handleCreatePress}
-              leftContentStyle={styles.iconContainer}
-              leftContent={<Icon name="ic-plus-circle-28" color="accentBlue" />}
-              title={t('add_wallet_modal.create.title')}
-              subtitle={t('add_wallet_modal.create.subtitle')}
-              subtitleNumberOfLines={3}
-              chevron
-            />
-          </List>
+          {!isImport ? (
+            <List>
+              <List.Item
+                onPress={handleCreatePress}
+                leftContentStyle={styles.iconContainer}
+                leftContent={<Icon name="ic-plus-circle-28" color="accentBlue" />}
+                title={t('add_wallet_modal.create.title')}
+                subtitle={t('add_wallet_modal.create.subtitle')}
+                subtitleNumberOfLines={3}
+                chevron
+              />
+            </List>
+          ) : null}
           <List>
             <List.Item
               onPress={() => {
@@ -136,6 +138,27 @@ export const AddWalletModal = memo<AddWalletModalProps>(({ isTonConnect }) => {
                 leftContent={<Icon name="ic-testnet-28" color="accentBlue" />}
                 title={t('add_wallet_modal.testnet.title')}
                 subtitle={t('add_wallet_modal.testnet.subtitle')}
+                subtitleNumberOfLines={3}
+                chevron
+              />
+            </List>
+          ) : null}
+          {!isTonConnect ? (
+            <List>
+              <List.Item
+                onPress={() => {
+                  nav.goBack();
+                  InteractionManager.runAfterInteractions(() => {
+                    nav.navigate('ImportWalletStack', {
+                      screen: 'PairSignerScreen',
+                      params: { testnet: true },
+                    });
+                  });
+                }}
+                leftContentStyle={styles.iconContainer}
+                leftContent={<Icon name="ic-globe-28" color="accentBlue" />}
+                title={t('add_wallet_modal.signer.title')}
+                subtitle={t('add_wallet_modal.signer.subtitle')}
                 subtitleNumberOfLines={3}
                 chevron
               />

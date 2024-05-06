@@ -40,6 +40,7 @@ export interface ScreenHeaderProps {
   onGoBack?: () => void;
   showCloseButton?: boolean;
   alternateBackground?: boolean;
+  trasnparent?: boolean;
 }
 
 export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
@@ -58,6 +59,7 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
     onGoBack,
     subtitle,
     alternateBackground,
+    trasnparent,
   } = props;
 
   const { scrollY, headerEjectionPoint } = useScreenScroll();
@@ -157,11 +159,12 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
           { height: headerHeight },
           styles.container,
           ejectionShiftStyle,
-          !gradient && {
-            backgroundColor: alternateBackground
-              ? theme.backgroundPageAlternate
-              : theme.backgroundPage,
-          },
+          !gradient &&
+            !trasnparent && {
+              backgroundColor: alternateBackground
+                ? theme.backgroundPageAlternate
+                : theme.backgroundPage,
+            },
           !isModal && { paddingTop: safeArea.top },
           styles.absolute,
         ]}

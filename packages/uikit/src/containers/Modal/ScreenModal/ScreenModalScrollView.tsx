@@ -1,4 +1,4 @@
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import { memo } from 'react';
 
 interface ScreenModalScrollViewProps {
@@ -6,7 +6,11 @@ interface ScreenModalScrollViewProps {
 }
 
 export const ScreenModalScrollView = memo<ScreenModalScrollViewProps>((props) => {
-  return <View style={styles.container}>{props.children}</View>;
+  return (
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      {props.children}
+    </ScrollView>
+  );
 });
 
 const styles = StyleSheet.create({

@@ -44,6 +44,7 @@ export type SendCoinsAction = PayloadAction<{
   address: string;
   comment: string;
   isCommentEncrypted?: boolean;
+  encryptedCommentPrivateKey?: Uint8Array | null;
   tokenType?: TokenType;
   jettonWalletAddress?: string;
   isSendAll?: boolean;

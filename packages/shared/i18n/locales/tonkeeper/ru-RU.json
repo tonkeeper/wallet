@@ -651,6 +651,7 @@
   "settings_reset_alert_caption_all": "Доступ к кошелькам будет отключён. Убедитесь, что вы сохранили все секретные ключи.",
   "settings_reset_alert_title_all": "\uD83D\uDEA7 \uD83D\uDEA8\uD83D\uDEA8\uD83D\uDEA8 \uD83D\uDEA7\nВыйти из всех кошельков?",
   "settings_delete_watch_account": "Удалить аккаунт для просмотра?",
+  "settings_delete_signer_account": "Удалить аккаунт?",
   "settings_delete_watch_account_button": "Удалить",
   "settings_search_engine" : "Поиск",
   "settings_security" : "Безопасность",

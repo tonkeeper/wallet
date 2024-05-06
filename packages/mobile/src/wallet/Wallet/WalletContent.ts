@@ -27,6 +27,7 @@ import { JettonVerification } from '../models/JettonBalanceModel';
 import { CardsManager } from '$wallet/managers/CardsManager';
 import { JettonQuantity } from '@tonkeeper/core/src/TonAPI';
 import { WalletContentReceiver } from '../../tabs/Wallet/content-providers/utils/receiver';
+import { SignerManager } from '$wallet/managers/SignerManager';
 
 export interface WalletStatusState {
   isReloading: boolean;
@@ -50,6 +51,7 @@ export class WalletContent extends WalletBase {
   public tonActivityList: TonActivityList;
   public jettonActivityList: JettonActivityList;
   public cards: CardsManager;
+  public signer: SignerManager;
 
   constructor(
     public config: WalletConfig,
@@ -139,6 +141,7 @@ export class WalletContent extends WalletBase {
       this.activityLoader,
       this.storage,
     );
+    this.signer = new SignerManager(tonRawAddress, this.tonapi, this.config);
   }
 
   protected async rehydrate() {

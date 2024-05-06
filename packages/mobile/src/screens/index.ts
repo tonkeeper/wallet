@@ -9,3 +9,5 @@ export * from './ChangePinBiometry';
 export * from './BackupScreen';
 export * from './BackupPhraseScreen';
 export * from './BackupCheckPhraseScreen';
+export * from './PairSignerScreen';
+export * from './SignerConfirmScreen';
