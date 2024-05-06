@@ -12,6 +12,7 @@ import {
   deviceHeight,
   isAndroid,
   isIOS,
+  useTheme,
 } from '@tonkeeper/uikit';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { Linking, Platform, StatusBar } from 'react-native';
@@ -28,6 +29,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { useFocusEffect } from '@tonkeeper/router';
 import { ScannerMask } from '$core/ScanQR/ScannerMask';
 import { t } from '@tonkeeper/shared/i18n';
+import SystemNavigationBar from 'react-native-system-navigation-bar';
 
 const SIGNER_SCHEME = 'tonsign://';
 
@@ -44,6 +46,8 @@ const CameraTheme: Theme = {
 };
 
 export const PairSignerScreen: FC = () => {
+  const theme = useTheme();
+
   const deeplinking = useDeeplinking();
 
   const scannerRef = useRef<QRCodeScanner>(null);
@@ -119,9 +123,25 @@ export const PairSignerScreen: FC = () => {
     });
   }, []);
 
+  useEffect(() => {
+    SystemNavigationBar.setNavigationColor(
+      DarkTheme.backgroundPageAlternate,
+      'light',
+      'navigation',
+    );
+
+    return () => {
+      SystemNavigationBar.setNavigationColor(
+        theme.backgroundPageAlternate,
+        theme.isDark ? 'light' : 'dark',
+        'navigation',
+      );
+    };
+  }, [theme.backgroundPageAlternate, theme.isDark]);
+
   return (
     <ThemeProvider theme={CameraTheme}>
-      {isIOS && isFocused ? <StatusBar barStyle="light-content" /> : null}
+      {isFocused ? <StatusBar barStyle="light-content" /> : null}
       <Screen>
         {isHasPermission && (
           <View style={styles.cameraContainer}>
