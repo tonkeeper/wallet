@@ -16,6 +16,8 @@ import { useUnlockVault } from '@tonkeeper/mobile/src/core/ModalContainer/NFTOpe
 import { getLastEnteredPasscode } from '@tonkeeper/mobile/src/store/wallet/sagas';
 import { config } from '@tonkeeper/mobile/src/config';
 import { InteractionManager } from 'react-native';
+import { walletActions } from '@tonkeeper/mobile/src/store/wallet';
+import { useDispatch } from 'react-redux';
 
 interface AddWalletModalProps {
   isTonConnect?: boolean;
@@ -25,6 +27,7 @@ interface AddWalletModalProps {
 export const AddWalletModal = memo<AddWalletModalProps>(({ isTonConnect, isImport }) => {
   const nav = useNavigation();
   const unlockVault = useUnlockVault();
+  const dispatch = useDispatch();
 
   const handleCreatePress = useCallback(async () => {
     if (tk.walletForUnlock) {
@@ -55,9 +58,10 @@ export const AddWalletModal = memo<AddWalletModalProps>(({ isTonConnect, isImpor
       }
     } else {
       nav.goBack();
+      dispatch(walletActions.generateVault());
       nav.navigate('CreateWalletStack');
     }
-  }, [nav]);
+  }, [nav, dispatch]);
 
   return (
     <Modal>
