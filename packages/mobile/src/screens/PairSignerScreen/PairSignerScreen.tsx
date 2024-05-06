@@ -10,6 +10,7 @@ import {
   ThemeProvider,
   View,
   deviceHeight,
+  isAndroid,
   isIOS,
 } from '@tonkeeper/uikit';
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
@@ -186,9 +187,11 @@ export const PairSignerScreen: FC = () => {
           }
           trasnparent
         />
-        <View style={styles.buttonContainer}>
-          <Button title={t('pairSigner.open_signer')} onPress={openSigner} />
-        </View>
+        {isAndroid ? (
+          <View style={styles.buttonContainer}>
+            <Button title={t('pairSigner.open_signer')} onPress={openSigner} />
+          </View>
+        ) : null}
       </Screen>
     </ThemeProvider>
   );
