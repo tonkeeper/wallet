@@ -1,6 +1,9 @@
 export const GOOGLE_PACKAGE_NAME = 'com.ton_keeper';
 export const APPLE_STORE_ID = '1587742107';
 
+export const APPLE_STORE_URL = `https://apps.apple.com/us/app/tonkeeper-ton-wallet/id${APPLE_STORE_ID}`;
+export const GOOGLE_PLAY_URL = `https://play.google.com/store/apps/details?id=${GOOGLE_PACKAGE_NAME}`;
+
 export enum CryptoCurrencies {
   Ton = 'ton',
   TonLocked = 'ton_locked',

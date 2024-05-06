@@ -21,7 +21,7 @@ export const useUpdatesStore = create(
     (set, getState) => ({
       ...initialState,
       actions: {
-        fetchMeta: async () => {
+        fetchMeta: async (shouldUnlinkApk) => {
           set({ isLoading: true });
           const oldMeta = getState().meta;
           const res = await fetch(`${config.get('tonkeeperEndpoint')}/check-for-updates`);
@@ -40,7 +40,9 @@ export const useUpdatesStore = create(
           } else {
             set({ update: { state: UpdateState.NOT_STARTED, progress: 0 } });
             try {
-              RNFS.unlink(getUpdatePath());
+              if (shouldUnlinkApk) {
+                RNFS.unlink(getUpdatePath());
+              }
             } catch (e) {}
           }
         },

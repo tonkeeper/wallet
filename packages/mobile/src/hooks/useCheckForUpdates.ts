@@ -1,28 +1,24 @@
 import { useEffect } from 'react';
 import { useUpdatesStore } from '$store/zustand/updates/useUpdatesStore';
 import { openUpdateAppModal } from '$core/ModalContainer/UpdateApp/UpdateApp';
-import { Platform } from 'react-native';
-import Config from 'react-native-config';
 import { useWallet } from '@tonkeeper/shared/hooks';
-
-const SHOULD_CHECK_FOR_UPDATES =
-  Platform.OS === 'android' && Config.CHECK_FOR_UPDATES === 'true';
+import Config from 'react-native-config';
 
 export function useCheckForUpdates() {
   const wallet = useWallet();
   const { fetchMeta } = useUpdatesStore((s) => s.actions);
   const shouldUpdate = useUpdatesStore((s) => s.shouldUpdate);
   useEffect(() => {
-    if (!wallet || !SHOULD_CHECK_FOR_UPDATES) {
+    if (!wallet) {
       return;
     }
-    fetchMeta();
-  }, [fetchMeta]);
+    fetchMeta(Config.CHECK_FOR_UPDATES === 'true');
+  }, [fetchMeta, wallet]);
 
   useEffect(() => {
     if (shouldUpdate) {
       // open update modal
-      openUpdateAppModal();
+      openUpdateAppModal(Config.CHECK_FOR_UPDATES === 'true');
     }
   }, [shouldUpdate]);
 }
