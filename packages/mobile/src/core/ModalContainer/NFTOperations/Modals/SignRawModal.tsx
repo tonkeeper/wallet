@@ -55,6 +55,7 @@ import {
 import { openAboutRiskAmountModal } from '@tonkeeper/shared/modals/AboutRiskAmountModal';
 import { toNano } from '@ton/core';
 import BigNumber from 'bignumber.js';
+import { WalletContractV4 } from '@ton/ton';
 
 interface SignRawModalProps {
   consequences?: MessageConsequences;

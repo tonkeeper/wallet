@@ -12,6 +12,7 @@ import {
 import { Address as AddressFormatter } from '../formatters/Address';
 import { OpCodes, Signer, WalletContract } from './contractService';
 import { SignRawMessage } from '@tonkeeper/mobile/src/core/ModalContainer/NFTOperations/TxRequest.types';
+import { WalletContractV4 } from '@ton/ton';
 
 export type AnyAddress = string | Address | AddressFormatter;
 
