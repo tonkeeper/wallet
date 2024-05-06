@@ -143,7 +143,7 @@ export const AddWalletModal = memo<AddWalletModalProps>(({ isTonConnect, isImpor
               />
             </List>
           ) : null}
-          {!isTonConnect ? (
+          {!isTonConnect && !config.get('disable_signer') ? (
             <List>
               <List.Item
                 onPress={() => {
