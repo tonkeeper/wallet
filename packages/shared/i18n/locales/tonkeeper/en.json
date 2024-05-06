@@ -1126,7 +1126,7 @@
       "subtitle": "Import wallet with a 24 secret recovery words to Testnet"
     },
     "signer": {
-      "title": "Pair Signer",
+      "title": "Pair with Signer",
       "subtitle": "A higher level of control and security"
     }
   },
