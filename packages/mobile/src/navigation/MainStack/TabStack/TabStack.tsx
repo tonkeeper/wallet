@@ -80,7 +80,7 @@ export const TabStack: FC = () => {
             <View
               style={[
                 styles.tabBarSplashBackground,
-                { backgroundColor: theme.colors.backgroundPrimary },
+                { backgroundColor: theme.colors.backgroundPageAlternate },
               ]}
             />
           ) : (

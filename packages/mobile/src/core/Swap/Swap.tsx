@@ -3,9 +3,7 @@ import { StonfiInjectedObject } from './types';
 import { openSignRawModal } from '$core/ModalContainer/NFTOperations/Modals/SignRawModal';
 import { getTimeSec } from '$utils/getTimeSec';
 import { useNavigation } from '@tonkeeper/router';
-import * as S from './Swap.style';
-import { Icon } from '$uikit';
-import { getCorrectUrl, getDomainFromURL } from '$utils';
+import { getCorrectUrl, getDomainFromURL, isAndroid } from '$utils';
 import { logEvent } from '@amplitude/analytics-browser';
 import { checkIsTimeSynced } from '$navigation/hooks/useDeeplinkingResolvers';
 import { useWebViewBridge } from '$hooks/jsBridge';
@@ -13,10 +11,13 @@ import { useWallet } from '@tonkeeper/shared/hooks';
 import { config } from '$config';
 import { tk } from '$wallet';
 import { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
-import { Linking } from 'react-native';
+import { Linking, StatusBar } from 'react-native';
 import { useDeeplinking } from '$libs/deeplinking';
 import DeviceInfo from 'react-native-device-info';
 import { BatterySupportedTransaction } from '$wallet/managers/BatteryManager';
+import { Icon, Modal, Steezy, TouchableOpacity, View } from '@tonkeeper/uikit';
+import { Opacity } from '$shared/constants';
+import WebView from 'react-native-webview';
 
 interface Props {
   jettonAddress?: string;
@@ -147,37 +148,74 @@ export const Swap: FC<Props> = (props) => {
     [deeplinking, openUrl],
   );
 
+  const webViewStyle = Steezy.useStyle(styles.webView);
+
   return (
-    <S.Container>
-      <S.Browser
-        ref={ref}
-        injectedJavaScriptBeforeContentLoaded={injectedJavaScriptBeforeContentLoaded}
-        onMessage={onMessage}
-        javaScriptEnabled
-        domStorageEnabled
-        source={webViewSource}
-        onLoadEnd={handleLoadEnd}
-        startInLoadingState={true}
-        originWhitelist={[`https://${getDomainFromURL(baseUrl)}`, 'ton://*']}
-        decelerationRate="normal"
-        javaScriptCanOpenWindowsAutomatically
-        mixedContentMode="always"
-        hideKeyboardAccessoryView
-        thirdPartyCookiesEnabled={true}
-        keyboardDisplayRequiresUserAction={false}
-        mediaPlaybackRequiresUserAction={false}
-        onShouldStartLoadWithRequest={handleOpenExternalLink}
-        webviewDebuggingEnabled={config.get('devmode_enabled')}
-      />
-      {overlayVisible ? (
-        <S.Overlay>
-          <S.BackButtonContainer onPress={nav.goBack}>
-            <S.BackButton>
-              <Icon name="ic-close-16" color="foregroundPrimary" />
-            </S.BackButton>
-          </S.BackButtonContainer>
-        </S.Overlay>
-      ) : null}
-    </S.Container>
+    <Modal>
+      <StatusBar barStyle="light-content" />
+      <View style={styles.container}>
+        <WebView
+          style={webViewStyle}
+          ref={ref}
+          injectedJavaScriptBeforeContentLoaded={injectedJavaScriptBeforeContentLoaded}
+          onMessage={onMessage}
+          javaScriptEnabled
+          domStorageEnabled
+          source={webViewSource}
+          onLoadEnd={handleLoadEnd}
+          startInLoadingState={true}
+          originWhitelist={[`https://${getDomainFromURL(baseUrl)}`, 'ton://*']}
+          decelerationRate="normal"
+          javaScriptCanOpenWindowsAutomatically
+          mixedContentMode="always"
+          hideKeyboardAccessoryView
+          thirdPartyCookiesEnabled={true}
+          keyboardDisplayRequiresUserAction={false}
+          mediaPlaybackRequiresUserAction={false}
+          onShouldStartLoadWithRequest={handleOpenExternalLink}
+          webviewDebuggingEnabled={config.get('devmode_enabled')}
+        />
+        {overlayVisible ? (
+          <View style={styles.overlay}>
+            <TouchableOpacity activeOpacity={Opacity.ForSmall} onPress={nav.goBack}>
+              <View style={styles.backButton}>
+                <Icon name="ic-close-16" color="buttonSecondaryForeground" />
+              </View>
+            </TouchableOpacity>
+          </View>
+        ) : null}
+      </View>
+    </Modal>
   );
 };
+
+const styles = Steezy.create(({ colors, safeArea }) => ({
+  container: {
+    flex: 1,
+    paddingTop: isAndroid ? safeArea.top : 0,
+    backgroundColor: colors.backgroundPage,
+  },
+  webView: {
+    flex: 1,
+    backgroundColor: colors.backgroundPage,
+  },
+  overlay: {
+    position: 'absolute',
+    top: isAndroid ? safeArea.top : 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    paddingVertical: 19.5,
+    paddingHorizontal: 16,
+    alignItems: 'flex-end',
+    backgroundColor: colors.backgroundPage,
+  },
+  backButton: {
+    backgroundColor: colors.buttonSecondaryBackground,
+    height: 32,
+    width: 32,
+    borderRadius: 32 / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+}));

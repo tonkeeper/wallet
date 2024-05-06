@@ -1,10 +1,8 @@
 import React, { memo } from 'react';
-import { Screen, View, List, ListSeparator } from '@tonkeeper/uikit';
+import { Screen, View, List, ListSeparator, RefreshControl } from '@tonkeeper/uikit';
 import { Steezy } from '$styles';
-import { RefreshControl } from 'react-native';
 import { ListItemRate } from './ListItemRate';
 import { TonIcon } from '@tonkeeper/uikit';
-import { useTheme } from '$hooks/useTheme';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { Text } from '@tonkeeper/uikit';
 import { CellItemToRender } from '../content-providers/utils/types';
@@ -110,8 +108,6 @@ function ItemSeparatorComponent() {
 }
 
 export const WalletContentList = memo<WalletContentListProps>((props) => {
-  const theme = useTheme();
-
   return (
     <Screen.FlashList
       ItemSeparatorComponent={ItemSeparatorComponent}
@@ -123,8 +119,6 @@ export const WalletContentList = memo<WalletContentListProps>((props) => {
         <RefreshControl
           onRefresh={props.handleRefresh}
           refreshing={props.isRefreshing && props.isFocused}
-          tintColor={theme.colors.iconPrimary}
-          progressBackgroundColor={theme.colors.foregroundPrimary}
         />
       }
     />

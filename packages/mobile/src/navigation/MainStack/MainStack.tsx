@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { MainStackParamList } from './MainStack.interface';
@@ -42,6 +42,7 @@ import { tk } from '$wallet';
 import { MigrationStack } from '$navigation/MigrationStack';
 import { useTonPriceUpdater } from '$hooks/useTonPriceUpdater';
 import { SettingsStack } from '$navigation/SettingsStack/SettingsStack';
+import SystemNavigationBar from 'react-native-system-navigation-bar';
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
 
@@ -73,6 +74,14 @@ export const MainStack: FC = () => {
     !attachedScreen.pathname;
 
   const isMigrated = useExternalState(tk.migrationStore, (state) => state.isMigrated);
+
+  useEffect(() => {
+    SystemNavigationBar.setNavigationColor(
+      theme.colors.backgroundPageAlternate,
+      theme.isDark ? 'light' : 'dark',
+      'navigation',
+    );
+  }, [theme.colors.backgroundPageAlternate, theme.isDark]);
 
   const renderRoot = () => {
     if (hasWallet) {
