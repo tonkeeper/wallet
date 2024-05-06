@@ -9,26 +9,30 @@ import {
   deviceWidth,
   ns,
 } from '@tonkeeper/uikit';
-import { useCallback, useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { tk } from '$wallet';
-import QRCode from 'react-native-qrcode-styled';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { DeeplinkOrigin, useDeeplinking } from '$libs/deeplinking';
 import { useParams } from '@tonkeeper/router/src/imperative';
 import { t } from '@tonkeeper/shared/i18n';
-import { LayoutChangeEvent } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { ScannerMask } from '$core/ScanQR/ScannerMask';
 import { delay } from '@tonkeeper/core';
+import { QR_WRAP_STYLE, QrCodeView } from './QrCodeView';
+import Animated, {
+  useSharedValue,
+  withDelay,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated';
 
-const QR_SIZE = deviceWidth - ns(16) * 2 - ns(24) * 2;
-
-const QR_WRAP_STYLE: ViewStyle = {
-  width: QR_SIZE,
-  height: QR_SIZE,
-  alignItems: 'center',
-  justifyContent: 'center',
-};
+function getChunks(input: string, chunkSize: number): string[] {
+  const chunks: string[] = [];
+  for (let i = 0; i < input.length; i += chunkSize) {
+    chunks.push(input.substring(i, i + chunkSize));
+  }
+  return chunks;
+}
 
 const SCANNER_SIZE = deviceWidth - ns(16) * 2;
 
@@ -50,18 +54,9 @@ export const SignerConfirmScreen = () => {
 
   const deeplinking = useDeeplinking();
 
-  const qrCodeScale = useSharedValue(1);
+  const chunks = useMemo(() => getChunks(deeplink, 256), [deeplink]);
 
-  const handleQrCodeLayout = useCallback(
-    (e: LayoutChangeEvent) => {
-      qrCodeScale.value = QR_SIZE / e.nativeEvent.layout.width;
-    },
-    [qrCodeScale],
-  );
-
-  const qrStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: qrCodeScale.value }],
-  }));
+  const currentChunkIndex = useSharedValue(0);
 
   useEffect(() => {
     return () => {
@@ -90,6 +85,17 @@ export const SignerConfirmScreen = () => {
     }
   };
 
+  useEffect(() => {
+    if (chunks.length > 0) {
+      currentChunkIndex.value = withRepeat(
+        withSequence(
+          ...chunks.map((_, index) => withDelay(100, withTiming(index, { duration: 0 }))),
+        ),
+        -1,
+      );
+    }
+  }, [chunks, currentChunkIndex]);
+
   return (
     <Modal>
       <Modal.Header title={t('signerConfirm.title')} titlePosition="left" />
@@ -104,9 +110,15 @@ export const SignerConfirmScreen = () => {
           <Spacer y={16} />
           <View style={styles.qrCodeContainer}>
             <View style={QR_WRAP_STYLE}>
-              <Animated.View style={qrStyle}>
-                <QRCode data={deeplink} onLayout={handleQrCodeLayout} pieceSize={8} />
-              </Animated.View>
+              {chunks.map((chunk, index) => (
+                <Animated.View style={styles.qrChunk.static} key={chunk}>
+                  <QrCodeView
+                    index={index}
+                    data={chunk}
+                    currentChunkIndex={currentChunkIndex}
+                  />
+                </Animated.View>
+              ))}
             </View>
           </View>
           <Spacer y={16} />
@@ -157,6 +169,11 @@ const styles = Steezy.create(({ colors, corners, safeArea }) => ({
     borderRadius: corners.medium,
     paddingVertical: 24,
     alignItems: 'center',
+  },
+  qrChunk: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
   },
   cameraContainer: {
     backgroundColor: colors.constantBlack,
