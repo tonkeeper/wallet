@@ -20,7 +20,6 @@ import { InternalNotificationModel } from '$store/models';
 
 import { initStats, trackEvent, trackFirstLaunch } from '$utils/stats';
 import { favoritesActions } from '$store/favorites';
-import { useSwapStore } from '$store/zustand/swap';
 import { tk } from '$wallet';
 import { config } from '$config';
 
@@ -53,10 +52,6 @@ export function* initHandler() {
 
   const logs = yield call(getSavedLogs);
   yield put(mainActions.setLogs(logs));
-
-  if (tk.wallet) {
-    useSwapStore.getState().actions.fetchAssets();
-  }
 
   yield put(mainActions.loadNotifications());
 
