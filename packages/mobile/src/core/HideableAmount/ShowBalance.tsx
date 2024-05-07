@@ -90,7 +90,7 @@ const styles = Steezy.create(({ colors }) => ({
   },
   starsContainer: {
     height: 40,
-    backgroundColor: colors.backgroundSecondary,
+    backgroundColor: colors.buttonSecondaryBackground,
     borderRadius: 100,
   },
   touchable: {
