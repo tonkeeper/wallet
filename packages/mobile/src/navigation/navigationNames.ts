@@ -13,6 +13,7 @@ export enum AppStackRouteNames {
   ScanQR = 'ScanQR',
   RequireWalletModal = 'RequireWalletModal',
   NFTSend = 'NFTSend',
+  BatterySend = 'BatterySend',
   Subscription = 'Subscription',
   BuyFiat = 'BuyFiat',
   ModalContainer = 'ModalContainer',

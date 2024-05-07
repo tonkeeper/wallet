@@ -34,6 +34,8 @@ interface Props {
   fiatRate: number;
   hideSwap?: boolean;
   withCoinSelector?: boolean;
+  customCurrency?: string;
+  fiatDecimals?: number;
   disabled?: boolean;
   setAmount: React.Dispatch<React.SetStateAction<SendAmount>>;
 }
@@ -49,6 +51,8 @@ const AmountInputComponent: React.FC<Props> = (props) => {
     minAmount,
     hideSwap = false,
     withCoinSelector = false,
+    customCurrency,
+    fiatDecimals = 2,
     disabled,
     setAmount,
   } = props;
@@ -57,7 +61,9 @@ const AmountInputComponent: React.FC<Props> = (props) => {
 
   const textInputRef = useRef<TextInput | null>(null);
 
-  const fiatCurrency = useWalletCurrency();
+  const walletCurrency = useWalletCurrency();
+  const fiatCurrency = customCurrency ?? walletCurrency;
+
   const wallet = useWallet();
 
   const isLockup = !!wallet?.isLockup;
@@ -109,10 +115,10 @@ const AmountInputComponent: React.FC<Props> = (props) => {
 
     const secondaryValue = isFiat
       ? fiatToCrypto(value, fiatRate, 2, true)
-      : cryptoToFiat(value, fiatRate, 2, true);
+      : cryptoToFiat(value, fiatRate, fiatDecimals, true);
 
     return secondaryValue === '0' ? `0${decimalSeparator}00` : secondaryValue;
-  }, [amount.all, balance, fiatRate, isFiat, value]);
+  }, [amount.all, balance, fiatDecimals, fiatRate, isFiat, value]);
 
   const mainCurrencyCode = isFiat ? fiatCurrency.toUpperCase() : currencyTitle;
   const secondaryCurrencyCode = isFiat ? currencyTitle : fiatCurrency.toUpperCase();
@@ -204,7 +210,9 @@ const AmountInputComponent: React.FC<Props> = (props) => {
       return;
     }
 
-    const nextValue = isFiat ? cryptoToFiat(amount.value, fiatRate, 2) : amount.value;
+    const nextValue = isFiat
+      ? cryptoToFiat(amount.value, fiatRate, fiatDecimals)
+      : amount.value;
 
     setValue(nextValue);
 

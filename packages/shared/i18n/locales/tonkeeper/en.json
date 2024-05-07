@@ -164,6 +164,13 @@
         "other": "%{count} charges"
       }
     },
+    "other_ways": {
+      "title": "Recharge",
+      "button": {
+        "title": "Recharge Battery",
+        "subtitle": "using TON, jUSDT, or promo code"
+      }
+    },
     "promocode": {
       "button": "Recharge by Promo Code",
       "title": "Promo Code",

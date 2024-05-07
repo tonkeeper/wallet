@@ -147,7 +147,7 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
 
   const isBackButtonRight = backButtonPosition === 'right';
   const rightContentSlot = isBackButtonRight ? backButtonSlot : rightContent;
-  const headerHeight = ScreenHeaderHeight + safeArea.top;
+  const headerHeight = isModal ? ScreenHeaderHeight : ScreenHeaderHeight + safeArea.top;
 
   return (
     <React.Fragment>

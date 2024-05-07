@@ -36,6 +36,8 @@ import { BackupWarningModal, ExchangeModal, LogoutWarningModal } from '$modals';
 import { ThemeProvider, useTheme } from '@tonkeeper/uikit';
 import { BlueTheme } from '@tonkeeper/uikit/src/styles/themes/blue';
 import SystemNavigationBar from 'react-native-system-navigation-bar';
+import { RechargeByPromoModal } from '@tonkeeper/shared/modals/ActivityActionModal/RechargeByPromoModal';
+import { BatterySend } from '$core/BatterySend';
 
 const Stack = createModalStackNavigator(ProvidersWithNavigation);
 
@@ -80,6 +82,7 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={RefillBatteryModal} path="/refill-battery" />
       <Stack.Modal component={BackupWarningModal} path="/backup-warning" />
       <Stack.Modal component={LogoutWarningModal} path="/logout-warning" />
+      <Stack.Modal component={RechargeByPromoModal} path="/recharge-by-promo" />
     </Stack.Group>
     <Stack.Group behavior="modal">
       <Stack.Modal component={ReceiveModal} path="ReceiveModal" />
@@ -99,6 +102,7 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={ChooseCountry} path={AppStackRouteNames.ChooseCountry} />
       <Stack.Modal component={StakingSend} path={AppStackRouteNames.StakingSend} />
       <Stack.Modal component={NFTSend} path={AppStackRouteNames.NFTSend} />
+      <Stack.Modal component={BatterySend} path={AppStackRouteNames.BatterySend} />
       <Stack.Modal component={ScanQR} path={AppStackRouteNames.ScanQR} />
       <Stack.Modal component={SwapWithTheme} path={AppStackRouteNames.Swap} />
       <Stack.Modal

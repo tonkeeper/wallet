@@ -16,12 +16,19 @@ import { ns } from '../utils';
 import { IconNames, Icon, IconColors } from './Icon';
 
 export type ButtonColors = 'green' | 'primary' | 'secondary' | 'tertiary';
-export type ButtonSizes = 'large' | 'medium' | 'small' | 'header' | 'icon';
+export type ButtonSizes =
+  | 'large'
+  | 'medium'
+  | 'small'
+  | 'header'
+  | 'icon'
+  | 'withSubtitle';
 
 export interface ButtonProps {
   size?: ButtonSizes;
   color?: ButtonColors;
   title?: string;
+  subtitle?: string;
   children?: React.ReactNode;
   leftContent?: React.ReactNode;
   onPress?: () => void;
@@ -41,6 +48,7 @@ export const Button = memo<ButtonProps>((props) => {
     size = 'large',
     color = 'primary',
     title,
+    subtitle,
     onPress,
     disabled,
     loading,
@@ -68,7 +76,8 @@ export const Button = memo<ButtonProps>((props) => {
 
   const containerStyle = useMemo(() => {
     const indentTopStyle = getIndentTopStyle(indentTop);
-    const stretchStyle = !stretch && size !== 'large' && styles.fitByContent;
+    const stretchStyle =
+      !stretch && !['large', 'withSubtitle'].includes(size) && styles.fitByContent;
     const indentBottomStyle = indentBottom && styles.indentBottom;
 
     return [indentTopStyle, indent && styles.indent, stretchStyle, indentBottomStyle];
@@ -113,19 +122,26 @@ export const Button = memo<ButtonProps>((props) => {
           <View style={styles.content}>
             {!!leftContent && <View style={styles.leftContent}>{leftContent}</View>}
             {size !== 'icon' ? (
-              <Text
-                numberOfLines={1}
-                ellipsizeMode="tail"
-                style={titleStyle}
-                type={textType}
-                color={
+              <View style={styles.textContainer}>
+                <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  style={titleStyle}
+                  type={textType}
+                  color={
                   ['primary', 'green'].includes(color)
                     ? 'buttonPrimaryForeground'
                     : 'textPrimary'
                 }
-              >
-                {title}
-              </Text>
+                >
+                  {title}
+                </Text>
+                {subtitle ? (
+                  <Text color="textSecondary" type={'body2'}>
+                    {subtitle}
+                  </Text>
+                ) : null}
+              </View>
             ) : null}
           </View>
         )}
@@ -144,6 +160,13 @@ export const Button = memo<ButtonProps>((props) => {
 });
 
 const styles = StyleSheet.create({
+  buttonWithSubtitle: {
+    height: ns(68),
+    paddingHorizontal: ns(24),
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: ns(16),
+  },
   buttonLarge: {
     height: ns(56),
     paddingHorizontal: ns(24),
@@ -214,9 +237,13 @@ const styles = StyleSheet.create({
   leftContent: {
     marginRight: 8,
   },
+  textContainer: {
+    alignItems: 'center',
+  },
 });
 
 const buttonStyleBySize: { [key in ButtonSizes]: ViewStyle } = {
+  withSubtitle: styles.buttonWithSubtitle,
   large: styles.buttonLarge,
   medium: styles.buttonMedium,
   small: styles.buttonSmall,
@@ -225,6 +252,7 @@ const buttonStyleBySize: { [key in ButtonSizes]: ViewStyle } = {
 };
 
 const textTypesBySize: { [key in ButtonSizes]: TTextTypes } = {
+  withSubtitle: 'label1',
   large: 'label1',
   medium: 'label1',
   small: 'label2',
