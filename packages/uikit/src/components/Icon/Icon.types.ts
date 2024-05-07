@@ -31,6 +31,7 @@ export type IconNames =
   | 'ic-doc-16'
   | 'ic-done-16'
   | 'ic-done-bold-16'
+  | 'ic-dot-16'
   | 'ic-ellipsis-16'
   | 'ic-getgems-16'
   | 'ic-globe-16'
@@ -225,6 +226,7 @@ export const AllIcons = [
   'ic-doc-16',
   'ic-done-16',
   'ic-done-bold-16',
+  'ic-dot-16',
   'ic-ellipsis-16',
   'ic-getgems-16',
   'ic-globe-16',
@@ -420,6 +422,7 @@ export const IconSizes = {
   'ic-doc-16': 16,
   'ic-done-16': 16,
   'ic-done-bold-16': 16,
+  'ic-dot-16': 16,
   'ic-ellipsis-16': 16,
   'ic-getgems-16': 16,
   'ic-globe-16': 16,

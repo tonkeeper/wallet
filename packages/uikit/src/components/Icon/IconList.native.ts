@@ -31,6 +31,7 @@ export const IconList = {
   'ic-doc-16': require('../../../assets/icons/png/ic-doc-16.png'),
   'ic-done-16': require('../../../assets/icons/png/ic-done-16.png'),
   'ic-done-bold-16': require('../../../assets/icons/png/ic-done-bold-16.png'),
+  'ic-dot-16': require('../../../assets/icons/png/ic-dot-16.png'),
   'ic-ellipsis-16': require('../../../assets/icons/png/ic-ellipsis-16.png'),
   'ic-getgems-16': require('../../../assets/icons/png/ic-getgems-16.png'),
   'ic-globe-16': require('../../../assets/icons/png/ic-globe-16.png'),

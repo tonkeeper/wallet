@@ -79,6 +79,17 @@ export const DevConfigScreen = memo(() => {
               />
             }
           />
+          <List.Item
+            title="Enable Ledger"
+            onPress={handleBooleanSwitch('disable_ledger')}
+            rightContent={
+              <Switch
+                trackColor={{ true: theme.accentBlue }}
+                value={!config.get('disable_ledger')}
+                onChange={handleBooleanSwitch('disable_ledger')}
+              />
+            }
+          />
         </List>
       </Screen.ScrollView>
     </Screen>
