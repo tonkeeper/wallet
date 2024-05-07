@@ -84,7 +84,7 @@ export const AddWalletModal = memo<AddWalletModalProps>(({ isTonConnect, isImpor
               <List.Item
                 onPress={handleCreatePress}
                 leftContentStyle={styles.iconContainer}
-                leftContent={<Icon name="ic-plus-circle-28" color="accentBlue" />}
+                leftContent={<Icon name="ic-plus-outline-28" color="accentBlue" />}
                 title={t('add_wallet_modal.create.title')}
                 subtitle={t('add_wallet_modal.create.subtitle')}
                 subtitleNumberOfLines={3}
@@ -101,7 +101,7 @@ export const AddWalletModal = memo<AddWalletModalProps>(({ isTonConnect, isImpor
                 });
               }}
               leftContentStyle={styles.iconContainer}
-              leftContent={<Icon name="ic-key-28" color="accentBlue" />}
+              leftContent={<Icon name="ic-import-wallet-outline-28" color="accentBlue" />}
               title={t('add_wallet_modal.import.title')}
               subtitle={t('add_wallet_modal.import.subtitle')}
               subtitleNumberOfLines={3}
@@ -118,7 +118,9 @@ export const AddWalletModal = memo<AddWalletModalProps>(({ isTonConnect, isImpor
                   });
                 }}
                 leftContentStyle={styles.iconContainer}
-                leftContent={<Icon name="ic-magnifying-glass-28" color="accentBlue" />}
+                leftContent={
+                  <Icon name="ic-magnifying-glass-outline-28" color="accentBlue" />
+                }
                 title={t('add_wallet_modal.watch_only.title')}
                 subtitle={t('add_wallet_modal.watch_only.subtitle')}
                 subtitleNumberOfLines={3}
@@ -139,7 +141,7 @@ export const AddWalletModal = memo<AddWalletModalProps>(({ isTonConnect, isImpor
                   });
                 }}
                 leftContentStyle={styles.iconContainer}
-                leftContent={<Icon name="ic-testnet-28" color="accentBlue" />}
+                leftContent={<Icon name="ic-testnet-outline-28" color="accentBlue" />}
                 title={t('add_wallet_modal.testnet.title')}
                 subtitle={t('add_wallet_modal.testnet.subtitle')}
                 subtitleNumberOfLines={3}
@@ -160,7 +162,7 @@ export const AddWalletModal = memo<AddWalletModalProps>(({ isTonConnect, isImpor
                   });
                 }}
                 leftContentStyle={styles.iconContainer}
-                leftContent={<Icon name="ic-globe-28" color="accentBlue" />}
+                leftContent={<Icon name="ic-globe-outline-28" color="accentBlue" />}
                 title={t('add_wallet_modal.signer.title')}
                 subtitle={t('add_wallet_modal.signer.subtitle')}
                 subtitleNumberOfLines={3}
