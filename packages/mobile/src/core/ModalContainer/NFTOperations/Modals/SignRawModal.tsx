@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useMemo } from 'react';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
-import { SignRawParams, TxBodyOptions } from '../TXRequest.types';
+import { SignRawMessage, SignRawParams, TxBodyOptions } from '../TXRequest.types';
 import { useUnlockVault } from '../useUnlockVault';
 import { calculateMessageTransferAmount, delay } from '$utils';
 import { debugLog } from '$utils/debugLog';
@@ -352,6 +352,10 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
   );
 });
 
+function isValidMessage(message: SignRawMessage): boolean {
+  return Address.isValid(message.address) && new BigNumber(message.amount).gt('0');
+}
+
 export const openSignRawModal = async (
   params: SignRawParams,
   options: TxBodyOptions,
@@ -369,6 +373,10 @@ export const openSignRawModal = async (
 
   try {
     Toast.loading();
+
+    if (!params.messages.every((mes) => isValidMessage(mes))) {
+      throw new Error('Invalid message');
+    }
 
     if (isTonConnect) {
       await TonConnectRemoteBridge.closeOtherTransactions();
