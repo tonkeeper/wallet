@@ -3,6 +3,7 @@ import { tk } from '@tonkeeper/mobile/src/wallet';
 import { ContentType, ServiceStatus } from '@tonkeeper/core/src/TonAPI';
 import { TransactionService } from '@tonkeeper/core';
 import { t } from '../i18n';
+import { Alert } from 'react-native';
 
 export class NetworkOverloadedError extends Error {}
 
@@ -67,10 +68,20 @@ export async function emulateBoc(
   }
 }
 
-export async function getTimeoutFromLiteserverSafely() {
+export async function getRawTimeFromLiteserverSafely(): Promise<number> {
   try {
-    return (await tk.wallet.tonapi.liteserver.getRawTime()).time + TransactionService.TTL;
-  } catch {
-    return TransactionService.getTimeout();
+    const res = await tk.wallet.tonapi.liteserver.getRawTime({
+      headers: {
+        'Cache-Control': 'no-cache',
+      },
+      cache: 'no-cache',
+    });
+    return res.time;
+  } catch (e) {
+    return Math.floor(Date.now() / 1e3);
   }
+}
+
+export async function getTimeoutFromLiteserverSafely() {
+  return (await getRawTimeFromLiteserverSafely()) + TransactionService.TTL;
 }
