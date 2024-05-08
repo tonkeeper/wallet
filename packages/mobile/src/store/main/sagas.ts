@@ -11,7 +11,6 @@ import {
   getHiddenNotifications,
   getSavedLogs,
   hideNotification,
-  MainDB,
   setSavedLogs,
 } from '$database';
 import { HideNotificationAction } from '$store/main/interface';
@@ -34,8 +33,6 @@ function* initWorker() {
 }
 
 export function* initHandler() {
-  const timeSyncedDismissed = yield call(MainDB.timeSyncedDismissedTimestamp);
-
   initStats();
 
   trackFirstLaunch();
@@ -43,12 +40,7 @@ export function* initHandler() {
 
   yield call([tk, 'init']);
 
-  yield put(
-    batchActions(
-      mainActions.endInitiating(),
-      mainActions.setTimeSyncedDismissed(timeSyncedDismissed),
-    ),
-  );
+  yield put(batchActions(mainActions.endInitiating()));
 
   const logs = yield call(getSavedLogs);
   yield put(mainActions.setLogs(logs));
@@ -56,7 +48,6 @@ export function* initHandler() {
   yield put(mainActions.loadNotifications());
 
   yield put(favoritesActions.loadSuggests());
-  yield put(mainActions.getTimeSynced());
   SplashScreen.hideAsync();
 }
 
@@ -94,27 +85,6 @@ function* hideNotificationWorker(action: HideNotificationAction) {
   } catch (e) {}
 }
 
-function* getTimeSyncedWorker() {
-  try {
-    const endpoint = `${config.get('tonapiV2Endpoint')}/v2/liteserver/get_time`;
-
-    const response = yield call(axios.get, endpoint, {
-      headers: { Authorization: `Bearer ${config.get('tonApiV2Key')}` },
-    });
-    const time = response?.data?.time;
-    const isSynced = Math.abs(Date.now() - time * 1000) <= 7000;
-
-    if (isSynced) {
-      yield call(MainDB.setTimeSyncedDismissed, false);
-      yield put(mainActions.setTimeSyncedDismissed(false));
-    }
-
-    yield put(mainActions.setTimeSynced(isSynced));
-  } catch (e) {
-    console.log(e);
-  }
-}
-
 function* addLogWorker() {
   try {
     const { logs } = yield select(mainSelector);
@@ -125,7 +95,6 @@ function* addLogWorker() {
 export function* mainSaga() {
   yield all([
     takeLatest(mainActions.init, initWorker),
-    takeLatest(mainActions.getTimeSynced, getTimeSyncedWorker),
     takeLatest(mainActions.loadNotifications, loadNotificationsWorker),
     takeLatest(mainActions.hideNotification, hideNotificationWorker),
     takeLatest(mainActions.addLog, addLogWorker),

@@ -30,6 +30,7 @@ import {
   NetworkOverloadedError,
   emulateBoc,
   sendBoc,
+  getTimeoutFromLiteserverSafely,
 } from '@tonkeeper/shared/utils/blockchain';
 import { OperationEnum, TonAPI, TypeEnum } from '@tonkeeper/core/src/TonAPI';
 import { setBalanceForEmulation } from '@tonkeeper/shared/utils/wallet';
@@ -45,6 +46,7 @@ const TonWeb = require('tonweb');
 export const inscriptionTransferAmount = '0.05';
 
 interface JettonTransferParams {
+  timeout?: number;
   seqno: number;
   jettonWalletAddress: string;
   recipient: Account;
@@ -358,6 +360,7 @@ export class TonWallet {
   }
 
   createJettonTransfer({
+    timeout,
     seqno,
     jettonWalletAddress,
     recipient,
@@ -382,6 +385,7 @@ export class TonWallet {
     const jettonAmount = BigInt(amountNano);
 
     return TransactionService.createTransfer(contract, {
+      timeout,
       seqno,
       secretKey,
       messages: [
@@ -417,7 +421,10 @@ export class TonWallet {
       throw new Error(t('send_get_wallet_info_error'));
     }
 
+    const timeout = await getTimeoutFromLiteserverSafely();
+
     const boc = this.createJettonTransfer({
+      timeout,
       seqno,
       jettonWalletAddress,
       recipient,
@@ -534,9 +541,6 @@ export class TonWallet {
       if (e instanceof NetworkOverloadedError) {
         throw e;
       }
-      if (!store.getState().main.isTimeSynced) {
-        throw new Error('wrong_time');
-      }
       throw new Error(t('send_publish_tx_error'));
     }
 
@@ -568,7 +572,11 @@ export class TonWallet {
         allowedDestinations: lockupConfig?.allowed_destinations,
       },
     );
+
+    const timeout = await getTimeoutFromLiteserverSafely();
+
     return TransactionService.createTransfer(contract, {
+      timeout,
       seqno,
       secretKey,
       sendMode,
@@ -746,9 +754,6 @@ export class TonWallet {
     } catch (e) {
       if (e instanceof NetworkOverloadedError) {
         throw e;
-      }
-      if (!store.getState().main.isTimeSynced) {
-        throw new Error('wrong_time');
       }
       throw new Error(t('send_publish_tx_error'));
     }

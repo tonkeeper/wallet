@@ -12,11 +12,13 @@ import {
 import { Address as AddressFormatter } from '../formatters/Address';
 import { OpCodes, WalletContract } from './contractService';
 import { SignRawMessage } from '@tonkeeper/mobile/src/core/ModalContainer/NFTOperations/TxRequest.types';
+import { tk } from '@tonkeeper/mobile/src/wallet';
 
 export type AnyAddress = string | Address | AddressFormatter;
 
 export interface TransferParams {
   seqno: number;
+  timeout?: number;
   sendMode?: number;
   secretKey: Buffer;
   messages: MessageRelaxed[];
@@ -35,7 +37,7 @@ export function tonAddress(address: AnyAddress) {
 export class TransactionService {
   public static TTL = 5 * 60;
 
-  private static getTimeout() {
+  public static getTimeout() {
     return Math.floor(Date.now() / 1e3) + TransactionService.TTL;
   }
 
@@ -163,7 +165,7 @@ export class TransactionService {
 
   static createTransfer(contract, transferParams: TransferParams) {
     const transfer = contract.createTransfer({
-      timeout: TransactionService.getTimeout(),
+      timeout: transferParams.timeout ?? TransactionService.getTimeout(),
       seqno: transferParams.seqno,
       secretKey: transferParams.secretKey,
       sendMode:

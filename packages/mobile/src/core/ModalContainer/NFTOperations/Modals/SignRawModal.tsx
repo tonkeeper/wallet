@@ -54,7 +54,11 @@ import { JettonTransferAction, NftItemTransferAction } from 'tonapi-sdk-js';
 import { TokenDetailsParams } from '../../../../components/TokenDetails/TokenDetails';
 import { ModalStackRouteNames } from '$navigation';
 import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
-import { emulateBoc, sendBoc } from '@tonkeeper/shared/utils/blockchain';
+import {
+  emulateBoc,
+  getTimeoutFromLiteserverSafely,
+  sendBoc,
+} from '@tonkeeper/shared/utils/blockchain';
 import { openAboutRiskAmountModal } from '@tonkeeper/shared/modals/AboutRiskAmountModal';
 import { toNano } from '@ton/core';
 import BigNumber from 'bignumber.js';
@@ -115,7 +119,10 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
       vault.workchain,
     );
 
+    const timeout = await getTimeoutFromLiteserverSafely();
+
     const boc = TransactionService.createTransfer(contract, {
+      timeout,
       messages: TransactionService.parseSignRawMessages(
         params.messages,
         isBattery ? tk.wallet.battery.excessesAccount : undefined,
@@ -391,7 +398,9 @@ export const openSignRawModal = async (
     let consequences: MessageConsequences | null = null;
     let isBattery = false;
     try {
+      const timeout = await getTimeoutFromLiteserverSafely();
       const boc = TransactionService.createTransfer(contract, {
+        timeout,
         messages: TransactionService.parseSignRawMessages(params.messages),
         seqno: await getWalletSeqno(wallet),
         secretKey: Buffer.alloc(64),

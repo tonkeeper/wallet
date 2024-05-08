@@ -66,3 +66,11 @@ export async function emulateBoc(
     return { emulateResult, battery: false };
   }
 }
+
+export async function getTimeoutFromLiteserverSafely() {
+  try {
+    return (await tk.wallet.tonapi.liteserver.getRawTime()).time + TransactionService.TTL;
+  } catch {
+    return TransactionService.getTimeout();
+  }
+}

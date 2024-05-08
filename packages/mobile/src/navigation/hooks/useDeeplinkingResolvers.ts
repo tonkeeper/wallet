@@ -22,7 +22,6 @@ import { openSignRawModal } from '$core/ModalContainer/NFTOperations/Modals/Sign
 import { isSignRawParams } from '$utils/isSignRawParams';
 import { AppStackRouteNames, MainStackRouteNames } from '$navigation/navigationNames';
 import { TonConnectRemoteBridge } from '$tonconnect/TonConnectRemoteBridge';
-import { openTimeNotSyncedModal } from '$core/ModalContainer/TimeNotSynced/TimeNotSynced';
 import { openAddressMismatchModal } from '$core/ModalContainer/AddressMismatch/AddressMismatch';
 import { openTonConnect } from '$core/TonConnect/TonConnectModal';
 import { useCallback, useRef } from 'react';
@@ -45,21 +44,9 @@ const getWallet = () => {
   return store.getState().wallet.wallet;
 };
 
-const getIsTimeSynced = () => {
-  return store.getState().main.isTimeSynced;
-};
-
 const getExpiresSec = () => {
   return getTimeSec() + 10 * 60;
 };
-
-export function checkIsTimeSynced() {
-  if (!getIsTimeSynced()) {
-    openTimeNotSyncedModal();
-    return false;
-  }
-  return true;
-}
 
 export function useDeeplinkingResolvers() {
   const deeplinking = useDeeplinking();
@@ -528,10 +515,6 @@ export function useDeeplinkingResolvers() {
 
     const txBody = txRequest.body as any;
     const isSignRaw = isSignRawParams(txBody?.params);
-
-    if (!checkIsTimeSynced()) {
-      return Toast.hide();
-    }
 
     if (
       txBody.expires_sec < getTimeSec() ||

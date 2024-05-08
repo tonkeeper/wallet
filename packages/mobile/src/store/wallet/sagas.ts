@@ -22,7 +22,6 @@ import {
   WalletGetUnlockedVaultAction,
 } from '$store/wallet/interface';
 
-import { MainDB } from '$database';
 import { Toast, useAddressUpdateStore, useConnectedAppsStore } from '$store';
 import { t } from '@tonkeeper/shared/i18n';
 import { getChainName } from '$shared/dynamicConfig';
@@ -351,8 +350,6 @@ function* sendCoinsWorker(action: SendCoinsAction) {
     e && debugLog(e.message);
 
     if (e && e.message === 'wrong_time') {
-      MainDB.setTimeSyncedDismissed(false);
-      yield put(mainActions.setTimeSyncedDismissed(false));
       Alert.alert(
         t('send_sending_wrong_time_title'),
         t('send_sending_wrong_time_description'),
