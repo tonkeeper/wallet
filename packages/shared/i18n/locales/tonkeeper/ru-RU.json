@@ -1304,5 +1304,19 @@
     "open_ton_app": "Разблокируйте его и откройте приложение TON",
     "install_ton_app": "Установить TON",
     "confirm_tx": "Подтвердите транзакцию в Ledger"
-  }
+  },
+  "bluetooth": {
+    "powered_off_alert": {
+      "title": "Bluetooth выключен",
+      "message": "Пожалуйста, включите Bluetooth, чтобы использовать эту функцию",
+      "open_settings": "Открыть настройки",
+      "cancel": "Отменить"
+    },
+    "permissions_alert": {
+      "title": "Разрешения Bluetooth",
+      "message": "Пожалуйста, включите разрешения Bluetooth в настройках, чтобы использовать эту функцию",
+      "open_settings": "Открыть настройки",
+      "cancel": "Отменить"
+    }
+  },
 }

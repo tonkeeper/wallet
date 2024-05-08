@@ -5,7 +5,13 @@ import { StyleSheet } from 'react-native';
 import { Text } from '@tonkeeper/uikit';
 import { TextColors } from '@tonkeeper/uikit/src/components/Text/Text';
 
-export type TagType = 'default' | 'accent' | 'warning' | 'warningLight' | 'positive';
+export type TagType =
+  | 'default'
+  | 'accent'
+  | 'warning'
+  | 'warningLight'
+  | 'positive'
+  | 'purple';
 
 interface Props {
   type?: TagType;
@@ -23,6 +29,8 @@ const getTextColor = (type: TagType): TextColors => {
       return 'constantBlack';
     case 'positive':
       return 'accentGreen';
+    case 'purple':
+      return 'accentPurple';
     case 'default':
     default:
       return 'textSecondary';
@@ -79,6 +87,9 @@ const styles = Steezy.create(({ colors }) => ({
   },
   positive: {
     backgroundColor: colors.accentGreen,
+  },
+  purple: {
+    backgroundColor: colors.accentPurple,
   },
   text: {
     textTransform: 'uppercase',

@@ -1,5 +1,6 @@
 export * from './StartScreen';
 export * from './ChooseWallets';
+export * from './ChooseLedgerWallets';
 export * from './MigrationPasscode';
 export * from './HoldersWebView';
 export * from './MigrationStartScreen';

@@ -1,7 +1,15 @@
-import { FC } from 'react';
+import { FC, useCallback } from 'react';
 import { Steezy } from '@tonkeeper/uikit/src/styles';
-import { Text, View, Icon, Loader, Spacer, TouchableOpacity } from '@tonkeeper/uikit';
+import { Text, View, Icon, Loader, TouchableOpacity } from '@tonkeeper/uikit';
 import { t } from '@tonkeeper/shared/i18n';
+import { LedgerConnectionCurrentStep } from './types';
+import { LegderView } from './LedgerView';
+import { Linking, Platform } from 'react-native';
+
+const LEDGER_LIVE_STORE_URL = Platform.select({
+  ios: 'https://apps.apple.com/app/ledger-live/id1361671700',
+  android: 'https://play.google.com/store/apps/details?id=com.ledger.live',
+});
 
 const BUTTON_HIT_SLOP = {
   top: 12,
@@ -25,14 +33,23 @@ const StepIcon: FC<{ state: 'future' | 'active' | 'completed' }> = ({ state }) =
 
 interface Props {
   showConfirmTxStep?: boolean;
-  currentStep: 'connect' | 'open-ton' | 'confirm-tx' | 'all-completed';
+  currentStep: LedgerConnectionCurrentStep;
 }
 
 export const LedgerConnectionSteps: FC<Props> = (props) => {
   const { currentStep, showConfirmTxStep } = props;
 
+  const openLegderLive = useCallback(async () => {
+    try {
+      await Linking.openURL('ledgerlive://myledger?installApp=TON');
+    } catch {
+      Linking.openURL(LEDGER_LIVE_STORE_URL!);
+    }
+  }, []);
+
   return (
     <View style={styles.container}>
+      <LegderView currentStep={currentStep} />
       <View style={styles.stepsContainer}>
         <View style={styles.step}>
           <StepIcon state={currentStep === 'connect' ? 'active' : 'completed'} />
@@ -67,7 +84,7 @@ export const LedgerConnectionSteps: FC<Props> = (props) => {
               {t('ledger.open_ton_app')}
             </Text>
             {!showConfirmTxStep ? (
-              <TouchableOpacity hitSlop={BUTTON_HIT_SLOP}>
+              <TouchableOpacity hitSlop={BUTTON_HIT_SLOP} onPress={openLegderLive}>
                 <Text type="body2" color="accentBlue">
                   {t('ledger.install_ton_app')}
                 </Text>

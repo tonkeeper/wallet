@@ -376,7 +376,7 @@ export const NFTSend: FC<Props> = (props) => {
           {(stepProps) => (
             <AddressStep
               recipient={recipient}
-              enableEncryption={!tk.wallet.isSigner}
+              enableEncryption={!tk.wallet.isExternal}
               decimals={9}
               stepsScrollTop={stepsScrollTop}
               setRecipient={setRecipient}

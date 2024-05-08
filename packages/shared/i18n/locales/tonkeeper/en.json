@@ -1260,5 +1260,19 @@
     "open_ton_app": "Unlock it and open TON App",
     "install_ton_app": "Install TON App",
     "confirm_tx": "Confirm your transaction on Ledger"
+  },
+  "bluetooth": {
+    "powered_off_alert": {
+      "title": "Bluetooth is off",
+      "message": "Please turn on Bluetooth to use this feature",
+      "open_settings": "Open Settings",
+      "cancel": "Cancel"
+    },
+    "permissions_alert": {
+      "title": "Bluetooth Permissions",
+      "message": "Please enable Bluetooth permissions in your settings to use this feature",
+      "open_settings": "Open Settings",
+      "cancel": "Cancel"
+    }
   }
 }

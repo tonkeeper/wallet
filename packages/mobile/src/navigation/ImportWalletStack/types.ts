@@ -4,6 +4,7 @@ export enum ImportWalletStackRouteNames {
   ImportWallet = 'ImportWallet',
   PairSignerScreen = 'PairSignerScreen',
   ChooseWallets = 'ChooseWallets',
+  ChooseLedgerWallets = 'ChooseLedgerWallets',
   CreatePasscode = 'ImportWalletPasscode',
   Notifications = 'ImportWalletNotifications',
 }
@@ -20,6 +21,10 @@ export type ImportWalletStackParamList = {
     lockupConfig: {};
     isMigration?: boolean;
     onDone?: (selectedVersions: WalletContractVersion[]) => Promise<void>;
+  };
+  [ImportWalletStackRouteNames.ChooseLedgerWallets]: {
+    walletsInfo: ImportWalletInfo[];
+    onDone: (walletsInfo: ImportWalletInfo[]) => Promise<void>;
   };
   [ImportWalletStackRouteNames.CreatePasscode]: {};
   [ImportWalletStackRouteNames.Notifications]: {

@@ -98,11 +98,19 @@ export class WalletBase {
     return this.config.type === WalletType.WatchOnly;
   }
 
+  public get isLedger() {
+    return this.config.type === WalletType.Ledger;
+  }
+
   public get isSigner() {
     return (
       this.config.type === WalletType.Signer ||
       this.config.type === WalletType.SignerDeeplink
     );
+  }
+
+  public get isExternal() {
+    return this.isSigner || this.isLedger;
   }
 
   public getLockupConfig() {

@@ -45,7 +45,7 @@ export const useDAppBridge = (walletAddress: string, webViewUrl: string) => {
       protocolVersion: CURRENT_PROTOCOL_VERSION,
       isWalletBrowser: true,
       connect: async (protocolVersion, request) => {
-        if (tk.wallet.isSigner || tk.wallet.isWatchOnly) {
+        if (tk.wallet.isExternal || tk.wallet.isWatchOnly) {
           return new ConnectEventError(
             CONNECT_EVENT_ERROR_CODES.METHOD_NOT_SUPPORTED,
             '',
@@ -65,7 +65,7 @@ export const useDAppBridge = (walletAddress: string, webViewUrl: string) => {
         return event;
       },
       restoreConnection: async () => {
-        if (tk.wallet.isSigner || tk.wallet.isWatchOnly) {
+        if (tk.wallet.isExternal || tk.wallet.isWatchOnly) {
           return new ConnectEventError(
             CONNECT_EVENT_ERROR_CODES.METHOD_NOT_SUPPORTED,
             '',

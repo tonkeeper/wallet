@@ -495,7 +495,7 @@ export const Send: FC<SendProps> = ({ route }) => {
           {(stepProps) => (
             <AddressStep
               enableEncryption={
-                tokensWithAllowedEncryption.includes(tokenType) && !tk.wallet.isSigner
+                tokensWithAllowedEncryption.includes(tokenType) && !tk.wallet.isExternal
               }
               recipient={recipient}
               decimals={decimals}
