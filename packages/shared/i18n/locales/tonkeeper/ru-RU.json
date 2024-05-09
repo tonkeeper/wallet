@@ -1190,6 +1190,10 @@
     "signer": {
       "title": "Подключить Signer",
       "subtitle": "Более высокий уровень контроля и безопасности"
+    },
+    "ledger": {
+      "title": "Подключить Ledger",
+      "subtitle": "Более высокий уровень безопасности благодаря аппаратному кошельку"
     }
   },
   "add_watch_only": {
@@ -1299,13 +1303,26 @@
     "description_with_nft": "Общая стоимость токенов, за исключением стоимости NFT, которые будут отправлены с вашего кошелька. Возвраты не учитываются в общей стоимости.",
     "ok_button": "Понятно"
   },
+  "signerConfirm": {
+    "title": "Подтвердить действие",
+    "step": "Шаг %{value}",
+    "scan_qr": "Отсканируйте QR-код с помощью Signer",
+    "confirm": "Подтвердите транзакцию в Signer",
+    "scan_signed_qr": "Отсканируйте QR-код подписанной транзакции Signer"
+  },
+  "pairSigner": {
+    "about": "Подробнее про Signer",
+    "open_signer": "Открыть на этом устройстве",
+    "title": "Отсканируйте QR-код",
+    "subtitle": "Откройте Signer » Выберите ключ » Отсканируйте QR-код"
+  },
   "ledger": {
     "confirm_title": "Подтвердить действие",
     "connect_title": "Подключить Ledger",
-    "connect": "Connect Ledger to your device via bluetooth",
-    "open_ton_app": "Разблокируйте его и откройте приложение TON",
-    "install_ton_app": "Установить TON",
-    "confirm_tx": "Подтвердите транзакцию в Ledger",
+    "connect": "Подключите Ledger к своему устройству с помощью Bluetooth",
+    "open_ton_app": "Разблокируйте его и откройте приложение TON",
+    "install_ton_app": "Установить приложение",
+    "confirm_tx": "Подтвердите транзакцию в Ledger",
     "operation_not_supported": "Операция недоступна для кошельков Ledger. Выберите другой кошелек и повторите попытку."
   },
   "bluetooth": {

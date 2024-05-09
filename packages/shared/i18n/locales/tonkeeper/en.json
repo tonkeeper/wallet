@@ -1258,10 +1258,10 @@
   "ledger": {
     "confirm_title": "Confirm Action",
     "connect_title": "Connect Ledger",
-    "connect": "Connect Ledger to your device via bluetooth",
+    "connect": "Connect Ledger to your device via Bluetooth",
     "open_ton_app": "Unlock it and open TON App",
     "install_ton_app": "Install TON App",
-    "confirm_tx": "Confirm your transaction on Ledger",
+    "confirm_tx": "Confirm your transaction on Ledger",
     "operation_not_supported": "The operation is not available for Ledger wallets. Select another wallet and try again."
   },
   "bluetooth": {
