@@ -33,13 +33,12 @@ import { useStakingState, useWallet } from '@tonkeeper/shared/hooks';
 import { tk } from '$wallet';
 import { Address } from '@tonkeeper/shared/Address';
 import { shallow } from 'zustand/shallow';
-import {
-  ContractService,
-  TransactionService,
-  contractVersionsMap,
-} from '@tonkeeper/core';
+import { TransactionService } from '@tonkeeper/core';
 import { getWalletSeqno } from '@tonkeeper/shared/utils/wallet';
-import { sendBoc } from '@tonkeeper/shared/utils/blockchain';
+import {
+  getTimeoutFromLiteserverSafely,
+  sendBoc,
+} from '@tonkeeper/shared/utils/blockchain';
 
 interface Props {
   route: RouteProp<AppStackParamList, AppStackRouteNames.StakingSend>;
@@ -217,15 +216,12 @@ export const StakingSend: FC<Props> = (props) => {
 
       messages.current = [message];
 
-      const contract = ContractService.getWalletContract(
-        contractVersionsMap[wallet.config.version],
-        Buffer.from(wallet.pubkey, 'hex'),
-        wallet.config.workchain,
-      );
-
       const signer = await wallet.signer.getSigner(true);
 
-      const boc = await TransactionService.createTransfer(contract, signer, {
+      const timeout = await getTimeoutFromLiteserverSafely();
+
+      const boc = await TransactionService.createTransfer(wallet.contract, signer, {
+        timeout,
         messages: TransactionService.parseSignRawMessages(messages.current),
         seqno: await getWalletSeqno(wallet),
       });
@@ -344,15 +340,12 @@ export const StakingSend: FC<Props> = (props) => {
         }
       }
 
-      const contract = ContractService.getWalletContract(
-        contractVersionsMap[wallet.config.version],
-        Buffer.from(wallet.pubkey, 'hex'),
-        wallet.config.workchain,
-      );
-
       const signer = await wallet.signer.getSigner();
 
-      const boc = await TransactionService.createTransfer(contract, signer, {
+      const timeout = await getTimeoutFromLiteserverSafely();
+
+      const boc = await TransactionService.createTransfer(wallet.contract, signer, {
+        timeout,
         messages: TransactionService.parseSignRawMessages(messages.current),
         seqno: await getWalletSeqno(wallet),
       });
