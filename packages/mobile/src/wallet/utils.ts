@@ -3,6 +3,8 @@ import { BatteryAPI } from '@tonkeeper/core/src/BatteryAPI';
 import { TonAPI } from '@tonkeeper/core/src/TonAPI';
 import { config } from '$config';
 import { i18n } from '@tonkeeper/shared/i18n';
+import { WalletContractVersion } from './WalletTypes';
+import { DEFAULT_WALLET_VERSION } from './constants';
 
 export const createTonApiInstance = (isTestnet = false) => {
   return new TonAPI({

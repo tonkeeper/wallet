@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Ton } from '$libs/Ton';
 import { useDispatch } from 'react-redux';
-import { DeeplinkingResolver, useDeeplinking } from '$libs/deeplinking';
+import { DeeplinkOrigin, DeeplinkingResolver, useDeeplinking } from '$libs/deeplinking';
 import { CryptoCurrencies } from '$shared/constants';
 import { walletActions } from '$store/wallet';
 import { Base64, delay, fromNano, toNano } from '$utils';
@@ -11,7 +11,13 @@ import {
   SignRawMessage,
   TxRequest,
 } from '$core/ModalContainer/NFTOperations/TXRequest.types';
-import { openBuyFiat, openSend, resetToWalletTab } from '../helper';
+import {
+  openBuyFiat,
+  openSend,
+  openSetupNotifications,
+  openSetupWalletDone,
+  resetToWalletTab,
+} from '../helper';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 
 import { t } from '@tonkeeper/shared/i18n';
@@ -39,6 +45,8 @@ import { config } from '$config';
 import { TokenType } from '$core/Send/Send.interface';
 import { ActionSource } from '$wallet/models/ActivityModel';
 import { StakingTransactionType } from '$core/StakingSend/types';
+import { ImportWalletInfo, WalletContractVersion } from '$wallet/WalletTypes';
+import { ImportWalletStackRouteNames } from '$navigation/ImportWalletStack/types';
 
 const getWallet = () => {
   return store.getState().wallet.wallet;
@@ -63,6 +71,14 @@ export function useDeeplinkingResolvers() {
   ]);
 
   deeplinking.addMiddleware(async (next, { prefix, pathname }) => {
+    const isSignerPairing = pathname.startsWith('/signer/link');
+
+    if (isSignerPairing) {
+      next();
+
+      return;
+    }
+
     if (!getWallet() || !tk.wallet) {
       return openRequireWalletModal();
     }
@@ -682,5 +698,76 @@ export function useDeeplinkingResolvers() {
 
   deeplinking.add('/staking', () => {
     nav.push(MainStackRouteNames.Staking);
+  });
+
+  deeplinking.add('/publish', async ({ query }) => {
+    if (!query.boc) {
+      return;
+    }
+
+    tk.wallet.signer.setSignerResult(query.boc);
+  });
+
+  deeplinking.add('/signer/link', async ({ query, origin }) => {
+    try {
+      const network = query.network ?? 'ton';
+      const publicKey = Buffer.from(query.pk, 'base64').toString('hex');
+      const name = query.name;
+
+      if (network !== 'ton') {
+        Toast.fail('Unsupported network');
+        return;
+      }
+
+      let walletsInfo: ImportWalletInfo[] | null = null;
+
+      try {
+        walletsInfo = await tk.getWalletsInfo(publicKey, false);
+      } catch {}
+
+      const shouldChooseWallets = walletsInfo && walletsInfo.length > 1;
+
+      const addWallet = async (selectedVersions?: WalletContractVersion[]) => {
+        try {
+          const identifiers = await tk.addSignerWallet(
+            publicKey,
+            name,
+            selectedVersions,
+            origin === DeeplinkOrigin.DEEPLINK,
+          );
+
+          const isNotificationsDenied = await tk.wallet.notifications.getIsDenied();
+
+          if (isNotificationsDenied) {
+            openSetupWalletDone(identifiers);
+          } else {
+            openSetupNotifications(identifiers);
+          }
+        } catch (e) {
+          console.log('error', e);
+          Toast.fail(t('error_occurred'));
+        }
+      };
+
+      if (shouldChooseWallets) {
+        nav.navigate(MainStackRouteNames.ImportWalletStack, {
+          screen: ImportWalletStackRouteNames.ChooseWallets,
+          params: {
+            walletsInfo,
+            mnemonic: '',
+            lockupConfig: null,
+            isTestnet: false,
+            onDone: addWallet,
+          },
+        });
+
+        return;
+      }
+
+      await addWallet();
+    } catch (e) {
+      console.log('error', e);
+      Toast.fail(t('error_occurred'));
+    }
   });
 }

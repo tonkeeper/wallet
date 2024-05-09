@@ -32,10 +32,16 @@ import { NFTSend } from '$core/NFTSend/NFTSend';
 import { ReceiveInscriptionModal } from '@tonkeeper/shared/modals/ReceiveInscriptionModal';
 import { CustomizeWallet } from '$core/CustomizeWallet/CustomizeWallet';
 import { TokenDetails } from '../components/TokenDetails/TokenDetails';
-import { BackupWarningModal, ExchangeModal, LogoutWarningModal } from '$modals';
+import {
+  BackupWarningModal,
+  ExchangeModal,
+  LogoutWarningModal,
+  PairLedgerModal,
+} from '$modals';
 import { ThemeProvider, useTheme } from '@tonkeeper/uikit';
 import { BlueTheme } from '@tonkeeper/uikit/src/styles/themes/blue';
 import SystemNavigationBar from 'react-native-system-navigation-bar';
+import { SignerConfirmScreen } from '../screens';
 
 const Stack = createModalStackNavigator(ProvidersWithNavigation);
 
@@ -80,6 +86,7 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={RefillBatteryModal} path="/refill-battery" />
       <Stack.Modal component={BackupWarningModal} path="/backup-warning" />
       <Stack.Modal component={LogoutWarningModal} path="/logout-warning" />
+      <Stack.Modal component={PairLedgerModal} path="/pair-ledger" />
     </Stack.Group>
     <Stack.Group behavior="modal">
       <Stack.Modal component={ReceiveModal} path="ReceiveModal" />
@@ -105,6 +112,7 @@ export const ModalStack = React.memo(() => (
         component={CustomizeWallet}
         path={AppStackRouteNames.CustomizeWallet}
       />
+      <Stack.Modal component={SignerConfirmScreen} path="/signer-confirm" />
     </Stack.Group>
     <Stack.Group behavior="fullScreenModal">
       <Stack.Modal

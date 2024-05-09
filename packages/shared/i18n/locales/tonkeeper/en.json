@@ -692,6 +692,7 @@
   "settings_reset_alert_caption_all": "This will erase keys to all wallets. Make sure you have backed up your recovery phrases.",
   "settings_reset_alert_title_all": "\uD83D\uDEA7 \uD83D\uDEA8\uD83D\uDEA8\uD83D\uDEA8 \uD83D\uDEA7\nSign Out of All Wallets?",
   "settings_delete_watch_account": "Delete Watch Account?",
+  "settings_delete_signer_account": "Delete Account?",
   "settings_delete_watch_account_button": "Delete",
   "settings_search_engine": "Search",
   "settings_security": "Security",
@@ -1106,6 +1107,9 @@
   "add_wallet_modal": {
     "title": "Add Wallet",
     "subtitle": "Create a new wallet or add an existing one.",
+    "import_title": "Import Wallet",
+    "import_subtitle": "Choose from the options below.",
+    "other_options": "Other options",
     "create": {
       "title": "New Wallet",
       "subtitle": "Create new wallet"
@@ -1121,6 +1125,14 @@
     "testnet": {
       "title": "Testnet Account",
       "subtitle": "Import wallet with a 24 secret recovery words to Testnet"
+    },
+    "signer": {
+      "title": "Pair with Signer",
+      "subtitle": "A higher level of control and security"
+    },
+    "ledger": {
+      "title": "Pair with Ledger",
+      "subtitle": "A higher level of security with hardware wallet"
     }
   },
   "add_watch_only": {
@@ -1145,7 +1157,8 @@
   "choose_wallets": {
     "title": "Choose Wallets",
     "subtitle": "Choose wallets you want to add.",
-    "tokens": "tokens"
+    "tokens": "tokens",
+    "already_added": "Already added"
   },
   "old_wallet_error": "Use wallet with v4R2 version",
   "migration": {
@@ -1228,5 +1241,41 @@
     "description": "The total value of tokens that will be sent from your wallet. Refunds are not included in the total value.",
     "description_with_nft": "The total value of tokens, excluding the cost of NFTs, that will be sent from your wallet. Refunds are not included in the total value.",
     "ok_button": "OK"
+  },
+  "signerConfirm": {
+    "title": "Confirm Action",
+    "step": "Step %{value}",
+    "scan_qr": "Scan the QR code with Signer",
+    "confirm": "Confirm your transaction in Signer",
+    "scan_signed_qr": "Scan signed transaction QR code from Signer"
+  },
+  "pairSigner": {
+    "about": "About Signer",
+    "open_signer": "Open Signer on this device",
+    "title": "Scan QR code",
+    "subtitle": "Open Signer » Select the required key » Scan QR code"
+  },
+  "ledger": {
+    "confirm_title": "Confirm Action",
+    "connect_title": "Connect Ledger",
+    "connect": "Connect Ledger to your device via Bluetooth",
+    "open_ton_app": "Unlock it and open TON App",
+    "install_ton_app": "Install TON App",
+    "confirm_tx": "Confirm your transaction on Ledger",
+    "operation_not_supported": "The operation is not available for Ledger wallets. Select another wallet and try again."
+  },
+  "bluetooth": {
+    "powered_off_alert": {
+      "title": "Bluetooth is off",
+      "message": "Please turn on Bluetooth to use this feature",
+      "open_settings": "Open Settings",
+      "cancel": "Cancel"
+    },
+    "permissions_alert": {
+      "title": "Bluetooth Permissions",
+      "message": "Please enable Bluetooth permissions in your settings to use this feature",
+      "open_settings": "Open Settings",
+      "cancel": "Cancel"
+    }
   }
 }

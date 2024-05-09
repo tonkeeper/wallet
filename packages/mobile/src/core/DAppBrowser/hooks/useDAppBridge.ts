@@ -1,4 +1,10 @@
-import { AppRequest, ConnectEvent, RpcMethod, WalletEvent } from '@tonconnect/protocol';
+import {
+  AppRequest,
+  CONNECT_EVENT_ERROR_CODES,
+  ConnectEvent,
+  RpcMethod,
+  WalletEvent,
+} from '@tonconnect/protocol';
 import { useCallback, useMemo, useState } from 'react';
 import { CURRENT_PROTOCOL_VERSION, TonConnect, tonConnectDeviceInfo } from '$tonconnect';
 import { useWebViewBridge } from '../jsBridge';
@@ -9,6 +15,8 @@ import {
   useConnectedAppsStore,
   disableNotifications,
 } from '$store';
+import { tk } from '$wallet';
+import { ConnectEventError } from '$tonconnect/ConnectEventError';
 
 export const useDAppBridge = (walletAddress: string, webViewUrl: string) => {
   const [connectEvent, setConnectEvent] = useState<ConnectEvent | null>(null);
@@ -37,6 +45,13 @@ export const useDAppBridge = (walletAddress: string, webViewUrl: string) => {
       protocolVersion: CURRENT_PROTOCOL_VERSION,
       isWalletBrowser: true,
       connect: async (protocolVersion, request) => {
+        if (tk.wallet.isExternal || tk.wallet.isWatchOnly) {
+          return new ConnectEventError(
+            CONNECT_EVENT_ERROR_CODES.METHOD_NOT_SUPPORTED,
+            '',
+          );
+        }
+
         const event = await TonConnect.connect(
           protocolVersion,
           request,
@@ -50,6 +65,13 @@ export const useDAppBridge = (walletAddress: string, webViewUrl: string) => {
         return event;
       },
       restoreConnection: async () => {
+        if (tk.wallet.isExternal || tk.wallet.isWatchOnly) {
+          return new ConnectEventError(
+            CONNECT_EVENT_ERROR_CODES.METHOD_NOT_SUPPORTED,
+            '',
+          );
+        }
+
         const event = await TonConnect.autoConnect(webViewUrl);
 
         setConnectEvent(event);

@@ -24,7 +24,7 @@ const WalletListItemComponent: FC<Props> = (props) => {
 
   const themeName = useThemeName();
 
-  const titleWithTag = wallet.isTestnet || wallet.isWatchOnly;
+  const titleWithTag = wallet.isTestnet || wallet.isWatchOnly || wallet.isExternal;
 
   return (
     <List.Item
@@ -35,6 +35,8 @@ const WalletListItemComponent: FC<Props> = (props) => {
           </Text>
           {wallet.isTestnet ? <Tag>Testnet</Tag> : null}
           {wallet.isWatchOnly ? <Tag>{t('watch_only')}</Tag> : null}
+          {wallet.isSigner ? <Tag>Signer</Tag> : null}
+          {wallet.isLedger ? <Tag>Ledger</Tag> : null}
         </View>
       }
       leftContent={

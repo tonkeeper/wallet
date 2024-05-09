@@ -69,7 +69,7 @@ export const useMigration = () => {
 
       setLastEnteredPasscode(passcode);
 
-      const walletsInfo = await tk.getWalletsInfo(mnemonic, false);
+      const walletsInfo = await tk.getWalletsInfoByMnemonic(mnemonic, false);
 
       const shouldChooseWallets = !lockupConfig && walletsInfo.length > 1;
 

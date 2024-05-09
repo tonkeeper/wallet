@@ -1,7 +1,6 @@
 import React, { memo, useEffect, useMemo } from 'react';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { SignRawMessage, SignRawParams, TxBodyOptions } from '../TXRequest.types';
-import { useUnlockVault } from '../useUnlockVault';
 import { calculateMessageTransferAmount, delay } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { t } from '@tonkeeper/shared/i18n';
@@ -29,16 +28,10 @@ import { TonConnectRemoteBridge } from '$tonconnect/TonConnectRemoteBridge';
 import { formatter } from '$utils/formatter';
 import { tk } from '$wallet';
 import { MessageConsequences } from '@tonkeeper/core/src/TonAPI';
-import {
-  Address,
-  ContractService,
-  contractVersionsMap,
-  TransactionService,
-} from '@tonkeeper/core';
+import { Address, TransactionService } from '@tonkeeper/core';
 import { ActionListItemByType } from '@tonkeeper/shared/components/ActivityList/ActionListItemByType';
 import { useGetTokenPrice } from '$hooks/useTokenPrice';
 import { formatValue, getActionTitle } from '@tonkeeper/shared/utils/signRaw';
-import { Buffer } from 'buffer';
 import { trackEvent } from '$utils/stats';
 import { Events, SendAnalyticsFrom } from '$store/models';
 import { getWalletSeqno, setBalanceForEmulation } from '@tonkeeper/shared/utils/wallet';
@@ -62,6 +55,7 @@ import {
 import { openAboutRiskAmountModal } from '@tonkeeper/shared/modals/AboutRiskAmountModal';
 import { toNano } from '@ton/core';
 import BigNumber from 'bignumber.js';
+import { WalletContractV4 } from '@ton/ton';
 
 interface SignRawModalProps {
   consequences?: MessageConsequences;
@@ -93,7 +87,6 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
   }
 
   const { footerRef, onConfirm } = useNFTOperationState(options, wallet);
-  const unlockVault = useUnlockVault();
 
   const fiatCurrency = useWalletCurrency();
   const getTokenPrice = useGetTokenPrice();
@@ -108,20 +101,14 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
       await delay(200);
       throw new CanceledActionError();
     }
-    const vault = await unlockVault(wallet.identifier);
-    const privateKey = await vault.getTonPrivateKey();
 
     startLoading();
 
-    const contract = ContractService.getWalletContract(
-      contractVersionsMap[vault.getVersion() ?? 'v4R2'],
-      Buffer.from(vault.tonPublicKey),
-      vault.workchain,
-    );
-
     const timeout = await getTimeoutFromLiteserverSafely();
 
-    const boc = TransactionService.createTransfer(contract, {
+    const signer = await wallet.signer.getSigner();
+
+    const boc = await TransactionService.createTransfer(wallet.contract, signer, {
       timeout,
       messages: TransactionService.parseSignRawMessages(
         params.messages,
@@ -129,7 +116,6 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
       ),
       seqno: await getWalletSeqno(wallet),
       sendMode: 3,
-      secretKey: Buffer.from(privateKey),
     });
 
     await sendBoc(boc, isBattery);
@@ -321,7 +307,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
       </Modal.ScrollView>
       <Modal.Footer>
         <NFTOperationFooter
-          withSlider
+          withSlider={!wallet.isExternal}
           onPressConfirm={handleConfirm}
           redirectToActivity={redirectToActivity}
           ref={footerRef}
@@ -389,21 +375,17 @@ export const openSignRawModal = async (
       await TonConnectRemoteBridge.closeOtherTransactions();
     }
 
-    const contract = ContractService.getWalletContract(
-      contractVersionsMap[wallet.config.version],
-      Buffer.from(wallet.pubkey, 'hex'),
-      wallet.config.workchain,
-    );
-
     let consequences: MessageConsequences | null = null;
     let isBattery = false;
     try {
       const timeout = await getTimeoutFromLiteserverSafely();
-      const boc = TransactionService.createTransfer(contract, {
+
+      const signer = await wallet.signer.getSigner(true);
+
+      const boc = await TransactionService.createTransfer(wallet.contract, signer, {
         timeout,
         messages: TransactionService.parseSignRawMessages(params.messages),
         seqno: await getWalletSeqno(wallet),
-        secretKey: Buffer.alloc(64),
       });
 
       const totalAmount = calculateMessageTransferAmount(params.messages);

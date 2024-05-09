@@ -11,6 +11,7 @@ export type IconColors =
   | 'iconTertiary'
   | 'iconPrimaryAlternate'
   | 'constantWhite'
+  | 'constantBlack'
   | 'accentBlue'
   | 'accentOrange'
   | 'accentRed'

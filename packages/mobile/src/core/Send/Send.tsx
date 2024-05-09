@@ -53,6 +53,7 @@ import { getTimeSec } from '$utils/getTimeSec';
 import { Toast } from '$store';
 import { config } from '$config';
 import { NetworkOverloadedError } from '@tonkeeper/shared/utils/blockchain';
+import { SignerError } from '$wallet/managers/SignerManager';
 
 const tokensWithAllowedEncryption = [TokenType.TON, TokenType.Jetton];
 
@@ -117,6 +118,8 @@ export const Send: FC<SendProps> = ({ route }) => {
 
   const [comment, setComment] = useState(initalComment.replace(/\0/g, ''));
 
+  const [encryptedCommentPrivateKey, setEncryptedCommentPrivateKey] =
+    useState<Uint8Array | null>(null);
   const [isCommentEncrypted, setCommentEncrypted] = useState(false);
 
   const [isPreparing, setPreparing] = useState(false);
@@ -276,7 +279,7 @@ export const Send: FC<SendProps> = ({ route }) => {
     trcPayload,
   ]);
 
-  const unlock = useUnlockVault();
+  const unlockVault = useUnlockVault();
   const doSend = useCallback(
     async (onDone: () => void, onFail: (e?: Error) => void) => {
       if (!recipient) {
@@ -316,6 +319,7 @@ export const Send: FC<SendProps> = ({ route }) => {
             address: recipient.address,
             comment,
             isCommentEncrypted,
+            encryptedCommentPrivateKey,
             tokenType,
             jettonWalletAddress,
             decimals,
@@ -329,7 +333,9 @@ export const Send: FC<SendProps> = ({ route }) => {
             onFail: (error) => {
               setSending(false);
               onFail(
-                error instanceof NetworkOverloadedError
+                error instanceof NetworkOverloadedError ||
+                  error instanceof CanceledActionError ||
+                  error instanceof SignerError
                   ? error
                   : new DismissedActionError(),
               );
@@ -337,7 +343,7 @@ export const Send: FC<SendProps> = ({ route }) => {
           }),
         );
       } else if (recipient.blockchain === 'tron' && trcPayload.value) {
-        const unloked = await unlock();
+        const unloked = await unlockVault();
         const privateKey = await unloked.getTonPrivateKey();
         const send = await tk.wallet.tronService.send(privateKey, trcPayload.value);
         console.log(send);
@@ -362,12 +368,13 @@ export const Send: FC<SendProps> = ({ route }) => {
       amount.all,
       comment,
       isCommentEncrypted,
+      encryptedCommentPrivateKey,
       tokenType,
       jettonWalletAddress,
       decimals,
       isBattery,
       from,
-      unlock,
+      unlockVault,
     ],
   );
 
@@ -408,6 +415,23 @@ export const Send: FC<SendProps> = ({ route }) => {
       setRecipientAccountInfo(accountInfo);
     } catch {}
   }, [accountsApi, recipient]);
+
+  const handleSetCommentEncrypted = useCallback(
+    async (value: boolean) => {
+      try {
+        if (value && !encryptedCommentPrivateKey) {
+          const unlockedVault = await unlockVault(tk.wallet.identifier);
+
+          const privateKey = await unlockedVault.getTonPrivateKey();
+
+          setEncryptedCommentPrivateKey(privateKey);
+        }
+
+        setCommentEncrypted(value);
+      } catch {}
+    },
+    [encryptedCommentPrivateKey, unlockVault],
+  );
 
   useEffect(() => () => Keyboard.dismiss(), []);
 
@@ -472,7 +496,9 @@ export const Send: FC<SendProps> = ({ route }) => {
         <StepViewItem id={SendSteps.ADDRESS}>
           {(stepProps) => (
             <AddressStep
-              enableEncryption={tokensWithAllowedEncryption.includes(tokenType)}
+              enableEncryption={
+                tokensWithAllowedEncryption.includes(tokenType) && !tk.wallet.isExternal
+              }
               recipient={recipient}
               decimals={decimals}
               changeBlockchain={changeBlockchain}
@@ -481,7 +507,7 @@ export const Send: FC<SendProps> = ({ route }) => {
               recipientAccountInfo={recipientAccountInfo}
               comment={comment}
               isCommentEncrypted={isCommentEncrypted}
-              setCommentEncrypted={setCommentEncrypted}
+              setCommentEncrypted={handleSetCommentEncrypted}
               setComment={setComment}
               setAmount={setAmount}
               onContinue={goToAmount}

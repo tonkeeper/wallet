@@ -31,6 +31,7 @@ export type IconNames =
   | 'ic-doc-16'
   | 'ic-done-16'
   | 'ic-done-bold-16'
+  | 'ic-dot-16'
   | 'ic-ellipsis-16'
   | 'ic-getgems-16'
   | 'ic-globe-16'
@@ -87,12 +88,16 @@ export type IconNames =
   | 'ic-gear-28'
   | 'ic-gear-outline-28'
   | 'ic-globe-28'
+  | 'ic-globe-outline-28'
   | 'ic-home-28'
+  | 'ic-import-wallet-outline-28'
   | 'ic-jetton-28'
   | 'ic-key-28'
+  | 'ic-ledger-28'
   | 'ic-link-28'
   | 'ic-lock-28'
   | 'ic-magnifying-glass-28'
+  | 'ic-magnifying-glass-outline-28'
   | 'ic-message-bubble-28'
   | 'ic-minus-28'
   | 'ic-minus-outline-28'
@@ -121,6 +126,7 @@ export type IconNames =
   | 'ic-swap-horizontal-outline-28'
   | 'ic-telegram-28'
   | 'ic-testnet-28'
+  | 'ic-testnet-outline-28'
   | 'ic-ticket-28'
   | 'ic-ton-28'
   | 'ic-tonkeeper-28'
@@ -220,6 +226,7 @@ export const AllIcons = [
   'ic-doc-16',
   'ic-done-16',
   'ic-done-bold-16',
+  'ic-dot-16',
   'ic-ellipsis-16',
   'ic-getgems-16',
   'ic-globe-16',
@@ -276,12 +283,16 @@ export const AllIcons = [
   'ic-gear-28',
   'ic-gear-outline-28',
   'ic-globe-28',
+  'ic-globe-outline-28',
   'ic-home-28',
+  'ic-import-wallet-outline-28',
   'ic-jetton-28',
   'ic-key-28',
+  'ic-ledger-28',
   'ic-link-28',
   'ic-lock-28',
   'ic-magnifying-glass-28',
+  'ic-magnifying-glass-outline-28',
   'ic-message-bubble-28',
   'ic-minus-28',
   'ic-minus-outline-28',
@@ -310,6 +321,7 @@ export const AllIcons = [
   'ic-swap-horizontal-outline-28',
   'ic-telegram-28',
   'ic-testnet-28',
+  'ic-testnet-outline-28',
   'ic-ticket-28',
   'ic-ton-28',
   'ic-tonkeeper-28',
@@ -410,6 +422,7 @@ export const IconSizes = {
   'ic-doc-16': 16,
   'ic-done-16': 16,
   'ic-done-bold-16': 16,
+  'ic-dot-16': 16,
   'ic-ellipsis-16': 16,
   'ic-getgems-16': 16,
   'ic-globe-16': 16,
@@ -466,12 +479,16 @@ export const IconSizes = {
   'ic-gear-28': 28,
   'ic-gear-outline-28': 28,
   'ic-globe-28': 28,
+  'ic-globe-outline-28': 28,
   'ic-home-28': 28,
+  'ic-import-wallet-outline-28': 28,
   'ic-jetton-28': 28,
   'ic-key-28': 28,
+  'ic-ledger-28': 28,
   'ic-link-28': 28,
   'ic-lock-28': 28,
   'ic-magnifying-glass-28': 28,
+  'ic-magnifying-glass-outline-28': 28,
   'ic-message-bubble-28': 28,
   'ic-minus-28': 28,
   'ic-minus-outline-28': 28,
@@ -500,6 +517,7 @@ export const IconSizes = {
   'ic-swap-horizontal-outline-28': 28,
   'ic-telegram-28': 28,
   'ic-testnet-28': 28,
+  'ic-testnet-outline-28': 28,
   'ic-ticket-28': 28,
   'ic-ton-28': 28,
   'ic-tonkeeper-28': 28,

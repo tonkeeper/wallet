@@ -243,7 +243,7 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
           {!isWatchOnly && isTonDiamondsNft && !flags.disable_apperance ? (
             <TonDiamondFeature nft={nft as NFTModel<TonDiamondMetadata>} />
           ) : null}
-          {!isWatchOnly ? (
+          {!isWatchOnly && !wallet.isLedger ? (
             <S.ButtonWrap>
               {nft.ownerAddress && (
                 <Button

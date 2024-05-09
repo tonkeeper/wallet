@@ -1,12 +1,5 @@
-import {
-  SendRecipient,
-  SendAmount,
-  SendSteps,
-  AccountWithPubKey,
-} from '../../Send.interface';
-import { StepComponentProps } from '$shared/components/StepView/StepView.interface';
+import { SendRecipient, SendAmount, AccountWithPubKey } from '../../Send.interface';
 import React from 'react';
-import { SharedValue } from 'react-native-reanimated';
 import { CryptoCurrencies } from '$shared/constants';
 
 export interface AddressStepProps {
@@ -20,7 +13,7 @@ export interface AddressStepProps {
   setRecipientAccountInfo: React.Dispatch<React.SetStateAction<AccountWithPubKey | null>>;
   setAmount?: React.Dispatch<React.SetStateAction<SendAmount>>;
   setComment: React.Dispatch<React.SetStateAction<string>>;
-  setCommentEncrypted: React.Dispatch<React.SetStateAction<boolean>>;
+  setCommentEncrypted: (value: boolean) => void;
   enableEncryption?: boolean;
   onContinue: () => void;
 }

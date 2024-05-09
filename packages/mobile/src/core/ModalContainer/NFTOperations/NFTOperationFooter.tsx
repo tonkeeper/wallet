@@ -21,6 +21,7 @@ import { TabsStackRouteNames } from '$navigation';
 import { Wallet } from '$wallet/Wallet';
 import { NetworkOverloadedError } from '@tonkeeper/shared/utils/blockchain';
 import { SlideButton, Steezy } from '@tonkeeper/uikit';
+import { SignerError } from '$wallet/managers/SignerManager';
 
 enum States {
   INITIAL,
@@ -110,6 +111,10 @@ export const useActionFooter = (wallet?: Wallet) => {
       } else if (error instanceof UnlockVaultError) {
         Toast.fail(error?.message);
       } else if (error instanceof NFTOperationError) {
+        if (error?.message) {
+          ref.current?.setError(error.message);
+        }
+      } else if (error instanceof SignerError) {
         if (error?.message) {
           ref.current?.setError(error.message);
         }
