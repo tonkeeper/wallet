@@ -13,6 +13,7 @@ import {
   Spacer,
   Steezy,
   Text,
+  View,
   isAndroid,
 } from '@tonkeeper/uikit';
 import { FC, useCallback, useState } from 'react';
@@ -61,6 +62,8 @@ export const ChooseLedgerWallets: FC<{
 
   const tokensText = `, ${t('choose_wallets.tokens')}`;
 
+  const addedText = ` · ${t('choose_wallets.already_added')}`;
+
   return (
     <Screen>
       <Screen.Header gradient />
@@ -78,6 +81,7 @@ export const ChooseLedgerWallets: FC<{
         <List indent={false}>
           {walletsInfo.map((walletInfo) => (
             <List.Item
+              disabled={walletInfo.isAdded}
               key={`${walletInfo.accountIndex}_${walletInfo.version}`}
               title={Address.parse(walletInfo.address, {
                 bounceable: false,
@@ -85,13 +89,15 @@ export const ChooseLedgerWallets: FC<{
               }).toShort()}
               subtitle={`${formatter.formatNano(walletInfo.balance)} TON${
                 walletInfo.tokens ? tokensText : ''
-              }`}
+              }${walletInfo.isAdded ? addedText : ''}`}
               rightContent={
-                <Checkbox
-                  checked={selectedIndexes.includes(walletInfo.accountIndex!)}
-                  onChange={() => {}}
-                  disabled={isAndroid}
-                />
+                <View style={walletInfo.isAdded && styles.checkboxDisabled}>
+                  <Checkbox
+                    checked={selectedIndexes.includes(walletInfo.accountIndex!)}
+                    onChange={() => {}}
+                    disabled={isAndroid || walletInfo.isAdded}
+                  />
+                </View>
               }
               onPress={() => toggleSelected(walletInfo)}
             />
@@ -114,5 +120,8 @@ export const ChooseLedgerWallets: FC<{
 const styles = Steezy.create(() => ({
   contentContainer: {
     paddingHorizontal: 32,
+  },
+  checkboxDisabled: {
+    opacity: 0.48,
   },
 }));

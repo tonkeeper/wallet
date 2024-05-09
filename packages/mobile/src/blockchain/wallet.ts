@@ -23,7 +23,15 @@ import {
 } from '@tonkeeper/core/src/legacy';
 
 import { tk } from '$wallet';
-import { Address, Cell, beginCell, internal } from '@ton/core';
+import {
+  Address,
+  Cell,
+  beginCell,
+  toNano as tonCoreToNano,
+  internal,
+  SendMode,
+  comment,
+} from '@ton/core';
 import {
   NetworkOverloadedError,
   emulateBoc,
@@ -383,9 +391,36 @@ export class TonWallet {
     jettonTransferAmount = ONE_TON,
     estimateFee,
   }: JettonTransferParams) {
-    const signer = await tk.wallet.signer.getSigner(estimateFee);
-
     const jettonAmount = BigInt(amountNano);
+
+    if (tk.wallet.isLedger && !estimateFee) {
+      const transfer = await tk.wallet.signer.signLedgerTransaction({
+        to: Address.parse(jettonWalletAddress),
+        bounce: true,
+        amount: jettonTransferAmount,
+        sendMode: SendMode.PAY_GAS_SEPARATELY + SendMode.IGNORE_ERRORS,
+        seqno,
+        timeout: timeout ?? TransactionService.getTimeout(),
+        payload: {
+          type: 'jetton-transfer',
+          queryId: ContractService.getWalletQueryId(),
+          amount: jettonAmount,
+          destination: Address.parse(recipient.address),
+          responseDestination: Address.parse(
+            excessesAccount ?? tk.wallet.address.ton.raw,
+          ),
+          forwardAmount: BigInt(1),
+          forwardPayload: typeof payload === 'string' ? comment(payload) : payload,
+          customPayload: null,
+        },
+      });
+
+      return TransactionService.externalMessage(tk.wallet.contract, seqno, transfer)
+        .toBoc()
+        .toString('base64');
+    }
+
+    const signer = await tk.wallet.signer.getSigner(estimateFee);
 
     return TransactionService.createTransfer(tk.wallet.contract, signer, {
       timeout,
@@ -559,6 +594,28 @@ export class TonWallet {
     estimateFee,
   }: TonTransferParams) {
     const timeout = await getTimeoutFromLiteserverSafely();
+
+    if (tk.wallet.isLedger && !estimateFee) {
+      const transfer = await tk.wallet.signer.signLedgerTransaction({
+        to: Address.parse(recipient.address),
+        bounce,
+        amount: tonCoreToNano(amount),
+        sendMode,
+        seqno,
+        timeout,
+        payload:
+          typeof payload === 'string' && payload !== ''
+            ? {
+                type: 'comment',
+                text: payload,
+              }
+            : undefined,
+      });
+
+      return TransactionService.externalMessage(tk.wallet.contract, seqno, transfer)
+        .toBoc()
+        .toString('base64');
+    }
 
     const signer = await tk.wallet.signer.getSigner(estimateFee);
 

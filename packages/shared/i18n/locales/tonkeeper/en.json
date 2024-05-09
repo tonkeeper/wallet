@@ -1157,7 +1157,8 @@
   "choose_wallets": {
     "title": "Choose Wallets",
     "subtitle": "Choose wallets you want to add.",
-    "tokens": "tokens"
+    "tokens": "tokens",
+    "already_added": "Already added"
   },
   "old_wallet_error": "Use wallet with v4R2 version",
   "migration": {
@@ -1255,11 +1256,13 @@
     "subtitle": "Open Signer » Select the required key » Scan QR code"
   },
   "ledger": {
+    "confirm_title": "Confirm Action",
     "connect_title": "Connect Ledger",
     "connect": "Connect Ledger to your device via bluetooth",
     "open_ton_app": "Unlock it and open TON App",
     "install_ton_app": "Install TON App",
-    "confirm_tx": "Confirm your transaction on Ledger"
+    "confirm_tx": "Confirm your transaction on Ledger",
+    "operation_not_supported": "The operation is not available for Ledger wallets. Select another wallet and try again."
   },
   "bluetooth": {
     "powered_off_alert": {

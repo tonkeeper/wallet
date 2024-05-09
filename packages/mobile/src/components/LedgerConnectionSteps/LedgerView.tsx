@@ -1,4 +1,4 @@
-import { Text, View, ns, useTheme } from '@tonkeeper/uikit';
+import { Icon, Text, View, ns, useTheme } from '@tonkeeper/uikit';
 import { FC } from 'react';
 import Svg, { Path, Circle } from 'react-native-svg';
 import { LedgerConnectionCurrentStep } from './types';
@@ -78,10 +78,11 @@ const fontFamily = Platform.select({
 
 interface Props {
   currentStep: LedgerConnectionCurrentStep;
+  showConfirmTxStep?: boolean;
 }
 
 export const LegderView: FC<Props> = (props) => {
-  const { currentStep } = props;
+  const { currentStep, showConfirmTxStep } = props;
 
   const bluetoothStyle = useAnimatedStyle(
     () => ({
@@ -120,9 +121,13 @@ export const LegderView: FC<Props> = (props) => {
         <LedgerPicture />
         <Animated.View style={[styles.textWrapper.static, textStyle]}>
           <View style={styles.textContainer}>
-            <Text type="body3" style={{ fontFamily }} color="textSecondary">
-              {currentStep === 'confirm-tx' ? 'Review' : 'TON ready'}
-            </Text>
+            {currentStep === 'all-completed' && showConfirmTxStep ? (
+              <Icon name="ic-done-16" color="iconSecondary" />
+            ) : (
+              <Text type="body3" style={{ fontFamily }} color="textSecondary">
+                {currentStep === 'confirm-tx' ? 'Review' : 'TON ready'}
+              </Text>
+            )}
           </View>
         </Animated.View>
       </Animated.View>

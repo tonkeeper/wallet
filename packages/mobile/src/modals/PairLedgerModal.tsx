@@ -3,13 +3,8 @@ import { FC, useCallback, useState } from 'react';
 import { LedgerConnectionSteps } from '$components';
 import { t } from '@tonkeeper/shared/i18n';
 import { LedgerConnectionCurrentStep } from 'components/LedgerConnectionSteps/types';
-import { usePairLedger } from './usePairLedger';
-import { useConnectLedger } from './useConnectLedger';
-import { useBluetoothAvailable } from './useBluetoothAvailable';
-import { useLedgerAccounts } from './useLedgerAccounts';
 import { useNavigation } from '@tonkeeper/router';
 import { tk } from '$wallet';
-import flatten from 'lodash/flatten';
 import {
   MainStackRouteNames,
   openSetupNotifications,
@@ -17,6 +12,13 @@ import {
 } from '$navigation';
 import { ImportWalletStackRouteNames } from '$navigation/ImportWalletStack/types';
 import { ImportWalletInfo } from '$wallet/WalletTypes';
+import {
+  useBluetoothAvailable,
+  usePairLedger,
+  useConnectLedger,
+  useLedgerAccounts,
+} from '../ledger';
+import { InteractionManager } from 'react-native';
 
 interface Props {}
 
@@ -52,28 +54,31 @@ export const PairLedgerModal: FC<Props> = () => {
       setLoading(true);
       const accounts = await getLedgerAccounts();
 
-      const walletsInfo = await tk.getLedgerWalletsInfo(accounts);
+      const walletsInfo = await tk.getLedgerWalletsInfo(accounts, deviceId);
 
-      nav.navigate(MainStackRouteNames.ImportWalletStack, {
-        screen: ImportWalletStackRouteNames.ChooseLedgerWallets,
-        params: {
-          walletsInfo,
-          onDone: async (selectedWallets: ImportWalletInfo[]) => {
-            const identifiers = await tk.addLedgerWallets(
-              selectedWallets,
-              deviceId,
-              deviceModel,
-            );
+      nav.goBack();
+      InteractionManager.runAfterInteractions(() => {
+        nav.navigate(MainStackRouteNames.ImportWalletStack, {
+          screen: ImportWalletStackRouteNames.ChooseLedgerWallets,
+          params: {
+            walletsInfo,
+            onDone: async (selectedWallets: ImportWalletInfo[]) => {
+              const identifiers = await tk.addLedgerWallets(
+                selectedWallets,
+                deviceId,
+                deviceModel,
+              );
 
-            const isNotificationsDenied = await tk.wallet.notifications.getIsDenied();
+              const isNotificationsDenied = await tk.wallet.notifications.getIsDenied();
 
-            if (isNotificationsDenied) {
-              openSetupWalletDone(identifiers);
-            } else {
-              openSetupNotifications(identifiers);
-            }
+              if (isNotificationsDenied) {
+                openSetupWalletDone(identifiers);
+              } else {
+                openSetupNotifications(identifiers);
+              }
+            },
           },
-        },
+        });
       });
     } catch {
     } finally {
@@ -102,7 +107,7 @@ export const PairLedgerModal: FC<Props> = () => {
   );
 };
 
-const styles = Steezy.create(({ colors }) => ({
+const styles = Steezy.create(() => ({
   container: {
     marginHorizontal: 16,
   },

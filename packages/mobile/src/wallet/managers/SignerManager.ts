@@ -5,11 +5,24 @@ import { Cell } from '@ton/core';
 import { TonAPI } from '@tonkeeper/core/src/TonAPI';
 import { UnlockedVault } from '$blockchain';
 import { sign } from '@ton/crypto';
-import { navigation } from '@tonkeeper/router';
+import { SheetActions, navigation } from '@tonkeeper/router';
 import { getCurrentRouteName } from '$navigation/imperative';
 import { Signer } from '@tonkeeper/core';
 import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
 import { AppState, Linking } from 'react-native';
+import { FC } from 'react';
+import { TonTransport } from '@ton-community/ton-ledger';
+import { t } from '@tonkeeper/shared/i18n';
+
+let ledgerConfirmModalRef: FC<any> | null = null;
+
+export const setLedgerConfirmModalRef = (ref: FC<any>) => {
+  ledgerConfirmModalRef = ref;
+};
+
+export type LedgerTransaction = Parameters<TonTransport['signTransaction']>[1];
+
+export class SignerError extends Error {}
 
 export class SignerManager {
   private signerPromise: {
@@ -106,6 +119,26 @@ export class SignerManager {
     return Buffer.from(base64Signature, 'base64');
   }
 
+  public async signLedgerTransaction(transaction: LedgerTransaction): Promise<Cell> {
+    const body = await new Promise<Cell>((resolve, reject) => {
+      navigation.push('SheetsProvider', {
+        $$action: SheetActions.ADD,
+        component: ledgerConfirmModalRef,
+        params: {
+          transaction,
+          walletIdentifier: this.config.identifier,
+          onDone: resolve,
+          onClose: () => {
+            reject(new CanceledActionError());
+          },
+        },
+        path: '/ledger-confirm',
+      });
+    });
+
+    return body;
+  }
+
   private createSignerDeeplink(message: Cell, addReturn?: boolean) {
     const body = message.toBoc({ idx: false }).toString('base64');
 
@@ -143,6 +176,10 @@ export class SignerManager {
 
     if (this.config.type === WalletType.Signer) {
       return this.signWithSigner.bind(this);
+    }
+
+    if (this.config.type === WalletType.Ledger) {
+      throw new SignerError(t('ledger.operation_not_supported'));
     }
 
     return this.signWithMnemonic.bind(this);

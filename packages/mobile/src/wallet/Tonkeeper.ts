@@ -308,8 +308,13 @@ export class Tonkeeper {
 
   public async getLedgerWalletsInfo(
     accounts: { index: number; pubkey: string; address: string }[],
+    deviceId: string,
   ) {
     const version = WalletContractVersion.v4R2;
+
+    const addedDeviceAccountIndexes = this.walletsStore.data.wallets
+      .filter((wallet) => deviceId === wallet.ledger?.deviceId)
+      .map((wallet) => wallet.ledger!.accountIndex);
 
     const accountsBalances = await Promise.all(
       accounts.map((account) => this.tonapi.mainnet.accounts.getAccount(account.address)),
@@ -331,6 +336,7 @@ export class Tonkeeper {
         balance: accountsBalances[index].balance,
         tokens: accountsJettons[index].balances.length > 0,
         accountIndex: account.index,
+        isAdded: addedDeviceAccountIndexes.includes(account.index),
       }),
     );
   }

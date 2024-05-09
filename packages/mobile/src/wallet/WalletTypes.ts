@@ -92,6 +92,7 @@ export interface ImportWalletInfo {
   balance: number;
   tokens: boolean;
   accountIndex?: number;
+  isAdded?: boolean;
 }
 
 export type WithWalletIdentifier<T> = T & { walletIdentifier: string };

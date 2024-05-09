@@ -15,6 +15,7 @@ interface Props {
   innerRef?: RefObject<TextInput>;
   comment: string;
   isAbleToEncryptComment: boolean;
+  isCommentValid: boolean;
   isCommentRequired: boolean;
   isCommentEncrypted: boolean;
   setComment: React.Dispatch<React.SetStateAction<string>>;
@@ -28,6 +29,7 @@ const CommentInputComponent: FC<Props> = (props) => {
     comment,
     isAbleToEncryptComment,
     isCommentRequired,
+    isCommentValid,
     isCommentEncrypted,
     setComment,
     setCommentEncrypted,
@@ -94,7 +96,7 @@ const CommentInputComponent: FC<Props> = (props) => {
     <FormItem description={commentDescription}>
       <Input
         innerRef={innerRef}
-        isFailed={commentRequiredError}
+        isFailed={commentRequiredError || !isCommentValid}
         isSuccessful={isCommentEncrypted}
         value={comment}
         onChangeText={handleCommentChange}

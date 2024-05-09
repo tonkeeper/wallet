@@ -15,7 +15,6 @@ import { UpdatesCell } from '$core/ApprovalCell/Updates/UpdatesCell';
 import { UpdateState } from '$store/zustand/updates/types';
 import { ShowBalance } from '$core/HideableAmount/ShowBalance';
 import { ExpiringDomainCell } from './components/ExpiringDomainCell';
-import { BatteryIcon } from '@tonkeeper/shared/components/BatteryIcon/BatteryIcon';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { format } from 'date-fns';
 import { getLocale } from '$utils/date';

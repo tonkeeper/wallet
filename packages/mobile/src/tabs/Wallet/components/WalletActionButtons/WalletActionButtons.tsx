@@ -19,8 +19,6 @@ export const WalletActionButtons = memo(() => {
   const deeplinking = useDeeplinking();
   const flags = useFlags(['disable_swap']);
 
-  const isWatchOnly = wallet.isWatchOnly;
-
   const handlePressSwap = useCallback(() => {
     if (wallet) {
       nav.openModal('Swap');
@@ -92,7 +90,7 @@ export const WalletActionButtons = memo(() => {
       buttons={[
         {
           id: 'send',
-          disabled: isWatchOnly,
+          disabled: wallet.isWatchOnly,
           onPress: handlePressSend,
           icon: 'ic-arrow-up-outline-28',
           title: t('wallet.send_btn'),
@@ -108,11 +106,11 @@ export const WalletActionButtons = memo(() => {
           icon: 'ic-qr-viewfinder-outline-28',
           title: t('wallet.scan_btn'),
           onPress: handlePressScanQR,
-          disabled: isWatchOnly,
+          disabled: wallet.isWatchOnly,
         },
         {
           id: 'swap',
-          disabled: isWatchOnly,
+          disabled: wallet.isWatchOnly || wallet.isLedger,
           onPress: handlePressSwap,
           icon: 'ic-swap-horizontal-outline-28',
           title: t('wallet.swap_btn'),
@@ -128,7 +126,7 @@ export const WalletActionButtons = memo(() => {
         {
           id: 'staking',
           onPress: handlePressStaking,
-          disabled: isWatchOnly,
+          disabled: wallet.isWatchOnly || wallet.isLedger,
           icon: 'ic-staking-outline-28',
           title: t('wallet.stake_btn'),
           visible: !wallet.isTestnet,

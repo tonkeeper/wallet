@@ -20,7 +20,6 @@ import { useGetTokenPrice } from '@tonkeeper/mobile/src/hooks/useTokenPrice';
 
 // TODO: move to shared
 import { ExtraListItem } from './components/ExtraListItem';
-import { Linking } from 'react-native';
 import { Address } from '../../Address';
 import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/useHideableFormatter';
 import {
@@ -30,6 +29,7 @@ import {
   isJettonTransferAction,
 } from '@tonkeeper/mobile/src/wallet/models/ActivityModel';
 import { AmountFormatter } from '@tonkeeper/core';
+import { openDAppBrowser } from '@tonkeeper/mobile/src/navigation';
 
 interface ActionModalContentProps {
   children?: React.ReactNode;
@@ -65,7 +65,7 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
   const hash = ` ${action.event.event_id.substring(0, 8)}`;
 
   const handlePressHash = useCallback(() => {
-    Linking.openURL(
+    openDAppBrowser(
       config.get('transactionExplorer').replace('%s', action.event.event_id),
     );
   }, [action.event.event_id]);

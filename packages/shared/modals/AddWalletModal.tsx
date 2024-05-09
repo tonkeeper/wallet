@@ -132,7 +132,7 @@ export const AddWalletModal = memo<AddWalletModalProps>(({ isTonConnect, isImpor
             <List style={styles.list}>
               <List.Item
                 onPress={() => {
-                  nav.openModal('/pair-ledger');
+                  nav.replaceModal('/pair-ledger');
                 }}
                 leftContentStyle={styles.iconContainer}
                 leftContent={<Icon name="ic-ledger-28" color="accentBlue" />}

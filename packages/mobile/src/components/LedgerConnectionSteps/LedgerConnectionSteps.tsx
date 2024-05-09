@@ -49,7 +49,7 @@ export const LedgerConnectionSteps: FC<Props> = (props) => {
 
   return (
     <View style={styles.container}>
-      <LegderView currentStep={currentStep} />
+      <LegderView currentStep={currentStep} showConfirmTxStep={showConfirmTxStep} />
       <View style={styles.stepsContainer}>
         <View style={styles.step}>
           <StepIcon state={currentStep === 'connect' ? 'active' : 'completed'} />
