@@ -4,6 +4,7 @@ import {
   showBluetoothPoweredOffAlert,
 } from '$utils/bluetoothPermissions';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
+import { delay } from '@tonkeeper/core';
 import { isIOS } from '@tonkeeper/uikit';
 import { useEffect, useState } from 'react';
 import { Observable } from 'rxjs';
@@ -14,19 +15,29 @@ export const useBluetoothAvailable = () => {
   useEffect(() => {
     const subscription = new Observable(TransportBLE.observeState).subscribe({
       next: async (event) => {
-        setAvailable(event.available);
-
         if (event.type === 'Unauthorized') {
           console.log('Bluetooth Unauthorized');
           if (isIOS) {
             showBluetoothPermissionsAlert();
-          } else {
-            await checkAndRequestAndroidBluetooth();
           }
         }
         if (event.type === 'PoweredOff') {
           console.log('Bluetooth Powered Off');
           showBluetoothPoweredOffAlert();
+        }
+
+        if (event.type === 'PoweredOn') {
+          if (isIOS) {
+            setAvailable(event.available);
+          } else {
+            try {
+              await delay(1000);
+              const granted = await checkAndRequestAndroidBluetooth();
+              setAvailable(granted);
+            } catch {
+              setAvailable(false);
+            }
+          }
         }
       },
       complete: () => {},
