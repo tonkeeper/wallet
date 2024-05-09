@@ -8,6 +8,7 @@ export const createTonApiInstance = (isTestnet = false) => {
   return new TonAPI({
     baseHeaders: () => ({
       Authorization: `Bearer ${config.get('tonApiV2Key', isTestnet)}`,
+      'Cache-Control': 'no-cache',
     }),
     baseUrl: () => config.get('tonapiIOEndpoint', isTestnet),
   });

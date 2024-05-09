@@ -491,7 +491,10 @@ export class TonWallet {
       ? tk.wallet.battery.excessesAccount
       : tk.wallet.address.ton.raw;
 
+    const timeout = await getTimeoutFromLiteserverSafely();
+
     const boc = this.createJettonTransfer({
+      timeout,
       seqno,
       jettonWalletAddress,
       recipient,
