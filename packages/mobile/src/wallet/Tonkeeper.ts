@@ -123,12 +123,12 @@ export class Tonkeeper {
   }
 
   public get walletForUnlock() {
-    if (this.wallet && !this.wallet.isWatchOnly && !this.wallet.isSigner) {
+    if (this.wallet && !this.wallet.isWatchOnly && !this.wallet.isExternal) {
       return this.wallet;
     }
 
     return Array.from(this.wallets.values()).find(
-      (wallet) => !wallet.isWatchOnly && !wallet.isSigner,
+      (wallet) => !wallet.isWatchOnly && !wallet.isExternal,
     )!;
   }
 
@@ -224,6 +224,27 @@ export class Tonkeeper {
       : DEFAULT_WALLET_STYLE_CONFIG.name;
   }
 
+  private getLedgerWalletNames(deviceName: string, walletsInfo: ImportWalletInfo[]) {
+    const regex = new RegExp(`${deviceName} (\\d+)`);
+    let lastNumber = [...this.wallets.values()].reduce((maxNumber, wallet) => {
+      const match = wallet.config.name.match(regex);
+      return match ? Math.max(maxNumber, Number(match[1])) : maxNumber;
+    }, 0);
+
+    if (
+      lastNumber === 0 &&
+      [...this.wallets.values()].map((wallet) => wallet.config.name).includes(deviceName)
+    ) {
+      lastNumber = 1;
+    }
+
+    if (walletsInfo.length === 1 && lastNumber === 0) {
+      return [`${deviceName}`];
+    }
+
+    return walletsInfo.map((_, index) => `${deviceName} ${lastNumber + index + 1}`);
+  }
+
   public async createWallet(passcode: string) {
     const mnemonic = (await Mnemonic.generateMnemonic(24)).join(' ');
     return await this.importWallet(mnemonic, passcode, [DEFAULT_WALLET_VERSION], {
@@ -285,6 +306,41 @@ export class Tonkeeper {
     return walletsInstances.map((item) => item.identifier);
   }
 
+  public async getLedgerWalletsInfo(
+    accounts: { index: number; pubkey: string; address: string }[],
+    deviceId: string,
+  ) {
+    const version = WalletContractVersion.v4R2;
+
+    const addedDeviceAccountIndexes = this.walletsStore.data.wallets
+      .filter((wallet) => deviceId === wallet.ledger?.deviceId)
+      .map((wallet) => wallet.ledger!.accountIndex);
+
+    const accountsBalances = await Promise.all(
+      accounts.map((account) => this.tonapi.mainnet.accounts.getAccount(account.address)),
+    );
+
+    const accountsJettons = await Promise.all(
+      accounts.map((account) =>
+        this.tonapi.mainnet.accounts.getAccountJettonsBalances({
+          accountId: account.address,
+        }),
+      ),
+    );
+
+    return accounts.map(
+      (account, index): ImportWalletInfo => ({
+        pubkey: account.pubkey,
+        version,
+        address: account.address,
+        balance: accountsBalances[index].balance,
+        tokens: accountsJettons[index].balances.length > 0,
+        accountIndex: account.index,
+        isAdded: addedDeviceAccountIndexes.includes(account.index),
+      }),
+    );
+  }
+
   public async getWalletsInfo(pubkey: string, isTestnet: boolean) {
     const tonapi = isTestnet ? this.tonapi.testnet : this.tonapi.mainnet;
 
@@ -311,6 +367,7 @@ export class Tonkeeper {
     const wallets = accounts
       .map(
         (account, index): ImportWalletInfo => ({
+          pubkey,
           version: versionByAddress[account.address],
           address: account.address,
           balance: account.balance,
@@ -321,6 +378,7 @@ export class Tonkeeper {
 
     if (!wallets.some((wallet) => wallet.version === DEFAULT_WALLET_VERSION)) {
       wallets.push({
+        pubkey,
         version: DEFAULT_WALLET_VERSION,
         address: addresses[DEFAULT_WALLET_VERSION].raw,
         balance: 0,
@@ -384,6 +442,47 @@ export class Tonkeeper {
     await this.setWallet(wallet);
 
     return [wallet.identifier];
+  }
+
+  public async addLedgerWallets(
+    walletsInfo: ImportWalletInfo[],
+    deviceId: string,
+    deviceModel: string,
+  ) {
+    const walletNames = this.getLedgerWalletNames(deviceModel, walletsInfo);
+
+    const ledgerWallets: WalletConfig[] = walletsInfo.map((walletInfo, index) => {
+      const workchain = Number(walletInfo.address.split(':')[0]);
+
+      const identifier = uuidv4();
+
+      return {
+        ...DEFAULT_WALLET_STYLE_CONFIG,
+        name: walletNames[index],
+        identifier,
+        network: WalletNetwork.mainnet,
+        type: WalletType.Ledger,
+        pubkey: walletInfo.pubkey,
+        workchain,
+        version: walletInfo.version,
+        ledger: {
+          deviceId,
+          deviceModel,
+          accountIndex: walletInfo.accountIndex!,
+        },
+      };
+    });
+
+    await this.walletsStore.setAsync(({ wallets }) => ({
+      wallets: [...wallets, ...ledgerWallets],
+    }));
+    const walletsInstances = await Promise.all(
+      ledgerWallets.map((wallet) => this.createWalletInstance(wallet)),
+    );
+
+    await this.setWallet(walletsInstances[0]);
+
+    return walletsInstances.map((item) => item.identifier);
   }
 
   public async addSignerWallet(

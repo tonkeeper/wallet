@@ -87,7 +87,7 @@ const EncryptedCommentComponent: React.FC<EncryptedCommentProps> = (props) => {
   );
 
   const handleDecryptComment = useCallback(() => {
-    if (tk.wallet.isWatchOnly || tk.wallet.isSigner) {
+    if (tk.wallet.isWatchOnly || tk.wallet.isExternal) {
       return;
     }
     openEncryptedCommentModalIfNeeded(() =>

@@ -67,7 +67,7 @@ export const MainStack: FC = () => {
   const shouldObtainTonProof =
     hasWallet &&
     !wallet.isWatchOnly &&
-    !wallet.isSigner &&
+    !wallet.isExternal &&
     !wallet.tonProof.tonProofToken;
 
   const showLockScreen =

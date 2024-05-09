@@ -53,6 +53,7 @@ import { getTimeSec } from '$utils/getTimeSec';
 import { Toast } from '$store';
 import { config } from '$config';
 import { NetworkOverloadedError } from '@tonkeeper/shared/utils/blockchain';
+import { SignerError } from '$wallet/managers/SignerManager';
 
 const tokensWithAllowedEncryption = [TokenType.TON, TokenType.Jetton];
 
@@ -333,7 +334,8 @@ export const Send: FC<SendProps> = ({ route }) => {
               setSending(false);
               onFail(
                 error instanceof NetworkOverloadedError ||
-                  error instanceof CanceledActionError
+                  error instanceof CanceledActionError ||
+                  error instanceof SignerError
                   ? error
                   : new DismissedActionError(),
               );
@@ -495,7 +497,7 @@ export const Send: FC<SendProps> = ({ route }) => {
           {(stepProps) => (
             <AddressStep
               enableEncryption={
-                tokensWithAllowedEncryption.includes(tokenType) && !tk.wallet.isSigner
+                tokensWithAllowedEncryption.includes(tokenType) && !tk.wallet.isExternal
               }
               recipient={recipient}
               decimals={decimals}

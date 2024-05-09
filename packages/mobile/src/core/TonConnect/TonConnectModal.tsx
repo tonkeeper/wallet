@@ -42,13 +42,13 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
   const theme = useTheme();
   const nav = useNavigation();
   const [selectedWalletIdentifier, setSelectedWalletIdentifier] = React.useState<string>(
-    tk.wallet.isWatchOnly || tk.wallet.isSigner
+    tk.wallet.isWatchOnly || tk.wallet.isExternal
       ? tk.walletForUnlock.identifier
       : tk.wallet.identifier,
   );
   const allWallets = useWallets();
   const selectableWallets = useMemo(
-    () => allWallets.filter((wallet) => !wallet.isWatchOnly && !wallet.isSigner),
+    () => allWallets.filter((wallet) => !wallet.isWatchOnly && !wallet.isExternal),
     [allWallets],
   );
   const wallet = useMemo(

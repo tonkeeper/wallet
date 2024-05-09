@@ -12,11 +12,7 @@ import {
   createNativeStackNavigator,
   NativeStackNavigationOptions,
 } from '@react-navigation/native-stack';
-import {
-  SheetActions,
-  SheetsProvider,
-  SheetsProviderRef,
-} from './SheetsProvider';
+import { SheetActions, SheetsProvider, SheetsProviderRef } from './SheetsProvider';
 import { RootStackContext } from './context/RootStackContext';
 import { ModalBehaviorContext } from './context/ModalBehaviorContext';
 import { SheetRoutesContext } from './context/SheetRoutesContext';
@@ -191,7 +187,7 @@ const SheetContainer = memo<any>((props) => {
     } else {
       console.warn('No $$action');
     }
-  }, [$$action]);
+  }, [path]);
 
   return <SheetsProvider ref={ref} />;
 });

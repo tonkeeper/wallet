@@ -22,6 +22,7 @@ export enum WalletType {
   WatchOnly = 'WatchOnly',
   Signer = 'Signer',
   SignerDeeplink = 'SignerDeeplink',
+  Ledger = 'Ledger',
 }
 
 export enum WalletContractVersion {
@@ -77,13 +78,21 @@ export interface WalletConfig extends WalletStyleConfig {
   /** lockup */
   allowedDestinations?: string;
   configPubKey?: string;
+  ledger?: {
+    deviceId: string;
+    deviceModel: string;
+    accountIndex: number;
+  };
 }
 
 export interface ImportWalletInfo {
+  pubkey: string;
   version: WalletContractVersion;
   address: string;
   balance: number;
   tokens: boolean;
+  accountIndex?: number;
+  isAdded?: boolean;
 }
 
 export type WithWalletIdentifier<T> = T & { walletIdentifier: string };

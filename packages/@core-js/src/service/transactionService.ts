@@ -39,7 +39,7 @@ export class TransactionService {
     return Math.floor(Date.now() / 1e3) + TransactionService.TTL;
   }
 
-  private static externalMessage(contract: WalletContract, seqno: number, body: Cell) {
+  public static externalMessage(contract: WalletContract, seqno: number, body: Cell) {
     return beginCell()
       .storeWritable(
         storeMessage(

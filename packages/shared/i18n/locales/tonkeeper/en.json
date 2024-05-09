@@ -1109,6 +1109,7 @@
     "subtitle": "Create a new wallet or add an existing one.",
     "import_title": "Import Wallet",
     "import_subtitle": "Choose from the options below.",
+    "other_options": "Other options",
     "create": {
       "title": "New Wallet",
       "subtitle": "Create new wallet"
@@ -1128,6 +1129,10 @@
     "signer": {
       "title": "Pair with Signer",
       "subtitle": "A higher level of control and security"
+    },
+    "ledger": {
+      "title": "Pair with Ledger",
+      "subtitle": "A higher level of security with hardware wallet"
     }
   },
   "add_watch_only": {
@@ -1152,7 +1157,8 @@
   "choose_wallets": {
     "title": "Choose Wallets",
     "subtitle": "Choose wallets you want to add.",
-    "tokens": "tokens"
+    "tokens": "tokens",
+    "already_added": "Already added"
   },
   "old_wallet_error": "Use wallet with v4R2 version",
   "migration": {
@@ -1248,5 +1254,28 @@
     "open_signer": "Open Signer on this device",
     "title": "Scan QR code",
     "subtitle": "Open Signer » Select the required key » Scan QR code"
+  },
+  "ledger": {
+    "confirm_title": "Confirm Action",
+    "connect_title": "Connect Ledger",
+    "connect": "Connect Ledger to your device via Bluetooth",
+    "open_ton_app": "Unlock it and open TON App",
+    "install_ton_app": "Install TON App",
+    "confirm_tx": "Confirm your transaction on Ledger",
+    "operation_not_supported": "The operation is not available for Ledger wallets. Select another wallet and try again."
+  },
+  "bluetooth": {
+    "powered_off_alert": {
+      "title": "Bluetooth is off",
+      "message": "Please turn on Bluetooth to use this feature",
+      "open_settings": "Open Settings",
+      "cancel": "Cancel"
+    },
+    "permissions_alert": {
+      "title": "Bluetooth Permissions",
+      "message": "Please enable Bluetooth permissions in your settings to use this feature",
+      "open_settings": "Open Settings",
+      "cancel": "Cancel"
+    }
   }
 }

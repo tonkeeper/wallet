@@ -55,6 +55,7 @@ import {
 import { openAboutRiskAmountModal } from '@tonkeeper/shared/modals/AboutRiskAmountModal';
 import { toNano } from '@ton/core';
 import BigNumber from 'bignumber.js';
+import { WalletContractV4 } from '@ton/ton';
 
 interface SignRawModalProps {
   consequences?: MessageConsequences;
@@ -306,7 +307,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
       </Modal.ScrollView>
       <Modal.Footer>
         <NFTOperationFooter
-          withSlider={!wallet.isSigner}
+          withSlider={!wallet.isExternal}
           onPressConfirm={handleConfirm}
           redirectToActivity={redirectToActivity}
           ref={footerRef}

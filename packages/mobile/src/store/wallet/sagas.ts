@@ -284,7 +284,7 @@ function* sendCoinsWorker(action: SendCoinsAction) {
     let commentValue: Cell | string = comment;
 
     if (
-      !tk.wallet.isSigner &&
+      !tk.wallet.isExternal &&
       isCommentEncrypted &&
       comment.length > 0 &&
       encryptedCommentPrivateKey

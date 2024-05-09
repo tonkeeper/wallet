@@ -20,6 +20,7 @@ export type TextColors =
   | 'accentRed'
   | 'accentGreen'
   | 'accentBlue'
+  | 'accentPurple'
   | 'constantWhite'
   | 'constantBlack'
   | 'buttonPrimaryForeground';
