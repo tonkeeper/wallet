@@ -8,8 +8,6 @@ import {
   SetAccentAction,
   SetLogsAction,
   SetNotificationsAction,
-  SetTimeSyncedAction,
-  SetTimeSyncedDismissedAction,
   SetTonCustomIcon,
   SetUnlockedAction,
   UpdateBadHostsAction,
@@ -19,8 +17,6 @@ import { walletWalletSelector } from '$store/wallet';
 
 const initialState: MainState = {
   isInitiating: true,
-  isTimeSynced: true,
-  timeSyncedDismissedTimestamp: false,
   badHosts: [],
   isBadHostsDismissed: false,
   internalNotifications: [],
@@ -45,11 +41,6 @@ export const { actions, reducer } = createSlice({
       state.isUnlocked = action.payload;
     },
 
-    getTimeSynced() {},
-    setTimeSynced(state, action: SetTimeSyncedAction) {
-      state.isTimeSynced = action.payload;
-    },
-
     updateBadHosts(state, action: UpdateBadHostsAction) {
       if (JSON.stringify(state.badHosts) !== JSON.stringify(action.payload)) {
         state.isBadHostsDismissed = false;
@@ -59,10 +50,6 @@ export const { actions, reducer } = createSlice({
 
     dismissBadHosts(state) {
       state.isBadHostsDismissed = true;
-    },
-
-    setTimeSyncedDismissed(state, action: SetTimeSyncedDismissedAction) {
-      state.timeSyncedDismissedTimestamp = action.payload;
     },
 
     loadNotifications() {},
@@ -136,9 +123,4 @@ export const accentTonIconSelector = createSelector(
   walletWalletSelector,
   customIconSelector,
   (wallet, tonCustomIcon) => (wallet ? tonCustomIcon : null),
-);
-
-export const isTimeSyncedSelector = createSelector(
-  mainSelector,
-  (state) => state.isTimeSynced,
 );

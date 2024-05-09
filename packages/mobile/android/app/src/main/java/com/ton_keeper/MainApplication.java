@@ -20,6 +20,9 @@ import com.ton_keeper.walletstore.WalletStorePackage;
 
 import java.util.List;
 
+import java.lang.reflect.Field;
+import android.database.CursorWindow;
+
 public class MainApplication extends Application implements ReactApplication {
 
   private final ReactNativeHost mReactNativeHost =
@@ -69,6 +72,18 @@ public class MainApplication extends Application implements ReactApplication {
     }
     ReactNativeFlipper.initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
     ApplicationLifecycleDispatcher.onApplicationCreate(this);
+
+    // https://github.com/react-native-async-storage/async-storage/issues/537
+    try {
+        Field field = CursorWindow.class.getDeclaredField("sCursorWindowSize");
+        field.setAccessible(true);
+        field.set(null, 300 * 1024 * 1024);
+    } catch (Exception e) {
+        if (BuildConfig.DEBUG) {
+            e.printStackTrace();
+        }
+    }
+
   }
 
   @Override

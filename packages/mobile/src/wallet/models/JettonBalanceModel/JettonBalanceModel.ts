@@ -1,5 +1,5 @@
 import { Address, AmountFormatter } from '@tonkeeper/core';
-import { JettonBalance } from '@tonkeeper/core/src/TonAPI';
+import { JettonBalance, JettonVerificationType } from '@tonkeeper/core/src/TonAPI';
 import { JettonMetadata, JettonVerification } from './types';
 
 export class JettonBalanceModel {
@@ -28,5 +28,9 @@ export class JettonBalanceModel {
     this.walletAddress = new Address(jettonBalance.wallet_address.address).toFriendly();
     this.verification = jettonBalance.jetton
       .verification as unknown as JettonVerification;
+
+    if (jettonBalance.jetton.verification === JettonVerificationType.Blacklist) {
+      this.metadata.symbol = 'FAKE';
+    }
   }
 }

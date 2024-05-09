@@ -5,7 +5,6 @@ import { getTimeSec } from '$utils/getTimeSec';
 import { useNavigation } from '@tonkeeper/router';
 import { getCorrectUrl, getDomainFromURL, isAndroid } from '$utils';
 import { logEvent } from '@amplitude/analytics-browser';
-import { checkIsTimeSynced } from '$navigation/hooks/useDeeplinkingResolvers';
 import { useWebViewBridge } from '$hooks/jsBridge';
 import { useWallet } from '@tonkeeper/shared/hooks';
 import { config } from '$config';
@@ -69,12 +68,6 @@ export const Swap: FC<Props> = (props) => {
       sendTransaction: (request) =>
         new Promise((resolve, reject) => {
           const { valid_until } = request;
-
-          if (!checkIsTimeSynced()) {
-            reject();
-
-            return;
-          }
 
           if (valid_until < getTimeSec()) {
             reject();

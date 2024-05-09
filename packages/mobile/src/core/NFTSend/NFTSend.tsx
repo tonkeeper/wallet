@@ -35,7 +35,11 @@ import { delay } from '$utils';
 import { Toast } from '$store';
 import axios from 'axios';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
-import { emulateBoc, sendBoc } from '@tonkeeper/shared/utils/blockchain';
+import {
+  emulateBoc,
+  getTimeoutFromLiteserverSafely,
+  sendBoc,
+} from '@tonkeeper/shared/utils/blockchain';
 import {
   checkIsInsufficient,
   openInsufficientFundsModal,
@@ -150,7 +154,9 @@ export const NFTSend: FC<Props> = (props) => {
         wallet.config.workchain,
       );
 
+      const timeout = await getTimeoutFromLiteserverSafely();
       const boc = TransactionService.createTransfer(contract, {
+        timeout,
         messages: nftTransferMessages,
         seqno: await getWalletSeqno(),
         secretKey: Buffer.alloc(64),
@@ -312,7 +318,9 @@ export const NFTSend: FC<Props> = (props) => {
         vault.workchain,
       );
 
+      const timeout = await getTimeoutFromLiteserverSafely();
       const boc = TransactionService.createTransfer(contract, {
+        timeout,
         messages: nftTransferMessages,
         seqno: await getWalletSeqno(),
         sendMode: 3,

@@ -11,7 +11,11 @@ import {
   ActionItem,
   AnyActionItem,
 } from './ActivityModelTypes';
-import { AccountEvent, ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
+import {
+  AccountEvent,
+  ActionStatusEnum,
+  JettonVerificationType,
+} from '@tonkeeper/core/src/TonAPI';
 import { toLowerCaseFirstLetter } from '@tonkeeper/uikit';
 import { Address } from '@tonkeeper/core';
 import { TronEvent } from '@tonkeeper/core/src/TronAPI/TronAPIGenerated';
@@ -167,7 +171,10 @@ export class ActivityModel {
           type: ActionAmountType.Jetton,
           jettonAddress: payload.jetton.address,
           decimals: payload.jetton.decimals,
-          symbol: payload.jetton.symbol,
+          symbol:
+            payload.jetton.verification === JettonVerificationType.Blacklist
+              ? 'FAKE'
+              : payload.jetton.symbol,
           value: payload.amount,
         };
       case ActionType.NftPurchase:

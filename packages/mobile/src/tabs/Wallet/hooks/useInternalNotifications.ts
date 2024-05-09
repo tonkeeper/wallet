@@ -2,7 +2,6 @@ import { usePrevious } from '$hooks/usePrevious';
 import { mainActions, mainSelector } from '$store/main';
 import { InternalNotificationProps } from '$uikit/InternalNotification/InternalNotification.interface';
 import { useNetInfo } from '@react-native-community/netinfo';
-import { MainDB } from '$database';
 import { useEffect, useMemo, useState } from 'react';
 import { Linking } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -31,13 +30,8 @@ export const useInternalNotifications = () => {
     }
   }, [netInfo.isConnected, prevNetInfo.isConnected, dispatch]);
 
-  const {
-    badHosts,
-    isBadHostsDismissed,
-    internalNotifications,
-    timeSyncedDismissedTimestamp,
-    isTimeSynced,
-  } = useSelector(mainSelector);
+  const { badHosts, isBadHostsDismissed, internalNotifications } =
+    useSelector(mainSelector);
 
   const addressUpdateDismissed = useAddressUpdateStore((s) => s.dismissed);
   const shouldShowAddressUpdate = useFlag('address_style_notice');
@@ -76,20 +70,6 @@ export const useInternalNotifications = () => {
         ),
         mode: 'danger',
         onClose: () => dispatch(mainActions.dismissBadHosts()),
-      });
-    } else if (
-      !isTimeSynced &&
-      (!timeSyncedDismissedTimestamp ||
-        timeSyncedDismissedTimestamp < Date.now() - 7 * 24 * 60 * 60 * 1000)
-    ) {
-      result.push({
-        title: t('notify_incorrect_time_err_title'),
-        caption: t('notify_incorrect_time_err_caption'),
-        mode: 'tertiary',
-        onClose: () => {
-          MainDB.setTimeSyncedDismissed(Date.now());
-          dispatch(mainActions.setTimeSyncedDismissed(Date.now()));
-        },
       });
     }
 
@@ -139,8 +119,6 @@ export const useInternalNotifications = () => {
     netInfo.isConnected,
     badHosts,
     isBadHostsDismissed,
-    isTimeSynced,
-    timeSyncedDismissedTimestamp,
     wallet,
     addressUpdateDismissed,
     shouldShowAddressUpdate,

@@ -1,5 +1,4 @@
 import { config } from '$config';
-import { init, logEvent } from '@amplitude/analytics-browser';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Aptabase from '@aptabase/react-native';
 import DeviceInfo from 'react-native-device-info';
@@ -19,20 +18,6 @@ export function initStats() {
       appVersion: DeviceInfo.getVersion(),
     });
   }
-  init(config.get('amplitudeKey'), '-', {
-    minIdLength: 1,
-    deviceId: '-',
-    trackingOptions: {
-      ipAddress: false,
-      deviceModel: true,
-      language: false,
-      osName: true,
-      osVersion: true,
-      platform: true,
-      adid: false,
-      carrier: false,
-    },
-  });
   TrakingEnabled = true;
 }
 
@@ -48,7 +33,6 @@ export async function trackEvent(name: string, params: any = {}) {
         Object.assign(params, { firebase_user_id: DeviceInfo.getUniqueId() }),
       );
     }
-    logEvent(name, params);
   } catch (e) {}
 }
 
