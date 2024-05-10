@@ -7,7 +7,7 @@ import DeviceInfo from 'react-native-device-info';
 import { useNavigation } from '@tonkeeper/router';
 import { config } from '$config';
 import RNRestart from 'react-native-restart';
-import { FC, useCallback, useState } from 'react';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { openLogs } from '$navigation';
 import Clipboard from '@react-native-community/clipboard';
 import { tk } from '$wallet';
@@ -18,6 +18,8 @@ export const DevMenu: FC = () => {
   const addNotification = useNotificationsStore((state) => state.actions.addNotification);
 
   const [_, rerender] = useState(0);
+
+  const shouldRestartRef = useRef(false);
 
   const handleSave = useCallback(() => rerender((c) => c + 1), []);
 
@@ -102,6 +104,7 @@ export const DevMenu: FC = () => {
   const toggleV5 = useCallback(() => {
     config.set({ v5_enabled: !config.get('v5_enabled') });
     handleSave();
+    shouldRestartRef.current = true;
   }, [handleSave]);
 
   const handleClearActivityCache = useCallback(() => {
@@ -113,6 +116,14 @@ export const DevMenu: FC = () => {
       tk.wallet.tonActivityList.state.clear();
       tk.wallet.tonActivityList.state.clearPersist();
     }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (shouldRestartRef.current) {
+        RNRestart.Restart();
+      }
+    };
   }, []);
 
   return (
