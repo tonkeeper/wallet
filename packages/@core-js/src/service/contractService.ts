@@ -1,5 +1,5 @@
 import { AnyAddress, tonAddress } from './transactionService';
-import { beginCell, Cell, comment } from '@ton/core';
+import { beginCell, Cell, comment, Contract, storeStateInit } from '@ton/core';
 import {
   WalletContractV4R1,
   LockupContractV1,
@@ -7,6 +7,8 @@ import {
 } from '../legacy';
 import { WalletContractV3R1, WalletContractV3R2, WalletContractV4 } from '@ton/ton';
 import nacl from 'tweetnacl';
+import { WalletContractV5 } from '@ton/ton/dist/wallets/WalletContractV5';
+import { WalletNetwork } from '@tonkeeper/mobile/src/wallet/WalletTypes';
 
 export type Signer = (message: Cell) => Promise<Buffer>;
 
@@ -22,6 +24,7 @@ export enum WalletVersion {
   v4R1 = 2,
   v4R2 = 3,
   LockupV1 = 4,
+  v5R1 = 5,
 }
 
 export const mappedFromLegacyWalletVersion = {
@@ -33,6 +36,7 @@ export const mappedFromLegacyWalletVersion = {
 };
 
 export const contractVersionsMap = {
+  v5R1: WalletVersion.v5R1,
   v4R2: WalletVersion.v4R2,
   v4R1: WalletVersion.v4R1,
   v3R2: WalletVersion.v3R2,
@@ -45,7 +49,8 @@ export type WalletContract =
   | WalletContractV3R1
   | WalletContractV3R2
   | WalletContractV4R1
-  | WalletContractV4;
+  | WalletContractV4
+  | WalletContractV5;
 
 export interface CreateNftTransferBodyParams {
   forwardAmount?: number | bigint;
@@ -74,6 +79,7 @@ export class ContractService {
     version: WalletVersion,
     publicKey: Buffer,
     workchain: number,
+    network: WalletNetwork,
     additionalParams?: LockupContractV1AdditionalParams,
   ) {
     switch (version) {
@@ -85,6 +91,14 @@ export class ContractService {
         return WalletContractV4R1.create({ workchain, publicKey });
       case WalletVersion.v4R2:
         return WalletContractV4.create({ workchain, publicKey });
+      case WalletVersion.v5R1:
+        return WalletContractV5.create({
+          walletId: {
+            workChain: workchain,
+            networkGlobalId: network,
+          },
+          publicKey,
+        });
       case WalletVersion.LockupV1:
         return LockupContractV1.create({ workchain, publicKey, additionalParams });
     }
@@ -134,5 +148,13 @@ export class ContractService {
       .storeCoins(createJettonTransferBodyParams.forwardAmount ?? 1n)
       .storeMaybeRef(this.prepareForwardBody(createJettonTransferBodyParams.forwardBody))
       .endCell();
+  }
+
+  static getStateInit(contract: Contract) {
+    return beginCell()
+      .store(storeStateInit(contract.init!))
+      .endCell()
+      .toBoc({ idx: false })
+      .toString('base64');
   }
 }

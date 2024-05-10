@@ -82,6 +82,8 @@ export type AppConfigVars = {
   notcoin_burn_addresses: string[];
   notcoin_burn_date: number;
   notcoin_burn: boolean;
+
+  v5_enabled: boolean;
 };
 
 const defaultConfig: Partial<AppConfigVars> = {
@@ -139,6 +141,8 @@ const defaultConfig: Partial<AppConfigVars> = {
   notcoin_nft_collection:
     '0:e6923eb901bfe6d1a65a5bc2292b0e2462a220213c3f1d1b2d60491543a34860',
   notcoin_bot_url: 'https://t.me/notcoin_bot',
+
+  v5_enabled: false,
 };
 
 export const config = new AppConfig<AppConfigVars>({

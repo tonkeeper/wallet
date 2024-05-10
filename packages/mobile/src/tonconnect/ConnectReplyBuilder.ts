@@ -142,16 +142,14 @@ export class ConnectReplyBuilder {
   }
 
   static createAutoConnectReplyItems(
-    addr: string,
+    rawAddress: string,
     publicKey: Uint8Array,
     walletStateInit: string,
   ): ConnectItemReply[] {
-    const address = new TonWeb.utils.Address(addr).toString(false, true, true);
-
     return [
       {
         name: 'ton_addr',
-        address,
+        address: rawAddress,
         network: getChainName() === 'mainnet' ? CHAIN.MAINNET : CHAIN.TESTNET,
         publicKey: Buffer.from(publicKey).toString('hex'),
         walletStateInit,

@@ -1,7 +1,8 @@
 import TonWeb, { AddressType } from 'tonweb';
 import { ContractService, mappedFromLegacyWalletVersion } from '../service';
+import { WalletNetwork } from '@tonkeeper/mobile/src/wallet/WalletTypes';
 
-const ContractVersions = ['lockup-0.1', 'v3R1', 'v3R2', 'v4R1', 'v4R2'] as const;
+const ContractVersions = ['lockup-0.1', 'v3R1', 'v3R2', 'v4R1', 'v4R2', 'v5R1'] as const;
 
 export type AddressFormats = {
   friendly: string;
@@ -105,11 +106,14 @@ export class Address {
         continue;
       }
 
+      const isLockup = contractVersion === 'lockup-0.1';
+
       const contract = ContractService.getWalletContract(
         mappedFromLegacyWalletVersion[contractVersion],
         Buffer.from(pubkey, 'hex'),
-        lockupConfig?.workchain ?? 0,
-        contractVersion === 'lockup-0.1'
+        isLockup ? lockupConfig?.workchain ?? 0 : 0,
+        isTestnet ? WalletNetwork.testnet : WalletNetwork.mainnet,
+        isLockup
           ? {
               lockupPubKey: lockupConfig?.configPubKey,
               allowedDestinations: lockupConfig?.allowedDestinations,

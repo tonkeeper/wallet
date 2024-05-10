@@ -42,6 +42,7 @@ import { tk } from '$wallet';
 import { TonConnectRemoteBridge } from './TonConnectRemoteBridge';
 import { WithWalletIdentifier } from '$wallet/WalletTypes';
 import { getDomainFromURL } from '$utils';
+import { ContractService } from '@tonkeeper/core';
 
 class TonConnectService {
   checkProtocolVersionCapability(protocolVersion: number) {
@@ -203,28 +204,17 @@ class TonConnectService {
         );
       }
 
-      const state = store.getState();
-      const currentWalletAddress = state.wallet?.address?.ton;
-
-      let walletStateInit = '';
-      let publicKey = new Uint8Array();
+      let stateInit = '';
       try {
-        if (state.wallet?.wallet?.vault?.tonPublicKey) {
-          publicKey = state.wallet.wallet.vault.tonPublicKey;
-        }
-        if (state.wallet?.wallet) {
-          const tonWallet = state.wallet.wallet.vault.tonWallet;
-          const { stateInit } = await tonWallet.createStateInit();
-          walletStateInit = TonWeb.utils.bytesToBase64(await stateInit.toBoc(false));
-        }
+        stateInit = ContractService.getStateInit(tk.wallet.contract);
       } catch (err) {
         debugLog(err);
       }
 
       const replyItems = ConnectReplyBuilder.createAutoConnectReplyItems(
-        currentWalletAddress,
-        publicKey,
-        walletStateInit,
+        tk.wallet.address.ton.raw,
+        Buffer.from(tk.wallet.pubkey, 'hex'),
+        stateInit,
       );
 
       if (
@@ -234,7 +224,7 @@ class TonConnectService {
       ) {
         saveAppConnection(
           tk.wallet.isTestnet,
-          currentWalletAddress,
+          tk.wallet.address.ton.raw,
           {
             name: connectedApp.name,
             url: connectedApp.url,

@@ -2,10 +2,13 @@ import { Buffer } from 'buffer';
 import { Ton } from '$libs/Ton';
 import { wordlist } from '$libs/Ton/mnemonic/wordlist';
 import { config } from '$config';
+import { WalletContractVersion } from '$wallet/WalletTypes';
+
+const DEFAULT_WALLET_VERSION = config.get('v5_enabled')
+  ? WalletContractVersion.v5R1
+  : WalletContractVersion.v4R2;
 
 const TonWeb = require('tonweb');
-
-const DEFAULT_VERSION = 'v4R2';
 
 // Non-secret metadata of the vault necessary to generate addresses and check balances.
 export type VaultJSON = {
@@ -57,7 +60,7 @@ export class Vault {
     // whether the password is required or not. We use password only for on-device storage,
     // and keep *this* password empty.
     const phrase = (await Ton.mnemonic.generateMnemonic(24)).join(' ');
-    return await Vault.restore(name, phrase, [DEFAULT_VERSION]);
+    return await Vault.restore(name, phrase, [DEFAULT_WALLET_VERSION]);
   }
 
   // Restores the wallet from the mnemonic phrase.
@@ -117,26 +120,8 @@ export class Vault {
     return this.info.version;
   }
 
-  getWalletId() {
-    if (this.info.version) {
-      const wallet = this.tonWalletByVersion(this.info.version);
-      return wallet?.options?.walletId ?? null;
-    }
-
-    return null;
-  }
-
   public get workchain() {
     return this.info.workchain ?? 0;
-  }
-
-  getLockupConfig() {
-    return {
-      wallet_type: this.info.version,
-      workchain: this.info.workchain,
-      config_pubkey: this.info.configPubKey,
-      allowed_destinations: this.info.allowedDestinations,
-    };
   }
 
   // Encodes non-secret metadata into a JSON object for storage on disk.
@@ -151,13 +136,12 @@ export class Vault {
     };
   }
 
-  // TON public key
-  get tonPublicKey(): Uint8Array {
-    return this.info.tonPubkey;
-  }
-
   // TON wallet instance.
   get tonWallet(): any {
+    if (this.info.version === WalletContractVersion.v5R1) {
+      return null;
+    }
+
     const tonweb = new TonWeb(
       new TonWeb.HttpProvider(config.get('tonEndpoint'), {
         apiKey: config.get('tonEndpointAPIKey'),
@@ -166,7 +150,7 @@ export class Vault {
 
     if (this.info.version && this.info.version.substr(0, 6) === 'lockup') {
       return new tonweb.lockupWallet.all[this.info.version](tonweb.provider, {
-        publicKey: this.tonPublicKey,
+        publicKey: this.info.tonPubkey,
         wc: this.info.workchain ?? 0,
         config: {
           wallet_type: this.info.version,
@@ -176,48 +160,13 @@ export class Vault {
       });
     }
 
-    return new tonweb.wallet.all[this.info.version ?? DEFAULT_VERSION](tonweb.provider, {
-      publicKey: this.tonPublicKey,
-      wc: 0,
-    });
-  }
-
-  tonWalletByVersion(version: string) {
-    const tonweb = new TonWeb(
-      new TonWeb.HttpProvider(config.get('tonEndpoint'), {
-        apiKey: config.get('tonEndpointAPIKey'),
-      }),
+    return new tonweb.wallet.all[this.info.version ?? DEFAULT_WALLET_VERSION](
+      tonweb.provider,
+      {
+        publicKey: this.info.tonPubkey,
+        wc: 0,
+      },
     );
-
-    return new tonweb.wallet.all[version](tonweb.provider, {
-      publicKey: this.tonPublicKey,
-      wc: 0,
-    });
-  }
-
-  // TON address corresponding to the public key
-  // To convert into a human-readable form use
-  // Address.toString(isUserFriendly,isUrlSafe,isBounceable,isTestOnly).
-  async getRawTonAddress(): Promise<any> {
-    return await this.tonWallet.getAddress();
-  }
-
-  // Returns an encoded address with userfriendly + urlsafe + bounceable + isTestOnly attributes.
-  async getTonAddress(isTestnet: boolean = false): Promise<string> {
-    return (await this.tonWallet.getAddress()).toString(true, true, true, !!isTestnet);
-  }
-
-  async getTonAddressByWalletVersion(
-    tonweb: any,
-    version: string,
-    isTestnet: boolean = false,
-  ) {
-    const wallet = new tonweb.wallet.all[version](tonweb.provider, {
-      publicKey: this.tonPublicKey,
-      wc: 0,
-    });
-    const address = await wallet.getAddress();
-    return address.toString(true, true, true, !!isTestnet);
   }
 }
 

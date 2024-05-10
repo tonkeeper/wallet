@@ -11,8 +11,7 @@ import BigNumber from 'bignumber.js';
 import { Ton } from '$libs/Ton';
 import { TouchableOpacity } from 'react-native';
 
-import { store, Toast } from '$store';
-import { Wallet } from 'blockchain';
+import { Toast } from '$store';
 import { Modal } from '@tonkeeper/uikit';
 import { push } from '$navigation/imperative';
 import { SheetActions } from '@tonkeeper/router';
@@ -33,10 +32,6 @@ interface LinkingDomainModalProps {
 
 export class LinkingDomainActions {
   /**
-   * Wallet instance
-   */
-  private wallet: Wallet;
-  /**
    * Transfer amount in nanocoins. Will be attached to transfer
    */
   public transferAmount: string = Ton.toNano('0.05').toString();
@@ -50,7 +45,6 @@ export class LinkingDomainActions {
   public walletAddress: string | undefined;
 
   constructor(domainAddress: string, walletAddress?: string) {
-    this.wallet = store.getState().wallet.wallet;
     this.domainAddress = domainAddress;
     this.walletAddress = walletAddress;
   }

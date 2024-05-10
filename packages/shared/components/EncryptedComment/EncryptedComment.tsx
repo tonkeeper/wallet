@@ -5,8 +5,6 @@ import { Toast, useEncryptedCommentsStore } from '@tonkeeper/mobile/src/store';
 import { shallow } from 'zustand/shallow';
 import { decryptMessageComment } from '@tonkeeper/core';
 import { t } from '../../i18n';
-import { useSelector } from 'react-redux';
-import { walletWalletSelector } from '@tonkeeper/mobile/src/store/wallet';
 import { useUnlockVault } from '@tonkeeper/mobile/src/core/ModalContainer/NFTOperations/useUnlockVault';
 import { TouchableWithoutFeedback } from 'react-native';
 import Animated from 'react-native-reanimated';
@@ -40,7 +38,6 @@ const EncryptedCommentComponent: React.FC<EncryptedCommentProps> = (props) => {
     shallow,
   );
 
-  const wallet = useSelector(walletWalletSelector);
   const unlockVault = useUnlockVault();
   const copyText = useCopyText();
 
@@ -73,7 +70,7 @@ const EncryptedCommentComponent: React.FC<EncryptedCommentProps> = (props) => {
 
         const comment = await decryptMessageComment(
           Buffer.from(encryptedComment.cipher_text, 'hex'),
-          wallet!.vault.tonPublicKey,
+          Buffer.from(tk.wallet.pubkey, 'hex'),
           privateKey,
           senderAddress,
         );
@@ -83,7 +80,7 @@ const EncryptedCommentComponent: React.FC<EncryptedCommentProps> = (props) => {
         Toast.fail(t('decryption_error'));
       }
     },
-    [saveDecryptedComment, t, unlockVault, wallet],
+    [saveDecryptedComment, t, unlockVault],
   );
 
   const handleDecryptComment = useCallback(() => {

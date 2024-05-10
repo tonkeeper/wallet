@@ -31,6 +31,7 @@ import {
   internal,
   SendMode,
   comment,
+  storeStateInit,
 } from '@ton/core';
 import {
   IndexerLatencyError,
@@ -87,28 +88,9 @@ export class Wallet {
     this.vault = vault;
     this.ton = ton;
 
-    this.getReadableAddress();
-
     this.tonapi = createTonApiInstance(
       tk.wallet.config.network === WalletNetwork.testnet,
     );
-  }
-
-  public async getReadableAddress() {
-    if (this.vault) {
-      const rawAddress = await this.vault.getRawTonAddress();
-      const tkWallet = tk.wallets.get(this.name)!;
-      const friendlyAddress = await this.vault.getTonAddress(
-        tkWallet.config.network === WalletNetwork.testnet,
-      );
-      const version = this.vault.getVersion()!;
-
-      this.address = {
-        rawAddress: rawAddress.toString(false),
-        friendlyAddress,
-        version,
-      };
-    }
   }
 
   async clean() {
@@ -157,10 +139,6 @@ export class TonWallet {
     return new TonWallet(vault);
   }
 
-  getTonWeb() {
-    return this.tonweb;
-  }
-
   get isTestnet(): boolean {
     return tk.wallet.isTestnet;
   }
@@ -173,51 +151,9 @@ export class TonWallet {
     return this.vault.workchain;
   }
 
-  isV4() {
-    return this.vault.getVersion() === 'v4R2';
-  }
-
   isLockup() {
     const version = this.vault.getVersion();
     return version && version.substr(0, 6) === 'lockup';
-  }
-
-  async getAddress() {
-    return this.vault.getTonAddress(this.isTestnet);
-  }
-
-  async createStateInitBase64() {
-    const { stateInit } = await this.vault.tonWallet.createStateInit();
-    return TonWeb.utils.bytesToBase64(await stateInit.toBoc(false));
-  }
-
-  async getAddressByWalletVersion(version: string) {
-    return this.vault.getTonAddressByWalletVersion(this.tonweb, version, this.isTestnet);
-  }
-
-  /*
-    All addresses, from newest to oldest
-   */
-  async getAllAddresses() {
-    const versions = ['v4R2', 'v4R1', 'v3R2', 'v3R1'];
-    const addresses = {};
-    for (let version of versions) {
-      addresses[version] = await this.getAddressByWalletVersion(version);
-    }
-    return addresses;
-  }
-
-  async getSeqno(address: string): Promise<number> {
-    try {
-      const seqno = (await this.tonapi.wallet.getAccountSeqno(address)).seqno;
-
-      return seqno;
-    } catch (err) {
-      if (err.response.status === 400) {
-        return 0;
-      }
-      throw err;
-    }
   }
 
   async createSubscription(
@@ -229,7 +165,7 @@ export class TonWallet {
   ) {
     let myinfo: Account;
     try {
-      myinfo = await this.getWalletInfo(await this.getAddress());
+      myinfo = await this.getWalletInfo(tk.wallet.address.ton.raw);
     } catch (e) {
       throw new Error(t('send_get_wallet_info_error'));
     }
@@ -265,10 +201,9 @@ export class TonWallet {
 
     const signer = await tk.wallet.signer.getSigner();
 
-    const stateInitBoc = Base64.encodeBytes(
-      (await subscription.createStateInit()).stateInit.toBoc(false),
-    );
-    const stateInit = Cell.fromBase64(stateInitBoc);
+    const stateInit = beginCell()
+      .store(storeStateInit(tk.wallet.contract.init!))
+      .endCell();
 
     const bodyBoc = Base64.encodeBytes(subscription.createBody().toBoc(false));
     const body = Cell.fromBase64(bodyBoc);
@@ -307,10 +242,9 @@ export class TonWallet {
       return;
     }
 
-    let walletAddress = await this.getAddress();
     let myinfo: Account;
     try {
-      myinfo = await this.getWalletInfo(walletAddress);
+      myinfo = await this.getWalletInfo(tk.wallet.address.ton.raw);
     } catch (e) {
       throw new Error(t('send_get_wallet_info_error'));
     }
@@ -450,9 +384,8 @@ export class TonWallet {
     let recipient: Account;
     let seqno: number;
     try {
-      const fromAddress = await this.getAddress();
       recipient = await this.getWalletInfo(address);
-      seqno = await this.getSeqno(fromAddress);
+      seqno = await getWalletSeqno();
     } catch (e) {
       throw new Error(t('send_get_wallet_info_error'));
     }
@@ -495,10 +428,9 @@ export class TonWallet {
     let recipient: Account;
     let seqno: number;
     try {
-      const fromAddress = await this.getAddress();
-      sender = await this.getWalletInfo(fromAddress);
+      sender = await this.getWalletInfo(tk.wallet.address.ton.raw);
       recipient = await this.getWalletInfo(address);
-      seqno = await this.getSeqno(fromAddress);
+      seqno = await getWalletSeqno();
     } catch (e) {
       throw new Error(t('send_get_wallet_info_error'));
     }
@@ -668,7 +600,7 @@ export class TonWallet {
     let seqno: number;
     try {
       recipientInfo = await this.getWalletInfo(address);
-      seqno = await this.getSeqno(tk.wallet.address.ton.raw);
+      seqno = await getWalletSeqno();
     } catch (e) {
       throw new Error(t('send_get_wallet_info_error'));
     }
@@ -689,6 +621,10 @@ export class TonWallet {
   }
 
   async deploy(unlockedVault: UnlockedVault) {
+    if (!this.isLockup) {
+      throw new Error('Wallet is not lockup');
+    }
+
     const wallet = unlockedVault.tonWallet;
     const secretKey = await unlockedVault.getTonPrivateKey();
 
@@ -733,7 +669,7 @@ export class TonWallet {
     try {
       fromInfo = await this.getWalletInfo(tk.wallet.address.ton.raw);
       recipientInfo = await this.getWalletInfo(address);
-      seqno = await this.getSeqno(tk.wallet.address.ton.raw);
+      seqno = await getWalletSeqno();
     } catch (e) {
       throw new Error(t('send_get_wallet_info_error'));
     }
@@ -791,10 +727,6 @@ export class TonWallet {
     return await this.accountsApi.getAccount({ accountId: address });
   }
 
-  async getTonPublicKey() {
-    return this.vault.tonPublicKey;
-  }
-
   async getPublicKeyByAddress(address: string): Promise<Buffer> {
     const { publicKey } = await this.accountsApi.getPublicKeyByAccountID({
       accountId: address,
@@ -819,21 +751,6 @@ export class TonWallet {
     } catch (e) {
       if (e?.response?.status === 404) {
         return [Ton.fromNano('0'), 0, 0];
-      }
-
-      throw e;
-    }
-  }
-
-  async getBalance(): Promise<string> {
-    try {
-      const account = await this.vault.getTonAddress(this.isTestnet);
-      const balance = (await this.blockchainApi.getRawAccount({ accountId: account }))
-        .balance;
-      return Ton.fromNano(balance);
-    } catch (e) {
-      if (e?.response?.status === 404) {
-        return Ton.fromNano(0);
       }
 
       throw e;

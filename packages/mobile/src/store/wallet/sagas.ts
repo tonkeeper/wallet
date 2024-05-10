@@ -141,7 +141,7 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
 
     const wallet = yield select(walletWalletSelector);
 
-    const walletAddress = wallet.address.rawAddress;
+    const walletAddress = tk.wallet.address.ton.raw;
 
     let commentValue: Cell | string = comment;
 
@@ -279,7 +279,7 @@ function* sendCoinsWorker(action: SendCoinsAction) {
 
     const wallet = yield select(walletWalletSelector);
 
-    const walletAddress = wallet.address.rawAddress;
+    const walletAddress = tk.wallet.address.ton.raw;
 
     let commentValue: Cell | string = comment;
 
@@ -294,7 +294,7 @@ function* sendCoinsWorker(action: SendCoinsAction) {
       const encryptedCommentCell = yield call(
         encryptMessageComment,
         comment,
-        wallet.vault.tonPublicKey,
+        Buffer.from(tk.wallet.pubkey, 'hex'),
         recipientPubKey,
         encryptedCommentPrivateKey,
         walletAddress,

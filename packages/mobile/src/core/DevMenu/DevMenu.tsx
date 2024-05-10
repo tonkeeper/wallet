@@ -1,7 +1,7 @@
 import { useNotificationsStore } from '$store/zustand/notifications/useNotificationsStore';
 import crashlytics from '@react-native-firebase/crashlytics';
 import { DevFeature, NotificationType, useDevFeaturesToggle } from '$store';
-import { List, Screen, copyText } from '@tonkeeper/uikit';
+import { List, Screen, Text, copyText } from '@tonkeeper/uikit';
 import { Switch } from 'react-native-gesture-handler';
 import DeviceInfo from 'react-native-device-info';
 import { useNavigation } from '@tonkeeper/router';
@@ -99,6 +99,11 @@ export const DevMenu: FC = () => {
     handleSave();
   }, [handleSave]);
 
+  const toggleV5 = useCallback(() => {
+    config.set({ v5_enabled: !config.get('v5_enabled') });
+    handleSave();
+  }, [handleSave]);
+
   const handleClearActivityCache = useCallback(() => {
     if (tk.wallet) {
       tk.wallet.activityList.state.clear();
@@ -122,11 +127,18 @@ export const DevMenu: FC = () => {
             }
           />
           <List.Item
-            title={`Version ${DeviceInfo.getVersion()} (${DeviceInfo.getBuildNumber()})`}
+            title="Enable W5"
+            subtitle="to create and import wallets"
+            rightContent={<Switch value={config.get('v5_enabled')} onChange={toggleV5} />}
+          />
+          <List.Item
+            title="Version"
+            value={`${DeviceInfo.getVersion()} (${DeviceInfo.getBuildNumber()})`}
             onPress={copyText(
               `${DeviceInfo.getVersion()} (${DeviceInfo.getBuildNumber()})`,
             )}
           />
+          <List.Item title="Wallet contract" value={tk.wallet.version} />
           <List.Item onPress={handleLogs} title="Logs" />
           <List.Item title="App config" onPress={() => nav.navigate('/dev/config')} />
           {__DEV__ && (

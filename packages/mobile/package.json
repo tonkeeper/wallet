@@ -47,7 +47,6 @@
     "@ton-community/ton-ledger": "^7.0.1",
     "@ton/core": "0.54.0",
     "@ton/ton": "https://github.com/tonkeeper/tonkeeper-ton#build9",
-    "@tonapps/tonlogin-client": "0.2.5",
     "@tonconnect/protocol": "^2.2.5",
     "@tonkeeper/core": "0.1.0",
     "@tonkeeper/router": "*",

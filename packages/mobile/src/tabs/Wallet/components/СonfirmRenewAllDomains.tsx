@@ -13,20 +13,23 @@ import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { copyText } from '$hooks/useCopyText';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
 import { RenewAllProgressButton } from './RenewAllProgressButton';
-import { Base64, delay, triggerNotificationSuccess } from '$utils';
+import { delay, triggerNotificationSuccess } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { Toast } from '$store/zustand/toast';
 import { Ton } from '$libs/Ton';
-import TonWeb from 'tonweb';
-import { useSelector } from 'react-redux';
 import {
   checkIsInsufficient,
   openInsufficientFundsModal,
 } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import BigNumber from 'bignumber.js';
 import { tk } from '$wallet';
-import { Address } from '@tonkeeper/core';
-import { walletWalletSelector } from '$store/wallet';
+import { TransactionService } from '@tonkeeper/core';
+import { getWalletSeqno } from '@tonkeeper/shared/utils/wallet';
+import { MessageRelaxed, SendMode, beginCell, internal } from '@ton/core';
+import {
+  getTimeoutFromLiteserverSafely,
+  sendBoc,
+} from '@tonkeeper/shared/utils/blockchain';
 
 enum States {
   INITIAL,
@@ -42,7 +45,6 @@ export const СonfirmRenewAllDomains = memo((props) => {
   const remove = useExpiringDomains((state) => state.actions.remove);
   const unlock = useUnlockVault();
   const [current, setCurrent] = useState(0);
-  const wallet = useSelector(walletWalletSelector)!;
 
   const [count] = useState(domains.length);
   const [amount] = useState(0.02 * count);
@@ -69,9 +71,7 @@ export const СonfirmRenewAllDomains = memo((props) => {
       setState(States.PROGRESS);
       const divider = 4;
       for (let i = 0; i < Math.ceil(domains.length / divider); i++) {
-        const tonWallet = wallet.vault.tonWallet;
-        const seqno = await wallet.ton.getSeqno(await wallet.ton.getAddress());
-        const signingMessage = (tonWallet as any).createSigningMessage(seqno);
+        const messages: MessageRelaxed[] = [];
 
         const part = domains.slice(i * divider, i * divider + divider);
         for (let iPart = 0; iPart < part.length; iPart++) {
@@ -79,41 +79,41 @@ export const СonfirmRenewAllDomains = memo((props) => {
           const domain = domains[index];
           setCurrent(index + 1);
 
-          const payload = new TonWeb.boc.Cell();
-          payload.bits.writeUint(0x4eb1f0f9, 32);
-          payload.bits.writeUint(0, 64);
-          payload.bits.writeUint(0, 256);
+          const payload = beginCell()
+            .storeUint(0x4eb1f0f9, 32)
+            .storeUint(0, 64)
+            .storeUint(0, 256)
+            .endCell();
 
-          const order = TonWeb.Contract.createCommonMsgInfo(
-            TonWeb.Contract.createInternalMessageHeader(
-              new Address(domain.dns_item.address).toRaw({ bounceable: true }),
-              amount,
-            ),
-            undefined,
-            payload,
+          messages.push(
+            internal({
+              to: domain.dns_item.address,
+              value: BigInt(amount),
+              body: payload,
+            }),
           );
-
-          signingMessage.bits.writeUint8(3);
-          signingMessage.refs.push(order);
         }
 
-        const tx = TonWeb.Contract.createMethod(
-          tonWallet.provider,
-          (tonWallet as any).createExternalMessage(
-            signingMessage,
-            secretKey,
-            seqno,
-            !secretKey,
-          ),
-        );
+        const timeout = await getTimeoutFromLiteserverSafely();
+        const seqno = await getWalletSeqno(tk.wallet);
 
-        const queryMsg = await tx.getQuery();
-        const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
-        await tk.wallet.tonapi.blockchain.sendBlockchainMessage(
-          { boc },
-          { format: 'text' },
-        );
-        tk.wallet.activityList.reload();
+        const transfer = tk.wallet.contract.createTransfer({
+          timeout,
+          seqno,
+          sendMode: SendMode.PAY_GAS_SEPARATELY + SendMode.IGNORE_ERRORS,
+          messages,
+          secretKey: Buffer.from(secretKey),
+        });
+
+        const boc = TransactionService.externalMessage(
+          tk.wallet.contract,
+          seqno,
+          transfer,
+        )
+          .toBoc()
+          .toString('base64');
+
+        await sendBoc(boc, false);
 
         await delay(15000);
 
@@ -134,7 +134,7 @@ export const СonfirmRenewAllDomains = memo((props) => {
       debugLog(err);
       setState(States.ERROR);
     }
-  }, [setCurrent]);
+  }, [domains, nav, remove, unlock]);
 
   const fiatAmount = `≈ ${fiatValue.fiat}`;
   const formattedAmount = formatter.format(amount, {

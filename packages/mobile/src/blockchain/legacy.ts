@@ -6,7 +6,7 @@ export const createLegacyWallet = (wallet: Wallet) => {
   const vault = Vault.fromJSON({
     name: wallet.identifier,
     tonPubkey: wallet.pubkey,
-    version: wallet.config.version,
+    version: wallet.version,
     workchain: wallet.config.workchain,
     configPubKey: wallet.config.configPubKey,
     allowedDestinations: wallet.config.allowedDestinations,

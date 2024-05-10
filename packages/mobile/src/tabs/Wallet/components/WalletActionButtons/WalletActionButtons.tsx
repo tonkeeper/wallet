@@ -5,7 +5,6 @@ import { trackEvent } from '$utils/stats';
 import { Events, SendAnalyticsFrom } from '$store/models';
 import { useWallet } from '@tonkeeper/shared/hooks';
 import { useNavigation } from '@tonkeeper/router';
-import { store } from '$store';
 import { MainStackRouteNames, openScanQR, openSend } from '$navigation';
 import { Address } from '@tonkeeper/core';
 import { CryptoCurrencies } from '$shared/constants';
@@ -58,7 +57,7 @@ export const WalletActionButtons = memo(() => {
   }, [nav]);
 
   const handlePressScanQR = React.useCallback(() => {
-    if (store.getState().wallet.wallet) {
+    if (wallet) {
       openScanQR((value) => {
         if (Address.isValid(value)) {
           setTimeout(() => {
@@ -87,7 +86,7 @@ export const WalletActionButtons = memo(() => {
     } else {
       openRequireWalletModal();
     }
-  }, [deeplinking]);
+  }, [deeplinking, wallet]);
 
   return (
     <ActionButtons
