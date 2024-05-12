@@ -174,7 +174,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
 
         const { replyBuilder, requestPromise } = props;
 
-        const replyItems = replyBuilder.createReplyItems(
+        const replyItems = await replyBuilder.createReplyItems(
           address,
           privateKey,
           publicKey,

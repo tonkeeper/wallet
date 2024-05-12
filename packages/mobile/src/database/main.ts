@@ -2,25 +2,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { LogItem } from '$store/main/interface';
 
-export class MainDB {
-  static async timeSyncedDismissedTimestamp(): Promise<false | number> {
-    const timeSyncedDismissed = await AsyncStorage.getItem('timeSyncedDismissed');
-    return (
-      !!timeSyncedDismissed &&
-      timeSyncedDismissed !== 'false' &&
-      parseFloat(timeSyncedDismissed)
-    );
-  }
-
-  static async setTimeSyncedDismissed(isDismissed: false | number) {
-    if (isDismissed) {
-      await AsyncStorage.setItem('timeSyncedDismissed', isDismissed.toString());
-    } else {
-      await AsyncStorage.setItem('timeSyncedDismissed', 'false');
-    }
-  }
-}
-
 export async function getHiddenNotifications(): Promise<string[]> {
   const raw = await AsyncStorage.getItem('mainnet_default_hidden_internal_notifications');
 

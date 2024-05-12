@@ -11,8 +11,6 @@ export interface LogItem {
 
 export interface MainState {
   isInitiating: boolean;
-  isTimeSynced: boolean;
-  timeSyncedDismissedTimestamp: false | number;
   badHosts: string[];
   isBadHostsDismissed: boolean;
   internalNotifications: InternalNotificationModel[];
@@ -23,8 +21,6 @@ export interface MainState {
   tonCustomIcon: AccentNFTIcon | null;
 }
 
-export type SetTimeSyncedAction = PayloadAction<boolean>;
-export type SetTimeSyncedDismissedAction = PayloadAction<false | number>;
 export type UpdateBadHostsAction = PayloadAction<string[]>;
 export type SetNotificationsAction = PayloadAction<InternalNotificationModel[]>;
 export type HideNotificationAction = PayloadAction<InternalNotificationModel>;

@@ -61,7 +61,7 @@ export const NavBar: FC<NavBarProps> = (props) => {
   }, [onGoBack]);
 
   const top = useMemo(() => {
-    if (isModal) {
+    if (isModal && isIOS) {
       return 0;
     } else {
       return topInset;

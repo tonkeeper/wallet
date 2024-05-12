@@ -1,16 +1,13 @@
 import React, { useCallback, useMemo } from 'react';
 import { JettonProps } from './Jetton.interface';
 import * as S from './Jetton.style';
-import { IconButton, PopupMenu, PopupMenuItem, Skeleton, SwapIcon, Text } from '$uikit';
-import { ns } from '$utils';
+import { PopupMenu, PopupMenuItem, Skeleton, Text } from '$uikit';
 import { useJetton } from '$hooks/useJetton';
 import { useTokenPrice } from '$hooks/useTokenPrice';
 import { openDAppBrowser, openSend } from '$navigation';
 
 import { formatter } from '$utils/formatter';
 import { useNavigation } from '@tonkeeper/router';
-import { useSwapStore } from '$store/zustand/swap';
-import { shallow } from 'zustand/shallow';
 import { useFlags } from '$utils/flags';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { Events, JettonVerification, SendAnalyticsFrom } from '$store/models';
@@ -54,12 +51,12 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
 
   const isWatchOnly = wallet && wallet.isWatchOnly;
   const fiatCurrency = useWalletCurrency();
-  const shouldShowChart = jettonPrice.fiat !== 0;
   const shouldExcludeChartPeriods = config.get('exclude_jetton_chart_periods');
 
   const nav = useNavigation();
 
-  const showSwap = useSwapStore((s) => !!s.assets[jetton.jettonAddress], shallow);
+  const shouldShowChart = jettonPrice.fiat !== 0;
+  const showSwap = jettonPrice.fiat !== 0;
 
   const handleSend = useCallback(() => {
     trackEvent(Events.SendOpen, { from: SendAnalyticsFrom.TokenScreen });

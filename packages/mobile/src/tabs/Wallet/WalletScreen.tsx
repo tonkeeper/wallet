@@ -50,6 +50,7 @@ export const WalletScreen = memo(({ navigation }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       dispatch(mainActions.mainStackInited());
+      dispatch(mainActions.setUnlocked(true));
     }, 500);
     return () => clearTimeout(timer);
   }, [dispatch]);
