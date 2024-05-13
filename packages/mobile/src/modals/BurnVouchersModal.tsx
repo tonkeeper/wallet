@@ -86,7 +86,7 @@ export const BurnVouchersModal = memo<BurnVouchersModalProps>((props) => {
       () => {
         setTimeout(() => {
           nav.openModal('/notcoin-verify');
-        }, 2000);
+        }, 3000);
       },
     );
   }, [nav, selectedNfts]);
