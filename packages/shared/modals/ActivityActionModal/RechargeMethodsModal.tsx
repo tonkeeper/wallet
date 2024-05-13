@@ -10,8 +10,10 @@ import { tk } from '@tonkeeper/mobile/src/wallet';
 export const RechargeMethodsModal = memo(() => {
   const nav = useNavigation();
 
-  const handleNavigateToPromo = useCallback(() => {
-    nav.replaceModal('/recharge-by-promo');
+  const handleNavigateToPromo = useCallback(async () => {
+    nav.goBack();
+    await delay(700);
+    nav.navigate('/recharge-by-promo');
   }, []);
 
   const handleRechargeBattery = useCallback(
