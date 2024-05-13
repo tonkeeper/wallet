@@ -33,6 +33,7 @@ interface Props {
   minAmount?: string;
   fiatRate: number;
   hideSwap?: boolean;
+  onFocus?: () => void;
   withCoinSelector?: boolean;
   calculateFiatFrom?: number | string;
   withMaxButton?: boolean;
@@ -50,6 +51,7 @@ const AmountInputComponent: React.FC<Props> = (props) => {
     currencyTitle,
     amount,
     fiatRate,
+    onFocus,
     minAmount,
     hideSwap = false,
     withCoinSelector = false,
@@ -278,6 +280,7 @@ const AmountInputComponent: React.FC<Props> = (props) => {
           >
             <S.FakeInputWrap>
               <S.AmountInput
+                onFocus={onFocus}
                 ref={handleRef}
                 autoCorrect={false}
                 selectionColor={theme.colors.accentPrimary}

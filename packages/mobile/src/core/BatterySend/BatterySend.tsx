@@ -3,6 +3,7 @@ import {
   Button,
   HeaderSwitch,
   Icon,
+  IconNames,
   KeyboardSpacer,
   List,
   Radio,
@@ -14,11 +15,10 @@ import {
 } from '@tonkeeper/uikit';
 import { AddressInput } from '$core/Send/steps/AddressStep/components';
 import { SendAmount, SendRecipient } from '$core/Send/Send.interface';
-import { t } from '@tonkeeper/shared/i18n';
 import { AmountInput } from '$shared/components';
 import { TextInput } from 'react-native-gesture-handler';
 import { asyncDebounce, parseLocaleNumber } from '$utils';
-import { Address, AmountFormatter, ContractService } from '@tonkeeper/core';
+import { Address, AmountFormatter, ContractService, delay } from '@tonkeeper/core';
 import TonWeb from 'tonweb';
 import { formatter } from '$utils/formatter';
 import { Tonapi } from '$libs/Tonapi';
@@ -37,27 +37,9 @@ import { useExternalState } from '@tonkeeper/shared/hooks/useExternalState';
 import { useNavigation } from '@tonkeeper/router';
 import { openSelectRechargeMethodModal } from '@tonkeeper/shared/modals/SelectRechargeMethodModal';
 import { RechargeMethodsTypeEnum } from '@tonkeeper/core/src/BatteryAPI';
-import { useJettonBalances } from '$hooks/useJettonBalances';
 import { compareAddresses } from '$utils/address';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-const packs = [
-  {
-    icon: 'ic-battery-100-44',
-    key: 'large',
-    tonAmount: 2,
-  },
-  {
-    icon: 'ic-battery-50-44',
-    key: 'medium',
-    tonAmount: 1,
-  },
-  {
-    icon: 'ic-battery-25-44',
-    key: 'small',
-    tonAmount: 0.3,
-  },
-];
+import { AnimatedScrollView } from 'react-native-reanimated/lib/typescript/reanimated2/component/ScrollView';
+import { BatteryPackItem } from '$core/BatterySend/components';
 
 let dnsAbortController: null | AbortController = null;
 
@@ -67,6 +49,34 @@ export interface BatterySendProps {
 
 export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
   const navigation = useNavigation();
+
+  const packs: { icon: IconNames; key: string; tonAmount: string }[] = useMemo(
+    () => [
+      {
+        icon: 'ic-battery-100-44',
+        key: 'large',
+        tonAmount: new BigNumber(config.get('batteryMeanFees'))
+          .multipliedBy(400)
+          .toString(),
+      },
+      {
+        icon: 'ic-battery-50-44',
+        key: 'medium',
+        tonAmount: new BigNumber(config.get('batteryMeanFees'))
+          .multipliedBy(250)
+          .toString(),
+      },
+      {
+        icon: 'ic-battery-25-44',
+        key: 'small',
+        tonAmount: new BigNumber(config.get('batteryMeanFees'))
+          .multipliedBy(100)
+          .toString(),
+      },
+    ],
+    [],
+  );
+
   const { recipient: initialRecipientAddress } = route.params;
   const [recipient, setRecipient] = useState<SendRecipient | null>(
     initialRecipientAddress
@@ -81,8 +91,6 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
   const shouldMinusReservedAmount =
     useExternalState(tk.wallet.battery.state, (state) => state.reservedBalance) === '0' &&
     !!initialRecipientAddress;
-
-  const { enabled: jettonBalances } = useJettonBalances();
 
   const [selectedJettonMaster, setSelectedJettonMaster] = useState<string | undefined>(
     undefined,
@@ -122,9 +130,11 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
             },
           ],
         },
-        {},
+        { experimentalWithBattery: true },
       );
     }
+
+    const jettonBalances = tk.wallet.jettons.state.data.jettonBalances;
 
     const relatedJettonBalance = jettonBalances.find((jettonBalance) =>
       compareAddresses(jettonBalance.jettonAddress, selectedJettonMaster),
@@ -147,16 +157,22 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
           },
         ],
       },
-      {},
+      { experimentalWithBattery: true },
     );
   }, [
     amount.value,
-    jettonBalances,
     rechargeMethod.decimals,
     rechargeMethod.isTon,
     recipient?.address,
     selectedJettonMaster,
   ]);
+
+  const scrollRef = useRef<AnimatedScrollView>();
+
+  const handleAmountInputFocus = async () => {
+    await delay(300);
+    scrollRef.current?.scrollToEnd();
+  };
 
   const handleAmountSelect = useCallback(
     (selectedAmount: undefined | number) => () => {
@@ -307,7 +323,11 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
           isModal
           title={'Recharge'}
         />
-        <Screen.ScrollView keyboardShouldPersistTaps="handled" withBottomInset>
+        <Screen.ScrollView
+          ref={scrollRef}
+          keyboardShouldPersistTaps="handled"
+          withBottomInset
+        >
           <Spacer y={8} />
           <View style={styles.contentContainer}>
             {!initialRecipientAddress ? (
@@ -322,43 +342,14 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
             ) : null}
             <List style={styles.list} indent={false}>
               {packs.map((pack) => (
-                <List.Item
-                  onPress={handleAmountSelect(rechargeMethod.fromTon(pack.tonAmount))}
-                  rightContent={
-                    <Radio
-                      onSelect={() => null}
-                      isSelected={
-                        !isManualAmountInput &&
-                        formatter.format(rechargeMethod.fromTon(pack.tonAmount), {
-                          decimals: rechargeMethod.decimals,
-                        }) === amount.value
-                      }
-                    />
-                  }
-                  key={pack.key}
-                  title={t('battery.description.other', {
-                    count: new BigNumber(rechargeMethod.fromTon(pack.tonAmount))
-                      .minus(
-                        shouldMinusReservedAmount
-                          ? config.get('batteryReservedAmount')
-                          : 0,
-                      )
-                      .multipliedBy(rechargeMethod.rate)
-                      .div(config.get('batteryMeanFees'))
-                      .decimalPlaces(0)
-                      .toNumber(),
-                  })}
-                  subtitle={`${formatter.format(rechargeMethod.fromTon(pack.tonAmount), {
-                    currency: rechargeMethod.symbol,
-                  })} · ${rechargeMethod.formattedTonFiatAmount(pack.tonAmount)}`}
-                  leftContent={
-                    <Icon
-                      style={styles.listItemIcon.static}
-                      imageStyle={styles.listItemIcon.static}
-                      colorless
-                      name={pack.icon}
-                    />
-                  }
+                <BatteryPackItem
+                  tonAmount={pack.tonAmount}
+                  icon={pack.icon}
+                  rechargeMethod={rechargeMethod}
+                  shouldMinusReservedAmount={shouldMinusReservedAmount}
+                  inputtedAmount={amount.value}
+                  onAmountSelect={handleAmountSelect}
+                  isManualAmountInput={isManualAmountInput}
                 />
               ))}
               <List.Item
@@ -385,6 +376,7 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
               >
                 <View style={styles.inputContainer}>
                   <AmountInput
+                    onFocus={handleAmountInputFocus}
                     roundFiatRate
                     customCurrency={renderFlashIcon}
                     innerRef={textInputRef}
@@ -398,7 +390,7 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
                     }
                     minAmount={rechargeMethod.minInputAmount}
                     decimals={rechargeMethod.decimals}
-                    balance={tk.wallet.balances.state.data.ton}
+                    balance={rechargeMethod.balance}
                     currencyTitle={rechargeMethod.symbol}
                     amount={amount}
                     fiatRate={new BigNumber(rechargeMethod.rate)
@@ -415,9 +407,9 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
               title="Continue"
             />
           </View>
+          <KeyboardSpacer />
         </Screen.ScrollView>
       </Screen>
-      <KeyboardSpacer />
     </>
   );
 };

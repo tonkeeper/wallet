@@ -10,6 +10,7 @@ import Animated, {
 
 export interface RadioProps {
   isSelected: boolean;
+  disabled?: boolean;
   onSelect: () => void;
 }
 
@@ -44,7 +45,13 @@ export const Radio = memo<RadioProps>((props) => {
   );
 
   return (
-    <Animated.View style={[styles.container.static, borderStyle]}>
+    <Animated.View
+      style={[
+        styles.container.static,
+        props.disabled && styles.containerDisabled.static,
+        borderStyle,
+      ]}
+    >
       <Animated.View style={dotStyle} />
     </Animated.View>
   );
@@ -59,5 +66,8 @@ const styles = Steezy.create(({ colors }) => ({
     justifyContent: 'center',
     borderWidth: 2,
     backgroundColor: 'transparent',
+  },
+  containerDisabled: {
+    opacity: 0.3,
   },
 }));

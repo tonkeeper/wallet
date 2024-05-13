@@ -1,12 +1,6 @@
-export enum RechargeMethodType {
-  TON = 'TON',
-  JETTON = 'JETTON',
-}
+import { RechargeMethods } from '@tonkeeper/core/src/BatteryAPI';
 
-export interface RechargeMethod {
-  type: RechargeMethodType;
-  key: string;
-  title: string;
-  markup: number;
-  decimals: number;
-}
+type ArrayElement<ArrayType extends readonly unknown[]> =
+  ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
+
+export type RechargeMethod = ArrayElement<RechargeMethods['methods']>;
