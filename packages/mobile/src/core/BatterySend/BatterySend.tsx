@@ -306,7 +306,11 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
         isModal
         title={'Recharge'}
       />
-      <Screen.ScrollView keyboardAvoiding withBottomInset>
+      <Screen.ScrollView
+        keyboardShouldPersistTaps="handled"
+        keyboardAvoiding
+        withBottomInset
+      >
         <Spacer y={8} />
         <View style={styles.contentContainer}>
           {!initialRecipientAddress ? (
