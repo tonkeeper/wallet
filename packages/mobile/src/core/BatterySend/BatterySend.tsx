@@ -117,7 +117,7 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
           messages: [
             {
               amount: AmountFormatter.toNano(parsedAmount, rechargeMethod.decimals),
-              address: tk.wallet.battery.state.data.fundReceiver!,
+              address: tk.wallet.battery.fundReceiver!,
               payload: commentCell.toBoc().toString('base64'),
             },
           ],
