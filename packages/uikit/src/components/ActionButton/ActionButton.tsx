@@ -34,7 +34,7 @@ export const ActionButton = ({
       ]}
     >
       <Icon name={icon} />
-      <Text color="textSecondary" type={'label3'}>
+      <Text color="textSecondary" textAlign="center" type={'label3'}>
         {title}
       </Text>
     </TouchableOpacity>

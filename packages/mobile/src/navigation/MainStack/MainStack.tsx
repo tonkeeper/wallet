@@ -43,6 +43,7 @@ import { MigrationStack } from '../MigrationStack';
 import { useTonPriceUpdater } from '$hooks/useTonPriceUpdater';
 import SystemNavigationBar from 'react-native-system-navigation-bar';
 import { SettingsStack } from '../SettingsStack/SettingsStack';
+import { NotCoinVouchers } from '$core/NotCoinVouchers/NotCoinVouchers';
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
 
@@ -162,6 +163,7 @@ export const MainStack: FC = () => {
         />
         <Stack.Screen name={MainStackRouteNames.DevStack} component={DevStack} />
         <Stack.Screen name={MainStackRouteNames.Jetton} component={Jetton} />
+        <Stack.Screen name={MainStackRouteNames.Vouchers} component={NotCoinVouchers} />
         <Stack.Screen
           name={MainStackRouteNames.Inscription}
           component={InscriptionScreen}

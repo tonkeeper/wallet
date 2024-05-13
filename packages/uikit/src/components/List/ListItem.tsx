@@ -158,7 +158,7 @@ export const ListItem = memo<ListItemProps>((props) => {
                   <Text
                     style={props.subtitleStyle}
                     numberOfLines={subtitleNumberOfLines}
-                    color="textSecondary"
+                    color={titleType === 'primary' ? 'textSecondary' : 'textTertiary'}
                     type="body2"
                   >
                     {props.subtitle}

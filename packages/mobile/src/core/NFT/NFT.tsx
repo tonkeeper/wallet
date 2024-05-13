@@ -35,6 +35,7 @@ import { tk } from '$wallet';
 import { CustomNftItem } from '@tonkeeper/core/src/TonAPI/CustomNftItems';
 import { mapNewNftToOldNftData } from '$utils/mapNewNftToOldNftData';
 import { useNftsState, useWallet } from '@tonkeeper/shared/hooks';
+import { config } from '$config';
 
 export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
   const { address: nftAddress } = route?.params?.keyPair || {};
@@ -89,6 +90,16 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
 
     return data.decoded.last_fill_up_time;
   }, [nft.address]);
+
+  useEffect(() => {
+    tk.wallet.nfts
+      .fetchByAddress(nft.address)
+      .then((data) => {
+        setNft(mapNewNftToOldNftData(data, wallet.address.ton.friendly));
+      })
+      .catch(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (isDNS) {
@@ -296,12 +307,23 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
                   {t('nft_open_in_marketplace')}
                 </Button>
               ) : null}
-              <ProgrammableButtons
-                disabled={!isCurrentAddressOwner}
-                nftAddress={nft.address}
-                isApproved={nft.isApproved}
-                buttons={nft.metadata.buttons}
-              />
+              {isCurrentAddressOwner &&
+              nft.collection &&
+              Address.compare(
+                nft.collection.address,
+                config.get('notcoin_nft_collection'),
+              ) ? (
+                <Button onPress={() => nav.navigate('/burn-vouchers')} mode="secondary">
+                  {t('notcoin.exchange_to_not')}
+                </Button>
+              ) : (
+                <ProgrammableButtons
+                  disabled={!isCurrentAddressOwner}
+                  nftAddress={nft.address}
+                  isApproved={nft.isApproved}
+                  buttons={nft.metadata.buttons}
+                />
+              )}
             </S.ButtonWrap>
           ) : null}
           {!hiddenAmounts && <Properties properties={nft.attributes} />}

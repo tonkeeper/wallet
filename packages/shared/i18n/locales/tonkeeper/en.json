@@ -1277,5 +1277,17 @@
       "open_settings": "Open Settings",
       "cancel": "Cancel"
     }
+  },
+  "notcoin": {
+    "not_vouchers": "NOT vouchers",
+    "exchange": "Exchange\nvouchers to NOT",
+    "exchange_all": "Exchange all in\nTonkeeper Pro",
+    "exchange_title": "Exchange your vouchers to NOT",
+    "exchange_subtitle": "NOT will be available on your balance shortly after the exchange.",
+    "count": "Number of vouchers",
+    "count_max": "Maximum 4 per exchange",
+    "total_amount": "Total amount",
+    "all": "Exchange all in Tonkeeper Pro",
+    "exchange_to_not": "Exchange to NOT"
   }
 }

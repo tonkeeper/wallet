@@ -1338,5 +1338,17 @@
       "open_settings": "Открыть настройки",
       "cancel": "Отменить"
     }
+  },
+  "notcoin": {
+    "not_vouchers": "Ваучеры NOT",
+    "exchange": "Обменять\nваучеры на NOT",
+    "exchange_all": "Обменять все\nв Tonkeeper Pro",
+    "exchange_title": "Обменяйте свои ваучеры на NOT",
+    "exchange_subtitle": "NOT появятся на вашем балансе вскоре после обмена.",
+    "count": "Количество ваучеров",
+    "count_max": "Максимум 4 за обмен",
+    "total_amount": "Сумма",
+    "all": "Обменять все в Tonkeeper Pro",
+    "exchange_to_not": "Обменять на NOT"
   }
 }
