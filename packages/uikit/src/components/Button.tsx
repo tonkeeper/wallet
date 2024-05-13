@@ -28,9 +28,9 @@ export interface ButtonProps {
   size?: ButtonSizes;
   color?: ButtonColors;
   title?: string;
-  subtitle?: string;
-  children?: React.ReactNode;
-  leftContent?: React.ReactNode;
+  subtitle?: string | ReactNode;
+  children?: ReactNode;
+  leftContent?: ReactNode;
   onPress?: () => void;
   disabled?: boolean;
   loading?: boolean;
@@ -129,15 +129,20 @@ export const Button = memo<ButtonProps>((props) => {
                   style={titleStyle}
                   type={textType}
                   color={
-                  ['primary', 'green'].includes(color)
-                    ? 'buttonPrimaryForeground'
-                    : 'textPrimary'
-                }
+                    ['primary', 'green'].includes(color)
+                      ? 'buttonPrimaryForeground'
+                      : 'textPrimary'
+                  }
                 >
                   {title}
                 </Text>
                 {subtitle ? (
-                  <Text color="textSecondary" type={'body2'}>
+                  <Text
+                    numberOfLines={1}
+                    color="textSecondary"
+                    textAlign="center"
+                    type={'body2'}
+                  >
                     {subtitle}
                   </Text>
                 ) : null}

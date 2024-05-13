@@ -34,6 +34,7 @@ interface Props {
   fiatRate: number;
   hideSwap?: boolean;
   withCoinSelector?: boolean;
+  calculateFiatFrom?: number | string;
   withMaxButton?: boolean;
   customCurrency?: (size: 'small' | 'large') => React.ReactNode;
   fiatDecimals?: number;
@@ -55,6 +56,7 @@ const AmountInputComponent: React.FC<Props> = (props) => {
     withMaxButton = true,
     customCurrency,
     fiatDecimals = 2,
+    calculateFiatFrom = '0',
     disabled,
     setAmount,
   } = props;
@@ -115,11 +117,11 @@ const AmountInputComponent: React.FC<Props> = (props) => {
     const { decimalSeparator } = getNumberFormatSettings();
 
     const secondaryValue = isFiat
-      ? fiatToCrypto(value, fiatRate, 2, true)
-      : cryptoToFiat(value, fiatRate, fiatDecimals, true);
+      ? fiatToCrypto(value, fiatRate, 2, true, calculateFiatFrom)
+      : cryptoToFiat(value, fiatRate, fiatDecimals, true, calculateFiatFrom);
 
     return secondaryValue === '0' ? `0${decimalSeparator}00` : secondaryValue;
-  }, [amount.all, balance, fiatDecimals, fiatRate, isFiat, value]);
+  }, [amount.all, balance, calculateFiatFrom, fiatDecimals, fiatRate, isFiat, value]);
 
   const mainCurrencyCode = isFiat
     ? customCurrency
@@ -142,11 +144,21 @@ const AmountInputComponent: React.FC<Props> = (props) => {
       setValue(nextValue);
 
       setAmount({
-        value: isFiat ? fiatToCrypto(nextValue, fiatRate, decimals) : nextValue,
+        value: isFiat
+          ? fiatToCrypto(nextValue, fiatRate, decimals, undefined, calculateFiatFrom)
+          : nextValue,
         all: nextValue === balanceInputValue,
       });
     },
-    [balanceInputValue, decimals, disabled, fiatRate, isFiat, setAmount],
+    [
+      balanceInputValue,
+      calculateFiatFrom,
+      decimals,
+      disabled,
+      fiatRate,
+      isFiat,
+      setAmount,
+    ],
   );
 
   const handlePressInput = useCallback(() => {
@@ -166,11 +178,21 @@ const AmountInputComponent: React.FC<Props> = (props) => {
 
       setFiat(false);
     } else {
-      setValue(trimZeroDecimals(cryptoToFiat(amount.value, fiatRate, 2)));
+      setValue(
+        trimZeroDecimals(
+          cryptoToFiat(
+            amount.value,
+            fiatRate,
+            fiatDecimals,
+            undefined,
+            calculateFiatFrom,
+          ),
+        ),
+      );
 
       setFiat(true);
     }
-  }, [amount.value, fiatRate, isFiat]);
+  }, [amount.value, calculateFiatFrom, fiatDecimals, fiatRate, isFiat]);
 
   const amountContainerStyle = useAnimatedStyle(
     () => ({
@@ -217,14 +239,16 @@ const AmountInputComponent: React.FC<Props> = (props) => {
   const fakeInputStyle = useAnimatedStyle(() => ({ height: inputHeight.value }));
 
   useEffect(() => {
-    const currentInputValue = isFiat ? fiatToCrypto(value, fiatRate, decimals) : value;
+    const currentInputValue = isFiat
+      ? fiatToCrypto(value, fiatRate, decimals, undefined, calculateFiatFrom)
+      : value;
 
     if (amount.value === currentInputValue) {
       return;
     }
 
     const nextValue = isFiat
-      ? cryptoToFiat(amount.value, fiatRate, fiatDecimals)
+      ? cryptoToFiat(amount.value, fiatRate, fiatDecimals, undefined, calculateFiatFrom)
       : amount.value;
 
     setValue(nextValue);

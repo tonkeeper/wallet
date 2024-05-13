@@ -3,6 +3,7 @@ import {
   Button,
   HeaderSwitch,
   Icon,
+  KeyboardSpacer,
   List,
   Radio,
   Screen,
@@ -38,6 +39,7 @@ import { openSelectRechargeMethodModal } from '@tonkeeper/shared/modals/SelectRe
 import { RechargeMethodsTypeEnum } from '@tonkeeper/core/src/BatteryAPI';
 import { useJettonBalances } from '$hooks/useJettonBalances';
 import { compareAddresses } from '$utils/address';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const packs = [
   {
@@ -75,8 +77,11 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
   const textInputRef = useRef<TextInput>(null);
   const [dnsLoading, setDnsLoading] = useState(false);
   const [isManualAmountInput, setIsManualAmountInput] = useState(false);
+
   const shouldMinusReservedAmount =
-    useExternalState(tk.wallet.battery.state, (state) => state.reservedBalance) === '0';
+    useExternalState(tk.wallet.battery.state, (state) => state.reservedBalance) === '0' &&
+    !initialRecipientAddress;
+
   const { enabled: jettonBalances } = useJettonBalances();
 
   const [selectedJettonMaster, setSelectedJettonMaster] = useState<string | undefined>(
@@ -269,7 +274,14 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
   );
 
   const handleOpenSelectRechargeMethod = useCallback(() => {
-    openSelectRechargeMethodModal(selectedJettonMaster, setSelectedJettonMaster);
+    openSelectRechargeMethodModal(
+      selectedJettonMaster,
+      (selected: string | undefined) => {
+        setAmount({ value: '0', all: false });
+        setIsManualAmountInput(false);
+        setSelectedJettonMaster(selected);
+      },
+    );
   }, [selectedJettonMaster]);
 
   return (
@@ -279,7 +291,11 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
         hideBackButton
         rightContent={
           <View style={styles.headerRightContent}>
-            <HeaderSwitch onPress={handleOpenSelectRechargeMethod} title={'TON'} />
+            <HeaderSwitch
+              icon={rechargeMethod.iconSource}
+              onPress={handleOpenSelectRechargeMethod}
+              title={rechargeMethod.symbol}
+            />
             <TouchableOpacity onPress={navigation.goBack}>
               <View style={styles.backButton}>
                 <Icon name={'ic-close-16'} />
@@ -290,7 +306,7 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
         isModal
         title={'Recharge'}
       />
-      <Screen.ScrollView>
+      <Screen.ScrollView keyboardAvoiding withBottomInset>
         <Spacer y={8} />
         <View style={styles.contentContainer}>
           {!initialRecipientAddress ? (
@@ -374,6 +390,9 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
                   withCoinSelector={false}
                   disabled={false}
                   hideSwap={true}
+                  calculateFiatFrom={
+                    shouldMinusReservedAmount ? rechargeMethod.minInputAmount : '0'
+                  }
                   minAmount={rechargeMethod.minInputAmount}
                   decimals={rechargeMethod.decimals}
                   balance={tk.wallet.balances.state.data.ton}
@@ -388,7 +407,7 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
             </Animated.View>
           )}
           <Button
-            disabled={!recipient?.address}
+            disabled={!recipient?.address || amount.value === '0'}
             onPress={handleContinue}
             title="Continue"
           />

@@ -14,13 +14,16 @@ export const RechargeMethodsModal = memo(() => {
     nav.replaceModal('/recharge-by-promo');
   }, []);
 
-  const handleRechargeBattery = useCallback(async () => {
-    nav.goBack();
-    await delay(700);
-    nav.navigate(AppStackRouteNames.BatterySend, {
-      recipient: tk.wallet.address.ton.friendly,
-    });
-  }, []);
+  const handleRechargeBattery = useCallback(
+    (withAddressSelect?: boolean) => async () => {
+      nav.goBack();
+      await delay(700);
+      nav.navigate(AppStackRouteNames.BatterySend, {
+        recipient: withAddressSelect ? undefined : tk.wallet.address.ton.friendly,
+      });
+    },
+    [],
+  );
 
   return (
     <Modal>
@@ -28,7 +31,7 @@ export const RechargeMethodsModal = memo(() => {
       <Modal.Content>
         <List>
           <List.Item
-            onPress={handleRechargeBattery}
+            onPress={handleRechargeBattery(false)}
             leftContent={
               <Image
                 style={styles.icon.static}
@@ -40,7 +43,7 @@ export const RechargeMethodsModal = memo(() => {
             chevron
           />
           <List.Item
-            onPress={handleRechargeBattery}
+            onPress={handleRechargeBattery(true)}
             leftContent={
               <Image
                 style={styles.icon.static}

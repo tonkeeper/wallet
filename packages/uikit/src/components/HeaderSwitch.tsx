@@ -3,22 +3,20 @@ import { View } from './View';
 import { Steezy } from '../styles';
 import { Icon } from './Icon';
 import { Text } from './Text';
-import { Image } from 'react-native';
+import { Image, ImageSourcePropType } from 'react-native';
 import { TouchableOpacity } from './TouchableOpacity';
 
 export interface HeaderSwitchProps {
   title: string;
   onPress?: () => void;
+  icon: ImageSourcePropType;
 }
 
 export const HeaderSwitch = memo<HeaderSwitchProps>((props) => {
   return (
     <TouchableOpacity onPress={props.onPress}>
       <View style={styles.container}>
-        <Image
-          style={styles.image.static}
-          source={require('../../assets/cryptoAssets/TON.png')}
-        />
+        <Image style={styles.image.static} source={props.icon} />
         <Text type="label2" color="buttonSecondaryForeground">
           {props.title}
         </Text>
