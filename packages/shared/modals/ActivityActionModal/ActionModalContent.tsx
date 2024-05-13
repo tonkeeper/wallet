@@ -9,7 +9,7 @@ import {
 } from '@tonkeeper/uikit';
 import { formatTransactionDetailsTime } from '../../utils/date';
 import { ActionStatusEnum, JettonVerificationType } from '@tonkeeper/core/src/TonAPI';
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, ReactNode, useCallback, useMemo } from 'react';
 import { formatter } from '../../formatter';
 import { config } from '@tonkeeper/mobile/src/config';
 import { t } from '../../i18n';
@@ -41,6 +41,7 @@ interface ActionModalContentProps {
   label?: string;
   isSimplePreview?: boolean;
   shouldShowFiatAmount?: boolean;
+  footerContent?: ReactNode;
 }
 
 export const ActionModalContent = memo<ActionModalContentProps>((props) => {
@@ -54,6 +55,7 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
     amountFiat,
     isSimplePreview,
     shouldShowFiatAmount = true,
+    footerContent,
   } = props;
   const { formatNano, format } = useHideableFormatter();
 
@@ -195,17 +197,19 @@ export const ActionModalContent = memo<ActionModalContentProps>((props) => {
           <ExtraListItem extra={action.event.extra} />
         </List>
       )}
-      <View style={styles.footer}>
-        <Button onPress={handlePressHash} size="small" color="secondary">
-          <Icon name="ic-globe-16" />
-          <Text type="label2" style={styles.buttonText}>
-            {t('transactionDetails.transaction')}
-          </Text>
-          <Text type="label2" color="textTertiary">
-            {hash}
-          </Text>
-        </Button>
-      </View>
+      {footerContent ?? (
+        <View style={styles.footer}>
+          <Button onPress={handlePressHash} size="small" color="secondary">
+            <Icon name="ic-globe-16" />
+            <Text type="label2" style={styles.buttonText}>
+              {t('transactionDetails.transaction')}
+            </Text>
+            <Text type="label2" color="textTertiary">
+              {hash}
+            </Text>
+          </Button>
+        </View>
+      )}
     </View>
   );
 });

@@ -4,6 +4,8 @@ import { NftItem, TonAPI } from '@tonkeeper/core/src/TonAPI';
 import { Storage } from '@tonkeeper/core/src/declarations/Storage';
 import { State } from '@tonkeeper/core/src/utils/State';
 import { TonRawAddress } from '$wallet/WalletTypes';
+import { config } from '$config';
+import { JettonsManager } from './JettonsManager';
 
 export type NftsState = {
   nfts: Record<NftItem['address'], NftItem>;
@@ -29,6 +31,7 @@ export class NftsManager {
     private tonRawAddress: TonRawAddress,
     private tonapi: TonAPI,
     private storage: Storage,
+    private jettons: JettonsManager,
   ) {
     this.state.persist({
       partialize: ({ accountNfts, selectedDiamond }) => ({
@@ -64,6 +67,19 @@ export class NftsManager {
         },
         {},
       );
+
+      if (
+        response.nft_items.some(
+          (item) =>
+            item.collection &&
+            Address.compare(
+              item.collection.address,
+              config.get('notcoin_nft_collection'),
+            ),
+        )
+      ) {
+        this.jettons.loadRate(config.get('notcoin_jetton_master'));
+      }
 
       this.state.set({ accountNfts });
 

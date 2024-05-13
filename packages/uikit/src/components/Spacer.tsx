@@ -2,9 +2,9 @@ import { StyleSheet, View, ViewProps } from 'react-native';
 import { ns } from '../utils';
 import { memo } from 'react';
 
-export type SpacerSizes = 2 | 4 | 6 | 8 | 10 | 12 | 14 | 16 | 20 | 24 | 32;
+export type SpacerSizes = 2 | 4 | 6 | 8 | 10 | 12 | 14 | 16 | 20 | 24 | 32 | 48;
 
-const sizes: SpacerSizes[] = [2, 4, 6, 8, 10, 12, 14, 16, 20, 24, 32];
+const sizes: SpacerSizes[] = [2, 4, 6, 8, 10, 12, 14, 16, 20, 24, 32, 48];
 
 interface SpacerProps extends ViewProps {
   x?: SpacerSizes;

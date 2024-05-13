@@ -6,11 +6,15 @@ import { memo } from 'react';
 import {
   ActionItem,
   ActionSource,
+  ActionType,
   AnyActionItem,
 } from '@tonkeeper/mobile/src/wallet/models/ActivityModel';
+import { NotcoinTransferActionContent } from './content/NotcoinTransferActionContent';
+import { NotcoinConfetti } from './components/NotcoinConfetti';
 
 type ActivityActionModalProps = {
   action: AnyActionItem;
+  isNotCoin?: boolean;
 };
 
 /** Payload with possibly big content to render.
@@ -21,7 +25,7 @@ type ActivityActionModalProps = {
 const possiblyLargePayloadFields = ['payload', 'comment', 'encrypted_comment'];
 
 export const ActivityActionModal = memo<ActivityActionModalProps>((props) => {
-  const { action } = props;
+  const { action, isNotCoin } = props;
 
   const shouldWrapIntoScrollView =
     possiblyLargePayloadFields.findIndex((field) => (action as any)?.payload?.[field]) !==
@@ -29,20 +33,34 @@ export const ActivityActionModal = memo<ActivityActionModalProps>((props) => {
 
   const Content = shouldWrapIntoScrollView ? Modal.ScrollView : Modal.Content;
 
+  const actionContent =
+    isNotCoin && action.type === ActionType.JettonTransfer ? (
+      <NotcoinTransferActionContent action={action} />
+    ) : (
+      renderActionModalContent(action)
+    );
+
   return (
-    <Modal>
-      <Modal.Header />
-      <Content safeArea>{renderActionModalContent(action)}</Content>
-    </Modal>
+    <>
+      <Modal>
+        <Modal.Header />
+        <Content safeArea>{actionContent}</Content>
+      </Modal>
+      {isNotCoin ? <NotcoinConfetti /> : null}
+    </>
   );
 });
 
-export async function openActivityActionModal(actionId: string, source: ActionSource) {
+export async function openActivityActionModal(
+  actionId: string,
+  source: ActionSource,
+  isNotCoin?: boolean,
+) {
   const openModal = (action: ActionItem) => {
     navigation.push('SheetsProvider', {
       $$action: SheetActions.ADD,
       component: ActivityActionModal,
-      params: { action },
+      params: { action, isNotCoin },
       path: 'TRANSACTION_DETAILS',
     });
   };

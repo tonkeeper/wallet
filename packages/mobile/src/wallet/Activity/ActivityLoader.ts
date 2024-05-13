@@ -19,7 +19,7 @@ export class ActivityLoader {
   private tonActions = new Map<ActionId, ActionItem>();
 
   constructor(
-    private tonRawAddress: TonRawAddress,
+    public tonRawAddress: TonRawAddress,
     private tonapi: TonAPI,
     private tronapi: TronAPI,
   ) {}
