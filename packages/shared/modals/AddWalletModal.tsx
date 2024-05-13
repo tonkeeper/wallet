@@ -18,6 +18,7 @@ import { config } from '@tonkeeper/mobile/src/config';
 import { InteractionManager } from 'react-native';
 import { walletActions } from '@tonkeeper/mobile/src/store/wallet';
 import { useDispatch } from 'react-redux';
+import { getFlag } from '@tonkeeper/mobile/src/utils/flags';
 
 interface AddWalletModalProps {
   isTonConnect?: boolean;
@@ -108,7 +109,8 @@ export const AddWalletModal = memo<AddWalletModalProps>(({ isTonConnect, isImpor
               chevron
             />
           </List>
-          {!isTonConnect && !config.get('disable_signer') ? (
+          {!isTonConnect &&
+          (!config.get('disable_signer') || !getFlag('disable_signer')) ? (
             <List style={styles.list}>
               <List.Item
                 onPress={() => {
@@ -128,7 +130,8 @@ export const AddWalletModal = memo<AddWalletModalProps>(({ isTonConnect, isImpor
               />
             </List>
           ) : null}
-          {!isTonConnect && !config.get('disable_ledger') ? (
+          {!isTonConnect &&
+          (!config.get('disable_ledger') || !getFlag('disable_ledger')) ? (
             <List style={styles.list}>
               <List.Item
                 onPress={() => {
