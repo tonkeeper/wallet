@@ -589,6 +589,7 @@
       "comment_label": "Комментарий",
       "comment_label_required": "Комментарий",
       "comment_required_text": "Обязательно укажите memo или тег при отправке на биржу. ",
+      "comment_ascii_text": "Используйте только ASCII символы: цифры, буквы латинского алфавита и знаки пунктуации.",
       "details_label": "Детали",
       "details_max_balance_label": "Отправка всего баланса %{currency}",
       "title": "Подтвердить действие",
@@ -1194,6 +1195,9 @@
   "add_wallet_modal": {
     "title": "Добавить кошелёк",
     "subtitle": "Создайте новый кошелёк или добавьте существующий.",
+    "import_title": "Добавить кошелёк",
+    "import_subtitle": "Выберите один из вариантов ниже.",
+    "other_options": "Другие варианты",
     "create": {
       "title": "Новый кошелёк",
       "subtitle": "Создать новый кошелёк"
@@ -1361,5 +1365,23 @@
       "open_settings": "Открыть настройки",
       "cancel": "Отменить"
     }
+  },
+  "notcoin": {
+    "not_vouchers": "Ваучеры NOT",
+    "exchange": "Обменять\nваучеры на NOT",
+    "exchange_all": "Обменять все\nв Tonkeeper Pro",
+    "exchange_title": "Обменяйте свои ваучеры на NOT",
+    "exchange_subtitle": "NOT появятся на вашем балансе вскоре после обмена.",
+    "count": "Количество ваучеров",
+    "count_max": "Максимум 4 за обмен",
+    "total_amount": "Сумма",
+    "all": "Обменять все в Tonkeeper Pro",
+    "exchange_to_not": "Обменять на NOT",
+    "verify_title": "Подключите кошелёк к Notcoin Bot, чтобы проверить сжигание",
+    "verify_subtitle": "Проверка может занять несколько часов.",
+    "open_bot": "Открыть Notcoin Bot",
+    "name": "Notcoin",
+    "slogan": "Probably nothing",
+    "open": "Открыть"
   }
 }

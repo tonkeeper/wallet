@@ -42,7 +42,9 @@ export type IconNames =
   | 'ic-loader-small-16'
   | 'ic-lock-16'
   | 'ic-magnifying-glass-16'
+  | 'ic-minus-16'
   | 'ic-pencil-16'
+  | 'ic-plus-16'
   | 'ic-sale-badge-16'
   | 'ic-share-16'
   | 'ic-sliders-16'
@@ -241,7 +243,9 @@ export const AllIcons = [
   'ic-loader-small-16',
   'ic-lock-16',
   'ic-magnifying-glass-16',
+  'ic-minus-16',
   'ic-pencil-16',
+  'ic-plus-16',
   'ic-sale-badge-16',
   'ic-share-16',
   'ic-sliders-16',
@@ -441,7 +445,9 @@ export const IconSizes = {
   'ic-loader-small-16': 16,
   'ic-lock-16': 16,
   'ic-magnifying-glass-16': 16,
+  'ic-minus-16': 16,
   'ic-pencil-16': 16,
+  'ic-plus-16': 16,
   'ic-sale-badge-16': 16,
   'ic-share-16': 16,
   'ic-sliders-16': 16,

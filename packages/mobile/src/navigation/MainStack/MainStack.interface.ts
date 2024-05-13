@@ -20,6 +20,7 @@ export type MainStackParamList = {
   [MainStackRouteNames.Jetton]: {
     jettonAddress: string;
   };
+  [MainStackRouteNames.Vouchers]: {};
   [MainStackRouteNames.DeleteAccountDone]: {};
   [MainStackRouteNames.Staking]: {};
   [MainStackRouteNames.StakingPools]: {

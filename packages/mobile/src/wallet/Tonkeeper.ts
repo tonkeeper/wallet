@@ -23,6 +23,7 @@ import { AccountsStream } from './streaming';
 import { InteractionManager } from 'react-native';
 import { Biometry } from './Biometry';
 import { CommonBatteryManager } from '$wallet/managers/CommonBatteryManager';
+import { Toast } from '@tonkeeper/uikit';
 
 type TonkeeperOptions = {
   storage: Storage;
@@ -174,6 +175,7 @@ export class Tonkeeper {
       this.emitChangeWallet();
     } catch (err) {
       console.log('TK:init', err);
+      Toast.fail(err.message);
     }
   }
 
@@ -225,8 +227,8 @@ export class Tonkeeper {
       : DEFAULT_WALLET_STYLE_CONFIG.name;
   }
 
-  private getLedgerWalletNames(deviceName: string, walletsInfo: ImportWalletInfo[]) {
-    const regex = new RegExp(`${deviceName} (\\d+)`);
+  private getLedgerWalletNames(name: string, walletsInfo: any[]) {
+    const regex = new RegExp(`${name} (\\d+)`);
     let lastNumber = [...this.wallets.values()].reduce((maxNumber, wallet) => {
       const match = wallet.config.name.match(regex);
       return match ? Math.max(maxNumber, Number(match[1])) : maxNumber;
@@ -234,16 +236,16 @@ export class Tonkeeper {
 
     if (
       lastNumber === 0 &&
-      [...this.wallets.values()].map((wallet) => wallet.config.name).includes(deviceName)
+      [...this.wallets.values()].map((wallet) => wallet.config.name).includes(name)
     ) {
       lastNumber = 1;
     }
 
     if (walletsInfo.length === 1 && lastNumber === 0) {
-      return [`${deviceName}`];
+      return [`${name}`];
     }
 
-    return walletsInfo.map((_, index) => `${deviceName} ${lastNumber + index + 1}`);
+    return walletsInfo.map((_, index) => `${name} ${lastNumber + index + 1}`);
   }
 
   public async createWallet(passcode: string) {
@@ -625,16 +627,21 @@ export class Tonkeeper {
 
       const identifiers = passedIdentifiers ?? [this.wallet.identifier];
 
+      const ledgerWalletNames = this.wallet.isLedger
+        ? this.getLedgerWalletNames(config.name ?? 'Ledger', identifiers)
+        : [];
+
       const updatedWallets = this.walletsStore.data.wallets.map(
         (wallet): WalletConfig => {
           if (identifiers.includes(wallet.identifier)) {
+            const multipleName = this.wallet.isLedger
+              ? ledgerWalletNames[identifiers.indexOf(wallet.identifier)]
+              : `${config.name} ${wallet.version}`;
+
             return {
               ...wallet,
               ...config,
-              name:
-                identifiers.length > 1
-                  ? `${config.name} ${wallet.version}`
-                  : config.name ?? wallet.name,
+              name: identifiers.length > 1 ? multipleName : config.name ?? wallet.name,
             };
           }
           return wallet;

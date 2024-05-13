@@ -46,6 +46,7 @@ export enum MainStackRouteNames {
   DeleteAccountDone = 'DeleteAccountDone',
   DevStack = 'DevStack',
   Jetton = 'Jetton',
+  Vouchers = 'Vouchers',
   ManageTokens = 'ManageTokens',
   AddressUpdateInfo = 'AddressUpdateInfo',
   Inscription = 'Inscription',

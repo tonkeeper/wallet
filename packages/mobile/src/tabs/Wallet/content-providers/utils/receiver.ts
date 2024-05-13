@@ -16,6 +16,8 @@ import { NamespacedLogger, logger } from '$logger';
 import BigNumber from 'bignumber.js';
 import { Wallet } from '$wallet/Wallet';
 import { tk } from '$wallet';
+import { NotCoinVouchersDependency } from '../dependencies/notcoinVouchers';
+import { VouchersContentProvider } from '../vouchers';
 
 type Subscriber = (cells: CellItemToRender[]) => void;
 
@@ -33,6 +35,7 @@ export class WalletContentReceiver {
   private jettonBalances = new JettonBalancesDependency(this.wallet);
   private staking = new StakingDependency(this.wallet);
   private inscriptions = new InscriptionsDependency(this.wallet);
+  private notCoinVouchers = new NotCoinVouchersDependency(this.wallet);
 
   private memoizedCells = new Map<string, CellItemToRender[] | false>();
 
@@ -44,6 +47,7 @@ export class WalletContentReceiver {
     this.jettonBalances,
     this.staking,
     this.inscriptions,
+    this.notCoinVouchers,
   ];
 
   constructor() {
@@ -61,6 +65,7 @@ export class WalletContentReceiver {
     ),
     new StakingContentProvider(this.tonPrice, this.jettonBalances, this.staking),
     new InscriptionsContentProvider(this.tonPrice, this.inscriptions, this.tokenApproval),
+    new VouchersContentProvider(this.tonPrice, this.jettonBalances, this.notCoinVouchers),
   ];
 
   public destroy() {

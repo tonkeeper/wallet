@@ -166,6 +166,10 @@ export function openJetton(jettonAddress: string) {
   });
 }
 
+export function openVouchers() {
+  navigate(MainStackRouteNames.Vouchers);
+}
+
 export async function openChooseCountry() {
   navigate(AppStackRouteNames.ChooseCountry);
 }
