@@ -132,7 +132,7 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
             },
           ],
         },
-        { experimentalWithBattery: true },
+        { experimentalWithBattery: true, forceRelayerUse: true },
       );
     }
 
@@ -159,7 +159,7 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
           },
         ],
       },
-      { experimentalWithBattery: true },
+      { experimentalWithBattery: true, forceRelayerUse: true },
     );
   }, [
     amount.value,
