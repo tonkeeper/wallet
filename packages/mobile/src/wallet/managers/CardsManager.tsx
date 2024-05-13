@@ -14,7 +14,11 @@ export interface AccountCard {
   kind: string;
 }
 
-export type PrepaidCard = AccountCard & { type: 'PREPAID'; fiatBalance: string };
+export type PrepaidCard = AccountCard & {
+  id: string;
+  type: 'PREPAID';
+  fiatBalance: string;
+};
 
 export interface AccountState {
   id: string;

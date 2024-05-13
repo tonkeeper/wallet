@@ -105,7 +105,6 @@ export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
       // Resolve parameters
       let data: any;
       let id: number;
-      let processed = false;
       try {
         let parsed = JSON.parse(nativeEvent.data);
 
@@ -245,11 +244,12 @@ export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
       initialInjectState: initialState,
     });
   }, [
-    accountState?.kycStatus,
+    accountState.kycStatus,
     accountState?.state,
     accountState?.suspended,
     accountsPrivate,
     injectedJavaScriptBeforeContentLoaded,
+    prepaidCards,
     safeAreaInsets,
   ]);
 
@@ -290,15 +290,15 @@ export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
         style={styles.webView.static}
         webviewDebuggingEnabled
       />
-      {mainButton && mainButton.isVisible && (
-        <KeyboardAvoidingView
-          style={[
-            styles.keyboardAvoidingView.static,
-            { bottom: Math.max(safeAreaInsets.bottom, 16) },
-          ]}
-          behavior={Platform.OS === 'ios' ? 'position' : undefined}
-          contentContainerStyle={styles.keyboardAvoidingViewContainer.static}
-        >
+      <KeyboardAvoidingView
+        style={[
+          styles.keyboardAvoidingView.static,
+          { bottom: Math.max(safeAreaInsets.bottom, 16) },
+        ]}
+        behavior={Platform.OS === 'ios' ? 'position' : undefined}
+        contentContainerStyle={styles.keyboardAvoidingViewContainer.static}
+      >
+        {mainButton && mainButton.isVisible && (
           <Animated.View
             style={Platform.select({
               android: { marginHorizontal: 16, marginBottom: 16 },
@@ -308,8 +308,8 @@ export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
           >
             <DappMainButton {...mainButton} />
           </Animated.View>
-        </KeyboardAvoidingView>
-      )}
+        )}
+      </KeyboardAvoidingView>
     </Animated.View>
   );
 });

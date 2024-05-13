@@ -8,14 +8,17 @@ import { useCardsState } from '$wallet/hooks';
 export const CardsWidget = memo(() => {
   const state = useCardsState();
 
+  const shouldRenderCardsList =
+    state.accounts.filter((account) =>
+      ['PENDING_CONTRACT', 'ACTIVE'].includes(account.state),
+    ).length || state.prepaidCards.length;
+
   return (
     <View style={styles.container}>
       {!state.accounts.length && !state.onboardBannerDismissed ? (
         <OnboardBanner onDismissBanner={() => tk.wallet.cards.dismissOnboardBanner()} />
       ) : null}
-      {state.accounts.filter((account) =>
-        ['PENDING_CONTRACT', 'ACTIVE'].includes(account.state),
-      ).length ? (
+      {shouldRenderCardsList ? (
         <>
           <CardsList prepaidCards={state.prepaidCards} accounts={state.accounts} />
           <Spacer y={16} />

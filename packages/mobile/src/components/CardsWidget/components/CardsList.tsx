@@ -32,11 +32,12 @@ export const CardsList = memo<CardsListProps>((props) => {
   const unlockVault = useUnlockVault();
   const enroll = useHoldersEnroll(unlockVault);
   const openWebView = useCallback(
-    (accountId) => () => {
-      enroll(() =>
-        nav.push(MainStackRouteNames.HoldersWebView, { path: `/account/${accountId}` }),
-      );
-    },
+    (accountId, path: 'account' | 'card-prepaid' = 'account') =>
+      () => {
+        enroll(() =>
+          nav.push(MainStackRouteNames.HoldersWebView, { path: `/${path}/${accountId}` }),
+        );
+      },
     [enroll, nav],
   );
   const getTokenPrice = useGetTokenPrice();
@@ -74,7 +75,7 @@ export const CardsList = memo<CardsListProps>((props) => {
       ))}
       {props.prepaidCards.map((card) => (
         <List.Item
-          onPress={openWebView(props.accounts[0]?.id)}
+          onPress={openWebView(card.id, 'card-prepaid')}
           leftContent={
             <View key={card.lastFourDigits} style={[styles.cardIcon]}>
               <Image source={CARD_DESIGN_3} style={styles.cardCover.static} />
