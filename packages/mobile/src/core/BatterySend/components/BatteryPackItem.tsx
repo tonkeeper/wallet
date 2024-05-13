@@ -1,10 +1,11 @@
 import React, { memo } from 'react';
-import { Icon, IconNames, List, Radio, Steezy } from '@tonkeeper/uikit';
+import { Icon, IconNames, List, Radio, Steezy, View } from '@tonkeeper/uikit';
 import { formatter } from '$utils/formatter';
 import { t } from '@tonkeeper/shared/i18n';
 import BigNumber from 'bignumber.js';
 import { config } from '$config';
 import { IRechargeMethod } from '$core/BatterySend/hooks/useRechargeMethod';
+import { Text } from '$uikit';
 
 export interface BatteryPackItemProps {
   icon: IconNames;
@@ -49,9 +50,19 @@ export const BatteryPackItem = memo<BatteryPackItemProps>((props) => {
           .decimalPlaces(0)
           .toNumber(),
       })}
-      subtitle={`${formatter.format(amountInToken, {
-        currency: props.rechargeMethod.symbol,
-      })} · ${props.rechargeMethod.formattedTonFiatAmount(props.tonAmount)}`}
+      subtitle={
+        <View style={styles.subtitleContainer}>
+          <Text variant="body2" color="textSecondary">
+            {formatter.format(amountInToken, {
+              currency: props.rechargeMethod.symbol,
+            })}
+            <Text variant="body2" color="textTertiary">
+              {' '}·{' '}
+            </Text>
+            {props.rechargeMethod.formattedTonFiatAmount(props.tonAmount)}
+          </Text>
+        </View>
+      }
       leftContent={
         <Icon
           style={styles.listItemIcon.static}
@@ -68,5 +79,9 @@ const styles = Steezy.create({
   listItemIcon: {
     width: 26,
     height: 44,
+  },
+  subtitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });

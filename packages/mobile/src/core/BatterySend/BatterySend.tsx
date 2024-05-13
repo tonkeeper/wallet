@@ -343,6 +343,7 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
             <List style={styles.list} indent={false}>
               {packs.map((pack) => (
                 <BatteryPackItem
+                  key={pack.key}
                   tonAmount={pack.tonAmount}
                   icon={pack.icon}
                   rechargeMethod={rechargeMethod}

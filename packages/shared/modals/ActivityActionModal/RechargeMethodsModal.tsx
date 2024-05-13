@@ -6,9 +6,13 @@ import { Image } from 'react-native';
 import { AppStackRouteNames } from '@tonkeeper/mobile/src/navigation';
 import { delay } from '@tonkeeper/core';
 import { tk } from '@tonkeeper/mobile/src/wallet';
+import { useBatteryRechargeMethods } from '../../query/hooks';
 
 export const RechargeMethodsModal = memo(() => {
   const nav = useNavigation();
+  const { methods } = useBatteryRechargeMethods();
+
+  const titles = methods.map((method) => method.symbol).join(', ');
 
   const handleNavigateToPromo = useCallback(async () => {
     nav.goBack();
@@ -40,8 +44,10 @@ export const RechargeMethodsModal = memo(() => {
                 source={require('@tonkeeper/uikit/assets/battery/recharge.png')}
               />
             }
-            title={'Recharge Battery'}
-            subtitle="Using TON or jUSDT"
+            title={t('battery.other_ways.methods.by_crypto.title')}
+            subtitle={t('battery.other_ways.methods.by_crypto.subtitle', {
+              methods: titles,
+            })}
             chevron
           />
           <List.Item
@@ -52,8 +58,8 @@ export const RechargeMethodsModal = memo(() => {
                 source={require('@tonkeeper/uikit/assets/battery/gift.png')}
               />
             }
-            title={'Give a battery'}
-            subtitle="By wallet address"
+            title={t('battery.other_ways.methods.gift.title')}
+            subtitle={t('battery.other_ways.methods.gift.subtitle')}
             chevron
           />
           <List.Item
@@ -64,8 +70,8 @@ export const RechargeMethodsModal = memo(() => {
               />
             }
             onPress={handleNavigateToPromo}
-            title={'Enter Promo Code'}
-            subtitle="You're lucky"
+            title={t('battery.other_ways.methods.promo.title')}
+            subtitle={t('battery.other_ways.methods.promo.subtitle')}
             chevron
           />
         </List>

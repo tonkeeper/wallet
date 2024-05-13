@@ -17,6 +17,7 @@ export const RechargeMethodsButton = memo(() => {
   return (
     <View>
       <Button
+        disabled={isLoading}
         onPress={openRechargeMethodsModal}
         color="secondary"
         size="withSubtitle"

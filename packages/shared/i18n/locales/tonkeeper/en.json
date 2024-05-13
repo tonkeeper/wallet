@@ -172,6 +172,20 @@
       "button": {
         "title": "Recharge Battery",
         "subtitle": "using %{methods}, or promo code"
+      },
+      "methods": {
+        "by_crypto": {
+          "title": "Recharge Battery",
+          "subtitle": "Using %{methods}"
+        },
+        "gift": {
+          "title": "Give a battery",
+          "subtitle": "By wallet address"
+        },
+        "promo": {
+          "title": "Enter Promo Code",
+          "subtitle": "You're lucky"
+        }
       }
     },
     "promocode": {
