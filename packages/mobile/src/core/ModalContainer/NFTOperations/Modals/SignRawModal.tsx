@@ -396,6 +396,7 @@ export const openSignRawModal = async (
           ),
         ], // Emulate with higher balance to calculate fair amount to send
         options.experimentalWithBattery,
+        options.forceRelayerUse,
       );
       consequences = emulateResult;
       isBattery = battery;
