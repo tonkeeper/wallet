@@ -12,17 +12,21 @@ import { isAndroid, isIOS } from '../../../utils';
 export interface ScreenModalHeaderProps {
   children?: React.ReactNode;
   title?: string | React.ReactNode;
+  titlePosition?: 'center' | 'left';
 }
 
 export const ScreenModalHeader = memo<ScreenModalHeaderProps>((props) => {
-  const { title } = props;
+  const { title, titlePosition = 'center' } = props;
   const nav = useNavigation();
 
   return (
     <View style={styles.container}>
       {isIOS && <StatusBar barStyle="light-content" />}
       <TouchableOpacity
-        style={[styles.closeButton, styles.leftButton]}
+        style={[
+          styles.closeButton,
+          titlePosition === 'center' ? styles.leftButton : styles.rightButton,
+        ]}
         onPress={() => nav.goBack()}
         activeOpacity={0.6}
       >
@@ -32,7 +36,7 @@ export const ScreenModalHeader = memo<ScreenModalHeaderProps>((props) => {
       </TouchableOpacity>
       <View style={styles.headerTitle}>
         {isString(title) ? (
-          <Text type="h3" textAlign="center">
+          <Text type="h3" textAlign={titlePosition}>
             {title}
           </Text>
         ) : (
@@ -48,7 +52,6 @@ const styles = Steezy.create(({ colors, safeArea }) => ({
     marginTop: isAndroid ? safeArea.top : 0,
     height: 64,
     justifyContent: 'center',
-    alignItems: 'center',
   },
   headerTitle: {
     flex: 1,
@@ -66,6 +69,9 @@ const styles = Steezy.create(({ colors, safeArea }) => ({
   },
   leftButton: {
     left: 0,
+  },
+  rightButton: {
+    right: 0,
   },
   close: {
     width: 32,

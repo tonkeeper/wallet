@@ -8,6 +8,8 @@ import {
 import { WalletContractV3R1, WalletContractV3R2, WalletContractV4 } from '@ton/ton';
 import nacl from 'tweetnacl';
 
+export type Signer = (message: Cell) => Promise<Buffer>;
+
 export enum OpCodes {
   JETTON_TRANSFER = 0xf8a7ea5,
   NFT_TRANSFER = 0x5fcc3d14,

@@ -16,7 +16,7 @@ import { DEFAULT_WALLET_VERSION } from '$wallet/constants';
 export const ChooseWallets: FC<{
   route: RouteProp<ImportWalletStackParamList, ImportWalletStackRouteNames.ChooseWallets>;
 }> = (props) => {
-  const { mnemonic, lockupConfig, isTestnet, walletsInfo, isMigration } =
+  const { mnemonic, lockupConfig, isTestnet, walletsInfo, isMigration, onDone } =
     props.route.params;
 
   const doImportWallet = useImportWallet();
@@ -43,18 +43,30 @@ export const ChooseWallets: FC<{
     }
     try {
       setLoading(true);
-      await doImportWallet(
-        mnemonic,
-        lockupConfig,
-        selectedVersions,
-        isTestnet,
-        isMigration,
-      );
+      if (onDone) {
+        await onDone(selectedVersions);
+      } else {
+        await doImportWallet(
+          mnemonic,
+          lockupConfig,
+          selectedVersions,
+          isTestnet,
+          isMigration,
+        );
+      }
     } catch {
     } finally {
       setLoading(false);
     }
-  }, [doImportWallet, isMigration, isTestnet, lockupConfig, mnemonic, selectedVersions]);
+  }, [
+    doImportWallet,
+    isMigration,
+    isTestnet,
+    lockupConfig,
+    mnemonic,
+    onDone,
+    selectedVersions,
+  ]);
 
   const tokensText = `, ${t('choose_wallets.tokens')}`;
 

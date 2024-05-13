@@ -11,9 +11,9 @@ import nacl from 'tweetnacl';
 import TonWeb from 'tonweb';
 import { Buffer } from 'buffer';
 import { getDomainFromURL } from '$utils';
-import { getTimeSec } from '$utils/getTimeSec';
 import { Int64LE } from 'int64-buffer';
 import { DAppManifest } from './models';
+import { getRawTimeFromLiteserverSafely } from '@tonkeeper/shared/utils/blockchain';
 
 const { createHash } = require('react-native-crypto');
 
@@ -31,13 +31,13 @@ export class ConnectReplyBuilder {
     return getChainName() === 'mainnet' ? CHAIN.MAINNET : CHAIN.TESTNET;
   }
 
-  private createTonProofItem(
+  private async createTonProofItem(
     address: string,
     secretKey: Uint8Array,
     payload: string,
-  ): TonProofItemReply {
+  ): Promise<TonProofItemReply> {
     try {
-      const timestamp = getTimeSec();
+      const timestamp = await getRawTimeFromLiteserverSafely();
       const timestampBuffer = new Int64LE(timestamp).toBuffer();
 
       const domain = getDomainFromURL(this.manifest.url);
@@ -102,36 +102,41 @@ export class ConnectReplyBuilder {
     }
   }
 
-  createReplyItems(
+  async createReplyItems(
     addr: string,
     privateKey: Uint8Array,
     publicKey: Uint8Array,
     walletStateInit: string,
     isTestnet: boolean,
-  ): ConnectItemReply[] {
+  ): Promise<ConnectItemReply[]> {
     const address = new TonWeb.utils.Address(addr).toString(false, true, true);
 
-    const replyItems = this.request.items.map((requestItem): ConnectItemReply => {
-      switch (requestItem.name) {
+    const replyItems: ConnectItemReply[] = [];
+    for (const item of this.request.items) {
+      switch (item.name) {
         case 'ton_addr':
-          return {
+          replyItems.push({
             name: 'ton_addr',
             address,
             network: isTestnet ? CHAIN.TESTNET : CHAIN.MAINNET,
             publicKey: Buffer.from(publicKey).toString('hex'),
             walletStateInit,
-          };
+          });
+          break;
 
         case 'ton_proof':
-          return this.createTonProofItem(address, privateKey, requestItem.payload);
+          replyItems.push(
+            await this.createTonProofItem(address, privateKey, item.payload),
+          );
+          break;
 
         default:
-          return {
-            name: (requestItem as ConnectItem).name,
+          replyItems.push({
+            name: (item as ConnectItem).name,
             error: { code: 400 },
-          } as unknown as ConnectItemReply;
+          } as unknown as ConnectItemReply);
       }
-    });
+    }
 
     return replyItems;
   }

@@ -15,7 +15,6 @@ import { UpdatesCell } from '$core/ApprovalCell/Updates/UpdatesCell';
 import { UpdateState } from '$store/zustand/updates/types';
 import { ShowBalance } from '$core/HideableAmount/ShowBalance';
 import { ExpiringDomainCell } from './components/ExpiringDomainCell';
-import { BatteryIcon } from '@tonkeeper/shared/components/BatteryIcon/BatteryIcon';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { format } from 'date-fns';
 import { getLocale } from '$utils/date';
@@ -93,7 +92,7 @@ export const WalletScreen = memo(({ navigation }) => {
         {shouldUpdate && <UpdatesCell />}
         <View style={styles.amount} pointerEvents="box-none">
           <ShowBalance
-            isWatchOnly={isWatchOnly}
+            isWatchOnly={isWatchOnly || wallet.isExternal}
             dangerLevel={balance.dangerLevel}
             amount={balance.inSelectedCurrency}
           />
@@ -131,13 +130,23 @@ export const WalletScreen = memo(({ navigation }) => {
                 <Tag type="warning">{t('watch_only')}</Tag>
               </>
             ) : null}
+            {wallet && wallet.isSigner ? (
+              <>
+                <Tag type="purple">Signer</Tag>
+              </>
+            ) : null}
+            {wallet && wallet.isLedger ? (
+              <>
+                <Tag type="positive">Ledger</Tag>
+              </>
+            ) : null}
           </View>
         </View>
         <WalletActionButtons />
         {wallet && !wallet.isWatchOnly && (
           <>
             <ExpiringDomainCell />
-            <FinishSetupList />
+            {!wallet.isExternal ? <FinishSetupList /> : null}
           </>
         )}
       </View>
@@ -167,7 +176,7 @@ export const WalletScreen = memo(({ navigation }) => {
             activeOpacity={0.6}
             onPress={handleNavigateToSettingsStack}
           >
-            {!isWatchOnly ? <BackupIndicator /> : null}
+            {!isWatchOnly && !wallet.isExternal ? <BackupIndicator /> : null}
             <Icon color="iconSecondary" name={'ic-gear-outline-28'} />
           </TouchableOpacity>
         }

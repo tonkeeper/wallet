@@ -11,6 +11,7 @@ import {
   SendMode,
 } from '@ton/core';
 import { Maybe } from '@ton/ton/dist/utils/maybe';
+import { ExternallySingedAuthWallet3SendArgs } from '@ton/ton/dist/wallets/WalletContractV3';
 import { createWalletTransferV3 } from '@ton/ton/dist/wallets/signing/createWalletTransfer';
 
 export interface LockupContractV1AdditionalParams {
@@ -146,6 +147,18 @@ export class LockupContractV1 implements Contract {
       secretKey: args.secretKey,
       messages: args.messages,
       timeout: args.timeout,
+      walletId: this.walletId,
+    });
+  }
+
+  createTransferAndSignRequestAsync(args: ExternallySingedAuthWallet3SendArgs) {
+    let sendMode = SendMode.PAY_GAS_SEPARATELY;
+    if (args.sendMode !== null && args.sendMode !== undefined) {
+      sendMode = args.sendMode;
+    }
+    return createWalletTransferV3({
+      ...args,
+      sendMode,
       walletId: this.walletId,
     });
   }

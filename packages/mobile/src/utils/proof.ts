@@ -1,4 +1,3 @@
-import { getTimeSec } from '$utils/getTimeSec';
 import { Int64LE } from 'int64-buffer';
 import { Buffer } from 'buffer';
 import nacl from 'tweetnacl';
@@ -7,6 +6,7 @@ const { createHash } = require('react-native-crypto');
 import { ConnectApi, Configuration } from '@tonkeeper/core/src/legacy';
 import { Address } from '@tonkeeper/core';
 import { config } from '$config';
+import { getRawTimeFromLiteserverSafely } from '@tonkeeper/shared/utils/blockchain';
 
 export interface TonProofArgs {
   address: string;
@@ -37,7 +37,7 @@ export async function createTonProof({
     if (!payload) {
       payload = (await connectApi.getTonConnectPayload()).payload;
     }
-    const timestamp = getTimeSec();
+    const timestamp = await getRawTimeFromLiteserverSafely();
     const timestampBuffer = new Int64LE(timestamp).toBuffer();
 
     const domainBuffer = Buffer.from(domain);

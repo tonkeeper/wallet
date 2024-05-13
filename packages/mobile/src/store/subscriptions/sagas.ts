@@ -3,7 +3,6 @@ import { all, takeLatest, call, select } from 'redux-saga/effects';
 import { actions as subscriptionsActions } from '$store/subscriptions/index';
 import { SubscribeAction, UnsubscribeAction } from '$store/subscriptions/interface';
 import { walletWalletSelector } from '$store/wallet';
-import { walletGetUnlockedVault } from '$store/wallet/sagas';
 import { CryptoCurrencies } from '$shared/constants';
 import { Toast } from '$store';
 import { fuzzifyNumber } from '$utils';
@@ -18,10 +17,8 @@ function* subscribeWorker(action: SubscribeAction) {
 
   try {
     const wallet = yield select(walletWalletSelector);
-    const unlockedVault = yield call(walletGetUnlockedVault);
     const prepared = yield call(
       [wallet.ton, 'createSubscription'],
-      unlockedVault,
       subscription.address,
       subscription.amountNano,
       subscription.intervalSec,
@@ -59,10 +56,8 @@ function* unsubscribeWorker(action: UnsubscribeAction) {
   const { subscription, onDone, onFail } = action.payload;
   try {
     const wallet = yield select(walletWalletSelector);
-    const unlockedVault = yield call(walletGetUnlockedVault);
     const signedTx = yield call(
       [wallet.ton, 'getCancelSubscriptionBoc'],
-      unlockedVault,
       subscription.subscriptionAddress,
     );
 

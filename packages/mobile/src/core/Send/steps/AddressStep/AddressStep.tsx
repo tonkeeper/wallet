@@ -35,6 +35,7 @@ import { AddressInput, AddressSuggests, CommentInput } from './components';
 import { TextInput } from 'react-native-gesture-handler';
 import { t } from '@tonkeeper/shared/i18n';
 import { Address } from '@tonkeeper/core';
+import { useWallet } from '@tonkeeper/shared/hooks';
 
 const TonWeb = require('tonweb');
 
@@ -57,6 +58,8 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
     onContinue,
   } = props;
 
+  const wallet = useWallet();
+
   const commentInputRef = useRef<TextInput>(null);
 
   const isCommentRequired = !!recipientAccountInfo?.memoRequired;
@@ -65,7 +68,10 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
     ? enableEncryption && !isCommentRequired && !!recipientAccountInfo.publicKey
     : enableEncryption;
 
-  const isReadyToContinue = !!recipient && (!isCommentRequired || comment.length);
+  const isCommentValid = wallet.isLedger ? /^[ -~]*$/gm.test(comment) : true;
+
+  const isReadyToContinue =
+    !!recipient && (!isCommentRequired || comment.length) && isCommentValid;
 
   const { keyboardHeightStyle } = useReanimatedKeyboardHeight();
 
@@ -295,6 +301,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
           <CommentInput
             innerRef={commentInputRef}
             isCommentRequired={isCommentRequired}
+            isCommentValid={isCommentValid}
             isAbleToEncryptComment={isAbleToEncryptComment}
             comment={comment}
             isCommentEncrypted={isCommentEncrypted}

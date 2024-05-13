@@ -2,7 +2,7 @@ import React, { FC, useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { MainStackParamList } from './MainStack.interface';
-import { AppStackRouteNames, MainStackRouteNames } from '$navigation';
+import { AppStackRouteNames, MainStackRouteNames } from '..';
 import { TabStack } from './TabStack/TabStack';
 
 import { useTheme } from '$hooks/useTheme';
@@ -19,7 +19,7 @@ import { useSelector } from 'react-redux';
 import { mainSelector } from '$store/main';
 import { useNotificationsResolver } from '$hooks/useNotificationsResolver';
 import { AccessConfirmation, AddressUpdateInfo, ChangePin } from '$core';
-import { ModalStack } from '$navigation/ModalStack';
+import { ModalStack } from '../ModalStack';
 import { withModalStack } from '@tonkeeper/router';
 import { ToncoinScreen } from '$core/Wallet/ToncoinScreen';
 import { InscriptionScreen } from '$core/InscriptionScreen';
@@ -35,14 +35,14 @@ import {
   BackupCheckPhraseScreen,
 } from '../../screens';
 import { CreateWalletStack } from '../CreateWalletStack';
-import { ImportWalletStack } from '$navigation/ImportWalletStack';
-import { AddWatchOnlyStack } from '$navigation/AddWatchOnlyStack';
+import { ImportWalletStack } from '../ImportWalletStack';
+import { AddWatchOnlyStack } from '../AddWatchOnlyStack';
 import { useExternalState } from '@tonkeeper/shared/hooks/useExternalState';
 import { tk } from '$wallet';
-import { MigrationStack } from '$navigation/MigrationStack';
+import { MigrationStack } from '../MigrationStack';
 import { useTonPriceUpdater } from '$hooks/useTonPriceUpdater';
-import { SettingsStack } from '$navigation/SettingsStack/SettingsStack';
 import SystemNavigationBar from 'react-native-system-navigation-bar';
+import { SettingsStack } from '../SettingsStack/SettingsStack';
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
 
@@ -65,7 +65,10 @@ export const MainStack: FC = () => {
   const { lockScreenEnabled } = useLockSettings();
 
   const shouldObtainTonProof =
-    hasWallet && !wallet.isWatchOnly && !wallet.tonProof.tonProofToken;
+    hasWallet &&
+    !wallet.isWatchOnly &&
+    !wallet.isExternal &&
+    !wallet.tonProof.tonProofToken;
 
   const showLockScreen =
     (lockScreenEnabled || shouldObtainTonProof) &&
@@ -131,12 +134,12 @@ export const MainStack: FC = () => {
           name={MainStackRouteNames.ImportWalletStack}
           component={ImportWalletStack}
         />
-      </Stack.Group>
-      <Stack.Group>
         <Stack.Screen
           name={MainStackRouteNames.AddWatchOnlyStack}
           component={AddWatchOnlyStack}
         />
+      </Stack.Group>
+      <Stack.Group>
         <Stack.Screen name={MainStackRouteNames.Settings} component={SettingsStack} />
         <Stack.Screen name={MainStackRouteNames.Wallet} component={ToncoinScreen} />
         <Stack.Screen name={MainStackRouteNames.Staking} component={Staking} />

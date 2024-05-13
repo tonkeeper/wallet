@@ -124,11 +124,13 @@ export class Tonkeeper {
   }
 
   public get walletForUnlock() {
-    if (this.wallet && !this.wallet.isWatchOnly) {
+    if (this.wallet && !this.wallet.isWatchOnly && !this.wallet.isExternal) {
       return this.wallet;
     }
 
-    return Array.from(this.wallets.values()).find((wallet) => !wallet.isWatchOnly)!;
+    return Array.from(this.wallets.values()).find(
+      (wallet) => !wallet.isWatchOnly && !wallet.isExternal,
+    )!;
   }
 
   public get biometryEnabled() {
@@ -223,6 +225,27 @@ export class Tonkeeper {
       : DEFAULT_WALLET_STYLE_CONFIG.name;
   }
 
+  private getLedgerWalletNames(deviceName: string, walletsInfo: ImportWalletInfo[]) {
+    const regex = new RegExp(`${deviceName} (\\d+)`);
+    let lastNumber = [...this.wallets.values()].reduce((maxNumber, wallet) => {
+      const match = wallet.config.name.match(regex);
+      return match ? Math.max(maxNumber, Number(match[1])) : maxNumber;
+    }, 0);
+
+    if (
+      lastNumber === 0 &&
+      [...this.wallets.values()].map((wallet) => wallet.config.name).includes(deviceName)
+    ) {
+      lastNumber = 1;
+    }
+
+    if (walletsInfo.length === 1 && lastNumber === 0) {
+      return [`${deviceName}`];
+    }
+
+    return walletsInfo.map((_, index) => `${deviceName} ${lastNumber + index + 1}`);
+  }
+
   public async createWallet(passcode: string) {
     const mnemonic = (await Mnemonic.generateMnemonic(24)).join(' ');
     return await this.importWallet(mnemonic, passcode, [DEFAULT_WALLET_VERSION], {
@@ -284,11 +307,42 @@ export class Tonkeeper {
     return walletsInstances.map((item) => item.identifier);
   }
 
-  public async getWalletsInfo(mnemonic: string, isTestnet: boolean) {
-    const keyPair = await Mnemonic.mnemonicToKeyPair(mnemonic.split(' '));
+  public async getLedgerWalletsInfo(
+    accounts: { index: number; pubkey: string; address: string }[],
+    deviceId: string,
+  ) {
+    const version = WalletContractVersion.v4R2;
 
-    const pubkey = Buffer.from(keyPair.publicKey).toString('hex');
+    const addedDeviceAccountIndexes = this.walletsStore.data.wallets
+      .filter((wallet) => deviceId === wallet.ledger?.deviceId)
+      .map((wallet) => wallet.ledger!.accountIndex);
 
+    const accountsBalances = await Promise.all(
+      accounts.map((account) => this.tonapi.mainnet.accounts.getAccount(account.address)),
+    );
+
+    const accountsJettons = await Promise.all(
+      accounts.map((account) =>
+        this.tonapi.mainnet.accounts.getAccountJettonsBalances({
+          accountId: account.address,
+        }),
+      ),
+    );
+
+    return accounts.map(
+      (account, index): ImportWalletInfo => ({
+        pubkey: account.pubkey,
+        version,
+        address: account.address,
+        balance: accountsBalances[index].balance,
+        tokens: accountsJettons[index].balances.length > 0,
+        accountIndex: account.index,
+        isAdded: addedDeviceAccountIndexes.includes(account.index),
+      }),
+    );
+  }
+
+  public async getWalletsInfo(pubkey: string, isTestnet: boolean) {
     const tonapi = isTestnet ? this.tonapi.testnet : this.tonapi.mainnet;
 
     const [{ accounts }, addresses] = await Promise.all([
@@ -314,6 +368,7 @@ export class Tonkeeper {
     const wallets = accounts
       .map(
         (account, index): ImportWalletInfo => ({
+          pubkey,
           version: versionByAddress[account.address],
           address: account.address,
           balance: account.balance,
@@ -324,6 +379,7 @@ export class Tonkeeper {
 
     if (!wallets.some((wallet) => wallet.version === DEFAULT_WALLET_VERSION)) {
       wallets.push({
+        pubkey,
         version: DEFAULT_WALLET_VERSION,
         address: addresses[DEFAULT_WALLET_VERSION].raw,
         balance: 0,
@@ -338,6 +394,14 @@ export class Tonkeeper {
       const indexB = versions.indexOf(b.version);
       return indexA - indexB;
     });
+  }
+
+  public async getWalletsInfoByMnemonic(mnemonic: string, isTestnet: boolean) {
+    const keyPair = await Mnemonic.mnemonicToKeyPair(mnemonic.split(' '));
+
+    const pubkey = Buffer.from(keyPair.publicKey).toString('hex');
+
+    return await this.getWalletsInfo(pubkey, isTestnet);
   }
 
   public async addWatchOnlyWallet(address: string, name?: string) {
@@ -379,6 +443,102 @@ export class Tonkeeper {
     await this.setWallet(wallet);
 
     return [wallet.identifier];
+  }
+
+  public async addLedgerWallets(
+    walletsInfo: ImportWalletInfo[],
+    deviceId: string,
+    deviceModel: string,
+  ) {
+    const walletNames = this.getLedgerWalletNames(deviceModel, walletsInfo);
+
+    const ledgerWallets: WalletConfig[] = walletsInfo.map((walletInfo, index) => {
+      const workchain = Number(walletInfo.address.split(':')[0]);
+
+      const identifier = uuidv4();
+
+      return {
+        ...DEFAULT_WALLET_STYLE_CONFIG,
+        name: walletNames[index],
+        identifier,
+        network: WalletNetwork.mainnet,
+        type: WalletType.Ledger,
+        pubkey: walletInfo.pubkey,
+        workchain,
+        version: walletInfo.version,
+        ledger: {
+          deviceId,
+          deviceModel,
+          accountIndex: walletInfo.accountIndex!,
+        },
+      };
+    });
+
+    await this.walletsStore.setAsync(({ wallets }) => ({
+      wallets: [...wallets, ...ledgerWallets],
+    }));
+    const walletsInstances = await Promise.all(
+      ledgerWallets.map((wallet) => this.createWalletInstance(wallet)),
+    );
+
+    await this.setWallet(walletsInstances[0]);
+
+    return walletsInstances.map((item) => item.identifier);
+  }
+
+  public async addSignerWallet(
+    pubkey: string,
+    name?: string,
+    versions: WalletContractVersion[] = [DEFAULT_WALLET_VERSION],
+    isSignerDeeplink = false,
+  ) {
+    const addresses = await Address.fromPubkey(pubkey, false);
+
+    if (!addresses) {
+      throw new Error("Can't parse pubkey");
+    }
+
+    const newWallets: WalletConfig[] = [];
+
+    for (const version of versions) {
+      const rawAddress = addresses[version].raw;
+
+      const workchain = Number(rawAddress.split(':')[0]);
+
+      const identifier = uuidv4();
+
+      const walletName = name ?? this.getNewWalletName();
+
+      newWallets.push({
+        ...DEFAULT_WALLET_STYLE_CONFIG,
+        name: versions.length > 1 ? `${walletName} ${version}` : walletName,
+        identifier,
+        network: WalletNetwork.mainnet,
+        type: isSignerDeeplink ? WalletType.SignerDeeplink : WalletType.Signer,
+        pubkey,
+        workchain,
+        version,
+      });
+    }
+
+    const versionsOrder = Object.values(WalletContractVersion);
+
+    const sortedWallets = newWallets.sort((a, b) => {
+      const indexA = versionsOrder.indexOf(a.version);
+      const indexB = versionsOrder.indexOf(b.version);
+      return indexA - indexB;
+    });
+
+    await this.walletsStore.setAsync(({ wallets }) => ({
+      wallets: [...wallets, ...sortedWallets],
+    }));
+    const walletsInstances = await Promise.all(
+      sortedWallets.map((wallet) => this.createWalletInstance(wallet)),
+    );
+
+    await this.setWallet(walletsInstances[0]);
+
+    return walletsInstances.map((item) => item.identifier);
   }
 
   public async removeWallet(identifier: string) {

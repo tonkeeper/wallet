@@ -83,7 +83,6 @@ export const CreateSubscription: FC<CreateSubscriptionProps> = ({
     if (info && !subscription) {
       wallet!.ton
         .createSubscription(
-          wallet!.vault,
           info.address,
           info.amountNano,
           info.intervalSec,

@@ -30,7 +30,7 @@ export const ImportWallet: FC<{
         let walletsInfo: ImportWalletInfo[] | null = null;
 
         try {
-          walletsInfo = await tk.getWalletsInfo(mnemonic, isTestnet);
+          walletsInfo = await tk.getWalletsInfoByMnemonic(mnemonic, isTestnet);
         } catch {}
 
         const shouldChooseWallets =

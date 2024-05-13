@@ -22,7 +22,6 @@ import {
   WalletGetUnlockedVaultAction,
 } from '$store/wallet/interface';
 
-import { MainDB } from '$database';
 import { Toast, useAddressUpdateStore, useConnectedAppsStore } from '$store';
 import { t } from '@tonkeeper/shared/i18n';
 import { getChainName } from '$shared/dynamicConfig';
@@ -178,7 +177,6 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
           jettonWalletAddress,
           address,
           toNano(amount, decimals),
-          wallet.vault,
           commentValue,
         );
         fee = estimatedFee;
@@ -188,7 +186,6 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
           [wallet.ton, 'estimateFee'],
           address,
           amount,
-          wallet.vault,
           commentValue,
           isSendAll ? 128 : 3,
         );
@@ -203,7 +200,6 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
           type,
           address,
           toNano(amount, decimals!),
-          wallet.vault,
           commentValue,
         );
         fee = estimatedFee;
@@ -278,19 +274,21 @@ function* sendCoinsWorker(action: SendCoinsAction) {
       decimals,
       sendWithBattery,
       currencyAdditionalParams,
+      encryptedCommentPrivateKey,
     } = action.payload;
 
     const wallet = yield select(walletWalletSelector);
-
-    const unlockedVault = yield call(walletGetUnlockedVault);
 
     const walletAddress = wallet.address.rawAddress;
 
     let commentValue: Cell | string = comment;
 
-    if (isCommentEncrypted && comment.length > 0) {
-      const secretKey = yield call([unlockedVault, 'getTonPrivateKey']);
-
+    if (
+      !tk.wallet.isExternal &&
+      isCommentEncrypted &&
+      comment.length > 0 &&
+      encryptedCommentPrivateKey
+    ) {
       const recipientPubKey = yield call([wallet.ton, 'getPublicKeyByAddress'], address);
 
       const encryptedCommentCell = yield call(
@@ -298,7 +296,7 @@ function* sendCoinsWorker(action: SendCoinsAction) {
         comment,
         wallet.vault.tonPublicKey,
         recipientPubKey,
-        secretKey,
+        encryptedCommentPrivateKey,
         walletAddress,
       );
 
@@ -311,7 +309,6 @@ function* sendCoinsWorker(action: SendCoinsAction) {
         jettonWalletAddress,
         address,
         toNano(amount, decimals),
-        unlockedVault,
         commentValue,
         sendWithBattery,
         BigNumber(toNano(fee)).plus(BASE_FORWARD_AMOUNT.toString()).toString(),
@@ -321,7 +318,6 @@ function* sendCoinsWorker(action: SendCoinsAction) {
         [wallet.ton, 'transfer'],
         address,
         amount,
-        unlockedVault,
         commentValue,
         isSendAll ? 128 : 3,
       );
@@ -333,7 +329,6 @@ function* sendCoinsWorker(action: SendCoinsAction) {
         type,
         address,
         toNano(amount, decimals!),
-        unlockedVault,
         commentValue,
       );
     } else {
@@ -351,8 +346,6 @@ function* sendCoinsWorker(action: SendCoinsAction) {
     e && debugLog(e.message);
 
     if (e && e.message === 'wrong_time') {
-      MainDB.setTimeSyncedDismissed(false);
-      yield put(mainActions.setTimeSyncedDismissed(false));
       Alert.alert(
         t('send_sending_wrong_time_title'),
         t('send_sending_wrong_time_description'),

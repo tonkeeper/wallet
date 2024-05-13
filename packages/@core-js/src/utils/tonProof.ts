@@ -4,6 +4,7 @@ import nacl from 'tweetnacl';
 import naclUtils from 'tweetnacl-util';
 const { createHash } = require('react-native-crypto');
 import { Address } from '../formatters/Address';
+import { getRawTimeFromLiteserverSafely } from '@tonkeeper/shared/utils/blockchain';
 
 export interface TonProofArgs {
   address: string;
@@ -22,7 +23,7 @@ export async function createTonProof({
 }: TonProofArgs) {
   try {
     const address = Address.parse(_addr).toRaw();
-    const timestamp = Math.floor(Date.now() / 1000);
+    const timestamp = await getRawTimeFromLiteserverSafely();
     const timestampBuffer = new Int64LE(timestamp).toBuffer();
 
     const domainBuffer = Buffer.from(domain);
