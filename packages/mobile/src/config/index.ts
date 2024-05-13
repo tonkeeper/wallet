@@ -73,6 +73,7 @@ export type AppConfigVars = {
   tonkeeper_pro_url: string;
   notcoin_jetton_master: string;
   notcoin_nft_collection: string;
+  notcoin_bot_url: string;
 };
 
 const defaultConfig: Partial<AppConfigVars> = {
@@ -123,6 +124,7 @@ const defaultConfig: Partial<AppConfigVars> = {
     '0:2f956143c461769579baef2e32cc2d7bc18283f40d20bb03e432cd603ac33ffc',
   notcoin_nft_collection:
     '0:e6923eb901bfe6d1a65a5bc2292b0e2462a220213c3f1d1b2d60491543a34860',
+  notcoin_bot_url: 'https://t.me/notcoin_bot',
 };
 
 export const config = new AppConfig<AppConfigVars>({

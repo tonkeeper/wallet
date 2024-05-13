@@ -1356,6 +1356,9 @@
     "exchange_to_not": "Обменять на NOT",
     "verify_title": "Подключите кошелёк к Notcoin Bot, чтобы проверить сжигание",
     "verify_subtitle": "Проверка может занять несколько часов.",
-    "open_bot": "Открыть Notcoin Bot"
+    "open_bot": "Открыть Notcoin Bot",
+    "name": "Notcoin",
+    "slogan": "Probably nothing",
+    "open": "Открыть"
   }
 }

@@ -3,15 +3,15 @@ import { Button, FastImage, Modal, Spacer, Steezy, Text, View } from '@tonkeeper
 import { memo, useCallback } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import { Linking } from 'react-native';
-
-const iconSource = require('./notcoin-bot.png');
+import { config } from '$config';
+import { NotcoinBotIcon } from './NotcoinBotIcon';
 
 export const NotcoinVerifyModal = memo(() => {
   const nav = useNavigation();
 
-  const openBot = useCallback(async () => {
+  const openNotcoinBot = useCallback(async () => {
     try {
-      await Linking.openURL('https://t.me/notcoin_bot');
+      await Linking.openURL(config.get('notcoin_bot_url'));
 
       setTimeout(() => {
         nav.goBack();
@@ -24,7 +24,7 @@ export const NotcoinVerifyModal = memo(() => {
       <Modal.Header />
       <Modal.Content safeArea>
         <View style={styles.container}>
-          <FastImage source={iconSource} style={styles.icon} />
+          <NotcoinBotIcon style={styles.icon} />
           <Spacer y={20} />
           <Text type="h2" textAlign="center">
             {t('notcoin.verify_title')}
@@ -39,7 +39,7 @@ export const NotcoinVerifyModal = memo(() => {
             {t('notcoin.verify_subtitle')}
           </Text>
           <Spacer y={48} />
-          <Button title={t('notcoin.open_bot')} onPress={openBot} />
+          <Button title={t('notcoin.open_bot')} onPress={openNotcoinBot} />
           <Spacer y={16} />
         </View>
       </Modal.Content>
