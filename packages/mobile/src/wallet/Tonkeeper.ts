@@ -22,6 +22,7 @@ import nacl from 'tweetnacl';
 import { AccountsStream } from './streaming';
 import { InteractionManager } from 'react-native';
 import { Biometry } from './Biometry';
+import { Toast } from '@tonkeeper/uikit';
 
 type TonkeeperOptions = {
   storage: Storage;
@@ -173,6 +174,7 @@ export class Tonkeeper {
       this.emitChangeWallet();
     } catch (err) {
       console.log('TK:init', err);
+      Toast.fail(err.message);
     }
   }
 
