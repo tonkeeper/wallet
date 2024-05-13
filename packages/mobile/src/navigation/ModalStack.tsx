@@ -37,6 +37,7 @@ import {
   BurnVouchersModal,
   ExchangeModal,
   LogoutWarningModal,
+  NotcoinVerifyModal,
   PairLedgerModal,
 } from '$modals';
 import { ThemeProvider, useTheme } from '@tonkeeper/uikit';
@@ -89,6 +90,7 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={LogoutWarningModal} path="/logout-warning" />
       <Stack.Modal component={PairLedgerModal} path="/pair-ledger" />
       <Stack.Modal component={BurnVouchersModal} path="/burn-vouchers" />
+      <Stack.Modal component={NotcoinVerifyModal} path="/notcoin-verify" />
     </Stack.Group>
     <Stack.Group behavior="modal">
       <Stack.Modal component={ReceiveModal} path="ReceiveModal" />

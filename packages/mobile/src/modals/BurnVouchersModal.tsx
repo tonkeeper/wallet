@@ -31,6 +31,8 @@ interface BurnVouchersModalProps {
 export const BurnVouchersModal = memo<BurnVouchersModalProps>((props) => {
   const { max = false } = props;
 
+  const nav = useNavigation();
+
   const nfts = useNftsState((s) =>
     Object.values(s.accountNfts).filter(
       (nft) =>
@@ -81,8 +83,13 @@ export const BurnVouchersModal = memo<BurnVouchersModalProps>((props) => {
           broadcast: false,
         },
       },
+      () => {
+        setTimeout(() => {
+          nav.openModal('/notcoin-verify');
+        }, 2000);
+      },
     );
-  }, [selectedNfts]);
+  }, [nav, selectedNfts]);
 
   const openTonkeeperPro = useCallback(() => {
     Linking.openURL(config.get('tonkeeper_pro_url')).catch(null);
