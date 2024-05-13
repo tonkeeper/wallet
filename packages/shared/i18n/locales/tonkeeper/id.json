@@ -618,6 +618,7 @@
     "amount": {
       "insufficient_balance": "Saldo tidak cukup",
       "less_than_min": "Minimum %{minAmount} TON",
+      "less_than_min_with_symbol": "Minimum %{minAmount} %{symbol}",
       "liquid_jetton_note": "Mengirim token likuiditas tsTON",
       "max": "MAKSIMUM",
       "recipient_label": "Ke:",

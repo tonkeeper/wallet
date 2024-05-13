@@ -1,4 +1,4 @@
-import { BatteryAPI, UnitsEnum } from '@tonkeeper/core/src/BatteryAPI';
+import { BatteryAPI, RechargeMethods, UnitsEnum } from '@tonkeeper/core/src/BatteryAPI';
 import { MessageConsequences } from '@tonkeeper/core/src/TonAPI';
 import { Storage } from '@tonkeeper/core/src/declarations/Storage';
 import { State } from '@tonkeeper/core/src/utils/State';
@@ -13,6 +13,9 @@ export enum BatterySupportedTransaction {
 }
 
 export interface BatteryState {
+  rechargeMethods: RechargeMethods['methods'];
+  isRechargeMethodsLoading: boolean;
+
   isLoading: boolean;
   balance?: string;
   reservedBalance?: string;
@@ -23,6 +26,8 @@ export interface BatteryState {
 
 export class BatteryManager {
   public state = new State<BatteryState>({
+    rechargeMethods: [],
+    isRechargeMethodsLoading: false,
     isLoading: false,
     balance: undefined,
     reservedBalance: '0',
@@ -60,6 +65,19 @@ export class BatteryManager {
 
   get fundReceiver() {
     return this.state.data.fundReceiver;
+  }
+
+  public async fetchRechargeMethods() {
+    try {
+      this.state.set({ isRechargeMethodsLoading: true });
+      const rechargeMethods = await this.batteryapi.getRechargeMethods();
+      this.state.set({
+        rechargeMethods: rechargeMethods.methods,
+        isRechargeMethodsLoading: false,
+      });
+    } catch (e) {
+      this.state.set({ rechargeMethods: [], isRechargeMethodsLoading: false });
+    }
   }
 
   public async fetchBalance() {
@@ -267,7 +285,7 @@ export class BatteryManager {
   }
 
   public async load() {
-    return this.fetchBalance();
+    return await Promise.all([this.fetchBalance(), this.loadBatteryConfig()]);
   }
 
   public async rehydrate() {

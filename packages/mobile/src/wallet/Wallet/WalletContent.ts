@@ -177,7 +177,6 @@ export class WalletContent extends WalletBase {
       this.staking.load(),
       this.subscriptions.load(),
       this.battery.load(),
-      this.battery.loadBatteryConfig(),
       this.activityList.load(),
       this.cards.load(),
     ]);
@@ -192,7 +191,6 @@ export class WalletContent extends WalletBase {
       this.staking.reload(),
       this.subscriptions.reload(),
       this.battery.load(),
-      this.battery.loadBatteryConfig(),
       this.activityList.reload(),
       this.cards.load(),
     ]);

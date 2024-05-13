@@ -68,6 +68,7 @@ export const cryptoToFiat = (
   fiatRate: number,
   decimals: number,
   skipFormatting?: boolean,
+  calculateFiatFrom: string | number = '0',
 ) => {
   if (!fiatRate || fiatRate <= 0) {
     return '0';
@@ -75,7 +76,13 @@ export const cryptoToFiat = (
 
   const bigNum = new BigNumber(parseLocaleNumber(input) || 0);
 
-  const calculated = bigNum.multipliedBy(fiatRate);
+  const amount = Math.max(0, bigNum.minus(calculateFiatFrom).toNumber());
+
+  if (amount === 0) {
+    return '0';
+  }
+
+  const calculated = new BigNumber(amount).multipliedBy(fiatRate);
 
   const { decimalSeparator, groupingSeparator } = getNumberFormatSettings();
 
@@ -92,6 +99,7 @@ export const fiatToCrypto = (
   fiatRate: number,
   decimals: number,
   skipFormatting?: boolean,
+  calculateFiatFrom: string | number = '0',
 ) => {
   if (!fiatRate || fiatRate <= 0) {
     return '0';
@@ -99,7 +107,7 @@ export const fiatToCrypto = (
 
   const bigNum = new BigNumber(parseLocaleNumber(input) || 0);
 
-  const calculated = bigNum.dividedBy(fiatRate);
+  const calculated = bigNum.dividedBy(fiatRate).plus(calculateFiatFrom);
 
   const { decimalSeparator, groupingSeparator } = getNumberFormatSettings();
 

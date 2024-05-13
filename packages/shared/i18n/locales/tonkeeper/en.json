@@ -164,6 +164,29 @@
         "other": "%{count} charges"
       }
     },
+    "recharge_by_crypto": {
+      "title": "Recharge",
+      "tokens": "Tokens",
+      "continue": "Continue",
+      "other": {
+        "title": "Other",
+        "subtitle": "Enter amount manually"
+      }
+    },
+    "other_ways": {
+      "by_crypto": {
+        "title": "Recharge Battery",
+        "subtitle": "Using %{methods}"
+      },
+      "gift": {
+        "title": "Give a battery",
+        "subtitle": "By wallet address"
+      },
+      "promo": {
+        "title": "Enter Promo Code",
+        "subtitle": "You're lucky"
+      }
+    },
     "promocode": {
       "button": "Recharge by Promo Code",
       "title": "Promo Code",
@@ -612,6 +635,7 @@
     "amount": {
       "insufficient_balance": "Insufficient balance",
       "less_than_min": "Minimum %{minAmount} TON",
+      "less_than_min_with_symbol": "Minimum %{minAmount} %{symbol}",
       "liquid_jetton_note": "Sending tsTON liquidity token",
       "max": "MAX",
       "recipient_label": "To:",

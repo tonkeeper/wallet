@@ -45,6 +45,23 @@ export interface Balance {
   units: BalanceUnitsEnum;
 }
 
+export interface RechargeMethods {
+  methods: {
+    /** @example "https://example.com/image.png" */
+    image?: string;
+    jetton_master?: string;
+    /** @example "10.0" */
+    min_bootstrap_value?: string;
+    type: RechargeMethodsTypeEnum;
+    /** @example "10.250" */
+    rate: string;
+    /** @example "usdt" */
+    symbol: string;
+    /** @example 6 */
+    decimals: number;
+  }[];
+}
+
 export interface Purchases {
   /** @example 1 */
   total_purchases: number;
@@ -81,6 +98,8 @@ export interface AndroidBatteryPurchaseStatus {
     };
   }[];
 }
+
+export type AppStoreResponse = object;
 
 export interface IOSBatteryPurchaseStatus {
   transactions: {
@@ -135,6 +154,11 @@ export interface Transactions {
 /** @example "usd" */
 export enum BalanceUnitsEnum {
   Usd = 'usd',
+  Ton = 'ton',
+}
+
+export enum RechargeMethodsTypeEnum {
+  Jetton = 'jetton',
   Ton = 'ton',
 }
 
@@ -525,6 +549,20 @@ export class BatteryGenerated<SecurityDataType extends unknown> {
     });
 
   /**
+   * @description This method returns on-chain recharge methods.
+   *
+   * @name GetRechargeMethods
+   * @request GET:/recharge-methods
+   */
+  getRechargeMethods = (params: RequestParams = {}) =>
+    this.http.request<RechargeMethods, Error>({
+      path: `/recharge-methods`,
+      method: 'GET',
+      format: 'json',
+      ...params,
+    });
+
+  /**
    * @description This method returns a list of purchases made by a specific user.
    *
    * @name GetPurchases
@@ -604,6 +642,26 @@ export class BatteryGenerated<SecurityDataType extends unknown> {
       }),
   };
   ios = {
+    /**
+     * No description
+     *
+     * @name AppStoreNotification
+     * @request POST:/purchase-battery/ios/app-store-notification
+     */
+    appStoreNotification: (
+      data: {
+        signedPayload: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<AppStoreResponse, Error>({
+        path: `/purchase-battery/ios/app-store-notification`,
+        method: 'POST',
+        body: data,
+        format: 'json',
+        ...params,
+      }),
+
     /**
      * @description verify an in-app purchase
      *

@@ -4,19 +4,30 @@ import { forwardRef, memo, useEffect, useMemo } from 'react';
 import { useBottomTabBarHeight } from '@tonkeeper/router';
 import { useScrollToTop } from '@react-navigation/native';
 import { ns, useMergeRefs } from '../../utils';
-import Animated from 'react-native-reanimated';
+import Animated, { useAnimatedKeyboard, useAnimatedStyle } from 'react-native-reanimated';
 import { useScreenScroll } from './hooks';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { safeAreaInsets } from '@tonkeeper/mobile/src/utils';
 
 interface ScreenScrollView extends ScrollViewProps {
   hideBottomSeparator?: boolean;
   indent?: boolean;
+  keyboardAvoiding?: boolean;
+  withBottomInset?: boolean;
 }
 
 export type ScreenScrollViewRef = Animated.ScrollView;
 
 export const ScreenScrollView = memo(
   forwardRef<ScreenScrollViewRef, ScreenScrollView>((props, ref) => {
-    const { indent, hideBottomSeparator, contentContainerStyle, ...other } = props;
+    const {
+      withBottomInset,
+      indent,
+      hideBottomSeparator,
+      keyboardAvoiding,
+      contentContainerStyle,
+      ...other
+    } = props;
     const {
       detectContentSize,
       detectLayoutSize,
@@ -28,6 +39,8 @@ export const ScreenScrollView = memo(
     } = useScreenScroll();
     const tabBarHeight = useBottomTabBarHeight();
     const setRef = useMergeRefs(scrollRef, ref);
+    const keyboard = useAnimatedKeyboard();
+    const bottomInset = useSafeAreaInsets().bottom;
 
     useScrollToTop(scrollRef as any);
 
@@ -35,12 +48,20 @@ export const ScreenScrollView = memo(
       headerEjectionPoint.value = 0;
       return () => {
         scrollY.value = 0;
-      }
+      };
     }, []);
+
+    const animatedKeyboardAvoidingContentStyle = useAnimatedStyle(() => ({
+      marginTop: -Math.max(
+        keyboard.height.value - (withBottomInset ? bottomInset * 2 : 0),
+        0,
+      ),
+    }));
 
     const contentStyle = useMemo(() => {
       return [
         { paddingBottom: tabBarHeight },
+        withBottomInset && { paddingBottom: bottomInset + 16 },
         indent && styles.indent,
         contentContainerStyle,
       ];
@@ -58,7 +79,12 @@ export const ScreenScrollView = memo(
           ref={setRef}
           {...other}
         >
-          <Animated.View style={headerOffsetStyle} />
+          <Animated.View
+            style={[
+              headerOffsetStyle,
+              keyboardAvoiding && animatedKeyboardAvoidingContentStyle,
+            ]}
+          />
           {props.children}
         </Animated.ScrollView>
         {!hideBottomSeparator && <ScreenBottomSeparator />}

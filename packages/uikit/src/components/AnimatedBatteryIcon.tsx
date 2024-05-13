@@ -129,7 +129,7 @@ export function AnimatedBatteryIcon(props: AnimatedBatteryIconProps) {
         {props.empty ? (
           <View style={styles.emptyIconContainer}>
             <Icon
-              name="ic-flash-32"
+              name="ic-flash-16"
               size={props.size === AnimatedBatterySize.Small ? 16 : 48}
               color={props.emptyAccent ? 'accentBlue' : 'iconSecondary'}
             />

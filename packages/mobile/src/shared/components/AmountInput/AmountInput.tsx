@@ -33,7 +33,12 @@ interface Props {
   minAmount?: string;
   fiatRate: number;
   hideSwap?: boolean;
+  onFocus?: () => void;
   withCoinSelector?: boolean;
+  calculateFiatFrom?: number | string;
+  withMaxButton?: boolean;
+  customCurrency?: (size: 'small' | 'large') => React.ReactNode;
+  fiatDecimals?: number;
   disabled?: boolean;
   setAmount: React.Dispatch<React.SetStateAction<SendAmount>>;
 }
@@ -46,9 +51,14 @@ const AmountInputComponent: React.FC<Props> = (props) => {
     currencyTitle,
     amount,
     fiatRate,
+    onFocus,
     minAmount,
     hideSwap = false,
     withCoinSelector = false,
+    withMaxButton = true,
+    customCurrency,
+    fiatDecimals = 2,
+    calculateFiatFrom = '0',
     disabled,
     setAmount,
   } = props;
@@ -58,6 +68,7 @@ const AmountInputComponent: React.FC<Props> = (props) => {
   const textInputRef = useRef<TextInput | null>(null);
 
   const fiatCurrency = useWalletCurrency();
+
   const wallet = useWallet();
 
   const isLockup = !!wallet?.isLockup;
@@ -108,14 +119,24 @@ const AmountInputComponent: React.FC<Props> = (props) => {
     const { decimalSeparator } = getNumberFormatSettings();
 
     const secondaryValue = isFiat
-      ? fiatToCrypto(value, fiatRate, 2, true)
-      : cryptoToFiat(value, fiatRate, 2, true);
+      ? fiatToCrypto(value, fiatRate, 2, true, calculateFiatFrom)
+      : cryptoToFiat(value, fiatRate, fiatDecimals, true, calculateFiatFrom);
 
-    return secondaryValue === '0' ? `0${decimalSeparator}00` : secondaryValue;
-  }, [amount.all, balance, fiatRate, isFiat, value]);
+    return fiatDecimals !== 0 && secondaryValue === '0'
+      ? `0${decimalSeparator}00`
+      : secondaryValue;
+  }, [amount.all, balance, calculateFiatFrom, fiatDecimals, fiatRate, isFiat, value]);
 
-  const mainCurrencyCode = isFiat ? fiatCurrency.toUpperCase() : currencyTitle;
-  const secondaryCurrencyCode = isFiat ? currencyTitle : fiatCurrency.toUpperCase();
+  const mainCurrencyCode = isFiat
+    ? customCurrency
+      ? customCurrency('large')
+      : fiatCurrency.toUpperCase()
+    : currencyTitle;
+  const secondaryCurrencyCode = isFiat
+    ? currencyTitle
+    : customCurrency
+    ? customCurrency('small')
+    : fiatCurrency.toUpperCase();
 
   const handleChangeAmount = useCallback(
     (text: string) => {
@@ -127,11 +148,21 @@ const AmountInputComponent: React.FC<Props> = (props) => {
       setValue(nextValue);
 
       setAmount({
-        value: isFiat ? fiatToCrypto(nextValue, fiatRate, decimals) : nextValue,
+        value: isFiat
+          ? fiatToCrypto(nextValue, fiatRate, decimals, undefined, calculateFiatFrom)
+          : nextValue,
         all: nextValue === balanceInputValue,
       });
     },
-    [balanceInputValue, decimals, disabled, fiatRate, isFiat, setAmount],
+    [
+      balanceInputValue,
+      calculateFiatFrom,
+      decimals,
+      disabled,
+      fiatRate,
+      isFiat,
+      setAmount,
+    ],
   );
 
   const handlePressInput = useCallback(() => {
@@ -151,11 +182,21 @@ const AmountInputComponent: React.FC<Props> = (props) => {
 
       setFiat(false);
     } else {
-      setValue(trimZeroDecimals(cryptoToFiat(amount.value, fiatRate, 2)));
+      setValue(
+        trimZeroDecimals(
+          cryptoToFiat(
+            amount.value,
+            fiatRate,
+            fiatDecimals,
+            undefined,
+            calculateFiatFrom,
+          ),
+        ),
+      );
 
       setFiat(true);
     }
-  }, [amount.value, fiatRate, isFiat]);
+  }, [amount.value, calculateFiatFrom, fiatDecimals, fiatRate, isFiat]);
 
   const amountContainerStyle = useAnimatedStyle(
     () => ({
@@ -163,7 +204,11 @@ const AmountInputComponent: React.FC<Props> = (props) => {
         {
           scale: withSpring(
             interpolate(
-              value.length + Math.max(mainCurrencyCode.length - 3, 0),
+              value.length +
+                Math.max(
+                  typeof mainCurrencyCode === 'string' ? mainCurrencyCode.length : 3 - 3,
+                  0,
+                ),
               [9, 21, 30, 40],
               [1, 0.6, 0.5, 0.4],
               Extrapolation.CLAMP,
@@ -198,13 +243,17 @@ const AmountInputComponent: React.FC<Props> = (props) => {
   const fakeInputStyle = useAnimatedStyle(() => ({ height: inputHeight.value }));
 
   useEffect(() => {
-    const currentInputValue = isFiat ? fiatToCrypto(value, fiatRate, decimals) : value;
+    const currentInputValue = isFiat
+      ? fiatToCrypto(value, fiatRate, decimals, undefined, calculateFiatFrom)
+      : value;
 
     if (amount.value === currentInputValue) {
       return;
     }
 
-    const nextValue = isFiat ? cryptoToFiat(amount.value, fiatRate, 2) : amount.value;
+    const nextValue = isFiat
+      ? cryptoToFiat(amount.value, fiatRate, fiatDecimals, undefined, calculateFiatFrom)
+      : amount.value;
 
     setValue(nextValue);
 
@@ -233,6 +282,7 @@ const AmountInputComponent: React.FC<Props> = (props) => {
           >
             <S.FakeInputWrap>
               <S.AmountInput
+                onFocus={onFocus}
                 ref={handleRef}
                 autoCorrect={false}
                 selectionColor={theme.colors.accentPrimary}
@@ -267,18 +317,23 @@ const AmountInputComponent: React.FC<Props> = (props) => {
       </S.InputTouchable>
       {!isLockup ? (
         <S.SendAllContainer>
-          <Button
-            mode={amount.all ? 'primary' : 'secondary'}
-            size="small"
-            onPress={handleSwitchAll}
-          >
-            {t('send_screen_steps.amount.max')}
-          </Button>
+          {withMaxButton && (
+            <Button
+              mode={amount.all ? 'primary' : 'secondary'}
+              size="small"
+              onPress={handleSwitchAll}
+            >
+              {t('send_screen_steps.amount.max')}
+            </Button>
+          )}
           {isInsufficientBalance || isLessThanMin ? (
             <S.Error>
               {isInsufficientBalance
                 ? t('send_screen_steps.amount.insufficient_balance')
-                : t('send_screen_steps.amount.less_than_min', { minAmount })}
+                : t('send_screen_steps.amount.less_than_min_with_symbol', {
+                    minAmount,
+                    symbol: currencyTitle,
+                  })}
             </S.Error>
           ) : (
             <S.SandAllLabel>

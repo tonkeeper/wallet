@@ -596,6 +596,7 @@
     "amount": {
       "insufficient_balance": "余额不足",
       "less_than_min": "最少 %{minAmount} TON",
+      "less_than_min_with_symbol": "最少 %{minAmount} %{symbol}",
       "max": "最大",
       "recipient_label": "至:",
       "remaining": "剩余: %{amount}",
