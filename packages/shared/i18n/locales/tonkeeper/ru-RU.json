@@ -571,6 +571,7 @@
     "amount": {
       "insufficient_balance": "Недостаточно средств",
       "less_than_min": "Минимум %{minAmount} TON",
+      "less_than_min_with_symbol": "Минимум %{minAmount} %{symbol}",
       "liquid_jetton_note": "Отправка токена ликвидности tsTON",
       "max": "MAX",
       "recipient_label": "Кому:",
@@ -1094,6 +1095,28 @@
         "other": "≈ %{count} зарядов за %{transactionName}",
         "one": "≈ %{count} заряд за %{transactionName}",
         "many": "≈ %{count} зарядов за %{transactionName}"
+      }
+    },
+    "recharge_by_crypto": {
+      "title": "Зарядка",
+      "tokens": "Токены",
+      "continue": "Продолжить",
+      "other": {
+        "title": "Другое количество",
+        "subtitle": "Ввести вручную"
+      }
+    },
+    "other_ways": {
+      "by_crypto": {
+        "title": "Зарядить за %{symbol}"
+      },
+      "gift": {
+        "title": "Подарить батарейку",
+        "subtitle": "По адресу кошелька"
+      },
+      "promo": {
+        "title": "Ввести промо-код",
+        "subtitle": "А вы счастливчик"
       }
     },
     "refilled": "Батарейка заряжена",

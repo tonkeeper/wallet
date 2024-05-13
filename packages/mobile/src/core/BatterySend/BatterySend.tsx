@@ -40,6 +40,7 @@ import { RechargeMethodsTypeEnum } from '@tonkeeper/core/src/BatteryAPI';
 import { compareAddresses } from '$utils/address';
 import { AnimatedScrollView } from 'react-native-reanimated/lib/typescript/reanimated2/component/ScrollView';
 import { BatteryPackItem } from '$core/BatterySend/components';
+import { t } from '@tonkeeper/shared/i18n';
 
 let dnsAbortController: null | AbortController = null;
 
@@ -70,14 +71,15 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
         icon: 'ic-battery-25-44',
         key: 'small',
         tonAmount: new BigNumber(config.get('batteryMeanFees'))
-          .multipliedBy(100)
+          .multipliedBy(150)
           .toString(),
       },
     ],
     [],
   );
 
-  const { recipient: initialRecipientAddress } = route.params;
+  const { recipient: initialRecipientAddress, jettonMaster: initialJettonMaster } =
+    route.params;
   const [recipient, setRecipient] = useState<SendRecipient | null>(
     initialRecipientAddress
       ? { address: initialRecipientAddress, blockchain: 'ton' }
@@ -93,7 +95,7 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
     !!initialRecipientAddress;
 
   const [selectedJettonMaster, setSelectedJettonMaster] = useState<string | undefined>(
-    undefined,
+    initialJettonMaster,
   );
 
   const selectedMethod = useMemo(() => {
@@ -300,6 +302,15 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
     );
   }, [selectedJettonMaster]);
 
+  const localeAmount = parseLocaleNumber(amount.value);
+  const isZero = new BigNumber(localeAmount).isZero();
+  const isLessThanMinimum = shouldMinusReservedAmount
+    ? new BigNumber(localeAmount).isLessThan(rechargeMethod.minInputAmount)
+    : false;
+  const isGreaterThanBalance = new BigNumber(localeAmount).isGreaterThan(
+    rechargeMethod.balance,
+  );
+
   return (
     <>
       <Screen>
@@ -321,7 +332,7 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
             </View>
           }
           isModal
-          title={'Recharge'}
+          title={t('battery.recharge_by_crypto.title')}
         />
         <Screen.ScrollView
           ref={scrollRef}
@@ -366,8 +377,8 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
                 rightContent={
                   <Radio onSelect={() => null} isSelected={isManualAmountInput} />
                 }
-                title={'Other'}
-                subtitle={'Enter amount manually'}
+                title={t('battery.recharge_by_crypto.other.title')}
+                subtitle={t('battery.recharge_by_crypto.other.subtitle')}
               />
             </List>
             {isManualAmountInput && (
@@ -389,7 +400,11 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
                     calculateFiatFrom={
                       shouldMinusReservedAmount ? rechargeMethod.minInputAmount : '0'
                     }
-                    minAmount={rechargeMethod.minInputAmount}
+                    minAmount={
+                      shouldMinusReservedAmount
+                        ? rechargeMethod.minInputAmount
+                        : undefined
+                    }
                     decimals={rechargeMethod.decimals}
                     balance={rechargeMethod.balance}
                     currencyTitle={rechargeMethod.symbol}
@@ -403,9 +418,11 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
               </Animated.View>
             )}
             <Button
-              disabled={!recipient?.address || amount.value === '0'}
+              disabled={
+                !recipient?.address || isZero || isLessThanMinimum || isGreaterThanBalance
+              }
               onPress={handleContinue}
-              title="Continue"
+              title={t('battery.recharge_by_crypto.continue')}
             />
           </View>
           <KeyboardSpacer />

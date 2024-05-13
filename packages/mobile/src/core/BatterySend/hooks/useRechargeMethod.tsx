@@ -34,9 +34,12 @@ export function useRechargeMethod(rechargeMethod: RechargeMethod): IRechargeMeth
 
   const fromTon = useCallback(
     (amount: number | string) => {
-      return new BigNumber(amount).div(rechargeMethod.rate).toNumber();
+      return new BigNumber(amount)
+        .div(rechargeMethod.rate)
+        .decimalPlaces(rechargeMethod.decimals)
+        .toNumber();
     },
-    [rechargeMethod.rate],
+    [rechargeMethod.decimals, rechargeMethod.rate],
   );
 
   const formattedTonFiatAmount = useCallback(

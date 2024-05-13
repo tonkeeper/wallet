@@ -64,6 +64,7 @@ export type AppStackParamList = {
     identifiers?: string[];
   };
   [AppStackRouteNames.BatterySend]: {
-    recipient: string;
+    recipient?: string;
+    jettonMaster?: string;
   };
 };

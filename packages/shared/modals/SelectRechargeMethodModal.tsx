@@ -43,7 +43,7 @@ export const SelectRechargeMethodModal = memo<SelectRechargeMethodModalParams>(
 
     return (
       <Modal>
-        <Modal.Header title={t('battery.select_recharge_method.title')} />
+        <Modal.Header title={t('battery.recharge_by_crypto.tokens')} />
         <Modal.Content safeArea>
           <List>
             <List.Item

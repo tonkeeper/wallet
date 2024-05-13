@@ -43,7 +43,7 @@ export const BatteryPackItem = memo<BatteryPackItemProps>((props) => {
       title={t('battery.description.other', {
         count: new BigNumber(amountInToken)
           .minus(
-            props.shouldMinusReservedAmount ? config.get('batteryReservedAmount') : 0,
+            props.shouldMinusReservedAmount ? props.rechargeMethod.minInputAmount : 0,
           )
           .multipliedBy(props.rechargeMethod.rate)
           .div(config.get('batteryMeanFees'))

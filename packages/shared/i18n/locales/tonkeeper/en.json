@@ -124,9 +124,6 @@
   "auth_failed": "Authentication failed",
   "balances_setup_wallet": "Set up wallet",
   "battery": {
-    "select_recharge_method": {
-      "title": "Tokens"
-    },
     "send_widget": {
       "battery": "Battery"
     },
@@ -167,25 +164,27 @@
         "other": "%{count} charges"
       }
     },
-    "other_ways": {
+    "recharge_by_crypto": {
       "title": "Recharge",
-      "button": {
+      "tokens": "Tokens",
+      "continue": "Continue",
+      "other": {
+        "title": "Other",
+        "subtitle": "Enter amount manually"
+      }
+    },
+    "other_ways": {
+      "by_crypto": {
         "title": "Recharge Battery",
-        "subtitle": "using %{methods}, or promo code"
+        "subtitle": "Using %{methods}"
       },
-      "methods": {
-        "by_crypto": {
-          "title": "Recharge Battery",
-          "subtitle": "Using %{methods}"
-        },
-        "gift": {
-          "title": "Give a battery",
-          "subtitle": "By wallet address"
-        },
-        "promo": {
-          "title": "Enter Promo Code",
-          "subtitle": "You're lucky"
-        }
+      "gift": {
+        "title": "Give a battery",
+        "subtitle": "By wallet address"
+      },
+      "promo": {
+        "title": "Enter Promo Code",
+        "subtitle": "You're lucky"
       }
     },
     "promocode": {
@@ -636,6 +635,7 @@
     "amount": {
       "insufficient_balance": "Insufficient balance",
       "less_than_min": "Minimum %{minAmount} TON",
+      "less_than_min_with_symbol": "Minimum %{minAmount} %{symbol}",
       "liquid_jetton_note": "Sending tsTON liquidity token",
       "max": "MAX",
       "recipient_label": "To:",

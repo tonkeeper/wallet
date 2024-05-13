@@ -19,7 +19,7 @@ import {
 import { RefillBatteryIAP } from './RefillBatteryIAP';
 import { t } from '@tonkeeper/shared/i18n';
 import { config } from '@tonkeeper/mobile/src/config';
-import { RechargeMethodsButton } from './RechargeMethodsButton';
+import { RechargeMethods } from './RechargeMethods';
 import { RestorePurchases } from './RestorePurchases';
 import { RefillBatterySettingsWidget } from './RefillBatterySettingsWidget';
 import Animated from 'react-native-reanimated';
@@ -91,12 +91,7 @@ export const RefillBattery = memo<RefillBatteryProps>((props) => {
       )}
       <View style={styles.indent}>
         {!isInAppPurchasesDisabled ? <RefillBatteryIAP /> : null}
-        {isPromoDisabled ? (
-          <>
-            <RechargeMethodsButton />
-            <Spacer y={16} />
-          </>
-        ) : null}
+        {isPromoDisabled ? <RechargeMethods /> : null}
         <RestorePurchases />
       </View>
     </Animated.ScrollView>

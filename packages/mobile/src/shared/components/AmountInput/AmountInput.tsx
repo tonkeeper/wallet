@@ -122,7 +122,9 @@ const AmountInputComponent: React.FC<Props> = (props) => {
       ? fiatToCrypto(value, fiatRate, 2, true, calculateFiatFrom)
       : cryptoToFiat(value, fiatRate, fiatDecimals, true, calculateFiatFrom);
 
-    return secondaryValue === '0' ? `0${decimalSeparator}00` : secondaryValue;
+    return fiatDecimals !== 0 && secondaryValue === '0'
+      ? `0${decimalSeparator}00`
+      : secondaryValue;
   }, [amount.all, balance, calculateFiatFrom, fiatDecimals, fiatRate, isFiat, value]);
 
   const mainCurrencyCode = isFiat
@@ -328,7 +330,10 @@ const AmountInputComponent: React.FC<Props> = (props) => {
             <S.Error>
               {isInsufficientBalance
                 ? t('send_screen_steps.amount.insufficient_balance')
-                : t('send_screen_steps.amount.less_than_min', { minAmount })}
+                : t('send_screen_steps.amount.less_than_min_with_symbol', {
+                    minAmount,
+                    symbol: currencyTitle,
+                  })}
             </S.Error>
           ) : (
             <S.SandAllLabel>

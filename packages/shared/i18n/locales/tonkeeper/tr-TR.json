@@ -722,6 +722,7 @@
     "amount": {
       "insufficient_balance": "Yetersiz bakiye",
       "less_than_min": "Minimum %{minAmount} TON",
+      "less_than_min_with_symbol": "Minimum %{minAmount} %{symbol}",
       "liquid_jetton_note": "tsTON likidite tokeni gönderiliyor",
       "max": "MAX",
       "recipient_label": "Alıcı:",
