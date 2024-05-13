@@ -285,139 +285,140 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
   }, [selectedJettonMaster]);
 
   return (
-    <Screen>
-      <Screen.Header
-        titlePosition={'left'}
-        hideBackButton
-        rightContent={
-          <View style={styles.headerRightContent}>
-            <HeaderSwitch
-              icon={rechargeMethod.iconSource}
-              onPress={handleOpenSelectRechargeMethod}
-              title={rechargeMethod.symbol}
-            />
-            <TouchableOpacity onPress={navigation.goBack}>
-              <View style={styles.backButton}>
-                <Icon name={'ic-close-16'} />
-              </View>
-            </TouchableOpacity>
-          </View>
-        }
-        isModal
-        title={'Recharge'}
-      />
-      <Screen.ScrollView
-        keyboardShouldPersistTaps="handled"
-        keyboardAvoiding
-        withBottomInset
-      >
-        <Spacer y={8} />
-        <View style={styles.contentContainer}>
-          {!initialRecipientAddress ? (
-            <AddressInput
-              recipient={recipient}
-              shouldFocus
-              dnsLoading={dnsLoading}
-              editable={true}
-              updateRecipient={updateRecipient}
-              onSubmit={() => null}
-            />
-          ) : null}
-          <List style={styles.list} indent={false}>
-            {packs.map((pack) => (
+    <>
+      <Screen>
+        <Screen.Header
+          titlePosition={'left'}
+          hideBackButton
+          rightContent={
+            <View style={styles.headerRightContent}>
+              <HeaderSwitch
+                icon={rechargeMethod.iconSource}
+                onPress={handleOpenSelectRechargeMethod}
+                title={rechargeMethod.symbol}
+              />
+              <TouchableOpacity onPress={navigation.goBack}>
+                <View style={styles.backButton}>
+                  <Icon name={'ic-close-16'} />
+                </View>
+              </TouchableOpacity>
+            </View>
+          }
+          isModal
+          title={'Recharge'}
+        />
+        <Screen.ScrollView keyboardShouldPersistTaps="handled" withBottomInset>
+          <Spacer y={8} />
+          <View style={styles.contentContainer}>
+            {!initialRecipientAddress ? (
+              <AddressInput
+                recipient={recipient}
+                shouldFocus
+                dnsLoading={dnsLoading}
+                editable={true}
+                updateRecipient={updateRecipient}
+                onSubmit={() => null}
+              />
+            ) : null}
+            <List style={styles.list} indent={false}>
+              {packs.map((pack) => (
+                <List.Item
+                  onPress={handleAmountSelect(rechargeMethod.fromTon(pack.tonAmount))}
+                  rightContent={
+                    <Radio
+                      onSelect={() => null}
+                      isSelected={
+                        !isManualAmountInput &&
+                        formatter.format(rechargeMethod.fromTon(pack.tonAmount), {
+                          decimals: rechargeMethod.decimals,
+                        }) === amount.value
+                      }
+                    />
+                  }
+                  key={pack.key}
+                  title={t('battery.description.other', {
+                    count: new BigNumber(rechargeMethod.fromTon(pack.tonAmount))
+                      .minus(
+                        shouldMinusReservedAmount
+                          ? config.get('batteryReservedAmount')
+                          : 0,
+                      )
+                      .multipliedBy(rechargeMethod.rate)
+                      .div(config.get('batteryMeanFees'))
+                      .decimalPlaces(0)
+                      .toNumber(),
+                  })}
+                  subtitle={`${formatter.format(rechargeMethod.fromTon(pack.tonAmount), {
+                    currency: rechargeMethod.symbol,
+                  })} · ${rechargeMethod.formattedTonFiatAmount(pack.tonAmount)}`}
+                  leftContent={
+                    <Icon
+                      style={styles.listItemIcon.static}
+                      imageStyle={styles.listItemIcon.static}
+                      colorless
+                      name={pack.icon}
+                    />
+                  }
+                />
+              ))}
               <List.Item
-                onPress={handleAmountSelect(rechargeMethod.fromTon(pack.tonAmount))}
-                rightContent={
-                  <Radio
-                    onSelect={() => null}
-                    isSelected={
-                      !isManualAmountInput &&
-                      formatter.format(rechargeMethod.fromTon(pack.tonAmount), {
-                        decimals: rechargeMethod.decimals,
-                      }) === amount.value
-                    }
-                  />
-                }
-                key={pack.key}
-                title={t('battery.description.other', {
-                  count: new BigNumber(rechargeMethod.fromTon(pack.tonAmount))
-                    .minus(
-                      shouldMinusReservedAmount ? config.get('batteryReservedAmount') : 0,
-                    )
-                    .multipliedBy(rechargeMethod.rate)
-                    .div(config.get('batteryMeanFees'))
-                    .decimalPlaces(0)
-                    .toNumber(),
-                })}
-                subtitle={`${formatter.format(rechargeMethod.fromTon(pack.tonAmount), {
-                  currency: rechargeMethod.symbol,
-                })} · ${rechargeMethod.formattedTonFiatAmount(pack.tonAmount)}`}
+                onPress={handleAmountSelect(undefined)}
                 leftContent={
                   <Icon
                     style={styles.listItemIcon.static}
                     imageStyle={styles.listItemIcon.static}
                     colorless
-                    name={pack.icon}
+                    name={'ic-battery-flash-44'}
                   />
                 }
+                rightContent={
+                  <Radio onSelect={() => null} isSelected={isManualAmountInput} />
+                }
+                title={'Other'}
+                subtitle={'Enter amount manually'}
               />
-            ))}
-            <List.Item
-              onPress={handleAmountSelect(undefined)}
-              leftContent={
-                <Icon
-                  style={styles.listItemIcon.static}
-                  imageStyle={styles.listItemIcon.static}
-                  colorless
-                  name={'ic-battery-flash-44'}
-                />
-              }
-              rightContent={
-                <Radio onSelect={() => null} isSelected={isManualAmountInput} />
-              }
-              title={'Other'}
-              subtitle={'Enter amount manually'}
+            </List>
+            {isManualAmountInput && (
+              <Animated.View
+                exiting={FadeOut.duration(120)}
+                entering={FadeIn.duration(120)}
+              >
+                <View style={styles.inputContainer}>
+                  <AmountInput
+                    roundFiatRate
+                    customCurrency={renderFlashIcon}
+                    innerRef={textInputRef}
+                    fiatDecimals={0}
+                    withMaxButton={false}
+                    withCoinSelector={false}
+                    disabled={false}
+                    hideSwap={true}
+                    calculateFiatFrom={
+                      shouldMinusReservedAmount ? rechargeMethod.minInputAmount : '0'
+                    }
+                    minAmount={rechargeMethod.minInputAmount}
+                    decimals={rechargeMethod.decimals}
+                    balance={tk.wallet.balances.state.data.ton}
+                    currencyTitle={rechargeMethod.symbol}
+                    amount={amount}
+                    fiatRate={new BigNumber(rechargeMethod.rate)
+                      .div(config.get('batteryMeanFees'))
+                      .toNumber()}
+                    setAmount={setAmount}
+                  />
+                </View>
+              </Animated.View>
+            )}
+            <Button
+              disabled={!recipient?.address || amount.value === '0'}
+              onPress={handleContinue}
+              title="Continue"
             />
-          </List>
-          {isManualAmountInput && (
-            <Animated.View
-              exiting={FadeOut.duration(120)}
-              entering={FadeIn.duration(120)}
-            >
-              <View style={styles.inputContainer}>
-                <AmountInput
-                  roundFiatRate
-                  customCurrency={renderFlashIcon}
-                  innerRef={textInputRef}
-                  fiatDecimals={0}
-                  withMaxButton={false}
-                  withCoinSelector={false}
-                  disabled={false}
-                  hideSwap={true}
-                  calculateFiatFrom={
-                    shouldMinusReservedAmount ? rechargeMethod.minInputAmount : '0'
-                  }
-                  minAmount={rechargeMethod.minInputAmount}
-                  decimals={rechargeMethod.decimals}
-                  balance={tk.wallet.balances.state.data.ton}
-                  currencyTitle={rechargeMethod.symbol}
-                  amount={amount}
-                  fiatRate={new BigNumber(rechargeMethod.rate)
-                    .div(config.get('batteryMeanFees'))
-                    .toNumber()}
-                  setAmount={setAmount}
-                />
-              </View>
-            </Animated.View>
-          )}
-          <Button
-            disabled={!recipient?.address || amount.value === '0'}
-            onPress={handleContinue}
-            title="Continue"
-          />
-        </View>
-      </Screen.ScrollView>
-    </Screen>
+          </View>
+        </Screen.ScrollView>
+      </Screen>
+      <KeyboardSpacer />
+    </>
   );
 };
 
