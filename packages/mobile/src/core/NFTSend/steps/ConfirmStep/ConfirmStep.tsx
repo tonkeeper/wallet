@@ -173,7 +173,7 @@ const ConfirmStepComponent: FC<Props> = (props) => {
                 )}
               </S.ItemRow>
               <S.ItemRow>
-                {batteryState !== BatteryState.Empty && isBattery ? (
+                {isBattery ? (
                   <Text color={'textTertiary'} variant={'body2'}>
                     {t('send_screen_steps.comfirm.will_be_paid_with_battery')}
                   </Text>
