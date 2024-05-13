@@ -120,7 +120,7 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
       .endCell();
 
     if (rechargeMethod.isTon) {
-      await openSignRawModal(
+      return await openSignRawModal(
         {
           messages: [
             {
