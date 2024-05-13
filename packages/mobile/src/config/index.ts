@@ -69,6 +69,8 @@ export type AppConfigVars = {
   disable_holders_cards: boolean;
   exclude_jetton_chart_periods: boolean;
   devmode_enabled: boolean;
+
+  notcoin_jetton_master: string;
 };
 
 const defaultConfig: Partial<AppConfigVars> = {
@@ -113,6 +115,8 @@ const defaultConfig: Partial<AppConfigVars> = {
   disable_holders_cards: true,
   exclude_jetton_chart_periods: true,
   devmode_enabled: false,
+
+  notcoin_jetton_master: 'EQAvlWFDxGF2lXm67y4yzC17wYKD9A0guwPkMs1gOsM__NOT',
 };
 
 export const config = new AppConfig<AppConfigVars>({
