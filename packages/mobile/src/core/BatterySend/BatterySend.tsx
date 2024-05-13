@@ -80,7 +80,7 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
 
   const shouldMinusReservedAmount =
     useExternalState(tk.wallet.battery.state, (state) => state.reservedBalance) === '0' &&
-    !initialRecipientAddress;
+    !!initialRecipientAddress;
 
   const { enabled: jettonBalances } = useJettonBalances();
 
