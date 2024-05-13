@@ -77,7 +77,7 @@ public class MainApplication extends Application implements ReactApplication {
     try {
         Field field = CursorWindow.class.getDeclaredField("sCursorWindowSize");
         field.setAccessible(true);
-        field.set(null, 300 * 1024 * 1024);
+        field.set(null, 50 * 1024 * 1024);
     } catch (Exception e) {
         if (BuildConfig.DEBUG) {
             e.printStackTrace();
