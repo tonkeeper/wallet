@@ -34,7 +34,8 @@ interface Props {
   fiatRate: number;
   hideSwap?: boolean;
   withCoinSelector?: boolean;
-  customCurrency?: string;
+  withMaxButton?: boolean;
+  customCurrency?: (size: 'small' | 'large') => React.ReactNode;
   fiatDecimals?: number;
   disabled?: boolean;
   setAmount: React.Dispatch<React.SetStateAction<SendAmount>>;
@@ -51,6 +52,7 @@ const AmountInputComponent: React.FC<Props> = (props) => {
     minAmount,
     hideSwap = false,
     withCoinSelector = false,
+    withMaxButton = true,
     customCurrency,
     fiatDecimals = 2,
     disabled,
@@ -61,8 +63,7 @@ const AmountInputComponent: React.FC<Props> = (props) => {
 
   const textInputRef = useRef<TextInput | null>(null);
 
-  const walletCurrency = useWalletCurrency();
-  const fiatCurrency = customCurrency ?? walletCurrency;
+  const fiatCurrency = useWalletCurrency();
 
   const wallet = useWallet();
 
@@ -120,8 +121,16 @@ const AmountInputComponent: React.FC<Props> = (props) => {
     return secondaryValue === '0' ? `0${decimalSeparator}00` : secondaryValue;
   }, [amount.all, balance, fiatDecimals, fiatRate, isFiat, value]);
 
-  const mainCurrencyCode = isFiat ? fiatCurrency.toUpperCase() : currencyTitle;
-  const secondaryCurrencyCode = isFiat ? currencyTitle : fiatCurrency.toUpperCase();
+  const mainCurrencyCode = isFiat
+    ? customCurrency
+      ? customCurrency('large')
+      : fiatCurrency.toUpperCase()
+    : currencyTitle;
+  const secondaryCurrencyCode = isFiat
+    ? currencyTitle
+    : customCurrency
+    ? customCurrency('small')
+    : fiatCurrency.toUpperCase();
 
   const handleChangeAmount = useCallback(
     (text: string) => {
@@ -169,7 +178,11 @@ const AmountInputComponent: React.FC<Props> = (props) => {
         {
           scale: withSpring(
             interpolate(
-              value.length + Math.max(mainCurrencyCode.length - 3, 0),
+              value.length +
+                Math.max(
+                  typeof mainCurrencyCode === 'string' ? mainCurrencyCode.length : 3 - 3,
+                  0,
+                ),
               [9, 21, 30, 40],
               [1, 0.6, 0.5, 0.4],
               Extrapolation.CLAMP,
@@ -275,13 +288,15 @@ const AmountInputComponent: React.FC<Props> = (props) => {
       </S.InputTouchable>
       {!isLockup ? (
         <S.SendAllContainer>
-          <Button
-            mode={amount.all ? 'primary' : 'secondary'}
-            size="small"
-            onPress={handleSwitchAll}
-          >
-            {t('send_screen_steps.amount.max')}
-          </Button>
+          {withMaxButton && (
+            <Button
+              mode={amount.all ? 'primary' : 'secondary'}
+              size="small"
+              onPress={handleSwitchAll}
+            >
+              {t('send_screen_steps.amount.max')}
+            </Button>
+          )}
           {isInsufficientBalance || isLessThanMin ? (
             <S.Error>
               {isInsufficientBalance

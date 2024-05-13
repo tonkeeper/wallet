@@ -33,6 +33,7 @@ export type IconNames =
   | 'ic-done-bold-16'
   | 'ic-ellipsis-16'
   | 'ic-flash-16'
+  | 'ic-flash-large-16'
   | 'ic-getgems-16'
   | 'ic-globe-16'
   | 'ic-information-circle-16'
@@ -72,6 +73,7 @@ export type IconNames =
   | 'ic-doc-28'
   | 'ic-done-28'
   | 'ic-donemark-28'
+  | 'ic-donemark-outline-28'
   | 'ic-donemark-thin-28'
   | 'ic-door-28'
   | 'ic-empty-battery-28'
@@ -224,6 +226,7 @@ export const AllIcons = [
   'ic-done-bold-16',
   'ic-ellipsis-16',
   'ic-flash-16',
+  'ic-flash-large-16',
   'ic-getgems-16',
   'ic-globe-16',
   'ic-information-circle-16',
@@ -263,6 +266,7 @@ export const AllIcons = [
   'ic-doc-28',
   'ic-done-28',
   'ic-donemark-28',
+  'ic-donemark-outline-28',
   'ic-donemark-thin-28',
   'ic-door-28',
   'ic-empty-battery-28',
@@ -416,6 +420,7 @@ export const IconSizes = {
   'ic-done-bold-16': 16,
   'ic-ellipsis-16': 16,
   'ic-flash-16': 16,
+  'ic-flash-large-16': 16,
   'ic-getgems-16': 16,
   'ic-globe-16': 16,
   'ic-information-circle-16': 16,
@@ -455,6 +460,7 @@ export const IconSizes = {
   'ic-doc-28': 28,
   'ic-done-28': 28,
   'ic-donemark-28': 28,
+  'ic-donemark-outline-28': 28,
   'ic-donemark-thin-28': 28,
   'ic-door-28': 28,
   'ic-empty-battery-28': 28,

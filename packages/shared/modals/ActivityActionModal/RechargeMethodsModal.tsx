@@ -5,6 +5,7 @@ import { t } from '@tonkeeper/shared/i18n';
 import { Image } from 'react-native';
 import { AppStackRouteNames } from '@tonkeeper/mobile/src/navigation';
 import { delay } from '@tonkeeper/core';
+import { tk } from '@tonkeeper/mobile/src/wallet';
 
 export const RechargeMethodsModal = memo(() => {
   const nav = useNavigation();
@@ -16,7 +17,9 @@ export const RechargeMethodsModal = memo(() => {
   const handleRechargeBattery = useCallback(async () => {
     nav.goBack();
     await delay(700);
-    nav.navigate(AppStackRouteNames.BatterySend);
+    nav.navigate(AppStackRouteNames.BatterySend, {
+      recipient: tk.wallet.address.ton.friendly,
+    });
   }, []);
 
   return (

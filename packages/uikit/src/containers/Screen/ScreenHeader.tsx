@@ -33,6 +33,7 @@ export interface ScreenHeaderProps {
   hideTitle?: boolean;
   gradient?: boolean;
   isModal?: boolean;
+  titlePosition?: 'center' | 'left';
   title?: string | React.ReactNode;
   subtitle?: string | React.ReactNode;
   children?: React.ReactNode;
@@ -47,6 +48,7 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
     showCloseButton,
     backButtonPosition = 'left',
     backButtonIcon = 'back',
+    titlePosition = 'center',
     hideBackButton,
     rightContent,
     hideTitle,
@@ -181,11 +183,16 @@ export const ScreenHeader = memo<ScreenHeaderProps>((props) => {
               <>
                 {!hideBackButton && !isBackButtonRight && backButtonSlot}
                 {isString(title) ? (
-                  <View style={[styles.titleContainer]}>
+                  <View
+                    style={[
+                      styles.titleContainer,
+                      titlePosition === 'left' && styles.titleContainerPositionLeft,
+                    ]}
+                  >
                     <Text
                       style={[styles.title, titleAnimatedStyle]}
                       type={!isSmallTitle ? 'label1' : 'h3'}
-                      textAlign="center"
+                      textAlign={titlePosition}
                       numberOfLines={1}
                       reanimated
                     >
@@ -249,6 +256,11 @@ const styles = StyleSheet.create({
     marginHorizontal: ScreenHeaderHeight - 24,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  titleContainerPositionLeft: {
+    alignItems: 'flex-start',
+    marginLeft: 0,
+    marginRight: ScreenHeaderHeight - 24,
   },
   content: {
     flex: 1,

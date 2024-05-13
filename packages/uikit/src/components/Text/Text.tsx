@@ -22,7 +22,8 @@ export type TextColors =
   | 'accentBlue'
   | 'constantWhite'
   | 'constantBlack'
-  | 'buttonPrimaryForeground';
+  | 'buttonPrimaryForeground'
+  | 'buttonSecondaryForeground';
 
 export interface TextProps extends AnimateProps<NativeTextProps> {
   type?: TTextTypes;

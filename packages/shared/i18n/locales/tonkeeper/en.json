@@ -124,6 +124,9 @@
   "auth_failed": "Authentication failed",
   "balances_setup_wallet": "Set up wallet",
   "battery": {
+    "select_recharge_method": {
+      "title": "Tokens"
+    },
     "send_widget": {
       "battery": "Battery"
     },
@@ -168,7 +171,7 @@
       "title": "Recharge",
       "button": {
         "title": "Recharge Battery",
-        "subtitle": "using TON, jUSDT, or promo code"
+        "subtitle": "using %{methods}, or promo code"
       }
     },
     "promocode": {

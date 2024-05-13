@@ -1,32 +1,43 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
   Button,
+  HeaderSwitch,
   Icon,
   List,
   Radio,
   Screen,
   Spacer,
   Steezy,
+  TouchableOpacity,
   View,
 } from '@tonkeeper/uikit';
 import { AddressInput } from '$core/Send/steps/AddressStep/components';
-import { AccountWithPubKey, SendAmount, SendRecipient } from '$core/Send/Send.interface';
+import { SendAmount, SendRecipient } from '$core/Send/Send.interface';
 import { t } from '@tonkeeper/shared/i18n';
 import { AmountInput } from '$shared/components';
 import { TextInput } from 'react-native-gesture-handler';
-import { RechargeMethod, RechargeMethodType } from '$core/BatterySend/types';
-import { asyncDebounce } from '$utils';
+import { asyncDebounce, parseLocaleNumber } from '$utils';
 import { Address, AmountFormatter, ContractService } from '@tonkeeper/core';
 import TonWeb from 'tonweb';
 import { formatter } from '$utils/formatter';
-import { CryptoCurrencies, Decimals } from '$shared/constants';
 import { Tonapi } from '$libs/Tonapi';
-import { useTokenPrice } from '$hooks/useTokenPrice';
 import BigNumber from 'bignumber.js';
 import { config } from '$config';
 import { tk } from '$wallet';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { openSignRawModal } from '$core/ModalContainer/NFTOperations/Modals/SignRawModal';
+import { RouteProp } from '@react-navigation/native';
+import { AppStackParamList } from '$navigation/AppStack';
+import { AppStackRouteNames } from '$navigation';
+import { useBatteryRechargeMethods } from '@tonkeeper/shared/query/hooks';
+import { useRechargeMethod } from '$core/BatterySend/hooks/useRechargeMethod';
+import { beginCell } from '@ton/core';
+import { useExternalState } from '@tonkeeper/shared/hooks/useExternalState';
+import { useNavigation } from '@tonkeeper/router';
+import { openSelectRechargeMethodModal } from '@tonkeeper/shared/modals/SelectRechargeMethodModal';
+import { RechargeMethodsTypeEnum } from '@tonkeeper/core/src/BatteryAPI';
+import { useJettonBalances } from '$hooks/useJettonBalances';
+import { compareAddresses } from '$utils/address';
 
 const packs = [
   {
@@ -46,35 +57,39 @@ const packs = [
   },
 ];
 
-const rechargeMethods: RechargeMethod[] = [
-  {
-    key: 'TON',
-    type: RechargeMethodType.TON,
-    title: 'TON',
-    markup: 0.05,
-    decimals: 9,
-  },
-  {
-    key: '0:b113a994b5024a16719f69139328eb759596c38a25f59028b146fecdc3621dfe',
-    type: RechargeMethodType.JETTON,
-    title: 'USD₮',
-    markup: 0.1,
-    decimals: 6,
-  },
-];
-
 let dnsAbortController: null | AbortController = null;
 
-export const BatterySend = () => {
-  const [recipient, setRecipient] = useState<SendRecipient | null>(null);
+export interface BatterySendProps {
+  route: RouteProp<AppStackParamList, AppStackRouteNames.BatterySend>;
+}
+
+export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
+  const navigation = useNavigation();
+  const { recipient: initialRecipientAddress } = route.params;
+  const [recipient, setRecipient] = useState<SendRecipient | null>(
+    initialRecipientAddress
+      ? { address: initialRecipientAddress, blockchain: 'ton' }
+      : null,
+  );
+  const { methods } = useBatteryRechargeMethods();
   const textInputRef = useRef<TextInput>(null);
-  const rechargeMethod = rechargeMethods[0];
   const [dnsLoading, setDnsLoading] = useState(false);
   const [isManualAmountInput, setIsManualAmountInput] = useState(false);
+  const shouldMinusReservedAmount =
+    useExternalState(tk.wallet.battery.state, (state) => state.reservedBalance) === '0';
+  const { enabled: jettonBalances } = useJettonBalances();
 
-  const tonPriceInUsd = useTokenPrice(CryptoCurrencies.Ton).usd;
-  const [recipientAccountInfo, setRecipientAccountInfo] =
-    useState<AccountWithPubKey | null>(null);
+  const [selectedJettonMaster, setSelectedJettonMaster] = useState<string | undefined>(
+    undefined,
+  );
+
+  const selectedMethod = useMemo(() => {
+    if (selectedJettonMaster === undefined) {
+      return methods.find((method) => method.type === RechargeMethodsTypeEnum.Ton)!;
+    }
+    return methods.find((method) => method.jetton_master === selectedJettonMaster)!;
+  }, [methods, selectedJettonMaster]);
+  const rechargeMethod = useRechargeMethod(selectedMethod);
 
   const [amount, setAmount] = useState<SendAmount>({
     value: formatter.format('0', {
@@ -83,20 +98,60 @@ export const BatterySend = () => {
     all: false,
   });
 
-  const handleContinue = useCallback(() => {
+  const handleContinue = useCallback(async () => {
+    const parsedAmount = parseLocaleNumber(amount.value);
+
+    const commentCell = beginCell()
+      .storeUint(0, 32)
+      .storeStringTail(recipient?.address ?? '')
+      .endCell();
+
+    if (rechargeMethod.isTon) {
+      await openSignRawModal(
+        {
+          messages: [
+            {
+              amount: AmountFormatter.toNano(parsedAmount, rechargeMethod.decimals),
+              address: tk.wallet.battery.state.data.fundReceiver!,
+              payload: commentCell.toBoc().toString('base64'),
+            },
+          ],
+        },
+        {},
+      );
+    }
+
+    const relatedJettonBalance = jettonBalances.find((jettonBalance) =>
+      compareAddresses(jettonBalance.jettonAddress, selectedJettonMaster),
+    )!;
+
+    const jettonTransferPayload = ContractService.createJettonTransferBody({
+      jettonAmount: Number(AmountFormatter.toNano(parsedAmount, rechargeMethod.decimals)),
+      receiverAddress: tk.wallet.battery.state.data.fundReceiver!,
+      excessesAddress: tk.wallet.address.ton.raw,
+      forwardBody: commentCell,
+    });
+
     await openSignRawModal(
       {
         messages: [
           {
-            amount: AmountFormatter.toNano(amount.value, rechargeMethod.decimals),
-            address: tk.wallet.battery.state.data.fundReceiver!,
-            payload: new TextEncoder().encode(recipient?.address),
+            amount: AmountFormatter.toNano('0.1', 9),
+            address: relatedJettonBalance.walletAddress,
+            payload: jettonTransferPayload.toBoc().toString('base64'),
           },
         ],
       },
       {},
     );
-  }, []);
+  }, [
+    amount.value,
+    jettonBalances,
+    rechargeMethod.decimals,
+    rechargeMethod.isTon,
+    recipient?.address,
+    selectedJettonMaster,
+  ]);
 
   const handleAmountSelect = useCallback(
     (selectedAmount: undefined | number) => () => {
@@ -143,8 +198,8 @@ export const BatterySend = () => {
   );
 
   const updateRecipient = useCallback(
-    async (value: string, accountInfo?: Partial<AccountWithPubKey>) => {
-      setRecipientAccountInfo(null);
+    async (value: string) => {
+      setRecipient(null);
 
       if (value.length === 0) {
         setRecipient(null);
@@ -160,12 +215,7 @@ export const BatterySend = () => {
         }
 
         if (Address.isValid(value)) {
-          if (accountInfo) {
-            setRecipientAccountInfo(accountInfo as AccountWithPubKey);
-          }
-
           setRecipient({ blockchain: 'ton', address: value });
-
           return true;
         }
 
@@ -207,41 +257,81 @@ export const BatterySend = () => {
     [getAddressByDomain],
   );
 
+  const renderFlashIcon = useCallback(
+    (size: 'small' | 'large') => (
+      <Icon
+        size={size === 'small' ? 16 : 36}
+        name={'ic-flash-16'}
+        color="iconSecondary"
+      />
+    ),
+    [],
+  );
+
+  const handleOpenSelectRechargeMethod = useCallback(() => {
+    openSelectRechargeMethodModal(selectedJettonMaster, setSelectedJettonMaster);
+  }, [selectedJettonMaster]);
+
   return (
     <Screen>
       <Screen.Header
-        backButtonPosition="right"
-        backButtonIcon={'close'}
+        titlePosition={'left'}
+        hideBackButton
+        rightContent={
+          <View style={styles.headerRightContent}>
+            <HeaderSwitch onPress={handleOpenSelectRechargeMethod} title={'TON'} />
+            <TouchableOpacity onPress={navigation.goBack}>
+              <View style={styles.backButton}>
+                <Icon name={'ic-close-16'} />
+              </View>
+            </TouchableOpacity>
+          </View>
+        }
         isModal
         title={'Recharge'}
       />
       <Screen.ScrollView>
         <Spacer y={8} />
         <View style={styles.contentContainer}>
-          <AddressInput
-            recipient={recipient}
-            shouldFocus
-            dnsLoading={dnsLoading}
-            editable={true}
-            updateRecipient={updateRecipient}
-            onSubmit={() => null}
-          />
+          {!initialRecipientAddress ? (
+            <AddressInput
+              recipient={recipient}
+              shouldFocus
+              dnsLoading={dnsLoading}
+              editable={true}
+              updateRecipient={updateRecipient}
+              onSubmit={() => null}
+            />
+          ) : null}
           <List style={styles.list} indent={false}>
             {packs.map((pack) => (
               <List.Item
-                onPress={handleAmountSelect(pack.tonAmount)}
-                rightContent={<Radio onSelect={() => null} isSelected={true} />}
+                onPress={handleAmountSelect(rechargeMethod.fromTon(pack.tonAmount))}
+                rightContent={
+                  <Radio
+                    onSelect={() => null}
+                    isSelected={
+                      !isManualAmountInput &&
+                      formatter.format(rechargeMethod.fromTon(pack.tonAmount), {
+                        decimals: rechargeMethod.decimals,
+                      }) === amount.value
+                    }
+                  />
+                }
                 key={pack.key}
                 title={t('battery.description.other', {
-                  count: new BigNumber(pack.tonAmount)
+                  count: new BigNumber(rechargeMethod.fromTon(pack.tonAmount))
+                    .minus(
+                      shouldMinusReservedAmount ? config.get('batteryReservedAmount') : 0,
+                    )
+                    .multipliedBy(rechargeMethod.rate)
                     .div(config.get('batteryMeanFees'))
-                    .multipliedBy(1 - rechargeMethod.markup)
                     .decimalPlaces(0)
                     .toNumber(),
                 })}
-                subtitle={`${formatter.format(pack.tonAmount.toString(), {
-                  currency: rechargeMethod.title,
-                })} · 0 $`}
+                subtitle={`${formatter.format(rechargeMethod.fromTon(pack.tonAmount), {
+                  currency: rechargeMethod.symbol,
+                })} · ${rechargeMethod.formattedTonFiatAmount(pack.tonAmount)}`}
                 leftContent={
                   <Icon
                     style={styles.listItemIcon.static}
@@ -277,17 +367,19 @@ export const BatterySend = () => {
               <View style={styles.inputContainer}>
                 <AmountInput
                   roundFiatRate
-                  customCurrency={'⚡'}
+                  customCurrency={renderFlashIcon}
                   innerRef={textInputRef}
                   fiatDecimals={0}
-                  withCoinSelector={true}
+                  withMaxButton={false}
+                  withCoinSelector={false}
                   disabled={false}
                   hideSwap={true}
+                  minAmount={rechargeMethod.minInputAmount}
                   decimals={rechargeMethod.decimals}
                   balance={tk.wallet.balances.state.data.ton}
-                  currencyTitle={rechargeMethod.title}
+                  currencyTitle={rechargeMethod.symbol}
                   amount={amount}
-                  fiatRate={new BigNumber(1)
+                  fiatRate={new BigNumber(rechargeMethod.rate)
                     .div(config.get('batteryMeanFees'))
                     .toNumber()}
                   setAmount={setAmount}
@@ -295,14 +387,18 @@ export const BatterySend = () => {
               </View>
             </Animated.View>
           )}
-          <Button title="Continue" />
+          <Button
+            disabled={!recipient?.address}
+            onPress={handleContinue}
+            title="Continue"
+          />
         </View>
       </Screen.ScrollView>
     </Screen>
   );
 };
 
-const styles = Steezy.create({
+const styles = Steezy.create(({ colors }) => ({
   contentContainer: {
     paddingHorizontal: 16,
     gap: 16,
@@ -320,4 +416,18 @@ const styles = Steezy.create({
   inputContainer: {
     height: 240,
   },
-});
+  headerRightContent: {
+    flexDirection: 'row',
+    gap: 8,
+    paddingRight: 16,
+    alignItems: 'center',
+  },
+  backButton: {
+    borderRadius: 16,
+    width: 32,
+    height: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.buttonSecondaryBackground,
+  },
+}));

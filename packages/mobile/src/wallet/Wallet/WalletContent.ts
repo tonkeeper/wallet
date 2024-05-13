@@ -26,7 +26,6 @@ import { TonProofManager } from '../managers/TonProofManager';
 import { JettonVerification } from '../models/JettonBalanceModel';
 import { CardsManager } from '$wallet/managers/CardsManager';
 import { JettonQuantity } from '@tonkeeper/core/src/TonAPI';
-import { WalletContentReceiver } from '../../tabs/Wallet/content-providers/utils/receiver';
 
 export interface WalletStatusState {
   isReloading: boolean;

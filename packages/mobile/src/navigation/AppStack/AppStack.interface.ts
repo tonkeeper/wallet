@@ -63,4 +63,7 @@ export type AppStackParamList = {
   [AppStackRouteNames.CustomizeWallet]: {
     identifiers?: string[];
   };
+  [AppStackRouteNames.BatterySend]: {
+    recipient: string;
+  };
 };

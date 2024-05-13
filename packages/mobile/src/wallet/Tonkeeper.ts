@@ -22,6 +22,7 @@ import nacl from 'tweetnacl';
 import { AccountsStream } from './streaming';
 import { InteractionManager } from 'react-native';
 import { Biometry } from './Biometry';
+import { CommonBatteryManager } from '$wallet/managers/CommonBatteryManager';
 
 type TonkeeperOptions = {
   storage: Storage;
