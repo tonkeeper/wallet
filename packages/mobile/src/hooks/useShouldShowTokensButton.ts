@@ -1,14 +1,13 @@
-import { useJettons, useNftsState } from '@tonkeeper/shared/hooks';
-import { useTonInscriptions } from '@tonkeeper/shared/query/hooks/useTonInscriptions';
+import { useInscriptionData } from '$core/ManageTokens/hooks/useInscriptionData';
+import { useJettonData } from '$core/ManageTokens/hooks/useJettonData';
+import { useNftData } from '$core/ManageTokens/hooks/useNftData';
 
 export const useShouldShowTokensButton = () => {
-  const { jettonBalances } = useJettons();
-  const inscriptions = useTonInscriptions();
-  const { accountNfts } = useNftsState();
+  const jettonData = useJettonData();
+  const inscriptionData = useInscriptionData();
+  const nftData = useNftData();
 
   return Boolean(
-    inscriptions.items?.length ||
-      jettonBalances.length > 0 ||
-      Object.keys(accountNfts).length > 0,
+    jettonData.length > 0 || nftData.length > 0 || inscriptionData.length > 0,
   );
 };
