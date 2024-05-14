@@ -11,10 +11,13 @@ import { useJettonBalances } from '@tonkeeper/mobile/src/hooks/useJettonBalances
 import { compareAddresses } from '@tonkeeper/mobile/src/utils/address';
 import { formatter } from '../../formatter';
 import { useExternalState } from '../../hooks/useExternalState';
+import { config } from '@tonkeeper/mobile/src/config';
 
 export const RechargeMethods = memo(() => {
   const { methods, isLoading, reload } = useBatteryRechargeMethods();
   const nav = useNavigation();
+
+  const isPromoDisabled = config.get('disable_battery_promo_module');
 
   const { enabled } = useJettonBalances();
   const balances = useExternalState(tk.wallet.balances.state);
@@ -91,18 +94,20 @@ export const RechargeMethods = memo(() => {
           subtitle={t('battery.other_ways.gift.subtitle')}
           chevron
         />
-        <List.Item
-          leftContent={
-            <Image
-              style={styles.icon.static}
-              source={require('@tonkeeper/uikit/assets/battery/promo.png')}
-            />
-          }
-          onPress={handleNavigateToPromo}
-          title={t('battery.other_ways.promo.title')}
-          subtitle={t('battery.other_ways.promo.subtitle')}
-          chevron
-        />
+        {!isPromoDisabled && (
+          <List.Item
+            leftContent={
+              <Image
+                style={styles.icon.static}
+                source={require('@tonkeeper/uikit/assets/battery/promo.png')}
+              />
+            }
+            onPress={handleNavigateToPromo}
+            title={t('battery.other_ways.promo.title')}
+            subtitle={t('battery.other_ways.promo.subtitle')}
+            chevron
+          />
+        )}
       </List>
     </View>
   );
