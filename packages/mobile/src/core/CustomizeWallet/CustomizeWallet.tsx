@@ -64,7 +64,7 @@ export const CustomizeWallet: FC<Props> = memo((props) => {
   const [name, setName] = useState(
     identifiers.length > 1
       ? wallet.isLedger
-        ? wallet.config.name.slice(0, -2)
+        ? wallet.config.ledger!.deviceModel
         : wallet.config.name.slice(0, -5)
       : wallet.config.name,
   );
