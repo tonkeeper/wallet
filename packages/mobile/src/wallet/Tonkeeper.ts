@@ -627,15 +627,11 @@ export class Tonkeeper {
 
       const identifiers = passedIdentifiers ?? [this.wallet.identifier];
 
-      const ledgerWalletNames = this.wallet.isLedger
-        ? this.getLedgerWalletNames(config.name ?? 'Ledger', identifiers)
-        : [];
-
       const updatedWallets = this.walletsStore.data.wallets.map(
         (wallet): WalletConfig => {
           if (identifiers.includes(wallet.identifier)) {
             const multipleName = this.wallet.isLedger
-              ? ledgerWalletNames[identifiers.indexOf(wallet.identifier)]
+              ? `${config.name} ${wallet.name.match(/\d+$/)?.[0]}`
               : `${config.name} ${wallet.version}`;
 
             return {
