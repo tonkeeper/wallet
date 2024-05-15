@@ -8,7 +8,15 @@ import { formatter } from '$utils/formatter';
 import { useNavigation } from '@tonkeeper/router';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { t } from '@tonkeeper/shared/i18n';
-import { ActionButtons, Icon, Screen, Spacer, Steezy, View } from '@tonkeeper/uikit';
+import {
+  ActionButtons,
+  Icon,
+  Screen,
+  Spacer,
+  Steezy,
+  Toast,
+  View,
+} from '@tonkeeper/uikit';
 
 import { config } from '$config';
 import { useNftsState, useWallet } from '@tonkeeper/shared/hooks';
@@ -17,6 +25,7 @@ import { Address } from '@tonkeeper/core';
 import { Linking, useWindowDimensions } from 'react-native';
 import { NFTCardItem } from '$core/Colectibles/NFTCardItem';
 import { mapNewNftToOldNftData } from '$utils/mapNewNftToOldNftData';
+import { checkBurnDate } from '$utils/notcoin';
 
 const mockupCardSize = {
   width: 114,
@@ -60,6 +69,38 @@ export const NotCoinVouchers: React.FC = () => {
     );
   }, []);
 
+  const handleBurn = useCallback(async () => {
+    try {
+      const isAvailable = await checkBurnDate();
+
+      if (!isAvailable) {
+        return;
+      }
+
+      nav.navigate('/burn-vouchers', { max: true });
+    } catch (e) {
+      if (e.message) {
+        Toast.fail(e.message);
+      }
+    }
+  }, [nav]);
+
+  const handleTonkeeperPro = useCallback(async () => {
+    try {
+      const isAvailable = await checkBurnDate();
+
+      if (!isAvailable) {
+        return;
+      }
+
+      Linking.openURL(config.get('tonkeeper_pro_url')).catch(null);
+    } catch (e) {
+      if (e.message) {
+        Toast.fail(e.message);
+      }
+    }
+  }, []);
+
   const renderHeader = useMemo(() => {
     return (
       <S.HeaderWrap>
@@ -93,14 +134,14 @@ export const NotCoinVouchers: React.FC = () => {
           buttons={[
             {
               id: 'exchange',
-              onPress: () => nav.navigate('/burn-vouchers', { max: true }),
+              onPress: handleBurn,
               icon: 'ic-swap-horizontal-outline-28',
               title: t('notcoin.exchange'),
               disabled: isWatchOnly,
             },
             {
               id: 'exchange_all',
-              onPress: () => Linking.openURL(config.get('tonkeeper_pro_url')).catch(null),
+              onPress: handleTonkeeperPro,
               icon: 'ic-swap-horizontal-outline-28',
               title: t('notcoin.exchange_all'),
               disabled: isWatchOnly,
@@ -110,10 +151,11 @@ export const NotCoinVouchers: React.FC = () => {
       </S.HeaderWrap>
     );
   }, [
+    handleBurn,
+    handleTonkeeperPro,
     isWatchOnly,
     jettonPrice.formatted.totalFiat,
     jettonPrice.totalFiat,
-    nav,
     totalValue,
   ]);
 

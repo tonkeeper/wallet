@@ -36,6 +36,7 @@ import { CustomNftItem } from '@tonkeeper/core/src/TonAPI/CustomNftItems';
 import { mapNewNftToOldNftData } from '$utils/mapNewNftToOldNftData';
 import { useNftsState, useWallet } from '@tonkeeper/shared/hooks';
 import { config } from '$config';
+import { checkBurnDate } from '$utils/notcoin';
 
 export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
   const { address: nftAddress } = route?.params?.keyPair || {};
@@ -190,6 +191,22 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
 
   const isWatchOnly = wallet && wallet.isWatchOnly;
 
+  const handleBurn = useCallback(async () => {
+    try {
+      const isAvailable = await checkBurnDate();
+
+      if (!isAvailable) {
+        return;
+      }
+
+      nav.navigate('/burn-vouchers');
+    } catch (e) {
+      if (e.message) {
+        Toast.fail(e.message);
+      }
+    }
+  }, [nav]);
+
   return (
     <S.Wrap>
       <NavBar
@@ -312,8 +329,9 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
               Address.compare(
                 nft.collection.address,
                 config.get('notcoin_nft_collection'),
-              ) ? (
-                <Button onPress={() => nav.navigate('/burn-vouchers')} mode="secondary">
+              ) &&
+              config.get('notcoin_burn') ? (
+                <Button onPress={handleBurn} mode="secondary">
                   {t('notcoin.exchange_to_not')}
                 </Button>
               ) : (

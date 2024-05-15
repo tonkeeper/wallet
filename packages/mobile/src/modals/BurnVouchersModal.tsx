@@ -7,6 +7,7 @@ import {
   Spacer,
   Steezy,
   Text,
+  Toast,
   TouchableOpacity,
   View,
 } from '@tonkeeper/uikit';
@@ -15,7 +16,7 @@ import { t } from '@tonkeeper/shared/i18n';
 import { HideableImage } from '$core/HideableAmount/HideableImage';
 import { formatter } from '@tonkeeper/shared/formatter';
 import { useNftsState } from '@tonkeeper/shared/hooks';
-import { Address, ContractService } from '@tonkeeper/core';
+import { ContractService } from '@tonkeeper/core';
 import { config } from '$config';
 import { Linking } from 'react-native';
 import { openSignRawModal } from '$core/ModalContainer/NFTOperations/Modals/SignRawModal';
@@ -23,6 +24,8 @@ import { getTimeSec } from '$utils/getTimeSec';
 import { tk } from '$wallet';
 import { Ton } from '$libs/Ton';
 import { BatterySupportedTransaction } from '$wallet/managers/BatteryManager';
+import { Address } from '@ton/core';
+import { checkBurnDate, getNotcoinBurnAddress } from '$utils/notcoin';
 
 interface BurnVouchersModalProps {
   max?: boolean;
@@ -37,7 +40,9 @@ export const BurnVouchersModal = memo<BurnVouchersModalProps>((props) => {
     Object.values(s.accountNfts).filter(
       (nft) =>
         nft.collection &&
-        Address.compare(nft.collection.address, config.get('notcoin_nft_collection')),
+        Address.parse(nft.collection.address).equals(
+          Address.parse(config.get('notcoin_nft_collection')),
+        ),
     ),
   );
 
@@ -56,39 +61,52 @@ export const BurnVouchersModal = memo<BurnVouchersModalProps>((props) => {
     .toString();
 
   const handleContinue = useCallback(async () => {
-    const valid_until = getTimeSec() + 10 * 60;
+    try {
+      const valid_until = getTimeSec() + 10 * 60;
 
-    openSignRawModal(
-      {
-        source: tk.wallet.address.ton.raw,
-        valid_until,
-        messages: selectedNfts.map((nft) => ({
-          address: nft.address,
-          amount: Ton.toNano('0.04'),
-          payload: ContractService.createNftTransferBody({
-            newOwnerAddress: 'EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c',
-            excessesAddress: tk.wallet.address.ton.raw,
-          })
-            .toBoc()
-            .toString('base64'),
-        })),
-      },
-      {
-        experimentalWithBattery:
-          tk.wallet.battery.state.data.supportedTransactions[
-            BatterySupportedTransaction.NFT
-          ],
-        expires_sec: valid_until,
-        response_options: {
-          broadcast: false,
+      const isAvailable = await checkBurnDate();
+
+      if (!isAvailable) {
+        return;
+      }
+
+      openSignRawModal(
+        {
+          source: tk.wallet.address.ton.raw,
+          valid_until,
+          messages: selectedNfts.map((nft) => ({
+            address: nft.address,
+            amount: Ton.toNano('0.05'),
+            payload: ContractService.createNftTransferBody({
+              newOwnerAddress: getNotcoinBurnAddress(nft.address),
+              excessesAddress: tk.wallet.address.ton.raw,
+              forwardAmount: Ton.toNano('0.05'),
+            })
+              .toBoc()
+              .toString('base64'),
+          })),
         },
-      },
-      () => {
-        setTimeout(() => {
-          nav.openModal('/notcoin-verify');
-        }, 3000);
-      },
-    );
+        {
+          experimentalWithBattery:
+            tk.wallet.battery.state.data.supportedTransactions[
+              BatterySupportedTransaction.NFT
+            ],
+          expires_sec: valid_until,
+          response_options: {
+            broadcast: false,
+          },
+        },
+        () => {
+          setTimeout(() => {
+            nav.openModal('/notcoin-verify');
+          }, 3000);
+        },
+      );
+    } catch (e) {
+      if (e.message) {
+        Toast.fail(e.message);
+      }
+    }
   }, [nav, selectedNfts]);
 
   const openTonkeeperPro = useCallback(() => {
