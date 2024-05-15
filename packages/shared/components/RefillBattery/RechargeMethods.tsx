@@ -93,7 +93,7 @@ export const RechargeMethods = memo(() => {
             onPress={handleRechargeBattery(
               true,
               filteredJettonBalances.length
-                ? filteredJettonBalances[0].jettonAddress
+                ? Address.parse(filteredJettonBalances[0].jettonAddress).toRaw()
                 : undefined,
             )}
             leftContent={
