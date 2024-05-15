@@ -21,7 +21,6 @@ import { check, PERMISSIONS, RESULTS, request } from 'react-native-permissions';
 import { DarkTheme } from '@tonkeeper/uikit/src/styles/themes/dark';
 import * as S from '../../core/ScanQR/ScanQR.style';
 import { config } from '$config';
-import { useNestedAutoScroll } from '$uikit/DraggableFlashList/hooks/useNestedAutoScroll';
 import { DeeplinkOrigin, useDeeplinking } from '$libs/deeplinking';
 import { delay } from '@tonkeeper/core';
 import { useIsFocused } from '@react-navigation/native';
@@ -66,11 +65,15 @@ export const PairSignerScreen: FC = () => {
     setFlashlightOn(!isFlashlightOn);
   }, [isFlashlightOn]);
 
+  const openAbout = useCallback(() => {
+    Linking.openURL(config.get('signer_about_url')).catch(null);
+  }, []);
+
   const openSigner = useCallback(async () => {
     try {
       await Linking.openURL(SIGNER_SCHEME);
     } catch {
-      Linking.openURL(config.get('signerStoreUrl')).catch(useNestedAutoScroll);
+      Linking.openURL(config.get('signer_store_url')).catch(null);
     }
   }, []);
 
@@ -201,7 +204,12 @@ export const PairSignerScreen: FC = () => {
         <Screen.Header
           rightContent={
             <View style={styles.headerButtonContainer}>
-              <Button size="header" color="secondary" title={t('pairSigner.about')} />
+              <Button
+                size="header"
+                color="secondary"
+                title={t('pairSigner.about')}
+                onPress={openAbout}
+              />
             </View>
           }
           trasnparent
