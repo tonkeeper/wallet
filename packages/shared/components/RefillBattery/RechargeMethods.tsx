@@ -43,7 +43,6 @@ export const RechargeMethods = memo(() => {
 
   const handleRechargeBattery = useCallback(
     (withAddressSelect?: boolean, jettonMaster?: string) => async () => {
-      console.log(jettonMaster);
       nav.navigate(AppStackRouteNames.BatterySend, {
         recipient: withAddressSelect ? undefined : tk.wallet.address.ton.friendly,
         jettonMaster,
