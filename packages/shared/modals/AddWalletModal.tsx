@@ -130,8 +130,7 @@ export const AddWalletModal = memo<AddWalletModalProps>(({ isTonConnect, isImpor
               />
             </List>
           ) : null}
-          {!isTonConnect &&
-          (!config.get('disable_ledger') || !getFlag('disable_ledger')) ? (
+          {!isTonConnect && !getFlag('disable_ledger') ? (
             <List style={styles.list}>
               <List.Item
                 onPress={() => {

@@ -65,7 +65,6 @@ export type AppConfigVars = {
   disable_battery_promo_module: boolean;
   disable_battery_crypto_recharge_module: boolean;
   disable_signer: boolean;
-  disable_ledger: boolean;
   disable_tonstakers: boolean;
   disable_holders_cards: boolean;
   exclude_jetton_chart_periods: boolean;
@@ -75,6 +74,9 @@ export type AppConfigVars = {
   notcoin_jetton_master: string;
   notcoin_nft_collection: string;
   notcoin_bot_url: string;
+  notcoin_burn_addresses: string[];
+  notcoin_burn_date: number;
+  notcoin_burn: boolean;
 };
 
 const defaultConfig: Partial<AppConfigVars> = {
@@ -113,7 +115,6 @@ const defaultConfig: Partial<AppConfigVars> = {
   disable_battery_promo_module: true,
   disable_battery_crypto_recharge_module: false,
   disable_signer: true,
-  disable_ledger: true,
 
   disable_show_unverified_token: false,
   disable_tonstakers: false,

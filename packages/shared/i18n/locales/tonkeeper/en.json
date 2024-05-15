@@ -1319,6 +1319,11 @@
     "open_bot": "Open Notcoin Bot",
     "name": "Notcoin",
     "slogan": "Probably nothing",
-    "open": "Open"
+    "open": "Open",
+    "burn_not_available": {
+      "hours": "Exchange will be available in %{hours} hours",
+      "minutes": "Exchange will be available in %{minutes} minutes",
+      "seconds": "Exchange will be available in %{seconds} seconds"
+    }
   }
 }

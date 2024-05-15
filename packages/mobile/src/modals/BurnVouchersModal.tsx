@@ -7,6 +7,7 @@ import {
   Spacer,
   Steezy,
   Text,
+  Toast,
   TouchableOpacity,
   View,
 } from '@tonkeeper/uikit';
@@ -15,7 +16,7 @@ import { t } from '@tonkeeper/shared/i18n';
 import { HideableImage } from '$core/HideableAmount/HideableImage';
 import { formatter } from '@tonkeeper/shared/formatter';
 import { useNftsState } from '@tonkeeper/shared/hooks';
-import { Address, ContractService } from '@tonkeeper/core';
+import { ContractService, OpCodes } from '@tonkeeper/core';
 import { config } from '$config';
 import { Linking } from 'react-native';
 import { openSignRawModal } from '$core/ModalContainer/NFTOperations/Modals/SignRawModal';
@@ -23,6 +24,19 @@ import { getTimeSec } from '$utils/getTimeSec';
 import { tk } from '$wallet';
 import { Ton } from '$libs/Ton';
 import { BatterySupportedTransaction } from '$wallet/managers/BatteryManager';
+import { Address, beginCell, toNano } from '@ton/core';
+import { checkBurnDate, getNotcoinBurnAddress } from '$utils/notcoin';
+import nacl from 'tweetnacl';
+
+function getRandomUint64(): bigint {
+  const buffer = nacl.randomBytes(8);
+  let result = BigInt(0);
+  for (let i = 0; i < buffer.length; i++) {
+    result += BigInt(buffer[i]) << BigInt(8 * i);
+  }
+
+  return result;
+}
 
 interface BurnVouchersModalProps {
   max?: boolean;
@@ -37,7 +51,9 @@ export const BurnVouchersModal = memo<BurnVouchersModalProps>((props) => {
     Object.values(s.accountNfts).filter(
       (nft) =>
         nft.collection &&
-        Address.compare(nft.collection.address, config.get('notcoin_nft_collection')),
+        Address.parse(nft.collection.address).equals(
+          Address.parse(config.get('notcoin_nft_collection')),
+        ),
     ),
   );
 
@@ -56,40 +72,54 @@ export const BurnVouchersModal = memo<BurnVouchersModalProps>((props) => {
     .toString();
 
   const handleContinue = useCallback(async () => {
-    const valid_until = getTimeSec() + 10 * 60;
+    try {
+      const valid_until = getTimeSec() + 10 * 60;
 
-    openSignRawModal(
-      {
-        source: tk.wallet.address.ton.raw,
-        valid_until,
-        messages: selectedNfts.map((nft) => ({
-          address: nft.address,
-          amount: Ton.toNano('0.04'),
-          payload: ContractService.createNftTransferBody({
-            newOwnerAddress: 'EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c',
-            excessesAddress: tk.wallet.address.ton.raw,
-          })
-            .toBoc()
-            .toString('base64'),
-        })),
-      },
-      {
-        experimentalWithBattery:
-          tk.wallet.battery.state.data.supportedTransactions[
-            BatterySupportedTransaction.NFT
-          ],
-        expires_sec: valid_until,
-        response_options: {
-          broadcast: false,
+      const isAvailable = await checkBurnDate();
+
+      if (!isAvailable) {
+        return;
+      }
+
+      openSignRawModal(
+        {
+          source: tk.wallet.address.ton.raw,
+          valid_until,
+          messages: selectedNfts.map((nft) => ({
+            address: nft.address,
+            amount: Ton.toNano('0.05'),
+            payload: beginCell()
+              .storeUint(OpCodes.NFT_TRANSFER, 32)
+              .storeUint(ContractService.getWalletQueryId(), 64)
+              .storeAddress(getNotcoinBurnAddress(nft.address))
+              .storeAddress(Address.parse(tk.wallet.address.ton.raw))
+              .storeBit(false)
+              .storeCoins(toNano('0.05'))
+              .storeBit(false)
+              .storeUint(0x5fec6642, 32)
+              .storeUint(getRandomUint64(), 64)
+              .endCell()
+              .toBoc()
+              .toString('base64'),
+          })),
         },
-      },
-      () => {
-        setTimeout(() => {
-          nav.openModal('/notcoin-verify');
-        }, 3000);
-      },
-    );
-  }, [nav, selectedNfts]);
+        {
+          experimentalWithBattery:
+            tk.wallet.battery.state.data.supportedTransactions[
+              BatterySupportedTransaction.NFT
+            ],
+          expires_sec: valid_until,
+          response_options: {
+            broadcast: false,
+          },
+        },
+      );
+    } catch (e) {
+      if (e.message) {
+        Toast.fail(e.message);
+      }
+    }
+  }, [selectedNfts]);
 
   const openTonkeeperPro = useCallback(() => {
     Linking.openURL(config.get('tonkeeper_pro_url')).catch(null);

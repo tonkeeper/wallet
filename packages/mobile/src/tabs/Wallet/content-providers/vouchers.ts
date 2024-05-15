@@ -1,14 +1,8 @@
 import { ContentProviderPrototype } from './utils/prototype';
 import { CellItemToRender } from './utils/types';
 import { formatter } from '@tonkeeper/shared/formatter';
-import { openWallet } from '$core/Wallet/ToncoinScreen';
-import { CryptoCurrencies } from '$shared/constants';
 import { Providers } from './providers';
-import {
-  TonBalancesDependency,
-  TonBalanceType,
-  TonBalance,
-} from './dependencies/tonBalances';
+import { TonBalanceType } from './dependencies/tonBalances';
 import { NotCoinVouchersDependency } from './dependencies/notcoinVouchers';
 import { JettonBalancesDependency } from './dependencies/jettons';
 import { NftItem } from '@tonkeeper/core/src/TonAPI';
@@ -40,6 +34,10 @@ export class VouchersContentProvider extends ContentProviderPrototype<{
   }
 
   get itemsArray() {
+    if (!config.get('notcoin_burn')) {
+      return [];
+    }
+
     return this.deps.vouchers.state.length > 0
       ? [{ nfts: this.deps.vouchers.state }]
       : [];

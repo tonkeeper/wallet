@@ -17,6 +17,7 @@ import {
   FeaturedApps,
   ConnectedApps,
   AppsCategory,
+  NotcoinBotIcon,
 } from './components';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
@@ -37,7 +38,6 @@ import { useSelectedCountry } from '$store/zustand/methodsToBuy/useSelectedCount
 import { CountryButton } from '@tonkeeper/shared/components';
 import { Linking } from 'react-native';
 import { config } from '$config';
-import { NotcoinBotIcon } from '$modals/NotcoinVerifyModal/NotcoinBotIcon';
 import { useJettons, useNftsState } from '@tonkeeper/shared/hooks';
 import { Address } from '@tonkeeper/core';
 
