@@ -45,10 +45,7 @@ export const RechargeMethods = memo(() => {
     (withAddressSelect?: boolean, jettonMaster?: string) => async () => {
       nav.navigate(AppStackRouteNames.BatterySend, {
         recipient: withAddressSelect ? undefined : tk.wallet.address.ton.friendly,
-        jettonMaster:
-          jettonMaster ?? hasTonBalance
-            ? undefined
-            : filteredJettonBalances[0]?.jettonAddress,
+        jettonMaster,
       });
     },
     [filteredJettonBalances, hasTonBalance],
@@ -93,7 +90,12 @@ export const RechargeMethods = memo(() => {
         )}
         {hasAnyBalance && (
           <List.Item
-            onPress={handleRechargeBattery(true)}
+            onPress={handleRechargeBattery(
+              true,
+              filteredJettonBalances.length
+                ? filteredJettonBalances[0].jettonAddress
+                : undefined,
+            )}
             leftContent={
               <Image
                 style={styles.icon.static}
