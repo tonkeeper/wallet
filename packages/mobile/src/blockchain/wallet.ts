@@ -33,7 +33,7 @@ import {
   comment,
 } from '@ton/core';
 import {
-  NetworkOverloadedError,
+  IndexerLatencyError,
   emulateBoc,
   sendBoc,
   getTimeoutFromLiteserverSafely,
@@ -572,7 +572,7 @@ export class TonWallet {
     try {
       await sendBoc(boc, isBattery);
     } catch (e) {
-      if (e instanceof NetworkOverloadedError) {
+      if (e instanceof IndexerLatencyError) {
         throw e;
       }
       throw new Error(t('send_publish_tx_error'));
@@ -775,7 +775,7 @@ export class TonWallet {
     try {
       await sendBoc(boc, false);
     } catch (e) {
-      if (e instanceof NetworkOverloadedError) {
+      if (e instanceof IndexerLatencyError) {
         throw e;
       }
       throw new Error(t('send_publish_tx_error'));
