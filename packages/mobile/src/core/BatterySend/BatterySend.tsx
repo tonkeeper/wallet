@@ -92,8 +92,8 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
   const [isManualAmountInput, setIsManualAmountInput] = useState(false);
 
   const shouldMinusReservedAmount =
-    useExternalState(tk.wallet.battery.state, (state) => state.reservedBalance) === '0' &&
-    !!initialRecipientAddress;
+    useExternalState(tk.wallet.battery.state, (state) => state.reservedBalance) === '0' ||
+    !initialRecipientAddress;
 
   const [selectedJettonMaster, setSelectedJettonMaster] = useState<string | undefined>(
     initialJettonMaster,
