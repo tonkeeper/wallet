@@ -1321,9 +1321,9 @@
     "slogan": "Probably nothing",
     "open": "Open",
     "burn_not_available": {
-      "hours": "Exchange will be available in %{hours} hours",
-      "minutes": "Exchange will be available in %{minutes} minutes",
-      "seconds": "Exchange will be available in %{seconds} seconds"
+      "hours": "Exchange will be available in %{count} hours",
+      "minutes": "Exchange will be available in %{count} minutes",
+      "seconds": "Exchange will be available in %{count} seconds"
     }
   }
 }

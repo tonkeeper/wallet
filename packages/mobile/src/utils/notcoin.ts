@@ -3,6 +3,7 @@ import { Address, BitString } from '@ton/core';
 import { t } from '@tonkeeper/shared/i18n';
 import { getRawTimeFromLiteserverSafely } from '@tonkeeper/shared/utils/blockchain';
 import { Toast } from '@tonkeeper/uikit';
+import { ToastSize } from '@tonkeeper/uikit/src/components/Toast';
 import { intervalToDuration } from 'date-fns';
 
 export const getNotcoinBurnAddress = (nftAddress: string) => {
@@ -29,11 +30,17 @@ export const checkBurnDate = async () => {
     });
 
     if (duration.hours && duration.hours > 0) {
-      Toast.fail(t('notcoin.burn_not_available.hours', { hours: duration.hours }));
+      Toast.fail(t('notcoin.burn_not_available.hours', { count: duration.hours }), {
+        size: ToastSize.Small,
+      });
     } else if (duration.minutes && duration.minutes > 1) {
-      Toast.fail(t('notcoin.burn_not_available.minutes', { minutes: duration.minutes }));
+      Toast.fail(t('notcoin.burn_not_available.minutes', { count: duration.minutes }), {
+        size: ToastSize.Small,
+      });
     } else {
-      Toast.fail(t('notcoin.burn_not_available.seconds', { seconds: duration.seconds }));
+      Toast.fail(t('notcoin.burn_not_available.seconds', { count: duration.seconds }), {
+        size: ToastSize.Small,
+      });
     }
     return false;
   }
