@@ -111,7 +111,7 @@ const defaultConfig: Partial<AppConfigVars> = {
   disable_battery_send: false,
   disable_battery_iap_module: Platform.OS === 'android', // Enable for iOS, disable for Android
   disable_battery_promo_module: true,
-  disable_battery_crypto_recharge_module: true,
+  disable_battery_crypto_recharge_module: false,
   disable_signer: true,
   disable_ledger: true,
 

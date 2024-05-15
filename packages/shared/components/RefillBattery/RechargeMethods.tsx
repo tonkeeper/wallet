@@ -105,18 +105,6 @@ export const RechargeMethods = memo(() => {
             chevron
           />
         )}
-        <List.Item
-          onPress={handleRechargeBattery(true)}
-          leftContent={
-            <Image
-              style={styles.icon.static}
-              source={require('@tonkeeper/uikit/assets/battery/gift.png')}
-            />
-          }
-          title={t('battery.other_ways.gift.title')}
-          subtitle={t('battery.other_ways.gift.subtitle')}
-          chevron
-        />
         {!isPromoDisabled && (
           <List.Item
             leftContent={
