@@ -286,6 +286,14 @@ export const Send: FC<SendProps> = ({ route }) => {
         return onFail(new DismissedActionError());
       }
 
+      const isCommentValid = tk.wallet.isLedger ? /^[ -~]*$/gm.test(comment) : true;
+
+      if (!isCommentValid) {
+        Toast.fail(t('send_screen_steps.comfirm.comment_ascii_text'));
+
+        return onFail(new CanceledActionError());
+      }
+
       const pendingTransactions = await tk.wallet.battery.getStatus();
       if (pendingTransactions.length) {
         Toast.fail(t('transfer_pending_by_battery_error'));
