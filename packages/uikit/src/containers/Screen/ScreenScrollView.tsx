@@ -4,15 +4,13 @@ import { forwardRef, memo, useEffect, useMemo } from 'react';
 import { useBottomTabBarHeight } from '@tonkeeper/router';
 import { useScrollToTop } from '@react-navigation/native';
 import { ns, useMergeRefs } from '../../utils';
-import Animated, { useAnimatedKeyboard, useAnimatedStyle } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { useScreenScroll } from './hooks';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { safeAreaInsets } from '@tonkeeper/mobile/src/utils';
 
 interface ScreenScrollView extends ScrollViewProps {
   hideBottomSeparator?: boolean;
   indent?: boolean;
-  keyboardAvoiding?: boolean;
   withBottomInset?: boolean;
 }
 
@@ -24,7 +22,6 @@ export const ScreenScrollView = memo(
       withBottomInset,
       indent,
       hideBottomSeparator,
-      keyboardAvoiding,
       contentContainerStyle,
       ...other
     } = props;
@@ -39,7 +36,6 @@ export const ScreenScrollView = memo(
     } = useScreenScroll();
     const tabBarHeight = useBottomTabBarHeight();
     const setRef = useMergeRefs(scrollRef, ref);
-    const keyboard = useAnimatedKeyboard();
     const bottomInset = useSafeAreaInsets().bottom;
 
     useScrollToTop(scrollRef as any);
@@ -50,13 +46,6 @@ export const ScreenScrollView = memo(
         scrollY.value = 0;
       };
     }, []);
-
-    const animatedKeyboardAvoidingContentStyle = useAnimatedStyle(() => ({
-      marginTop: -Math.max(
-        keyboard.height.value - (withBottomInset ? bottomInset * 2 : 0),
-        0,
-      ),
-    }));
 
     const contentStyle = useMemo(() => {
       return [
@@ -79,12 +68,7 @@ export const ScreenScrollView = memo(
           ref={setRef}
           {...other}
         >
-          <Animated.View
-            style={[
-              headerOffsetStyle,
-              keyboardAvoiding && animatedKeyboardAvoidingContentStyle,
-            ]}
-          />
+          <Animated.View style={[headerOffsetStyle]} />
           {props.children}
         </Animated.ScrollView>
         {!hideBottomSeparator && <ScreenBottomSeparator />}

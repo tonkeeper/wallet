@@ -41,7 +41,7 @@ import { compareAddresses } from '$utils/address';
 import { AnimatedScrollView } from 'react-native-reanimated/lib/typescript/reanimated2/component/ScrollView';
 import { BatteryPackItem } from '$core/BatterySend/components';
 import { t } from '@tonkeeper/shared/i18n';
-import { Keyboard } from 'react-native';
+import { Keyboard, Platform } from 'react-native';
 
 let dnsAbortController: null | AbortController = null;
 
@@ -174,7 +174,7 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
   const scrollRef = useRef<AnimatedScrollView>();
 
   const handleAmountInputFocus = async () => {
-    await delay(100);
+    await delay(250);
     scrollRef.current?.scrollToEnd();
   };
 
@@ -353,7 +353,7 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
               </TouchableOpacity>
             </View>
           }
-          isModal
+          isModal={Platform.OS === 'ios'}
           title={t('battery.recharge_by_crypto.title')}
         />
         <Screen.ScrollView
