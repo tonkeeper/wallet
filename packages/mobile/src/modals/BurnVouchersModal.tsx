@@ -113,18 +113,13 @@ export const BurnVouchersModal = memo<BurnVouchersModalProps>((props) => {
             broadcast: false,
           },
         },
-        () => {
-          setTimeout(() => {
-            nav.openModal('/notcoin-verify');
-          }, 3000);
-        },
       );
     } catch (e) {
       if (e.message) {
         Toast.fail(e.message);
       }
     }
-  }, [nav, selectedNfts]);
+  }, [selectedNfts]);
 
   const openTonkeeperPro = useCallback(() => {
     Linking.openURL(config.get('tonkeeper_pro_url')).catch(null);
