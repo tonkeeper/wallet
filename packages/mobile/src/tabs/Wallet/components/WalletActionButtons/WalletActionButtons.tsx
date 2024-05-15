@@ -59,16 +59,20 @@ export const WalletActionButtons = memo(() => {
 
   const handlePressScanQR = React.useCallback(() => {
     if (store.getState().wallet.wallet) {
-      openScanQR((address) => {
-        if (Address.isValid(address)) {
+      openScanQR((value) => {
+        if (Address.isValid(value)) {
           setTimeout(() => {
-            openSend({ currency: CryptoCurrencies.Ton, address });
+            openSend({ currency: CryptoCurrencies.Ton, address: value });
           }, 200);
 
           return true;
         }
 
-        const resolver = deeplinking.getResolver(address, {
+        if (value.startsWith('tonkeeper://signer/link')) {
+          return;
+        }
+
+        const resolver = deeplinking.getResolver(value, {
           delay: 200,
           origin: DeeplinkOrigin.QR_CODE,
         });
