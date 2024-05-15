@@ -34,14 +34,21 @@ export const RechargeMethods = memo(() => {
     reload();
   }, []);
 
+  const hasTonBalance = balances.ton !== '0';
+  const hasJettonBalances = !!filteredJettonBalances.length;
+  const hasAnyBalance = hasTonBalance && hasJettonBalances;
+
   const handleRechargeBattery = useCallback(
     (withAddressSelect?: boolean, jettonMaster?: string) => async () => {
       nav.navigate(AppStackRouteNames.BatterySend, {
         recipient: withAddressSelect ? undefined : tk.wallet.address.ton.friendly,
-        jettonMaster,
+        jettonMaster:
+          jettonMaster ?? hasTonBalance
+            ? undefined
+            : filteredJettonBalances[0]?.jettonAddress,
       });
     },
-    [],
+    [filteredJettonBalances, hasTonBalance],
   );
 
   const handleNavigateToPromo = useCallback(async () => {
@@ -55,13 +62,15 @@ export const RechargeMethods = memo(() => {
   return (
     <View>
       <List indent={false}>
-        <List.Item
-          chevron
-          leftContent={<TonIcon showDiamond />}
-          title={t('battery.other_ways.by_crypto.title', { symbol: 'TON' })}
-          onPress={handleRechargeBattery(false)}
-          subtitle={formatter.format(balances.ton, { currency: 'TON' })}
-        />
+        {hasTonBalance && (
+          <List.Item
+            chevron
+            leftContent={<TonIcon showDiamond />}
+            title={t('battery.other_ways.by_crypto.title', { symbol: 'TON' })}
+            onPress={handleRechargeBattery(false)}
+            subtitle={formatter.format(balances.ton, { currency: 'TON' })}
+          />
+        )}
         {filteredJettonBalances.map((jettonBalance) => (
           <List.Item
             chevron
@@ -79,18 +88,20 @@ export const RechargeMethods = memo(() => {
             })}
           />
         ))}
-        <List.Item
-          onPress={handleRechargeBattery(true)}
-          leftContent={
-            <Image
-              style={styles.icon.static}
-              source={require('@tonkeeper/uikit/assets/battery/gift.png')}
-            />
-          }
-          title={t('battery.other_ways.gift.title')}
-          subtitle={t('battery.other_ways.gift.subtitle')}
-          chevron
-        />
+        {hasAnyBalance && (
+          <List.Item
+            onPress={handleRechargeBattery(true)}
+            leftContent={
+              <Image
+                style={styles.icon.static}
+                source={require('@tonkeeper/uikit/assets/battery/gift.png')}
+              />
+            }
+            title={t('battery.other_ways.gift.title')}
+            subtitle={t('battery.other_ways.gift.subtitle')}
+            chevron
+          />
+        )}
         <List.Item
           leftContent={
             <Image

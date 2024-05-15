@@ -104,6 +104,9 @@ export const SecondaryAmountContainer = styled.TouchableOpacity.attrs({
   border: 1.5px solid ${({ theme }) => theme.colors.backgroundTertiary};
   border-radius: ${ns(100)}px;
   margin-top: ${ns(8)}px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 `;
 
 export const SwapButtonContainer = styled.View`
