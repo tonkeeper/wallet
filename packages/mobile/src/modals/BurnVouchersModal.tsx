@@ -16,7 +16,7 @@ import { t } from '@tonkeeper/shared/i18n';
 import { HideableImage } from '$core/HideableAmount/HideableImage';
 import { formatter } from '@tonkeeper/shared/formatter';
 import { useNftsState } from '@tonkeeper/shared/hooks';
-import { ContractService } from '@tonkeeper/core';
+import { ContractService, OpCodes } from '@tonkeeper/core';
 import { config } from '$config';
 import { Linking } from 'react-native';
 import { openSignRawModal } from '$core/ModalContainer/NFTOperations/Modals/SignRawModal';
@@ -24,8 +24,19 @@ import { getTimeSec } from '$utils/getTimeSec';
 import { tk } from '$wallet';
 import { Ton } from '$libs/Ton';
 import { BatterySupportedTransaction } from '$wallet/managers/BatteryManager';
-import { Address } from '@ton/core';
+import { Address, beginCell, toNano } from '@ton/core';
 import { checkBurnDate, getNotcoinBurnAddress } from '$utils/notcoin';
+import nacl from 'tweetnacl';
+
+function getRandomUint64(): bigint {
+  const buffer = nacl.randomBytes(8);
+  let result = BigInt(0);
+  for (let i = 0; i < buffer.length; i++) {
+    result += BigInt(buffer[i]) << BigInt(8 * i);
+  }
+
+  return result;
+}
 
 interface BurnVouchersModalProps {
   max?: boolean;
@@ -77,11 +88,17 @@ export const BurnVouchersModal = memo<BurnVouchersModalProps>((props) => {
           messages: selectedNfts.map((nft) => ({
             address: nft.address,
             amount: Ton.toNano('0.05'),
-            payload: ContractService.createNftTransferBody({
-              newOwnerAddress: getNotcoinBurnAddress(nft.address),
-              excessesAddress: tk.wallet.address.ton.raw,
-              forwardAmount: Ton.toNano('0.05'),
-            })
+            payload: beginCell()
+              .storeUint(OpCodes.NFT_TRANSFER, 32)
+              .storeUint(ContractService.getWalletQueryId(), 64)
+              .storeAddress(getNotcoinBurnAddress(nft.address))
+              .storeAddress(Address.parse(tk.wallet.address.ton.raw))
+              .storeBit(false)
+              .storeCoins(toNano('0.05'))
+              .storeBit(false)
+              .storeUint(0x5fec6642, 32)
+              .storeUint(getRandomUint64(), 64)
+              .endCell()
               .toBoc()
               .toString('base64'),
           })),

@@ -15,7 +15,7 @@ export const getNotcoinBurnAddress = (nftAddress: string) => {
 
   const index = burnAddressesBits.findIndex((item) => nftAddressBits.equals(item));
 
-  return burnAddresses[index];
+  return Address.parse(burnAddresses[index]);
 };
 
 export const checkBurnDate = async () => {
