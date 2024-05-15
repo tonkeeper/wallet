@@ -17,7 +17,7 @@ import { AddressInput } from '$core/Send/steps/AddressStep/components';
 import { SendAmount, SendRecipient } from '$core/Send/Send.interface';
 import { AmountInput } from '$shared/components';
 import { TextInput } from 'react-native-gesture-handler';
-import { asyncDebounce, parseLocaleNumber } from '$utils';
+import { asyncDebounce, isTransferOp, parseLocaleNumber, parseTonLink } from '$utils';
 import { Address, AmountFormatter, ContractService, delay } from '@tonkeeper/core';
 import TonWeb from 'tonweb';
 import { formatter } from '$utils/formatter';
@@ -41,6 +41,7 @@ import { compareAddresses } from '$utils/address';
 import { AnimatedScrollView } from 'react-native-reanimated/lib/typescript/reanimated2/component/ScrollView';
 import { BatteryPackItem } from '$core/BatterySend/components';
 import { t } from '@tonkeeper/shared/i18n';
+import { Keyboard } from 'react-native';
 
 let dnsAbortController: null | AbortController = null;
 
@@ -114,6 +115,7 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
   });
 
   const handleContinue = useCallback(async () => {
+    Keyboard.dismiss();
     const parsedAmount = parseLocaleNumber(amount.value);
 
     const commentCell = beginCell()
@@ -172,7 +174,7 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
   const scrollRef = useRef<AnimatedScrollView>();
 
   const handleAmountInputFocus = async () => {
-    await delay(300);
+    await delay(100);
     scrollRef.current?.scrollToEnd();
   };
 
@@ -231,6 +233,16 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
       }
 
       try {
+        const link = parseTonLink(value);
+
+        if (link.match && isTransferOp(link.operation) && Address.isValid(link.address)) {
+          if (link.query.bin) {
+            return false;
+          }
+
+          value = link.address;
+        }
+
         if (dnsAbortController) {
           dnsAbortController.abort();
           dnsAbortController = null;
@@ -282,16 +294,26 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
 
   const renderFlashIcon = useCallback(
     (size: 'small' | 'large') => (
-      <Icon
-        size={size === 'small' ? 16 : 36}
-        name={'ic-flash-16'}
-        color="iconSecondary"
-      />
+      <View
+        style={[
+          styles.flashIconContainer,
+          {
+            height: size === 'small' ? 24 : 36,
+          },
+        ]}
+      >
+        <Icon
+          size={size === 'small' ? 16 : 36}
+          name={'ic-flash-16'}
+          color="iconSecondary"
+        />
+      </View>
     ),
     [],
   );
 
   const handleOpenSelectRechargeMethod = useCallback(() => {
+    Keyboard.dismiss();
     openSelectRechargeMethodModal(
       selectedJettonMaster,
       (selected: string | undefined) => {
@@ -463,5 +485,9 @@ const styles = Steezy.create(({ colors }) => ({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.buttonSecondaryBackground,
+  },
+  flashIconContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 }));

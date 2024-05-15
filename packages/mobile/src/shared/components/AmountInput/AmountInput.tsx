@@ -297,14 +297,26 @@ const AmountInputComponent: React.FC<Props> = (props) => {
                 <S.FakeInput style={fakeInputStyle}>{value}</S.FakeInput>
               </View>
             </S.FakeInputWrap>
-            <S.AmountCode>{mainCurrencyCode}</S.AmountCode>
+            {typeof mainCurrencyCode === 'string' ? (
+              <S.AmountCode>{mainCurrencyCode}</S.AmountCode>
+            ) : (
+              mainCurrencyCode
+            )}
           </S.AmountContainer>
           {isFiatAvailable ? (
             <>
               <S.SecondaryAmountContainer onPress={handleToggleFiat}>
                 <Text color="foregroundSecondary" numberOfLines={1}>
-                  {secondaryAmount} {secondaryCurrencyCode}
+                  {secondaryAmount}
                 </Text>
+                <Text> </Text>
+                {typeof secondaryCurrencyCode === 'string' ? (
+                  <Text numberOfLines={1} color={'foregroundSecondary'}>
+                    {secondaryCurrencyCode}
+                  </Text>
+                ) : (
+                  secondaryCurrencyCode
+                )}
               </S.SecondaryAmountContainer>
               {!hideSwap ? (
                 <S.SwapButtonContainer>

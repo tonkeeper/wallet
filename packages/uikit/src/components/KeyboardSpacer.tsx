@@ -1,12 +1,11 @@
 import { memo } from 'react';
 
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import { useReanimatedKeyboardHeight,  } from '../utils/keyboard';
+import Animated, { useAnimatedKeyboard, useAnimatedStyle } from 'react-native-reanimated';
 
 interface KeyboardSpacerProps {}
 
 export const KeyboardSpacer = memo<KeyboardSpacerProps>((props) => {
-  const { height } = useReanimatedKeyboardHeight();
+  const { height } = useAnimatedKeyboard();
 
   const style = useAnimatedStyle(() => ({
     height: height.value,
