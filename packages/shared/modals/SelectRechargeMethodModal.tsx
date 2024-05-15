@@ -46,17 +46,6 @@ export const SelectRechargeMethodModal = memo<SelectRechargeMethodModalParams>(
         <Modal.Header title={t('battery.recharge_by_crypto.tokens')} />
         <Modal.Content safeArea>
           <List>
-            <List.Item
-              leftContent={<TonIcon showDiamond />}
-              title={'TON'}
-              onPress={handleSelectJettonMaster(undefined)}
-              rightContent={
-                !props.selectedJettonMaster && (
-                  <Icon color={'accentBlue'} name={'ic-donemark-outline-28'} />
-                )
-              }
-              subtitle={formatter.format(balances.ton, { currency: 'TON' })}
-            />
             {filteredJettonBalances.map((jettonBalance) => (
               <List.Item
                 key={jettonBalance.jettonAddress}
@@ -76,6 +65,17 @@ export const SelectRechargeMethodModal = memo<SelectRechargeMethodModalParams>(
                 title={jettonBalance.metadata.symbol}
               />
             ))}
+            <List.Item
+              leftContent={<TonIcon showDiamond />}
+              title={'TON'}
+              onPress={handleSelectJettonMaster(undefined)}
+              rightContent={
+                !props.selectedJettonMaster && (
+                  <Icon color={'accentBlue'} name={'ic-donemark-outline-28'} />
+                )
+              }
+              subtitle={formatter.format(balances.ton, { currency: 'TON' })}
+            />
           </List>
         </Modal.Content>
       </Modal>

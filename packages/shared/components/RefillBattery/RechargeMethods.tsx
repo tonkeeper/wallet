@@ -65,15 +65,6 @@ export const RechargeMethods = memo(() => {
   return (
     <View>
       <List indent={false}>
-        {hasTonBalance && (
-          <List.Item
-            chevron
-            leftContent={<TonIcon showDiamond />}
-            title={t('battery.other_ways.by_crypto.title', { symbol: 'TON' })}
-            onPress={handleRechargeBattery(false)}
-            subtitle={formatter.format(balances.ton, { currency: 'TON' })}
-          />
-        )}
         {filteredJettonBalances.map((jettonBalance) => (
           <List.Item
             chevron
@@ -91,6 +82,15 @@ export const RechargeMethods = memo(() => {
             })}
           />
         ))}
+        {hasTonBalance && (
+          <List.Item
+            chevron
+            leftContent={<TonIcon showDiamond />}
+            title={t('battery.other_ways.by_crypto.title', { symbol: 'TON' })}
+            onPress={handleRechargeBattery(false)}
+            subtitle={formatter.format(balances.ton, { currency: 'TON' })}
+          />
+        )}
         {hasAnyBalance && (
           <List.Item
             onPress={handleRechargeBattery(true)}

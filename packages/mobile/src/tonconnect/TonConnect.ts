@@ -41,6 +41,7 @@ import { SendTransactionError } from './SendTransactionError';
 import { tk } from '$wallet';
 import { TonConnectRemoteBridge } from './TonConnectRemoteBridge';
 import { WithWalletIdentifier } from '$wallet/WalletTypes';
+import { getDomainFromURL } from '$utils';
 
 class TonConnectService {
   checkProtocolVersionCapability(protocolVersion: number) {
@@ -111,6 +112,13 @@ class TonConnectService {
       this.verifyConnectRequest(request);
 
       const manifest = await this.getManifest(request);
+
+      if (getDomainFromURL(manifest.url) === 'tonkeeper.com') {
+        throw new ConnectEventError(
+          CONNECT_EVENT_ERROR_CODES.BAD_REQUEST_ERROR,
+          'Bad request',
+        );
+      }
 
       try {
         const { address, replyItems, notificationsEnabled, walletIdentifier } =
