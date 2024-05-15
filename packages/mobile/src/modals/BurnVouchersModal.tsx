@@ -1,4 +1,3 @@
-import { useNavigation } from '@tonkeeper/router';
 import {
   Button,
   Icon,
@@ -26,17 +25,6 @@ import { Ton } from '$libs/Ton';
 import { BatterySupportedTransaction } from '$wallet/managers/BatteryManager';
 import { Address, beginCell, toNano } from '@ton/core';
 import { checkBurnDate, getNotcoinBurnAddress } from '$utils/notcoin';
-import nacl from 'tweetnacl';
-
-function getRandomUint64(): bigint {
-  const buffer = nacl.randomBytes(8);
-  let result = BigInt(0);
-  for (let i = 0; i < buffer.length; i++) {
-    result += BigInt(buffer[i]) << BigInt(8 * i);
-  }
-
-  return result;
-}
 
 interface BurnVouchersModalProps {
   max?: boolean;
@@ -44,8 +32,6 @@ interface BurnVouchersModalProps {
 
 export const BurnVouchersModal = memo<BurnVouchersModalProps>((props) => {
   const { max = false } = props;
-
-  const nav = useNavigation();
 
   const nfts = useNftsState((s) =>
     Object.values(s.accountNfts).filter(
@@ -97,7 +83,7 @@ export const BurnVouchersModal = memo<BurnVouchersModalProps>((props) => {
               .storeCoins(toNano('0.05'))
               .storeBit(false)
               .storeUint(0x5fec6642, 32)
-              .storeUint(getRandomUint64(), 64)
+              .storeUint(nft.index, 64)
               .endCell()
               .toBoc()
               .toString('base64'),

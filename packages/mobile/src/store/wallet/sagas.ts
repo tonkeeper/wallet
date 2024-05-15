@@ -435,7 +435,7 @@ export function* walletGetUnlockedVault(action?: WalletGetUnlockedVaultAction) {
   try {
     const wallet = action?.payload?.walletIdentifier
       ? tk.wallets.get(action.payload.walletIdentifier)!
-      : tk.wallet;
+      : tk.walletForUnlock;
 
     let withoutBiometryOnOpen = false;
 

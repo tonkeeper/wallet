@@ -125,7 +125,8 @@ export const AccessConfirmation: FC = () => {
     try {
       const promise = getCurrentConfirmationVaultPromise();
 
-      const walletForUnlock = isUnlock ? tk.walletForUnlock : wallet;
+      const walletForUnlock =
+        isUnlock || wallet.isWatchOnly || wallet.isExternal ? tk.walletForUnlock : wallet;
       const passcode = await vault.exportPasscodeWithBiometry();
       const mnemonic = await vault.exportWithPasscode(
         walletForUnlock.identifier,
