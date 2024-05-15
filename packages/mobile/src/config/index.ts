@@ -43,7 +43,6 @@ export type AppConfigVars = {
   tonapiTestnetHost: string;
   tronapiHost: string;
   tronapiTestnetHost: string;
-  signerStoreUrl: string;
 
   batteryHost: string;
   batteryTestnetHost: string;
@@ -69,6 +68,9 @@ export type AppConfigVars = {
   disable_holders_cards: boolean;
   exclude_jetton_chart_periods: boolean;
   devmode_enabled: boolean;
+
+  signer_store_url: string;
+  signer_about_url: string;
 
   tonkeeper_pro_url: string;
   notcoin_jetton_master: string;
@@ -99,7 +101,6 @@ const defaultConfig: Partial<AppConfigVars> = {
   holdersService: 'https://card-dev.whales-api.com',
   tronapiHost: 'https://tron.tonkeeper.com',
   tronapiTestnetHost: 'https://testnet-tron.tonkeeper.com',
-  signerStoreUrl: 'https://play.google.com/store/apps/details?id=com.tonapps.signer',
 
   batteryHost: 'https://battery.tonkeeper.com',
   batteryTestnetHost: 'https://testnet-battery.tonkeeper.com',
@@ -121,6 +122,9 @@ const defaultConfig: Partial<AppConfigVars> = {
   disable_holders_cards: true,
   exclude_jetton_chart_periods: true,
   devmode_enabled: false,
+
+  signer_store_url: 'https://play.google.com/store/apps/details?id=com.tonapps.signer',
+  signer_about_url: 'https://tonkeeper.com',
 
   tonkeeper_pro_url: 'https://tonkeeper.com/pro',
   notcoin_jetton_master:
