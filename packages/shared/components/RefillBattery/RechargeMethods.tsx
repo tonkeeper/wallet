@@ -54,7 +54,7 @@ export const RechargeMethods = memo(() => {
     nav.navigate('/recharge-by-promo');
   }, []);
 
-  if (isLoading) {
+  if (isLoading || !methods?.length) {
     return null;
   }
 
