@@ -179,8 +179,8 @@
         "subtitle": "Using %{methods}"
       },
       "gift": {
-        "title": "Give a battery",
-        "subtitle": "By wallet address"
+        "title": "Send a Gift",
+        "subtitle": "To friends and family"
       },
       "promo": {
         "title": "Enter Promo Code",
