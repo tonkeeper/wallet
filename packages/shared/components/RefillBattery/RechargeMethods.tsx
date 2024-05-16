@@ -9,7 +9,6 @@ import { useNavigation } from '@tonkeeper/router';
 import { Image } from 'react-native';
 import { useJettonBalances } from '@tonkeeper/mobile/src/hooks/useJettonBalances';
 import { compareAddresses } from '@tonkeeper/mobile/src/utils/address';
-import { formatter } from '../../formatter';
 import { useExternalState } from '../../hooks/useExternalState';
 import { config } from '@tonkeeper/mobile/src/config';
 
@@ -67,9 +66,6 @@ export const RechargeMethods = memo(() => {
             chevron
             key={jettonBalance.jettonAddress}
             picture={jettonBalance.metadata.image}
-            subtitle={formatter.format(jettonBalance.balance, {
-              currency: jettonBalance.metadata.symbol,
-            })}
             onPress={handleRechargeBattery(
               false,
               Address.parse(jettonBalance.jettonAddress).toRaw(),
@@ -85,7 +81,6 @@ export const RechargeMethods = memo(() => {
             leftContent={<TonIcon showDiamond />}
             title={t('battery.other_ways.by_crypto.title', { symbol: 'TON' })}
             onPress={handleRechargeBattery(false)}
-            subtitle={formatter.format(balances.ton, { currency: 'TON' })}
           />
         )}
         {hasAnyBalance && (

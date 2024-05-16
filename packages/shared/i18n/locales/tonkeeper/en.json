@@ -175,12 +175,12 @@
     },
     "other_ways": {
       "by_crypto": {
-        "title": "Recharge Battery",
+        "title": "Recharge with %{symbol}",
         "subtitle": "Using %{methods}"
       },
       "gift": {
-        "title": "Give a battery",
-        "subtitle": "By wallet address"
+        "title": "Send a Gift",
+        "subtitle": "To friends and family"
       },
       "promo": {
         "title": "Enter Promo Code",
@@ -385,7 +385,7 @@
   "edit_coins_title": "Add crypto",
   "error_network": "Network error",
   "error_occurred": "An error occurred",
-  "network_overloaded_error": "Network overloaded",
+  "indexer_latency_error": "Sending error, try again later",
   "exchange_method_dont_show_again": "Do not show again",
   "exchange_method_open_warning": "You are opening an external app not operated by Tonkeeper.",
   "exchange_modal": {

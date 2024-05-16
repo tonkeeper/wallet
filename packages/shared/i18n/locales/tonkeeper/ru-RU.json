@@ -308,7 +308,7 @@
   "edit_coins_title": "Валюты",
   "error_network": "Ошибка сети",
   "error_occurred": "Произошла ошибка",
-  "network_overloaded_error": "Сеть перегружена",
+  "indexer_latency_error": "Ошибка отправки. Попробуйте позже",
   "exchange_method_dont_show_again": "Больше не показывать",
   "exchange_method_open_warning": "Вы открываете внешнее приложение, которым не управляет Tonkeeper.",
   "exchange_modal": {
@@ -1112,8 +1112,8 @@
         "title": "Зарядить за %{symbol}"
       },
       "gift": {
-        "title": "Подарить батарейку",
-        "subtitle": "По адресу кошелька"
+        "title": "Отправить подарок",
+        "subtitle": "Друзьям и семье"
       },
       "promo": {
         "title": "Ввести промо-код",

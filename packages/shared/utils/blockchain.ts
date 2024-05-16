@@ -5,14 +5,14 @@ import { TransactionService } from '@tonkeeper/core';
 import { t } from '../i18n';
 import { Alert } from 'react-native';
 
-export class NetworkOverloadedError extends Error {}
+export class IndexerLatencyError extends Error {}
 
 export async function sendBoc(boc, attemptWithRelayer = true) {
   const { rest_online, indexing_latency } =
     (await tk.wallet.tonapi.status.reduceIndexingLatency()) as ServiceStatus;
 
   if (!rest_online || indexing_latency > TransactionService.TTL - 30) {
-    throw new NetworkOverloadedError(t('network_overloaded_error'));
+    throw new IndexerLatencyError(t('indexer_latency_error'));
   }
 
   try {
