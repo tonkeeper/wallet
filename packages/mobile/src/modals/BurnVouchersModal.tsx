@@ -73,7 +73,7 @@ export const BurnVouchersModal = memo<BurnVouchersModalProps>((props) => {
           valid_until,
           messages: selectedNfts.map((nft) => ({
             address: nft.address,
-            amount: Ton.toNano('0.09'),
+            amount: Ton.toNano('0.1'),
             payload: beginCell()
               .storeUint(OpCodes.NFT_TRANSFER, 32)
               .storeUint(ContractService.getWalletQueryId(), 64)
