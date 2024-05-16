@@ -10,17 +10,20 @@ import {
   View,
 } from '@tonkeeper/uikit';
 import { memo, useCallback, useEffect, useMemo } from 'react';
-import { t } from '@tonkeeper/shared/i18n';
+import { i18n, t } from '@tonkeeper/shared/i18n';
 import { useBiometrySettings, useWallet, useWalletSetup } from '@tonkeeper/shared/hooks';
 import { useNavigation } from '@tonkeeper/router';
 import { useNotificationsSwitch } from '$hooks/useNotificationsSwitch';
 import { LayoutAnimation, Linking } from 'react-native';
 import { getBiometryIcon, getBiometryName } from '$utils';
+import { config } from '$config';
+import { tk } from '$wallet';
 
 enum SetupItemType {
   Backup = 'Backup',
   Notifications = 'Notifications',
   Biometry = 'Biometry',
+  JoinTonkeeper = 'JoinTonkeeper',
 }
 
 interface SetupItem {
@@ -32,7 +35,7 @@ interface SetupItem {
 }
 
 export const FinishSetupList = memo(() => {
-  const { lastBackupAt, setupDismissed } = useWalletSetup();
+  const { lastBackupAt, setupDismissed, hasOpenedTelegramChannel } = useWalletSetup();
   const wallet = useWallet();
   const nav = useNavigation();
 
@@ -98,6 +101,23 @@ export const FinishSetupList = memo(() => {
       });
     }
 
+    if (!hasOpenedTelegramChannel) {
+      list.push({
+        type: SetupItemType.JoinTonkeeper,
+        iconName: 'ic-telegram-28',
+        title: t('finish_setup.join_tg'),
+        switch: null,
+        onPress: () => {
+          tk.wallet.toggleTgJoined();
+          Linking.openURL(
+            i18n.locale === 'ru'
+              ? config.get('telegram_ru')
+              : config.get('telegram_global'),
+          ).catch((e) => console.log(e));
+        },
+      });
+    }
+
     if (lastBackupAt === null) {
       list.push({
         type: SetupItemType.Backup,
@@ -109,13 +129,21 @@ export const FinishSetupList = memo(() => {
     }
 
     return list;
-  }, [biometry, initialItems, lastBackupAt, nav, notifications]);
+  }, [
+    biometry,
+    initialItems,
+    lastBackupAt,
+    nav,
+    notifications,
+    hasOpenedTelegramChannel,
+  ]);
 
   useEffect(() => {
     const notificationsEnabled = !notifications.isAvailable || notifications.isSubscribed;
     const biometryEnabled = !biometry.isAvailable || biometry.isEnabled;
     if (
       !setupDismissed &&
+      hasOpenedTelegramChannel &&
       biometryEnabled &&
       notificationsEnabled &&
       lastBackupAt !== null
@@ -123,9 +151,10 @@ export const FinishSetupList = memo(() => {
       setTimeout(() => handleDone(), 300);
     }
   }, [
-    biometry.isEnabled,
     biometry.isAvailable,
+    biometry.isEnabled,
     handleDone,
+    hasOpenedTelegramChannel,
     lastBackupAt,
     notifications.isAvailable,
     notifications.isSubscribed,

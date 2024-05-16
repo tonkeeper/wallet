@@ -18,6 +18,8 @@ export type AppConfigVars = {
   tonNFTsMarketplaceEndpoint: string;
   tonapiMainnetHost: string;
   accountExplorer: string;
+  telegram_ru: string;
+  telegram_global: string;
   subscriptionsHost: string;
   cachedMediaEndpoint: string;
   cachedMediaKey: string;
@@ -116,6 +118,9 @@ const defaultConfig: Partial<AppConfigVars> = {
   disable_battery_promo_module: true,
   disable_battery_crypto_recharge_module: false,
   disable_signer: true,
+
+  telegram_global: 'https://t.me/tonkeeper_news',
+  telegram_ru: 'https://t.me/tonkeeper_ru',
 
   disable_show_unverified_token: false,
   disable_tonstakers: false,

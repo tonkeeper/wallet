@@ -17,6 +17,7 @@ export interface WalletStatusState {
 export interface WalletSetupState {
   lastBackupAt: number | null;
   setupDismissed: boolean;
+  hasOpenedTelegramChannel: boolean;
 }
 
 export class Wallet extends WalletContent {
@@ -29,6 +30,7 @@ export class Wallet extends WalletContent {
   static readonly INITIAL_SETUP_STATE: WalletSetupState = {
     lastBackupAt: null,
     setupDismissed: false,
+    hasOpenedTelegramChannel: false,
   };
 
   private stopListenTransactions: Function | null = null;
@@ -58,6 +60,8 @@ export class Wallet extends WalletContent {
     this.setup.persist({
       storage: this.storage,
       key: `${this.persistPath}/setup`,
+      version: 1,
+      onUpdate: (lastVersion, prevData) => ({ ...prevData, setupDismissed: false }),
     });
 
     this.listenTransactions();
@@ -70,6 +74,10 @@ export class Wallet extends WalletContent {
 
   public dismissSetup() {
     this.setup.set({ setupDismissed: true });
+  }
+
+  public toggleTgJoined() {
+    this.setup.set({ hasOpenedTelegramChannel: true });
   }
 
   public async rehydrate() {

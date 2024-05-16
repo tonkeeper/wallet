@@ -1242,6 +1242,7 @@
     "done_button": "Done"
   },
   "finish_setup": {
+    "join_tg": "Join Tonkeeper channel",
     "header_title": "Finish setting up",
     "use_biometry": "Use %{name} to approve transaction",
     "enable_notifications": "Enable transaction notifications",
