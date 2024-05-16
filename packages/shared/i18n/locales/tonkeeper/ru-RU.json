@@ -1305,6 +1305,7 @@
     "done_button": "Готово"
   },
   "finish_setup": {
+    "join_tg": "Присоединяйтесь к каналу Tonkeeper",
     "header_title": "Завершить установку",
     "use_biometry": "Включите %{name} для подтверждения транзакций",
     "enable_notifications": "Включите уведомления о транзакциях",

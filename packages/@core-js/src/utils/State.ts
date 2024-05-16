@@ -9,6 +9,8 @@ export interface StatePersistOptions<TData extends DefaultStateData> {
   storage: Storage;
   partialize?: (data: TData) => Partial<TData>;
   rehydrated?: (data: TData) => void;
+  version?: number;
+  onUpdate?: (prevVersion: number | undefined, prevData: any) => Partial<TData>;
 }
 
 export class State<TData extends DefaultStateData> {
@@ -29,7 +31,13 @@ export class State<TData extends DefaultStateData> {
     const { key, storage, partialize } = this.persistOptions;
 
     try {
-      const data = partialize ? partialize(this.data) : this.data;
+      const data: Partial<TData> & { __version?: number } = partialize
+        ? partialize(this.data)
+        : this.data;
+
+      // We should keep last version in storage
+      data.__version = this.persistOptions.version;
+
       await storage.setItem(key, JSON.stringify(data));
     } catch (err) {
       console.log('[State]: error persist for key', key, err);
@@ -57,6 +65,18 @@ export class State<TData extends DefaultStateData> {
       const parsedData = JSON.parse(data);
 
       this.data = { ...this.data, ...parsedData };
+
+      if (
+        this.persistOptions.onUpdate &&
+        this.persistOptions.version &&
+        (!parsedData.__version || this.persistOptions.version > parsedData.__version)
+      ) {
+        this.data = {
+          ...this.data,
+          ...this.persistOptions.onUpdate(parsedData.__version, this.data),
+        };
+        this.storeIfNeeded();
+      }
 
       if (rehydrated) {
         rehydrated(this.data);
