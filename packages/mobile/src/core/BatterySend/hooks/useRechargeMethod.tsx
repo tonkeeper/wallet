@@ -7,6 +7,7 @@ import { tk } from '$wallet';
 import { compareAddresses } from '$utils/address';
 import { RechargeMethod } from '$core/BatterySend/types';
 import { ImageProps } from 'react-native';
+import { config } from '$config';
 
 export interface IRechargeMethod extends RechargeMethod {
   formattedTonFiatAmount: (amount: number | string) => string;
@@ -68,7 +69,7 @@ export function useRechargeMethod(rechargeMethod: RechargeMethod): IRechargeMeth
     [balance],
   );
 
-  const minInputAmount = fromTon(0.1).toString();
+  const minInputAmount = fromTon(config.get('batteryReservedAmount')).toString();
 
   return useMemo(
     () => ({
