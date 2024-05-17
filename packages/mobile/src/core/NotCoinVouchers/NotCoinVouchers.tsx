@@ -41,6 +41,7 @@ export const NotCoinVouchers: React.FC = () => {
   const nfts = useNftsState((s) =>
     Object.values(s.accountNfts).filter(
       (nft) =>
+        !nft.sale &&
         nft.collection &&
         Address.compare(nft.collection.address, config.get('notcoin_nft_collection')),
     ),
