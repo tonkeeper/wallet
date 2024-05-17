@@ -124,6 +124,7 @@
   "auth_failed": "Authentication failed",
   "balances_setup_wallet": "Set up wallet",
   "battery": {
+    "max_input_amount": "Max input amount is %{amount}",
     "send_widget": {
       "battery": "Battery"
     },
@@ -946,6 +947,9 @@
     "contract_deploy": "Contract Deploy",
     "deposit": "Stake",
     "failed": "Failed",
+    "failed_with_reason": {
+      "swap_refund_no_liq": "Failed. Increase the slippage tolerance in the swap settings to avoid this error."
+    },
     "nft_purchase": "NFT Purchase",
     "smartcontract_exec": "Call contract",
     "spam": "Spam",

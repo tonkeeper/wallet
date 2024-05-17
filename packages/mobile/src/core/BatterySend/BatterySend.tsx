@@ -10,6 +10,7 @@ import {
   Screen,
   Spacer,
   Steezy,
+  Toast,
   TouchableOpacity,
   View,
 } from '@tonkeeper/uikit';
@@ -117,6 +118,18 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
   const handleContinue = useCallback(async () => {
     Keyboard.dismiss();
     const parsedAmount = parseLocaleNumber(amount.value);
+
+    if (BigNumber(parsedAmount).isGreaterThan(rechargeMethod.maxInputAmount)) {
+      return Toast.fail(
+        t('battery.max_input_amount', {
+          amount: formatter.format(rechargeMethod.maxInputAmount, {
+            decimals: 0,
+            currency: rechargeMethod.symbol,
+            forceRespectDecimalPlaces: true,
+          }),
+        }),
+      );
+    }
 
     const commentCell = beginCell()
       .storeUint(0, 32)

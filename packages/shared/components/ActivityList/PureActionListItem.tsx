@@ -228,7 +228,7 @@ export const PureActionListItem = memo<ActionListItemProps>((props) => {
           </Text>
         )}
       {isFailed && !ignoreFailed && (
-        <Text type="body2" color="accentOrange" style={styles.warn.static}>
+        <Text type="body3" color="accentOrange" style={styles.warn.static}>
           {t('transactions.failed')}
         </Text>
       )}

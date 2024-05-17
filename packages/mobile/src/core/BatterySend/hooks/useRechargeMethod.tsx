@@ -14,6 +14,7 @@ export interface IRechargeMethod extends RechargeMethod {
   fromTon: (amount: number | string) => number;
   isTon: boolean;
   minInputAmount: string;
+  maxInputAmount: string;
   iconSource: ImageProps['source'];
   balance: string;
   isGreaterThanBalance: (amount: string) => () => void;
@@ -70,6 +71,7 @@ export function useRechargeMethod(rechargeMethod: RechargeMethod): IRechargeMeth
   );
 
   const minInputAmount = fromTon(config.get('batteryReservedAmount')).toString();
+  const maxInputAmount = fromTon(config.get('batteryMaxInputAmount')).toString();
 
   return useMemo(
     () => ({
@@ -78,6 +80,7 @@ export function useRechargeMethod(rechargeMethod: RechargeMethod): IRechargeMeth
       fromTon,
       isTon,
       minInputAmount,
+      maxInputAmount,
       iconSource,
       balance,
       isGreaterThanBalance,
@@ -88,6 +91,7 @@ export function useRechargeMethod(rechargeMethod: RechargeMethod): IRechargeMeth
       fromTon,
       isTon,
       minInputAmount,
+      maxInputAmount,
       iconSource,
       balance,
       isGreaterThanBalance,

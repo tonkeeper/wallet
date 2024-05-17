@@ -6,17 +6,17 @@ import { debugLog } from '$utils/debugLog';
 import { t } from '@tonkeeper/shared/i18n';
 import { Toast } from '$store';
 import {
+  Icon,
+  isAndroid,
   List,
+  ListItemContent,
   Modal,
   Spacer,
   Steezy,
   Text,
+  TouchableOpacity,
   View,
   WalletIcon,
-  isAndroid,
-  Icon,
-  ListItemContent,
-  TouchableOpacity,
 } from '@tonkeeper/uikit';
 import { push } from '$navigation/imperative';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
@@ -27,7 +27,7 @@ import {
 import { TonConnectRemoteBridge } from '$tonconnect/TonConnectRemoteBridge';
 import { formatter } from '$utils/formatter';
 import { tk } from '$wallet';
-import { MessageConsequences } from '@tonkeeper/core/src/TonAPI';
+import { ActionStatusEnum, MessageConsequences } from '@tonkeeper/core/src/TonAPI';
 import { Address, TransactionService } from '@tonkeeper/core';
 import { ActionListItemByType } from '@tonkeeper/shared/components/ActivityList/ActionListItemByType';
 import { useGetTokenPrice } from '$hooks/useTokenPrice';
@@ -235,6 +235,11 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
     }
   }, [consequences?.risk.nfts.length, fiatCurrency, totalRiskedAmount]);
 
+  const hasFailedSwap = actions.some(
+    (action) =>
+      action.status === ActionStatusEnum.Failed && action.type === ActionType.JettonSwap,
+  );
+
   return (
     <Modal>
       <Modal.Header
@@ -306,6 +311,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
       </Modal.ScrollView>
       <Modal.Footer>
         <NFTOperationFooter
+          disabled={hasFailedSwap}
           withSlider={!wallet.isExternal}
           onPressConfirm={handleConfirm}
           redirectToActivity={redirectToActivity}

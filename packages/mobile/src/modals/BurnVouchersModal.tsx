@@ -36,6 +36,7 @@ export const BurnVouchersModal = memo<BurnVouchersModalProps>((props) => {
   const nfts = useNftsState((s) =>
     Object.values(s.accountNfts).filter(
       (nft) =>
+        !nft.sale &&
         nft.collection &&
         Address.parse(nft.collection.address).equals(
           Address.parse(config.get('notcoin_nft_collection')),
