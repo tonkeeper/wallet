@@ -42,6 +42,7 @@
     "@react-native-firebase/app": "18.5.0",
     "@react-native-firebase/crashlytics": "18.5.0",
     "@react-native-firebase/messaging": "18.5.0",
+    "@react-native-masked-view/masked-view": "^0.3.1",
     "@reduxjs/toolkit": "^1.6.1",
     "@shopify/flash-list": "^1.5.0",
     "@ton-community/ton-ledger": "^7.0.1",

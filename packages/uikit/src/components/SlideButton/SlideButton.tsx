@@ -1,16 +1,20 @@
 import React, { memo } from 'react';
 import { View } from '../View';
-import { Steezy } from '../../styles';
+import { Steezy, useTheme } from '../../styles';
 import { Icon } from '../Icon';
 import { Text } from '../Text';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+import MaskedView from '@react-native-masked-view/masked-view';
 import Animated, {
   clamp,
+  Easing,
   ReduceMotion,
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withDelay,
+  withRepeat,
+  withSequence,
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
@@ -19,6 +23,9 @@ import {
   triggerImpactMedium,
   triggerNotificationSuccess,
 } from '@tonkeeper/mobile/src/utils';
+
+const GRADIENT_SOURCE = require('./gradient.png');
+const GRADIENT_WIDTH = 168;
 
 export interface SlideButtonProps {
   onSuccessSlide: () => void;
@@ -41,6 +48,8 @@ export const SlideButton = memo<SlideButtonProps>((props) => {
   const disabledButtonStyle = Steezy.useStyle(styles.buttonDisabled);
   const leftOffset = useSharedValue(0);
   const maxOffset = useSharedValue(0);
+  const textWidth = useSharedValue(0);
+  const theme = useTheme();
 
   const panGesture = Gesture.Pan()
     .enabled(!props.disabled)
@@ -70,7 +79,29 @@ export const SlideButton = memo<SlideButtonProps>((props) => {
 
   const textContainerStyle = useAnimatedStyle(() => {
     return {
+      flex: 1,
       opacity: withTiming(props.disabled || leftOffset.value ? 0 : 1, { duration: 175 }),
+    };
+  });
+
+  const gradientStyle = useAnimatedStyle(() => {
+    const startX = (maxOffset.value - textWidth.value) / 2 - GRADIENT_WIDTH;
+    const endX = (maxOffset.value - textWidth.value) / 2 + textWidth.value;
+
+    return {
+      width: GRADIENT_WIDTH,
+      height: '100%',
+      transform: [
+        {
+          translateX: withRepeat(
+            withSequence(
+              withTiming(startX, { duration: 0 }),
+              withTiming(endX, { duration: 2000, easing: Easing.linear }),
+            ),
+            -1,
+          ),
+        },
+      ],
     };
   });
 
@@ -80,9 +111,29 @@ export const SlideButton = memo<SlideButtonProps>((props) => {
       style={styles.container}
     >
       <Animated.View style={textContainerStyle}>
-        <Text color="textTertiary" fontWeight={'600'} type={'body1'}>
-          {props.text}
-        </Text>
+        <MaskedView
+          style={styles.flexOne.static}
+          maskElement={
+            <View style={styles.maskedTextContainer}>
+              <Text
+                color="textTertiary"
+                fontWeight={'600'}
+                type={'body1'}
+                onLayout={(e) => (textWidth.value = e.nativeEvent.layout.width)}
+              >
+                {props.text}
+              </Text>
+            </View>
+          }
+        >
+          <View style={styles.maskContainer}>
+            <Animated.Image
+              tintColor={theme.textPrimary}
+              source={GRADIENT_SOURCE}
+              style={gradientStyle}
+            />
+          </View>
+        </MaskedView>
       </Animated.View>
       <GestureDetector gesture={panGesture}>
         <Animated.View
@@ -119,13 +170,28 @@ const styles = Steezy.create(({ colors }) => ({
     height: 56,
     backgroundColor: colors.backgroundContent,
     borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   buttonDisabled: {
     backgroundColor: colors.buttonPrimaryBackgroundDisabled,
   },
   iconDisabled: {
     opacity: 0.48,
+  },
+  flexOne: {
+    flex: 1,
+  },
+  maskedTextContainer: {
+    backgroundColor: 'transparent',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  maskContainer: {
+    flex: 1,
+    backgroundColor: colors.textTertiary,
+  },
+  gradient: {
+    width: 168,
+    height: '100%',
   },
 }));
