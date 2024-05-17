@@ -23,6 +23,7 @@ import {
 export interface SlideButtonProps {
   onSuccessSlide: () => void;
   text: string;
+  disabled?: boolean;
 }
 
 const BUTTON_WIDTH = 92;
@@ -37,10 +38,12 @@ const SPRING_CONFIG = {
 
 export const SlideButton = memo<SlideButtonProps>((props) => {
   const buttonStyle = Steezy.useStyle(styles.button);
+  const disabledButtonStyle = Steezy.useStyle(styles.buttonDisabled);
   const leftOffset = useSharedValue(0);
   const maxOffset = useSharedValue(0);
 
   const panGesture = Gesture.Pan()
+    .enabled(!props.disabled)
     .onStart(() => {
       runOnJS(triggerImpactMedium)();
     })
@@ -67,7 +70,7 @@ export const SlideButton = memo<SlideButtonProps>((props) => {
 
   const textContainerStyle = useAnimatedStyle(() => {
     return {
-      opacity: withTiming(leftOffset.value ? 0 : 1, { duration: 175 }),
+      opacity: withTiming(props.disabled || leftOffset.value ? 0 : 1, { duration: 175 }),
     };
   });
 
@@ -82,8 +85,18 @@ export const SlideButton = memo<SlideButtonProps>((props) => {
         </Text>
       </Animated.View>
       <GestureDetector gesture={panGesture}>
-        <Animated.View style={[buttonStyle, animatedButtonOffset]}>
-          <Icon name={'ic-arrow-right-outline-28'} color="buttonPrimaryForeground" />
+        <Animated.View
+          style={[
+            buttonStyle,
+            props.disabled && disabledButtonStyle,
+            animatedButtonOffset,
+          ]}
+        >
+          <Icon
+            style={props.disabled && styles.iconDisabled.static}
+            name={'ic-arrow-right-outline-28'}
+            color="buttonPrimaryForeground"
+          />
         </Animated.View>
       </GestureDetector>
     </View>
@@ -108,5 +121,11 @@ const styles = Steezy.create(({ colors }) => ({
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  buttonDisabled: {
+    backgroundColor: colors.buttonPrimaryBackgroundDisabled,
+  },
+  iconDisabled: {
+    opacity: 0.48,
   },
 }));

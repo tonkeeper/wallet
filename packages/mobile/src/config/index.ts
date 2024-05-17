@@ -50,6 +50,7 @@ export type AppConfigVars = {
   batteryTestnetHost: string;
   batteryMeanFees: string;
   batteryReservedAmount: string;
+  batteryMaxInputAmount: string;
   batteryMeanPrice_swap: string;
   batteryMeanPrice_jetton: string;
   batteryMeanPrice_nft: string;
@@ -108,6 +109,7 @@ const defaultConfig: Partial<AppConfigVars> = {
   batteryTestnetHost: 'https://testnet-battery.tonkeeper.com',
   batteryMeanFees: '0.0055',
   batteryReservedAmount: '0.3',
+  batteryMaxInputAmount: '3',
   batteryMeanPrice_swap: '0.22',
   batteryMeanPrice_jetton: '0.06',
   batteryMeanPrice_nft: '0.03',

@@ -918,6 +918,9 @@
     "contract_deploy": "Создание контракта",
     "deposit": "Депозит",
     "failed": "Неуспешно",
+    "failed_with_reason": {
+      "swap_refund_no_liq": "Неуспешно. Увеличьте допустимый процент изменения цены (Slippage) в настройках обмена, чтобы избежать подобных ошибок."
+    },
     "nft_purchase": "Покупка NFT",
     "smartcontract_exec": "Вызов контракта",
     "spam": "Спам",
@@ -1072,6 +1075,7 @@
   "region_nokyc": "Нейтральные воды",
   "nokyc": "без KYC",
   "battery": {
+    "max_input_amount": "Максимальная сумма: %{amount}",
     "send_widget": {
       "battery": "Батарейка"
     },

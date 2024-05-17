@@ -28,8 +28,6 @@ import { usePreparedWalletContent } from './content-providers/utils/usePreparedW
 import { FinishSetupList } from './components/FinishSetupList';
 import { BackupIndicator } from './components/Tabs/BackupIndicator';
 import { useExternalState } from '@tonkeeper/shared/hooks/useExternalState';
-import { openActivityActionModal } from '@tonkeeper/shared/modals/ActivityActionModal';
-import { ActionSource } from '$wallet/models/ActivityModel';
 
 export const WalletScreen = memo(({ navigation }) => {
   const dispatch = useDispatch();
@@ -84,14 +82,6 @@ export const WalletScreen = memo(({ navigation }) => {
 
     return unsubscribe;
   }, [nav, navigation]);
-
-  useEffect(() => {
-    if (!isNotCoinReceived && notCoinActionId) {
-      openActivityActionModal(notCoinActionId, ActionSource.Ton, true);
-
-      wallet.activityList.setNotCoinReceived();
-    }
-  }, [notCoinActionId, isNotCoinReceived, wallet.activityList]);
 
   const isWatchOnly = wallet && wallet.isWatchOnly;
 

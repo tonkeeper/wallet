@@ -12,6 +12,7 @@ export class NotCoinVouchersDependency extends DependencyPrototype<NftsState, Nf
       const nfts = Object.values(state.accountNfts).filter(
         (nft) =>
           nft.collection &&
+          !nft.sale &&
           Address.compare(nft.collection.address, config.get('notcoin_nft_collection')),
       );
 
