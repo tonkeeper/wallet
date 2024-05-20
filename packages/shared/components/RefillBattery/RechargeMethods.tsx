@@ -38,7 +38,7 @@ export const RechargeMethods = memo(() => {
 
   const hasTonBalance = balances.ton !== '0';
   const hasJettonBalances = !!filteredJettonBalances.length;
-  const hasAnyBalance = hasTonBalance && hasJettonBalances;
+  const hasAnyBalance = hasTonBalance || hasJettonBalances;
 
   const handleRechargeBattery = useCallback(
     (withAddressSelect?: boolean, jettonMaster?: string) => async () => {

@@ -34,19 +34,23 @@ const packages: InAppPackage[] = [
     icon: 'ic-battery-100-44',
     key: 'large',
     userProceed: 7.5,
-    packageId: 'LargePack',
+    packageId: Platform.select({ ios: 'LargePack', android: 'large_pack', default: '' }),
   },
   {
     icon: 'ic-battery-50-44',
     key: 'medium',
     userProceed: 5,
-    packageId: 'MediumPack',
+    packageId: Platform.select({
+      ios: 'MediumPack',
+      android: 'medium_pack',
+      default: '',
+    }),
   },
   {
     icon: 'ic-battery-25-44',
     key: 'small',
     userProceed: 2.5,
-    packageId: 'SmallPack',
+    packageId: Platform.select({ ios: 'SmallPack', android: 'small_pack', default: '' }),
   },
 ];
 
@@ -73,7 +77,10 @@ export const RefillBatteryIAP = memo(() => {
     (packageId: string) => async () => {
       try {
         setPurchaseInProgress(true);
-        let requestedPurchase = await requestPurchase({ sku: packageId });
+        let requestedPurchase = await requestPurchase({
+          sku: packageId,
+          skus: [packageId],
+        });
 
         if (!requestedPurchase) {
           return;

@@ -5,7 +5,7 @@ import { Steezy } from '$styles';
 import { Pressable, View } from '$uikit';
 import { Haptics, isAndroid } from '$utils';
 import { Icon, Text, useTheme } from '@tonkeeper/uikit';
-import { DangerLevel } from '@tonkeeper/shared/hooks';
+import { DangerLevel, useWallet } from '@tonkeeper/shared/hooks';
 import { useNavigation } from '@tonkeeper/router';
 import { SettingsStackRouteNames } from '$navigation';
 import { BatteryIcon } from '@tonkeeper/shared/components/BatteryIcon/BatteryIcon';
@@ -30,6 +30,7 @@ export const ShowBalance: React.FC<{
   dangerLevel: DangerLevel;
   isWatchOnly: boolean;
 }> = ({ amount, dangerLevel, isWatchOnly }) => {
+  const wallet = useWallet();
   const hideAmounts = usePrivacyStore((state) => state.actions.toggleHiddenAmounts);
   const isHidden = usePrivacyStore((state) => state.hiddenAmounts);
   const nav = useNavigation();
@@ -63,7 +64,7 @@ export const ShowBalance: React.FC<{
           </Text>
         </TouchableOpacity>
       )}
-      {!isWatchOnly && <BatteryIcon />}
+      {!isWatchOnly && wallet.tonProof.tonProofToken && <BatteryIcon />}
       {dangerLevel !== DangerLevel.Normal && (
         <TouchableOpacity
           onPress={handleNavigateToBackup}

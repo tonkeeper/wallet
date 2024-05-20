@@ -90,7 +90,7 @@ export const RefillBattery = memo<RefillBatteryProps>((props) => {
         <RefillBatterySettingsWidget onPress={props.navigateToTransactions} />
       )}
       <View style={styles.indent}>
-        {!isInAppPurchasesDisabled ? <RefillBatteryIAP /> : null}
+        <RefillBatteryIAP />
         {!isCryptoRechargeDisabled ? <RechargeMethods /> : null}
         <RestorePurchases />
       </View>

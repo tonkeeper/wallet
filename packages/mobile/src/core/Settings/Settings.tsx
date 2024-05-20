@@ -77,6 +77,7 @@ export const Settings: FC = () => {
     !!wallet &&
     !wallet.isWatchOnly &&
     !wallet.isExternal &&
+    wallet.tonProof.tonProofToken &&
     !config.get('disable_battery');
 
   const searchEngine = useBrowserStore((state) => state.searchEngine);
