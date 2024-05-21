@@ -22,7 +22,6 @@ import nacl from 'tweetnacl';
 import { AccountsStream } from './streaming';
 import { InteractionManager } from 'react-native';
 import { Biometry } from './Biometry';
-import { CommonBatteryManager } from '$wallet/managers/CommonBatteryManager';
 import { Toast } from '@tonkeeper/uikit';
 
 type TonkeeperOptions = {
@@ -164,7 +163,8 @@ export class Tonkeeper {
 
       await Promise.all(
         this.walletsStore.data.wallets.map((walletConfig) =>
-          this.createWalletInstance(walletConfig),
+          // It's safer to throw one instance instead of all in case of error
+          this.createWalletInstance(walletConfig).catch((e) => Toast.fail(e.message)),
         ),
       );
 
@@ -599,7 +599,7 @@ export class Tonkeeper {
 
     const wallet = new Wallet(
       walletConfig,
-      addresses!,
+      addresses,
       this.storage,
       this.tonPrice,
       accountStream,
