@@ -10,10 +10,11 @@ import { useApprovedNfts } from '$hooks/useApprovedNfts';
 import { JettonVerification, NFTModel } from '$store/models';
 import { tk } from '$wallet';
 import {
-  TokenApprovalType,
   TokenApprovalStatus,
+  TokenApprovalType,
 } from '$wallet/managers/TokenApprovalManager';
 import { Address } from '@tonkeeper/core';
+import { TrustType } from '@tonkeeper/core/src/TonAPI';
 
 const baseNftCellData = (nft: NFTModel) => ({
   type: ContentType.Cell,
@@ -31,9 +32,10 @@ const baseNftCellData = (nft: NFTModel) => ({
       type: nft.collection?.address
         ? TokenApprovalType.Collection
         : TokenApprovalType.Token,
-      verification: nft.isApproved
-        ? JettonVerification.WHITELIST
-        : JettonVerification.NONE,
+      verification:
+        nft.trust === TrustType.Whitelist
+          ? JettonVerification.WHITELIST
+          : JettonVerification.NONE,
       tokenIdentifier: Address.parse(nft.collection?.address || nft.address).toRaw(),
       image: nft.content.image.baseUrl,
       name: nft.collection?.name,

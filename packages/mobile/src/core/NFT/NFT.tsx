@@ -30,7 +30,7 @@ import { useExpiringDomains } from '$store/zustand/domains/useExpiringDomains';
 import { usePrivacyStore } from '$store/zustand/privacy/usePrivacyStore';
 import { ProgrammableButtons } from '$core/NFT/ProgrammableButtons/ProgrammableButtons';
 import { Address, DNS, KnownTLDs } from '@tonkeeper/core';
-import { NftItem } from '@tonkeeper/core/src/TonAPI';
+import { NftItem, TrustType } from '@tonkeeper/core/src/TonAPI';
 import { tk } from '$wallet';
 import { CustomNftItem } from '@tonkeeper/core/src/TonAPI/CustomNftItems';
 import { mapNewNftToOldNftData } from '$utils/mapNewNftToOldNftData';
@@ -248,7 +248,7 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
               videoUri={videoUri}
               title={(!isTG && nft.dns) || nft.name}
               collection={isDNS ? 'TON DNS' : nft.collection?.name}
-              isVerified={isDNS || nft.isApproved}
+              isVerified={isDNS || nft.trust === TrustType.Whitelist}
               description={!hiddenAmounts ? nft.description : '* * *'}
               collectionDescription={!hiddenAmounts && nft.collection?.description}
               isOnSale={isOnSale}
@@ -338,7 +338,7 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
                 <ProgrammableButtons
                   disabled={!isCurrentAddressOwner}
                   nftAddress={nft.address}
-                  isApproved={nft.isApproved}
+                  isApproved={nft.trust === TrustType.Whitelist}
                   buttons={nft.metadata.buttons}
                 />
               )}
