@@ -91,10 +91,7 @@ export const BurnVouchersModal = memo<BurnVouchersModalProps>((props) => {
           })),
         },
         {
-          experimentalWithBattery:
-            tk.wallet.battery.state.data.supportedTransactions[
-              BatterySupportedTransaction.NFT
-            ],
+          experimentalWithBattery: true,
           expires_sec: valid_until,
           response_options: {
             broadcast: false,

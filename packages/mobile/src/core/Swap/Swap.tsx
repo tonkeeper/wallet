@@ -78,10 +78,7 @@ export const Swap: FC<Props> = (props) => {
           openSignRawModal(
             request,
             {
-              experimentalWithBattery:
-                tk.wallet.battery.state.data.supportedTransactions[
-                  BatterySupportedTransaction.Swap
-                ],
+              experimentalWithBattery: true,
               expires_sec: valid_until,
               response_options: {
                 broadcast: false,
