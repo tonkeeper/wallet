@@ -14,6 +14,8 @@ export enum OpCodes {
   JETTON_TRANSFER = 0xf8a7ea5,
   NFT_TRANSFER = 0x5fcc3d14,
   STONFI_SWAP = 0x25938561,
+  PUT_ON_SALE = 0x00000001,
+  REMOVE_FROM_SALE = 0x00000003,
 }
 
 export enum WalletVersion {

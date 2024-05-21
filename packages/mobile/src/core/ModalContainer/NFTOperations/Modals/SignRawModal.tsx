@@ -380,6 +380,18 @@ export const openSignRawModal = async (
       await TonConnectRemoteBridge.closeOtherTransactions();
     }
 
+    let shouldRelayTransaction: boolean = false;
+    try {
+      shouldRelayTransaction = options.experimentalWithBattery
+        ? TransactionService.shouldRelayPayloads(
+            params.messages
+              .map((message) => message.payload)
+              .filter((message) => !!message) as string[],
+            tk.wallet.battery.state.data.supportedTransactions,
+          )
+        : false;
+    } catch {}
+
     let consequences: MessageConsequences | null = null;
     let isBattery = false;
     try {
@@ -392,15 +404,6 @@ export const openSignRawModal = async (
         messages: TransactionService.parseSignRawMessages(params.messages),
         seqno: await getWalletSeqno(wallet),
       });
-
-      const shouldRelayTransaction = options.experimentalWithBattery
-        ? TransactionService.shouldRelayPayloads(
-            params.messages
-              .map((message) => message.payload)
-              .filter((message) => !!message) as string[],
-            tk.wallet.battery.state.data.supportedTransactions,
-          )
-        : false;
 
       const totalAmount = calculateMessageTransferAmount(params.messages);
       const { emulateResult, battery } = await emulateBoc(

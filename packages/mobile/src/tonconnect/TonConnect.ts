@@ -42,6 +42,7 @@ import { tk } from '$wallet';
 import { TonConnectRemoteBridge } from './TonConnectRemoteBridge';
 import { WithWalletIdentifier } from '$wallet/WalletTypes';
 import { getDomainFromURL } from '$utils';
+import { ALLOWED_BATTERY_DOMAINS } from '@tonkeeper/core';
 
 class TonConnectService {
   checkProtocolVersionCapability(protocolVersion: number) {
@@ -310,6 +311,10 @@ class TonConnectService {
         );
       }
 
+      const isBatteryEnabled = ALLOWED_BATTERY_DOMAINS.includes(
+        getDomainFromURL(senderUrl),
+      );
+
       const { valid_until, messages } = params;
 
       if (valid_until < getTimeSec()) {
@@ -332,7 +337,7 @@ class TonConnectService {
         const openModalResult = await openSignRawModal(
           txParams,
           {
-            experimentalWithBattery: true,
+            experimentalWithBattery: isBatteryEnabled,
             expires_sec: valid_until,
             response_options: {
               broadcast: false,

@@ -24,6 +24,8 @@ export interface TransferParams {
   messages: MessageRelaxed[];
 }
 
+export const ALLOWED_BATTERY_DOMAINS = ['getgems.io'];
+
 export function tonAddress(address: AnyAddress) {
   if (typeof address === 'string') {
     return Address.parse(address);
@@ -111,24 +113,37 @@ export class TransactionService {
     supportedTransactions: Record<BatterySupportedTransaction, boolean>,
   ) {
     const slice = payload.beginParse();
+    if (slice.remainingBits < 32) {
+      return true;
+    }
     const opCode = slice.loadUint(32);
 
     switch (opCode) {
+      case OpCodes.PUT_ON_SALE:
+        return supportedTransactions[BatterySupportedTransaction.NFTSale];
+      case OpCodes.REMOVE_FROM_SALE:
+        return supportedTransactions[BatterySupportedTransaction.NFTSale];
       case OpCodes.STONFI_SWAP:
         return supportedTransactions[BatterySupportedTransaction.Swap];
       case OpCodes.NFT_TRANSFER:
         if (slice.remainingRefs) {
-          return TransactionService.shouldRelayPayload(
-            slice.loadRef(),
-            supportedTransactions,
+          const refsArr = new Array(slice.remainingRefs);
+          while (slice.remainingRefs) {
+            refsArr.push(slice.loadRef());
+          }
+          return refsArr.every((ref) =>
+            TransactionService.shouldRelayPayload(ref, supportedTransactions),
           );
         }
         return supportedTransactions[BatterySupportedTransaction.NFT];
       case OpCodes.JETTON_TRANSFER:
         if (slice.remainingRefs) {
-          return TransactionService.shouldRelayPayload(
-            slice.loadRef(),
-            supportedTransactions,
+          const refsArr = new Array(slice.remainingRefs);
+          while (slice.remainingRefs) {
+            refsArr.push(slice.loadRef());
+          }
+          return refsArr.every((ref) =>
+            TransactionService.shouldRelayPayload(ref, supportedTransactions),
           );
         }
         return supportedTransactions[BatterySupportedTransaction.Jetton];
