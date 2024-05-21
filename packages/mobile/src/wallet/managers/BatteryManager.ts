@@ -10,6 +10,8 @@ export enum BatterySupportedTransaction {
   Swap = 'swap',
   Jetton = 'jetton',
   NFT = 'nft',
+  CNFTMint = 'cnft_mint',
+  NFTSale = 'nft_sale',
 }
 
 export interface BatteryState {
@@ -35,6 +37,8 @@ export class BatteryManager {
       [BatterySupportedTransaction.Swap]: true,
       [BatterySupportedTransaction.Jetton]: true,
       [BatterySupportedTransaction.NFT]: true,
+      [BatterySupportedTransaction.CNFTMint]: true,
+      [BatterySupportedTransaction.NFTSale]: true,
     },
   });
 
@@ -52,6 +56,15 @@ export class BatteryManager {
         balance,
         reservedBalance,
         supportedTransactions,
+      }),
+      version: 1,
+      onUpdate: (prevVersion, prevData) => ({
+        ...prevData,
+        supportedTransactions: {
+          ...prevData?.supportedTransactions,
+          [BatterySupportedTransaction.CNFTMint]: true,
+          [BatterySupportedTransaction.NFTSale]: true,
+        },
       }),
       storage: this.storage,
       key: `${this.persistPath}/battery`,

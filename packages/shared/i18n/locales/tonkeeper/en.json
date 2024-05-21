@@ -133,11 +133,15 @@
         "nft": "NFT transfers",
         "swap": "swaps via Tonkeeper",
         "jetton": "token transfers",
-        "ton": "TON transfers"
+        "ton": "TON transfers",
+        "cnft_mint": "compressed NFT mints",
+        "nft_sale": "NFT sales"
       },
       "type": {
         "swap": "swap",
-        "transfer": "transfer"
+        "transfer": "transfer",
+        "mint": "mint",
+        "sale": "sale"
       },
       "title": "Transactions",
       "settings": "Battery Settings",

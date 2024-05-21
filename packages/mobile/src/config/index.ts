@@ -52,8 +52,10 @@ export type AppConfigVars = {
   batteryReservedAmount: string;
   batteryMaxInputAmount: string;
   batteryMeanPrice_swap: string;
+  batteryMeanPrice_cnft_mint: string;
   batteryMeanPrice_jetton: string;
   batteryMeanPrice_nft: string;
+  batteryMeanPrice_nft_sale: string;
 
   holdersAppEndpoint: string;
   holdersService: string;
@@ -112,6 +114,8 @@ const defaultConfig: Partial<AppConfigVars> = {
   batteryMaxInputAmount: '3',
   batteryMeanPrice_swap: '0.22',
   batteryMeanPrice_jetton: '0.06',
+  batteryMeanPrice_cnft_mint: '0.08',
+  batteryMeanPrice_nft_sale: '0.1',
   batteryMeanPrice_nft: '0.03',
   battery_beta: true,
   disable_battery: false,

@@ -1084,7 +1084,8 @@
         "nft": "отправка NFT",
         "swap": "обмен через Tonkeeper",
         "jetton": "отправка токенов",
-        "ton": "отправка TON"
+        "ton": "отправка TON",
+        "cnft_mint": "минт cNFT"
       },
       "type": {
         "swap": "обмен",

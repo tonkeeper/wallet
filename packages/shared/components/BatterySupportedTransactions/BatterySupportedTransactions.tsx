@@ -31,6 +31,16 @@ export const supportedTransactions: SupportedTransaction[] = [
     name: 'battery.transactions.types.jetton',
     nameSingle: 'battery.transactions.type.transfer',
   },
+  {
+    type: BatterySupportedTransaction.CNFTMint,
+    name: 'battery.transactions.types.cnft_mint',
+    nameSingle: 'battery.transactions.type.mint',
+  },
+  {
+    type: BatterySupportedTransaction.NFTSale,
+    name: 'battery.transactions.types.nft_sale',
+    nameSingle: 'battery.transactions.type.sale',
+  },
 ];
 
 const calculateChargesAmount = (transactionCost: string, chargeCost: string) =>
