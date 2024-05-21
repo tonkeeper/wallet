@@ -98,10 +98,8 @@ export class Address {
       allowedDestinations?: string;
     },
   ): Promise<AddressesByVersion> {
-    const tonweb = new TonWeb();
     const addresses = {} as AddressesByVersion;
 
-    const publicKey = Uint8Array.from(Buffer.from(pubkey, 'hex'));
     for (let contractVersion of ContractVersions) {
       if (!lockupConfig && contractVersion === 'lockup-0.1') {
         continue;
