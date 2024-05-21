@@ -393,6 +393,15 @@ export const openSignRawModal = async (
         seqno: await getWalletSeqno(wallet),
       });
 
+      const shouldRelayTransaction = options.experimentalWithBattery
+        ? TransactionService.shouldRelayPayloads(
+            params.messages
+              .map((message) => message.payload)
+              .filter((message) => !!message) as string[],
+            tk.wallet.battery.state.data.supportedTransactions,
+          )
+        : false;
+
       const totalAmount = calculateMessageTransferAmount(params.messages);
       const { emulateResult, battery } = await emulateBoc(
         boc,
@@ -401,7 +410,7 @@ export const openSignRawModal = async (
             new BigNumber(totalAmount).plus(toNano('2').toString()).toString(),
           ),
         ], // Emulate with higher balance to calculate fair amount to send
-        options.experimentalWithBattery,
+        shouldRelayTransaction,
         options.forceRelayerUse,
       );
       consequences = emulateResult;

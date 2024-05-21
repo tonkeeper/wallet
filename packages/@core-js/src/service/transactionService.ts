@@ -12,6 +12,8 @@ import {
 import { Address as AddressFormatter } from '../formatters/Address';
 import { OpCodes, Signer, WalletContract } from './contractService';
 import { SignRawMessage } from '@tonkeeper/mobile/src/core/ModalContainer/NFTOperations/TxRequest.types';
+import { retry } from '@tonkeeper/mobile/src/utils';
+import { BatterySupportedTransaction } from '@tonkeeper/mobile/src/wallet/managers/BatteryManager';
 
 export type AnyAddress = string | Address | AddressFormatter;
 
@@ -93,6 +95,46 @@ export class TransactionService {
         init: TransactionService.parseStateInit(message.stateInit),
       });
     });
+  }
+
+  static shouldRelayPayloads(
+    payloads: string[],
+    supportedTransactions: Record<BatterySupportedTransaction, boolean>,
+  ) {
+    return payloads.every((p) =>
+      TransactionService.shouldRelayPayload(Cell.fromBase64(p), supportedTransactions),
+    );
+  }
+
+  static shouldRelayPayload(
+    payload: Cell,
+    supportedTransactions: Record<BatterySupportedTransaction, boolean>,
+  ) {
+    const slice = payload.beginParse();
+    const opCode = slice.loadUint(32);
+
+    switch (opCode) {
+      case OpCodes.STONFI_SWAP:
+        return supportedTransactions[BatterySupportedTransaction.Swap];
+      case OpCodes.NFT_TRANSFER:
+        if (slice.remainingRefs) {
+          return TransactionService.shouldRelayPayload(
+            slice.loadRef(),
+            supportedTransactions,
+          );
+        }
+        return supportedTransactions[BatterySupportedTransaction.NFT];
+      case OpCodes.JETTON_TRANSFER:
+        if (slice.remainingRefs) {
+          return TransactionService.shouldRelayPayload(
+            slice.loadRef(),
+            supportedTransactions,
+          );
+        }
+        return supportedTransactions[BatterySupportedTransaction.Jetton];
+      default:
+        return false;
+    }
   }
 
   static rebuildBodyWithCustomExcessesAccount(
