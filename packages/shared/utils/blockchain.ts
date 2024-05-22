@@ -9,7 +9,7 @@ export class IndexerLatencyError extends Error {}
 
 export async function sendBoc(boc, attemptWithRelayer = true) {
   const { rest_online, indexing_latency } =
-    (await tk.wallet.tonapi.status.reduceIndexingLatency()) as ServiceStatus;
+    (await tk.wallet.tonapi.status.status()) as ServiceStatus;
 
   if (!rest_online || indexing_latency > TransactionService.TTL - 30) {
     throw new IndexerLatencyError(t('indexer_latency_error'));
