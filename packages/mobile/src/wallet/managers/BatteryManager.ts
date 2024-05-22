@@ -5,6 +5,7 @@ import { State } from '@tonkeeper/core/src/utils/State';
 import { TonProofManager } from '$wallet/managers/TonProofManager';
 import { logger, NamespacedLogger } from '$logger';
 import { config } from '$config';
+import { Alert } from 'react-native';
 
 export enum BatterySupportedTransaction {
   Swap = 'swap',
@@ -205,6 +206,8 @@ export class BatteryManager {
       if (!this.tonProof.tonProofToken) {
         throw new Error('No proof token');
       }
+
+      Alert.alert(JSON.stringify(purchases));
 
       const data = await this.batteryapi.android.androidBatteryPurchase(
         { purchases },
