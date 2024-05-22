@@ -24,6 +24,14 @@ export enum WalletVersion {
   LockupV1 = 4,
 }
 
+export const mappedFromLegacyWalletVersion = {
+  'lockup-0.1': WalletVersion.LockupV1,
+  v3R1: WalletVersion.v3R1,
+  v3R2: WalletVersion.v3R2,
+  v4R1: WalletVersion.v4R1,
+  v4R2: WalletVersion.v4R2,
+};
+
 export const contractVersionsMap = {
   v4R2: WalletVersion.v4R2,
   v4R1: WalletVersion.v4R1,
