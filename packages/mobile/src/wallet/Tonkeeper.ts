@@ -105,6 +105,11 @@ export class Tonkeeper {
     this.walletsStore.persist({
       storage: this.storage,
       key: 'walletsStore',
+      version: 1,
+      onUpdate: (_, prevData) => ({
+        ...prevData,
+        wallets: prevData?.wallets.filter((wallet) => wallet.version) ?? [],
+      }),
     });
 
     this.migrationStore.persist({
@@ -426,6 +431,10 @@ export class Tonkeeper {
     const workchain = Number(rawAddress.split(':')[0]);
 
     const version = versionByAddress[rawAddress] as WalletContractVersion;
+
+    if (!version) {
+      throw new Error('Unknown contract');
+    }
 
     const config: WalletConfig = {
       ...DEFAULT_WALLET_STYLE_CONFIG,
