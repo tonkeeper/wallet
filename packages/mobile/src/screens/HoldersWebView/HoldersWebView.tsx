@@ -215,7 +215,7 @@ export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
         token: tk.wallet.cards.state.data.token,
         status: {
           state: accountState?.state,
-          kycStatus: accountState?.state === 'need-kyc' ? accountState.kycStatus : null,
+          kycStatus: accountState?.state === 'need-kyc' ? accountState?.kycStatus : null,
           suspended: accountState?.suspended || false,
         },
       },
@@ -244,7 +244,7 @@ export const HoldersWebView = memo<HoldersWebViewProps>((props) => {
       initialInjectState: initialState,
     });
   }, [
-    accountState.kycStatus,
+    accountState?.kycStatus,
     accountState?.state,
     accountState?.suspended,
     accountsPrivate,
