@@ -33,6 +33,7 @@ export const mappedFromLegacyWalletVersion = {
   v3R2: WalletVersion.v3R2,
   v4R1: WalletVersion.v4R1,
   v4R2: WalletVersion.v4R2,
+  v5R1: WalletVersion.v5R1,
 };
 
 export const contractVersionsMap = {
