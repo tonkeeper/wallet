@@ -184,6 +184,7 @@ export interface BlockchainBlockShards {
   shards: {
     /** @example "(0,8000000000000000,4234234)" */
     last_known_block_id: string;
+    last_known_block: BlockchainBlock;
   }[];
 }
 
@@ -312,6 +313,7 @@ export interface ComputePhase {
    * @example 0
    */
   exit_code?: number;
+  exit_code_description?: string;
 }
 
 export interface StoragePhase {
@@ -369,6 +371,7 @@ export interface ActionPhase {
    * @example 1000
    */
   total_fees: number;
+  result_code_description?: string;
 }
 
 export interface Transaction {
@@ -394,6 +397,11 @@ export interface Transaction {
    * @example 25713146000001
    */
   total_fees: number;
+  /**
+   * @format int64
+   * @example 25713146000001
+   */
+  end_balance: number;
   transaction_type: TransactionType;
   /** @example "55e8809519cd3c49098c9ee45afdafcea7a894a74d0f628d94a115a50e045122" */
   state_update_old: string;
@@ -1289,6 +1297,13 @@ export interface ImagePreview {
 
 export type NftApprovedBy = NftApprovedByEnum[];
 
+/** @example "whitelist" */
+export enum TrustType {
+  Whitelist = 'whitelist',
+  Blacklist = 'blacklist',
+  None = 'none',
+}
+
 export interface Sale {
   /** @example "0:10C1073837B93FDAAD594284CE8B8EFF7B9CF25427440EB2FC682762E1471365" */
   address: string;
@@ -1323,6 +1338,9 @@ export interface NftItem {
   /** @example "crypto.ton" */
   dns?: string;
   approved_by: NftApprovedBy;
+  /** @example false */
+  include_cnft?: boolean;
+  trust: TrustType;
 }
 
 export interface NftItems {
@@ -1389,6 +1407,7 @@ export interface Action {
   InscriptionMint?: InscriptionMintAction;
   /** shortly describes what this action is about. */
   simple_preview: ActionSimplePreview;
+  base_transactions: string[];
 }
 
 export interface TonTransferAction {
@@ -1817,6 +1836,7 @@ export interface Auctions {
 export interface WalletDNS {
   /** @example "0:da6b1b6663a0e4d18cc8574ccd9db5296e367dd9324706f3bbd9eb1cd2caf0bf" */
   address: string;
+  account: AccountAddress;
   /** @example true */
   is_wallet: boolean;
   /** @example true */
@@ -2051,6 +2071,7 @@ export interface JettonInfo {
   mintable: boolean;
   /** @example 311500000000000 */
   total_supply: string;
+  admin?: AccountAddress;
   metadata: JettonMetadata;
   verification: JettonVerificationType;
   /**
@@ -2068,6 +2089,11 @@ export interface JettonHolders {
     /** @example 1000000000 */
     balance: string;
   }[];
+  /**
+   * @format int64
+   * @example 2000
+   */
+  total: number;
 }
 
 export interface AccountStaking {
@@ -2442,10 +2468,33 @@ export interface GetBlockchainAccountTransactionsParams {
    */
   limit?: number;
   /**
+   * used to sort the result-set in ascending or descending order by lt.
+   * @default "desc"
+   */
+  sort_order?: SortOrderEnum;
+  /**
    * account ID
    * @example "0:97264395BD65A255A429B11326C84128B7D70FFED7949ABAE3036D506BA38621"
    */
   accountId: string;
+}
+
+/**
+ * used to sort the result-set in ascending or descending order by lt.
+ * @default "desc"
+ */
+export enum SortOrderEnum {
+  Desc = 'desc',
+  Asc = 'asc',
+}
+
+/**
+ * used to sort the result-set in ascending or descending order by lt.
+ * @default "desc"
+ */
+export enum GetBlockchainAccountTransactionsParams1SortOrderEnum {
+  Desc = 'desc',
+  Asc = 'asc',
 }
 
 export interface ExecGetMethodForBlockchainAccountParams {
@@ -2686,6 +2735,12 @@ export interface GetAccountEventParams {
 }
 
 export interface GetAccountTracesParams {
+  /**
+   * omit this parameter to get last events
+   * @format int64
+   * @example 25758317000002
+   */
+  before_lt?: number;
   /**
    * @min 1
    * @max 1000
@@ -3403,13 +3458,13 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
 
   status = {
     /**
-     * @description Reduce indexing latency
+     * @description Status
      *
      * @tags Blockchain
-     * @name ReduceIndexingLatency
+     * @name Status
      * @request GET:/v2/status
      */
-    reduceIndexingLatency: (params: RequestParams = {}) =>
+    status: (params: RequestParams = {}) =>
       this.http.request<ServiceStatus, Error>({
         path: `/v2/status`,
         method: 'GET',
@@ -5342,6 +5397,32 @@ export class TonAPIGenerated<SecurityDataType extends unknown> {
         Error
       >({
         path: `/v2/liteserver/get_shard_block_proof/${blockId}`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get out msg queue sizes
+     *
+     * @tags Lite Server
+     * @name GetOutMsgQueueSizes
+     * @request GET:/v2/liteserver/get_out_msg_queue_sizes
+     */
+    getOutMsgQueueSizes: (params: RequestParams = {}) =>
+      this.http.request<
+        {
+          /** @format uint32 */
+          ext_msg_queue_size_limit: number;
+          shards: {
+            id: BlockRaw;
+            /** @format uint32 */
+            size: number;
+          }[];
+        },
+        Error
+      >({
+        path: `/v2/liteserver/get_out_msg_queue_sizes`,
         method: 'GET',
         format: 'json',
         ...params,
