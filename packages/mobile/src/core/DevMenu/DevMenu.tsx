@@ -165,6 +165,10 @@ export const DevMenu: FC = () => {
               <List.Item onPress={handleComponents} title="Components" />
             </>
           )}
+          <List.Item
+            title="Copy wallets info"
+            onPress={copyText(JSON.stringify(tk.walletsStore.data.wallets))}
+          />
         </List>
         {/* <CellSection>
             <PopupSelect

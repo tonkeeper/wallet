@@ -23,6 +23,7 @@ import { AccountsStream } from './streaming';
 import { InteractionManager } from 'react-native';
 import { Biometry } from './Biometry';
 import { Toast } from '@tonkeeper/uikit';
+import { debugLog } from '$utils/debugLog';
 
 type TonkeeperOptions = {
   storage: Storage;
@@ -591,6 +592,8 @@ export class Tonkeeper {
       walletConfig.network === WalletNetwork.testnet,
       walletConfig.version === WalletContractVersion.LockupV1 ? walletConfig : undefined,
     );
+
+    debugLog(`${walletConfig.identifier} addresses`, addresses);
 
     const accountStream =
       walletConfig.network === WalletNetwork.testnet
