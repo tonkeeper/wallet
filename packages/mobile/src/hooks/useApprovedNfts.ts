@@ -9,6 +9,7 @@ import { TrustType } from '@tonkeeper/core/src/TonAPI';
 export interface IBalances {
   enabled: NFTModel[];
   disabled: NFTModel[];
+  spam: NFTModel[];
 }
 export function useApprovedNfts() {
   const accountNfts = useNftsState((s) => s.accountNfts);
@@ -18,6 +19,7 @@ export function useApprovedNfts() {
     const nftBalances: IBalances = {
       enabled: [],
       disabled: [],
+      spam: [],
     };
     Object.values(accountNfts).forEach((item) => {
       const nft = mapNewNftToOldNftData(item, wallet?.address.ton.friendly);
@@ -30,11 +32,13 @@ export function useApprovedNfts() {
         (collectionAddress && approvalStatuses[collectionAddress]) ||
         approvalStatuses[nftAddress];
 
-      if (
-        (isBlacklisted && !approvalStatus) ||
-        approvalStatus?.current === TokenApprovalStatus.Declined
-      ) {
+      if (approvalStatus?.current === TokenApprovalStatus.Declined) {
         nftBalances.disabled.push(nft);
+      } else if (
+        (isBlacklisted && !approvalStatus) ||
+        approvalStatus?.current === TokenApprovalStatus.Spam
+      ) {
+        nftBalances.spam.push(nft);
       } else {
         nftBalances.enabled.push(nft);
       }

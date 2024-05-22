@@ -25,6 +25,11 @@ export const BlueTheme = {
   iconTertiary: '#556170',
   iconPrimaryAlternate: '#10161F',
 
+  buttonOrangeBackground: '#F5A73B',
+  buttonOrangeForeground: '#FFFFFF',
+  buttonOrangeBackgroundHighlighted: '#F5AF4E',
+  buttonOrangeBackgroundDisabled: '#C2842F',
+
   buttonPrimaryBackground: '#45AEF5',
   buttonPrimaryForeground: '#FFFFFF',
   buttonSecondaryBackground: '#1D2633',

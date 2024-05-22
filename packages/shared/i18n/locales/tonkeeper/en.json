@@ -92,6 +92,7 @@
     "blacklisted_token": "Blacklisted token",
     "decline": "Decline",
     "declined": "Hidden",
+    "spam": "Spam",
     "declined_at_collection": "Declined on %{date}",
     "declined_at_token": "Declined on %{date}",
     "details_collection": "Collection details",
@@ -105,6 +106,7 @@
     "move_to_declined": "Move to Declined",
     "move_to_declined_collection": "Hide collection from wallet",
     "move_to_declined_token": "Hide token from wallet",
+    "not_spam": "Not Spam",
     "name": "Name",
     "pending": "Pending",
     "show_all": "Show all",
@@ -1118,6 +1120,46 @@
       "description": "The comment is encrypted by sender and can only be decrypted by you. Please be careful with the content and beware of scams.",
       "button": "Decrypt the comment",
       "checkboxLabel": "Do not show again"
+    }
+  },
+  "nft_actions": {
+    "hide":  {
+      "nft": "Hide NFT",
+      "collection": "Hide Collection"
+    },
+    "hide_and_report": "Hide and Report Spam",
+    "view_on_explorer": "View on Tonviewer"
+  },
+  "suspicious": {
+    "label": {
+      "short": "Suspicious",
+      "full": "Suspicious NFT"
+    },
+    "buttons": {
+      "report": "Report Spam",
+      "not_spam": "Not Spam"
+    },
+    "status_update": {
+      "spam": {
+        "nft": "NFT marked as Spam",
+        "collection": "Collection marked as Spam"
+      },
+      "hidden": {
+        "nft": "NFT hidden",
+        "collection": "Collection hidden"
+      }
+    }
+  },
+  "suspiciousNFTDetails": {
+    "title": "Suspicious NFT",
+    "subtitle": "This NFT looks suspicious for one or several reasons.",
+    "paragraphs": {
+      "p1": "Used for spam. Employed for sending unwanted and often irrelevant messages at scale.",
+      "p2": "Used for scam. NFT's name, description or image can lead users into deception."
+    },
+    "buttons": {
+      "report": "Report Spam",
+      "not_spam": "Not Spam"
     }
   },
   "unverifiedTokenDetails": {

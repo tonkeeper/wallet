@@ -1,6 +1,6 @@
 import { useNftItemByAddress } from '../../query/hooks/useNftItemByAddress';
 import { Steezy, View, Text, Icon, Picture, ListItemContent } from '@tonkeeper/uikit';
-import { NftItem } from '@tonkeeper/core/src/TonAPI';
+import { NftItem, TrustType } from '@tonkeeper/core/src/TonAPI';
 import { Pressable } from 'react-native';
 import { memo, useCallback } from 'react';
 import { t } from '../../i18n';
@@ -13,6 +13,9 @@ import {
 import { HideableImage } from '@tonkeeper/mobile/src/core/HideableAmount/HideableImage';
 import { useHideableAmount } from '@tonkeeper/mobile/src/core/HideableAmount/HideableAmountProvider';
 import Animated, { useAnimatedStyle, interpolate } from 'react-native-reanimated';
+import { Address } from '../../Address';
+import { useTokenApproval } from '../../hooks';
+import { TokenApprovalStatus } from '@tonkeeper/mobile/src/wallet/managers/TokenApprovalManager';
 
 interface NftPreviewContentProps {
   nftAddress?: string;
@@ -26,6 +29,7 @@ export const NftPreviewContent = memo<NftPreviewContentProps>((props) => {
     existingNft: nftItem,
   });
 
+  const approvalStatuses = useTokenApproval((state) => state.tokens);
   const hideableAnimProgress = useHideableAmount();
 
   const hideableAnimStyle = useAnimatedStyle(() => ({
@@ -40,6 +44,11 @@ export const NftPreviewContent = memo<NftPreviewContentProps>((props) => {
   }, [nftAddress, nftItem?.address]);
 
   if (nft) {
+    const approvalIdentifier = Address.parse(
+      nft?.collection?.address ?? nft?.address,
+    ).toRaw();
+    const nftApprovalStatus = approvalStatuses[approvalIdentifier];
+
     return (
       <Pressable
         disabled={props.disabled}
@@ -69,14 +78,28 @@ export const NftPreviewContent = memo<NftPreviewContentProps>((props) => {
               {nft.name}
             </HideableAmount>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <HideableAmount
-                animationDirection={AnimationDirection.Left}
-                variant="body2"
-                color="textSecondary"
-                numberOfLines={1}
-              >
-                {nft.collection?.name || t('nft_single_nft')}
-              </HideableAmount>
+              {nft.trust === TrustType.None ? (
+                <Text
+                  numberOfLines={1}
+                  type="body2"
+                  color={
+                    nftApprovalStatus?.current === TokenApprovalStatus.Approved
+                      ? 'textSecondary'
+                      : 'accentOrange'
+                  }
+                >
+                  {t('suspicious.label.full')}
+                </Text>
+              ) : (
+                <HideableAmount
+                  animationDirection={AnimationDirection.Left}
+                  variant="body2"
+                  color="textSecondary"
+                  numberOfLines={1}
+                >
+                  {nft.collection?.name || t('nft_single_nft')}
+                </HideableAmount>
+              )}
               {nft.approved_by?.length > 0 && (
                 <Animated.View
                   style={[styles.verificationIcon.static, hideableAnimStyle]}

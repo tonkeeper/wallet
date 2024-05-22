@@ -15,7 +15,7 @@ import { Text } from './Text';
 import { ns } from '../utils';
 import { IconNames, Icon, IconColors } from './Icon';
 
-export type ButtonColors = 'green' | 'primary' | 'secondary' | 'tertiary';
+export type ButtonColors = 'green' | 'primary' | 'secondary' | 'tertiary' | 'orange';
 export type ButtonSizes =
   | 'large'
   | 'medium'
@@ -41,6 +41,7 @@ export interface ButtonProps {
   indent?: boolean;
   stretch?: boolean;
   style?: StyleProp<ViewStyle>;
+  buttonStyle?: StyleProp<ViewStyle>;
 }
 
 export const Button = memo<ButtonProps>((props) => {
@@ -61,6 +62,7 @@ export const Button = memo<ButtonProps>((props) => {
     indentTop,
     indent,
     style,
+    buttonStyle: buttonPropsStyle,
   } = props;
 
   const router = useRouter();
@@ -91,9 +93,9 @@ export const Button = memo<ButtonProps>((props) => {
       } else if (disabled) {
         backgroundColor = colorStyle.disable;
       }
-      return [buttonSizeStyle, { backgroundColor }];
+      return [buttonSizeStyle, { backgroundColor }, buttonPropsStyle];
     },
-    [buttonSizeStyle, colorStyle, disabled],
+    [buttonSizeStyle, buttonPropsStyle, colorStyle, disabled],
   );
 
   const handlePress = useCallback(() => {
@@ -275,6 +277,11 @@ const getButtonColors = (theme: Theme) => ({
     highlighted: theme.buttonSecondaryBackgroundHighlighted,
     disable: theme.buttonSecondaryBackgroundDisabled,
     background: theme.buttonSecondaryBackground,
+  },
+  orange: {
+    highlighted: theme.buttonOrangeBackgroundHighlighted,
+    disable: theme.buttonOrangeBackgroundDisabled,
+    background: theme.buttonOrangeBackground,
   },
   tertiary: {
     highlighted: theme.buttonTertiaryBackgroundHighlighted,

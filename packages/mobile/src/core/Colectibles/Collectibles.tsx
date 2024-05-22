@@ -6,6 +6,7 @@ import { useWindowDimensions } from 'react-native';
 import { useApprovedNfts } from '$hooks/useApprovedNfts';
 import { Screen } from '@tonkeeper/uikit';
 import { t } from '@tonkeeper/shared/i18n';
+import { useTokenApproval } from '@tonkeeper/shared/hooks';
 
 const mockupCardSize = {
   width: 114,
@@ -18,6 +19,7 @@ const heightRatio = mockupCardSize.height / mockupCardSize.width;
 export const Collectibles = memo(() => {
   const nfts = useApprovedNfts();
   const dimensions = useWindowDimensions();
+  const approvalStatuses = useTokenApproval((state) => state.tokens);
 
   const size = useMemo(() => {
     const width = (dimensions.width - 48) / numColumn;
@@ -36,7 +38,7 @@ export const Collectibles = memo(() => {
         columnWrapperStyle={styles.columnWrapper.static}
         renderItem={({ item }) => (
           <View style={size}>
-            <NFTCardItem item={item} />
+            <NFTCardItem approvalStatuses={approvalStatuses} item={item} />
           </View>
         )}
       />

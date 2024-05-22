@@ -22,5 +22,5 @@ export const TouchableOpacity = memo<TouchableOpacityProps>((props) => {
     ? GestureHandlerTouchableOpacity
     : NativeTouchableOpacity;
 
-  return <Component {...other} style={style} activeOpacity={0.6} />;
+  return <Component {...other} style={style} activeOpacity={activeOpacity} />;
 });

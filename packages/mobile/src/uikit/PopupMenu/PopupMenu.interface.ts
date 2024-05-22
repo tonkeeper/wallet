@@ -3,6 +3,7 @@ import React, { ReactNode } from 'react';
 export interface PopupMenuProps {
   children: React.ReactElement;
   items: ReactNode[];
+  width?: number;
 }
 
 export interface PopupMenuItemProps {
