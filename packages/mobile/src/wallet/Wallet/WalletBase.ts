@@ -87,8 +87,12 @@ export class WalletBase {
     return this.config.version;
   }
 
-  public isV4() {
+  public get isV4() {
     return this.version === WalletContractVersion.v4R2;
+  }
+
+  public get isW5() {
+    return this.version === WalletContractVersion.v5R1;
   }
 
   public get isLockup() {
@@ -101,6 +105,10 @@ export class WalletBase {
 
   public get isTestnet() {
     return this.network === WalletNetwork.testnet;
+  }
+
+  public get isMnemonic() {
+    return this.config.type === WalletType.Regular;
   }
 
   public get isWatchOnly() {

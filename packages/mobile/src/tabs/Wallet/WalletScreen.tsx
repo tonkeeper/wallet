@@ -21,7 +21,7 @@ import { getLocale } from '$utils/date';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useWallet, useWalletStatus } from '@tonkeeper/shared/hooks';
 import { WalletSelector } from './components/WalletSelector';
-import { MainStackRouteNames } from '$navigation';
+import { AppStackRouteNames, MainStackRouteNames } from '$navigation';
 import { WalletActionButtons } from './components/WalletActionButtons/WalletActionButtons';
 import { WalletContentList } from './components/WalletContentList';
 import { usePreparedWalletContent } from './content-providers/utils/usePreparedWalletContent';
@@ -73,6 +73,10 @@ export const WalletScreen = memo(({ navigation }) => {
 
     wallet.reload();
   }, [wallet]);
+
+  const openW5Stories = useCallback(() => {
+    nav.navigate(AppStackRouteNames.W5StoriesScreen, {});
+  }, [nav]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('tabLongPress', () => {
@@ -130,9 +134,11 @@ export const WalletScreen = memo(({ navigation }) => {
                 </Text>
               </View>
             ) : null}
-            {wallet && wallet.isTestnet ? (
+            {wallet && wallet.isW5 ? (
               <>
-                <Tag type="warning">Testnet</Tag>
+                <TouchableOpacity onPress={openW5Stories}>
+                  <Tag type="positive">W5</Tag>
+                </TouchableOpacity>
               </>
             ) : null}
             {isWatchOnly ? (
@@ -148,6 +154,11 @@ export const WalletScreen = memo(({ navigation }) => {
             {wallet && wallet.isLedger ? (
               <>
                 <Tag type="positive">Ledger</Tag>
+              </>
+            ) : null}
+            {wallet && wallet.isTestnet ? (
+              <>
+                <Tag type="warning">Testnet</Tag>
               </>
             ) : null}
           </View>

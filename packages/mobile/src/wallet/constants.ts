@@ -1,7 +1,6 @@
 import { WalletColor } from '@tonkeeper/uikit/src/utils/walletColor';
 import { WalletContractVersion, WalletStyleConfig } from './WalletTypes';
 import { t } from '@tonkeeper/shared/i18n';
-import { config } from '$config';
 
 export const DEFAULT_WALLET_STYLE_CONFIG: WalletStyleConfig = {
   name: t('wallet_title'),
@@ -9,6 +8,24 @@ export const DEFAULT_WALLET_STYLE_CONFIG: WalletStyleConfig = {
   emoji: 'ic-wallet-32',
 };
 
-export const DEFAULT_WALLET_VERSION = config.get('v5_enabled')
-  ? WalletContractVersion.v5R1
-  : WalletContractVersion.v4R2;
+export const DEFAULT_WALLET_VERSION = WalletContractVersion.v4R2;
+
+export const mapContractVersionToName = (
+  contractVersion: WalletContractVersion,
+): string => {
+  switch (contractVersion) {
+    case WalletContractVersion.LockupV1:
+      return 'lockup-0.1';
+    case WalletContractVersion.v3R1:
+      return 'v3R1';
+    case WalletContractVersion.v3R2:
+      return 'v3R2';
+    case WalletContractVersion.v4R1:
+      return 'v4R1';
+    case WalletContractVersion.v5R1:
+      return 'W5';
+    case WalletContractVersion.v4R2:
+    default:
+      return 'v4R2';
+  }
+};

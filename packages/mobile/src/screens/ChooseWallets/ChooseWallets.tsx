@@ -2,22 +2,36 @@ import {
   ImportWalletStackParamList,
   ImportWalletStackRouteNames,
 } from '$navigation/ImportWalletStack/types';
-import { Checkbox } from '$uikit';
-import { WalletContractVersion } from '$wallet/WalletTypes';
+import { Checkbox, Tag } from '$uikit';
+import { ImportWalletInfo, WalletContractVersion } from '$wallet/WalletTypes';
 import { t } from '@tonkeeper/shared/i18n';
-import { Button, List, Screen, Spacer, Steezy, Text, isAndroid } from '@tonkeeper/uikit';
+import {
+  Button,
+  List,
+  Screen,
+  Spacer,
+  Steezy,
+  Text,
+  TouchableOpacity,
+  View,
+  isAndroid,
+} from '@tonkeeper/uikit';
 import { FC, useCallback, useState } from 'react';
 import { RouteProp } from '@react-navigation/native';
 import { Address } from '@tonkeeper/shared/Address';
 import { formatter } from '@tonkeeper/shared/formatter';
 import { useImportWallet } from '$hooks/useImportWallet';
 import { DEFAULT_WALLET_VERSION } from '$wallet/constants';
+import { useNavigation } from '@tonkeeper/router';
+import { AppStackRouteNames } from '$navigation';
 
 export const ChooseWallets: FC<{
   route: RouteProp<ImportWalletStackParamList, ImportWalletStackRouteNames.ChooseWallets>;
 }> = (props) => {
   const { mnemonic, lockupConfig, isTestnet, walletsInfo, isMigration, onDone } =
     props.route.params;
+
+  const nav = useNavigation();
 
   const doImportWallet = useImportWallet();
 
@@ -68,6 +82,16 @@ export const ChooseWallets: FC<{
     selectedVersions,
   ]);
 
+  const openW5Stories = useCallback(() => {
+    nav.navigate(AppStackRouteNames.W5StoriesScreen, {
+      onPressButton: () => {
+        setSelectedVersions((s) =>
+          s.includes(WalletContractVersion.v5R1) ? s : [...s, WalletContractVersion.v5R1],
+        );
+      },
+    });
+  }, [nav]);
+
   const tokensText = `, ${t('choose_wallets.tokens')}`;
 
   return (
@@ -88,13 +112,34 @@ export const ChooseWallets: FC<{
           {walletsInfo.map((walletInfo) => (
             <List.Item
               key={walletInfo.version}
-              title={Address.parse(walletInfo.address, {
-                bounceable: false,
-                testOnly: isTestnet,
-              }).toShort()}
-              subtitle={`${walletInfo.version} · ${formatter.formatNano(
-                walletInfo.balance,
-              )} TON${walletInfo.tokens ? tokensText : ''}`}
+              title={
+                <View style={styles.titleContainer}>
+                  <Text type="label1">
+                    {Address.parse(walletInfo.address, {
+                      bounceable: false,
+                      testOnly: isTestnet,
+                    }).toShort()}
+                  </Text>
+                  {walletInfo.version === WalletContractVersion.v5R1 ? (
+                    <Tag type="positive">W5</Tag>
+                  ) : null}
+                </View>
+              }
+              subtitle={
+                walletInfo.version === WalletContractVersion.v5R1 &&
+                walletInfo.balance === 0 ? (
+                  <Text type="body2" color="textSecondary">
+                    {t('choose_wallets.w5_subtitle')}{' '}
+                    <Text type="body2" color="accentBlue" onPress={openW5Stories}>
+                      {t('choose_wallets.w5_subtitle_link')}
+                    </Text>
+                  </Text>
+                ) : (
+                  `${walletInfo.version} · ${formatter.formatNano(
+                    walletInfo.balance,
+                  )} TON${walletInfo.tokens ? tokensText : ''}`
+                )
+              }
               rightContent={
                 <Checkbox
                   checked={selectedVersions.includes(walletInfo.version)}
@@ -123,5 +168,9 @@ export const ChooseWallets: FC<{
 const styles = Steezy.create(() => ({
   contentContainer: {
     paddingHorizontal: 32,
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 }));

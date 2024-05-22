@@ -1187,7 +1187,9 @@
     "title": "Choose Wallets",
     "subtitle": "Choose wallets you want to add.",
     "tokens": "tokens",
-    "already_added": "Already added"
+    "already_added": "Already added",
+    "w5_subtitle": "Lower fees, gasless transactions, multi-transfers.",
+    "w5_subtitle_link": "More details"
   },
   "old_wallet_error": "Use wallet with v4R2 version",
   "migration": {
@@ -1330,5 +1332,30 @@
       "minutes": "Exchange will be available in %{count} minutes",
       "seconds": "Exchange will be available in %{count} seconds"
     }
+  },
+  "w5_stories": {
+    "0": {
+      "title": "Reduced Blockchain Fees",
+      "description": "W5 employs a more efficient transaction processing approach, leading to a significant reduction in gas costs. 25% lower fees then v4r2."
+    },
+    "1": {
+      "title": "Support for up to 255 Internal Messages",
+      "description": "W5 enables sending up to 255 internal messages in a single transaction, boosting speed and efficiency."
+    },
+    "2": {
+      "title": "Gasless Transactions for USDT",
+      "description": "Allow users to pay transfer fees directly in USDT instead of TON, eliminating the need to hold TON on their balance."
+    },
+    "3": {
+      "title": "One recovery phrase for W5 and current wallet",
+      "description": "Your old wallet and new W5 are available with your current recovery phrase.",
+      "button": "Add Wallet W5"
+    }
+  },
+  "upgrade_to_w5": {
+    "title": "Upgrade to W5",
+    "description": "Lower blockchain fees, tonless transactions and multi-transfers in the upcoming wallet standard W5. You can use both new and old accounts at the same time.",
+    "add_button": "Add Wallet W5",
+    "more_button": "Learn More"
   }
 }

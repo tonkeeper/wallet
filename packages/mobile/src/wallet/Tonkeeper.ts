@@ -16,13 +16,18 @@ import { createTonApiInstance } from './utils';
 import { Vault } from '@tonkeeper/core';
 import { v4 as uuidv4 } from 'uuid';
 import { Mnemonic } from '@tonkeeper/core/src/utils/mnemonic';
-import { DEFAULT_WALLET_STYLE_CONFIG, DEFAULT_WALLET_VERSION } from './constants';
+import {
+  DEFAULT_WALLET_STYLE_CONFIG,
+  DEFAULT_WALLET_VERSION,
+  mapContractVersionToName,
+} from './constants';
 import { Buffer } from 'buffer';
 import nacl from 'tweetnacl';
 import { AccountsStream } from './streaming';
 import { InteractionManager } from 'react-native';
 import { Biometry } from './Biometry';
 import { Toast } from '@tonkeeper/uikit';
+import { config } from '$config';
 
 type TonkeeperOptions = {
   storage: Storage;
@@ -283,7 +288,7 @@ export class Tonkeeper {
         ...walletConfig,
         name:
           versions.length > 1
-            ? `${this.getNewWalletName()} ${version}`
+            ? `${this.getNewWalletName()} ${mapContractVersionToName(version)}`
             : this.getNewWalletName(),
         version,
         type: WalletType.Regular,
@@ -389,6 +394,19 @@ export class Tonkeeper {
         pubkey,
         version: DEFAULT_WALLET_VERSION,
         address: addresses[DEFAULT_WALLET_VERSION].raw,
+        balance: 0,
+        tokens: false,
+      });
+    }
+
+    if (
+      config.get('v5_enabled') &&
+      !wallets.some((wallet) => wallet.version === WalletContractVersion.v5R1)
+    ) {
+      wallets.push({
+        pubkey,
+        version: WalletContractVersion.v5R1,
+        address: addresses.v5R1.raw,
         balance: 0,
         tokens: false,
       });
@@ -522,7 +540,10 @@ export class Tonkeeper {
 
       newWallets.push({
         ...DEFAULT_WALLET_STYLE_CONFIG,
-        name: versions.length > 1 ? `${walletName} ${version}` : walletName,
+        name:
+          versions.length > 1
+            ? `${walletName} ${mapContractVersionToName(version)}`
+            : walletName,
         identifier,
         network: WalletNetwork.mainnet,
         type: isSignerDeeplink ? WalletType.SignerDeeplink : WalletType.Signer,
@@ -550,6 +571,50 @@ export class Tonkeeper {
     await this.setWallet(walletsInstances[0]);
 
     return walletsInstances.map((item) => item.identifier);
+  }
+
+  public async addWalletV5() {
+    if (!this.wallet) {
+      throw new Error('No active wallet');
+    }
+
+    const version = WalletContractVersion.v5R1;
+
+    const identifier = uuidv4();
+
+    let keyPair: nacl.SignKeyPair | null = null;
+
+    if (this.wallet.isMnemonic) {
+      const {
+        mnemonic,
+        passcode,
+        keyPair: walletKeyPair,
+      } = await this.wallet.signer.getMnemonic();
+
+      keyPair = walletKeyPair;
+
+      await this.vault.import(identifier, mnemonic, passcode);
+    }
+
+    const config: WalletConfig = {
+      ...this.wallet.config,
+      name: this.wallet.config.name.replace(/\s*v\d+R\d+/g, ''),
+      identifier,
+      version,
+    };
+
+    await this.walletsStore.setAsync(({ wallets }) => ({
+      wallets: [...wallets, config],
+    }));
+    const wallet = await this.createWalletInstance(config);
+
+    if (keyPair) {
+      wallet.tonProof.obtainProof(keyPair).then(() => wallet.battery.load());
+    }
+
+    wallet.saveLastBackupTimestamp();
+
+    return wallet.identifier;
   }
 
   public async removeWallet(identifier: string) {
@@ -641,7 +706,7 @@ export class Tonkeeper {
           if (identifiers.includes(wallet.identifier)) {
             const multipleName = this.wallet.isLedger
               ? `${config.name} ${wallet.name.match(/\d+$/)?.[0]}`
-              : `${config.name} ${wallet.version}`;
+              : `${config.name} ${mapContractVersionToName(wallet.version)}`;
 
             return {
               ...wallet,
@@ -741,5 +806,15 @@ export class Tonkeeper {
 
   public async disableLock() {
     await this.walletsStore.setAsync({ lockScreenEnabled: false });
+  }
+
+  public get hasW5WithCurrentPubkey() {
+    if (!this.wallet) {
+      return false;
+    }
+
+    return Array.from(this.wallets.values()).some(
+      (wallet) => wallet.isW5 && wallet.pubkey === this.wallet.pubkey,
+    );
   }
 }

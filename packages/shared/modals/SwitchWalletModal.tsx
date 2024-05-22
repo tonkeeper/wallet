@@ -1,5 +1,14 @@
 import { useNavigation } from '@tonkeeper/router';
-import { Button, Haptics, Icon, List, Modal, Steezy, View } from '@tonkeeper/uikit';
+import {
+  Button,
+  Flash,
+  Haptics,
+  Icon,
+  List,
+  Modal,
+  Steezy,
+  View,
+} from '@tonkeeper/uikit';
 import { FC, memo, useCallback, useMemo } from 'react';
 import { useWalletCurrency, useWallets } from '../hooks';
 import { tk } from '@tonkeeper/mobile/src/wallet';
@@ -9,6 +18,7 @@ import { WalletListItem } from '../components';
 import { HideableAmount } from '@tonkeeper/mobile/src/core/HideableAmount/HideableAmount';
 
 interface Props {
+  withW5Flash?: boolean;
   selected?: string;
   onSelect?: (identifier: string) => void;
 }
@@ -46,27 +56,32 @@ export const SwitchWalletModal: FC<Props> = memo((props) => {
         <Modal.Content safeArea>
           <List>
             {selectableWallets.map((wallet) => (
-              <WalletListItem
+              <Flash
+                disabled={!wallet.isW5 || !props.withW5Flash}
                 key={wallet.identifier}
-                wallet={wallet}
-                onPress={handlePress(wallet.identifier)}
-                subtitle={
-                  <HideableAmount variant="body2" color="textSecondary">
-                    {formatter.format(wallet.totalFiat, { currency })}
-                  </HideableAmount>
-                }
-                rightContent={
-                  selectedIdentifier === wallet.identifier && (
-                    <View style={styles.checkmark}>
-                      <Icon
-                        style={styles.checkmarkIcon.static}
-                        name="ic-donemark-thin-28"
-                        color="accentBlue"
-                      />
-                    </View>
-                  )
-                }
-              />
+              >
+                <WalletListItem
+                  key={wallet.identifier}
+                  wallet={wallet}
+                  onPress={handlePress(wallet.identifier)}
+                  subtitle={
+                    <HideableAmount variant="body2" color="textSecondary">
+                      {formatter.format(wallet.totalFiat, { currency })}
+                    </HideableAmount>
+                  }
+                  rightContent={
+                    selectedIdentifier === wallet.identifier && (
+                      <View style={styles.checkmark}>
+                        <Icon
+                          style={styles.checkmarkIcon.static}
+                          name="ic-donemark-thin-28"
+                          color="accentBlue"
+                        />
+                      </View>
+                    )
+                  }
+                />
+              </Flash>
             ))}
           </List>
           <View style={styles.buttons}>

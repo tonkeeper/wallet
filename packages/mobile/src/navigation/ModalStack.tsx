@@ -44,7 +44,7 @@ import { BlueTheme } from '@tonkeeper/uikit/src/styles/themes/blue';
 import SystemNavigationBar from 'react-native-system-navigation-bar';
 import { RechargeByPromoModal } from '@tonkeeper/shared/modals/ActivityActionModal/RechargeByPromoModal';
 import { BatterySend } from '$core/BatterySend';
-import { SignerConfirmScreen } from '../screens';
+import { SignerConfirmScreen, W5StoriesScreen } from '../screens';
 
 const Stack = createModalStackNavigator(ProvidersWithNavigation);
 
@@ -92,6 +92,10 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={RechargeByPromoModal} path="/recharge-by-promo" />
       <Stack.Modal component={PairLedgerModal} path="/pair-ledger" />
       <Stack.Modal component={BurnVouchersModal} path="/burn-vouchers" />
+      <Stack.Modal
+        component={W5StoriesScreen}
+        path={AppStackRouteNames.W5StoriesScreen}
+      />
     </Stack.Group>
     <Stack.Group behavior="modal">
       <Stack.Modal component={ReceiveModal} path="ReceiveModal" />

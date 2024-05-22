@@ -19,13 +19,17 @@ import { useTheme } from '../../../styles';
 
 import { useSheetInternal } from '@tonkeeper/router';
 import { Easing, ReduceMotion, useReducedMotion } from 'react-native-reanimated';
-import { Handle, InteractionManager } from 'react-native';
+import { Handle, InteractionManager, StyleProp, ViewStyle } from 'react-native';
 
 export type SheetModalRef = BottomSheetModal;
 
 export type SheetModalProps = Omit<DefaultBottomSheetProps, 'snapPoints'> & {
   children?: React.ReactNode;
   alternateBackground?: boolean;
+  backgroundStyle?: StyleProp<ViewStyle>;
+  backdropComponent?: React.ComponentType<BottomSheetBackdropProps>;
+  topInset?: number;
+  enableContentPanningGesture?: boolean;
 };
 
 const ANIMATION_CONFIGS = isIOS
@@ -106,7 +110,7 @@ export const SheetModal = memo(
     return (
       <DefaultBottomSheet
         {...props}
-        backdropComponent={BackdropSheetComponent}
+        backdropComponent={props.backdropComponent ?? BackdropSheetComponent}
         contentHeight={contentHeight}
         handleHeight={handleHeight}
         enablePanDownToClose={true}
@@ -116,16 +120,19 @@ export const SheetModal = memo(
         animationConfigs={ANIMATION_CONFIGS}
         snapPoints={snapPoints}
         handleComponent={null}
-        topInset={topInset}
+        topInset={props.topInset ?? topInset}
         animateOnMount={!isAndroid || !reduceMotion}
+        enableContentPanningGesture={props.enableContentPanningGesture}
         index={index}
         ref={setRef}
-        backgroundStyle={{
-          borderRadius: 18,
-          backgroundColor: props.alternateBackground
-            ? theme.backgroundPageAlternate
-            : theme.backgroundPage,
-        }}
+        backgroundStyle={
+          props.backgroundStyle ?? {
+            borderRadius: 18,
+            backgroundColor: props.alternateBackground
+              ? theme.backgroundPageAlternate
+              : theme.backgroundPage,
+          }
+        }
       >
         {props.children}
       </DefaultBottomSheet>
