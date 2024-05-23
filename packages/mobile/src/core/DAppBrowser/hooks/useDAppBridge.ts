@@ -17,6 +17,7 @@ import {
 } from '$store';
 import { tk } from '$wallet';
 import { ConnectEventError } from '$tonconnect/ConnectEventError';
+import { TCEventID } from '$tonconnect/EventID';
 
 export const useDAppBridge = (walletAddress: string, webViewUrl: string) => {
   const [connectEvent, setConnectEvent] = useState<ConnectEvent | null>(null);
@@ -96,7 +97,7 @@ export const useDAppBridge = (walletAddress: string, webViewUrl: string) => {
   const disconnect = useCallback(async () => {
     try {
       await TonConnect.disconnect(webViewUrl);
-      sendEvent({ event: 'disconnect', payload: {} });
+      sendEvent({ event: 'disconnect', id: TCEventID.getId(), payload: {} });
     } catch {}
   }, [webViewUrl, sendEvent]);
 

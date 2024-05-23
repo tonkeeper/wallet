@@ -28,6 +28,7 @@ import {
   SEND_TRANSACTION_ERROR_CODES,
   SessionCrypto,
   WalletResponse,
+  CHAIN,
 } from '@tonconnect/protocol';
 import axios from 'axios';
 import FastImage from 'react-native-fast-image';
@@ -42,6 +43,8 @@ import { tk } from '$wallet';
 import { TonConnectRemoteBridge } from './TonConnectRemoteBridge';
 import { WithWalletIdentifier } from '$wallet/WalletTypes';
 import { getDomainFromURL } from '$utils';
+import { Address } from '@tonkeeper/core';
+import { t } from '@tonkeeper/shared/i18n';
 
 class TonConnectService {
   checkProtocolVersionCapability(protocolVersion: number) {
@@ -293,7 +296,7 @@ class TonConnectService {
     connection: WithWalletIdentifier<IConnectedAppConnection>,
   ): Promise<WalletResponse<'sendTransaction'>> {
     try {
-      const params = JSON.parse(request.params[0]) as SignRawParams;
+      const params = JSON.parse(request.params[0]);
 
       const isValidRequest =
         params &&
@@ -301,7 +304,17 @@ class TonConnectService {
         Array.isArray(params.messages) &&
         params.messages.every((msg) => !!msg.address && !!msg.amount);
 
+      const walletNetwork = tk.wallet.isTestnet ? CHAIN.TESTNET : CHAIN.MAINNET;
+
+      const isValidNetwork = params.network ? params.network === walletNetwork : true;
+
+      const isValidFrom = params.from
+        ? Address.compare(params.from, tk.wallet.address.ton.raw)
+        : true;
+
       if (!isValidRequest) {
+        Toast.fail(t('tonconnect_error.bad_request'));
+
         throw new SendTransactionError(
           request.id,
           SEND_TRANSACTION_ERROR_CODES.BAD_REQUEST_ERROR,
@@ -309,9 +322,29 @@ class TonConnectService {
         );
       }
 
+      if (!isValidNetwork) {
+        Toast.fail(t('tonconnect_error.wrong_network'));
+
+        throw new SendTransactionError(
+          request.id,
+          SEND_TRANSACTION_ERROR_CODES.BAD_REQUEST_ERROR,
+          'Wrong network',
+        );
+      }
+
+      if (!isValidFrom) {
+        Toast.fail(t('tonconnect_error.wrong_from'));
+
+        throw new SendTransactionError(
+          request.id,
+          SEND_TRANSACTION_ERROR_CODES.BAD_REQUEST_ERROR,
+          'Wrong "from" parameter',
+        );
+      }
+
       const { valid_until, messages } = params;
 
-      if (valid_until < getTimeSec()) {
+      if (valid_until && valid_until < getTimeSec()) {
         throw new SendTransactionError(
           request.id,
           SEND_TRANSACTION_ERROR_CODES.BAD_REQUEST_ERROR,
