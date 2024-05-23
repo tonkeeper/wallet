@@ -96,7 +96,13 @@ export const SlideButton = memo<SlideButtonProps>((props) => {
           translateX: withRepeat(
             withSequence(
               withTiming(startX, { duration: 0 }),
-              withTiming(endX, { duration: 2000, easing: Easing.linear }),
+              withDelay(
+                1500,
+                withTiming(endX, {
+                  duration: 1000,
+                  easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+                }),
+              ),
             ),
             -1,
           ),
