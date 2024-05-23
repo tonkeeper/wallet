@@ -314,6 +314,7 @@ const Indicator: FC<{ index: number; indicatorsValues: DerivedValue<number[]> }>
   const animatedStyle = useAnimatedStyle(() => ({
     flex: 1,
     backgroundColor: '#FFF',
+    borderRadius: 2,
     width: (indicatorsValues.value[index] * 100 + '%') as `${number}%`,
   }));
 

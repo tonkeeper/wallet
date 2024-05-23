@@ -411,6 +411,14 @@ export class Tonkeeper {
         balance: 0,
         tokens: false,
       });
+    } else {
+      const v5Index = wallets.findIndex(
+        (wallet) => wallet.version === WalletContractVersion.v5R1,
+      );
+
+      if (v5Index !== -1) {
+        wallets.splice(v5Index, 1);
+      }
     }
 
     const versions = Object.values(WalletContractVersion);

@@ -129,7 +129,8 @@ export const ChooseWallets: FC<{
               }
               subtitle={
                 walletInfo.version === WalletContractVersion.v5R1 &&
-                walletInfo.balance === 0 ? (
+                walletInfo.balance === 0 &&
+                walletInfo.tokens ? (
                   <View>
                     <Text type="body2" color="textSecondary">
                       {t('choose_wallets.w5_subtitle')}{' '}
