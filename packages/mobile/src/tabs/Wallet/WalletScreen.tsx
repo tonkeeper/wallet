@@ -198,6 +198,7 @@ export const WalletScreen = memo(({ navigation }) => {
         handleRefresh={handleRefresh}
         isRefreshing={isRefreshing}
         isFocused={isFocused}
+        identifier={wallet.identifier}
       />
     </Screen>
   );
