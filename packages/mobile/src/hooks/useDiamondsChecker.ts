@@ -1,5 +1,6 @@
 import { mainActions } from '$store/main';
-import { AccentKey, AppearanceAccents } from '$styled';
+import { NFTModel, TonDiamondMetadata } from '$store/models';
+import { AccentKey, getAccentIdByDiamondsNFT } from '$styled';
 import { useNftsState } from '@tonkeeper/shared/hooks';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
@@ -10,10 +11,12 @@ export const useDiamondsChecker = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const accent =
-      Object.values(AppearanceAccents).find(
-        (item) => item.colors.accentPrimary === selectedDiamond?.metadata.theme.main,
-      )?.id ?? AccentKey.default;
+    const accent = selectedDiamond
+      ? getAccentIdByDiamondsNFT(
+          selectedDiamond as unknown as NFTModel<TonDiamondMetadata>,
+        )
+      : AccentKey.default;
+    console.log('accent', accent);
     dispatch(mainActions.setAccent(accent));
     dispatch(
       mainActions.setTonCustomIcon(
