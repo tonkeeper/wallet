@@ -3,7 +3,7 @@ import {
   ImportWalletStackRouteNames,
 } from '$navigation/ImportWalletStack/types';
 import { Checkbox, Tag } from '$uikit';
-import { ImportWalletInfo, WalletContractVersion } from '$wallet/WalletTypes';
+import { WalletContractVersion } from '$wallet/WalletTypes';
 import { t } from '@tonkeeper/shared/i18n';
 import {
   Button,
@@ -24,6 +24,8 @@ import { useImportWallet } from '$hooks/useImportWallet';
 import { DEFAULT_WALLET_VERSION } from '$wallet/constants';
 import { useNavigation } from '@tonkeeper/router';
 import { AppStackRouteNames } from '$navigation';
+
+const w5ButtonHitSlop = { top: 10, right: 10, bottom: 10, left: 10 };
 
 export const ChooseWallets: FC<{
   route: RouteProp<ImportWalletStackParamList, ImportWalletStackRouteNames.ChooseWallets>;
@@ -127,13 +129,17 @@ export const ChooseWallets: FC<{
               }
               subtitle={
                 walletInfo.version === WalletContractVersion.v5R1 &&
-                walletInfo.balance === 0 ? (
-                  <Text type="body2" color="textSecondary">
-                    {t('choose_wallets.w5_subtitle')}{' '}
-                    <Text type="body2" color="accentBlue" onPress={openW5Stories}>
-                      {t('choose_wallets.w5_subtitle_link')}
+                walletInfo.balance !== 0 ? (
+                  <View>
+                    <Text type="body2" color="textSecondary">
+                      {t('choose_wallets.w5_subtitle')}{' '}
                     </Text>
-                  </Text>
+                    <TouchableOpacity onPress={openW5Stories} hitSlop={w5ButtonHitSlop}>
+                      <Text type="body2" color="accentBlue">
+                        {t('choose_wallets.w5_subtitle_link')}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
                 ) : (
                   `${walletInfo.version} · ${formatter.formatNano(
                     walletInfo.balance,

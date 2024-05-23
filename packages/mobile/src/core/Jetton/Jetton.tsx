@@ -213,6 +213,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
           ]}
         />
         {Address.compare(config.get('usdt_jetton_master'), jetton.metadata.address) &&
+        tk.wallet.isMnemonic &&
         !tk.hasW5WithCurrentPubkey ? (
           <View style={styles.upgradeContainer}>
             <View style={styles.updateBackground} />

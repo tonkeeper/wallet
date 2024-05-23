@@ -359,7 +359,7 @@ export class Tonkeeper {
     );
   }
 
-  public async getWalletsInfo(pubkey: string, isTestnet: boolean) {
+  public async getWalletsInfo(pubkey: string, isTestnet: boolean, isMnemonic = false) {
     const tonapi = isTestnet ? this.tonapi.testnet : this.tonapi.mainnet;
 
     const [{ accounts }, addresses] = await Promise.all([
@@ -405,6 +405,7 @@ export class Tonkeeper {
     }
 
     if (
+      isMnemonic &&
       config.get('v5_enabled') &&
       !wallets.some((wallet) => wallet.version === WalletContractVersion.v5R1)
     ) {
@@ -431,7 +432,7 @@ export class Tonkeeper {
 
     const pubkey = Buffer.from(keyPair.publicKey).toString('hex');
 
-    return await this.getWalletsInfo(pubkey, isTestnet);
+    return await this.getWalletsInfo(pubkey, isTestnet, true);
   }
 
   public async addWatchOnlyWallet(address: string, name?: string) {

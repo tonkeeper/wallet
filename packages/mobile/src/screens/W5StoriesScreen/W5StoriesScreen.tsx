@@ -18,14 +18,17 @@ export const W5StoriesScreen = memo((props: Props) => {
         {
           title: t('w5_stories.0.title'),
           description: t('w5_stories.0.description'),
+          image: require('./images/fees.png'),
         },
         {
           title: t('w5_stories.1.title'),
           description: t('w5_stories.1.description'),
+          image: require('./images/messages.png'),
         },
         {
           title: t('w5_stories.2.title'),
           description: t('w5_stories.2.description'),
+          image: require('./images/usdt.png'),
         },
 
         {

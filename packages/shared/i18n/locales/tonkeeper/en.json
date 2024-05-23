@@ -153,7 +153,7 @@
     },
     "refilled": "Battery refilled",
     "screen_title": "Battery",
-    "settings": "Battery %{betaLabel}",
+    "settings": "Battery",
     "ok": "OK",
     "title": "Tonkeeper Battery",
     "description": {
@@ -1188,8 +1188,8 @@
     "subtitle": "Choose wallets you want to add.",
     "tokens": "tokens",
     "already_added": "Already added",
-    "w5_subtitle": "Lower fees, gasless transactions, multi-transfers.",
-    "w5_subtitle_link": "More details"
+    "w5_subtitle": "Lower blockchain fees, gasless transactions and multi-transfers.",
+    "w5_subtitle_link": "Learn more"
   },
   "old_wallet_error": "Use wallet with v4R2 version",
   "migration": {
@@ -1336,25 +1336,26 @@
   "w5_stories": {
     "0": {
       "title": "Reduced Blockchain Fees",
-      "description": "W5 employs a more efficient transaction processing approach, leading to a significant reduction in gas costs. 25% lower fees then v4r2."
+      "description": "W5 employs a more efficient transaction processing approach, leading to a significant reduction in gas costs. 25% lower fees then v4R2."
     },
     "1": {
-      "title": "Support for up to 255 Internal Messages",
-      "description": "W5 enables sending up to 255 internal messages in a single transaction, boosting speed and efficiency."
+      "title": "Up to 255 operations in one transaction",
+      "description": "W5 increases number of simultaneous operations from 4 to 255, letting you save on fees."
     },
     "2": {
-      "title": "Gasless Transactions for USDT",
-      "description": "Allow users to pay transfer fees directly in USDT instead of TON, eliminating the need to hold TON on their balance."
+      "title": "Gasless USDT Transactions",
+      "description": "Send USDT without having TONs: your transaction fees will be covered by a few cents of USD₮  automatically."
     },
     "3": {
-      "title": "One recovery phrase for W5 and current wallet",
-      "description": "Your old wallet and new W5 are available with your current recovery phrase.",
+      "title": "Recovery phrase does not change",
+      "description": "Your old account and new W5 account use the same recovery phrase: when you restore your accounts on a new device, both old and new will appear automatically.",
       "button": "Add Wallet W5"
     }
   },
   "upgrade_to_w5": {
+    "settings": "Wallet W5",
     "title": "Upgrade to W5",
-    "description": "Lower blockchain fees, tonless transactions and multi-transfers in the upcoming wallet standard W5. You can use both new and old accounts at the same time.",
+    "description": "Lower blockchain fees, gasless transactions and multi-transfers in the upcoming wallet standard W5. You can use both new and old wallet at the same time.",
     "add_button": "Add Wallet W5",
     "more_button": "Learn More"
   }
