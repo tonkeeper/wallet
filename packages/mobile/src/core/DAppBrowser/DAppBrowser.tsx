@@ -1,6 +1,6 @@
 import { useDeeplinking } from '$libs/deeplinking';
 import { openDAppsSearch } from '$navigation';
-import { getCorrectUrl, getSearchQuery, getUrlWithoutTonProxy, isIOS } from '$utils';
+import { getCorrectUrl, getSearchQuery, getUrlWithoutTonProxy } from '$utils';
 import React, { FC, memo, useCallback, useState } from 'react';
 import { Linking, StatusBar, useWindowDimensions } from 'react-native';
 import { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
@@ -16,10 +16,11 @@ import { useDAppBridge } from './hooks/useDAppBridge';
 import { useWallet } from '@tonkeeper/shared/hooks';
 import { Address } from '@tonkeeper/shared/Address';
 import { config } from '$config';
-import { Screen, isAndroid, useTheme } from '@tonkeeper/uikit';
+import { Screen, useTheme } from '@tonkeeper/uikit';
 
 export interface DAppBrowserProps {
   url: string;
+  persistentQueryParams?: string;
 }
 
 const TONKEEPER_UTM = 'utm_source=tonkeeper';
@@ -30,12 +31,31 @@ const addUtmToUrl = (url: string) => {
   return `${url}${startChar}${TONKEEPER_UTM}`;
 };
 
+const addPersistentQueryParamsIfNeeded = (
+  url: string,
+  persistentQueryParams?: string,
+) => {
+  if (!persistentQueryParams) {
+    return url;
+  }
+  const startChar = url.includes('?') ? '&' : '?';
+
+  return `${url}${startChar}${persistentQueryParams}`;
+};
+
+const removeQueryParamsFromUrl = (url: string, params?: string) => {
+  if (!params) {
+    return url;
+  }
+  return url.replace(new RegExp(`[?|&]${params}`), '');
+};
+
 const removeUtmFromUrl = (url: string) => {
-  return url.replace(new RegExp(`[?|&]${TONKEEPER_UTM}`), '');
+  return removeQueryParamsFromUrl(url, TONKEEPER_UTM);
 };
 
 const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
-  const { url: initialUrl } = props;
+  const { url: initialUrl, persistentQueryParams } = props;
 
   const wallet = useWallet();
   const walletAddress = wallet
@@ -49,7 +69,9 @@ const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
 
   const [currentUrl, setCurrentUrl] = useState(getCorrectUrl(initialUrl));
 
-  const [webViewSource, setWebViewSource] = useState({ uri: addUtmToUrl(currentUrl) });
+  const [webViewSource, setWebViewSource] = useState({
+    uri: addPersistentQueryParamsIfNeeded(addUtmToUrl(currentUrl), persistentQueryParams),
+  });
 
   const app = useAppInfo(walletAddress, currentUrl);
 
@@ -86,9 +108,16 @@ const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
       progress.value = withTiming(e.nativeEvent.progress);
 
       setTitle(e.nativeEvent.title);
-      setCurrentUrl(getUrlWithoutTonProxy(removeUtmFromUrl(e.nativeEvent.url)));
+      setCurrentUrl(
+        getUrlWithoutTonProxy(
+          removeQueryParamsFromUrl(
+            removeUtmFromUrl(e.nativeEvent.url),
+            persistentQueryParams,
+          ),
+        ),
+      );
     },
-    [progress],
+    [persistentQueryParams, progress],
   );
 
   const handleNavigationStateChange = useCallback((e: WebViewNavigation) => {
@@ -96,8 +125,14 @@ const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
   }, []);
 
   const openUrl = useCallback(
-    (url: string) => setWebViewSource({ uri: addUtmToUrl(getCorrectUrl(url)) }),
-    [],
+    (url: string) =>
+      setWebViewSource({
+        uri: addPersistentQueryParamsIfNeeded(
+          addUtmToUrl(getCorrectUrl(url)),
+          persistentQueryParams,
+        ),
+      }),
+    [persistentQueryParams],
   );
 
   const handleOpenExternalLink = useCallback(

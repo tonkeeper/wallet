@@ -4,6 +4,8 @@ import { t } from '../../i18n';
 import { getPendingPurchasesIOS, finishTransaction } from 'react-native-iap';
 import { Platform } from 'react-native';
 import { tk } from '@tonkeeper/mobile/src/wallet';
+import { openDAppBrowser } from '@tonkeeper/mobile/src/navigation';
+import { config } from '@tonkeeper/mobile/src/config';
 
 export const RestorePurchases = memo(() => {
   const handleRestorePurchases = useCallback(async () => {
@@ -45,19 +47,50 @@ export const RestorePurchases = memo(() => {
     }
   }, []);
 
+  const openRefundsDApp = useCallback(() => {
+    openDAppBrowser(
+      config.get('batteryRefundEndpoint'),
+      `token=${encodeURIComponent(tk.wallet.tonProof.tonProofToken)}` +
+        `&testnet=${tk.wallet.isTestnet}`,
+    );
+  }, []);
+
   return (
-    <Text style={styles.text.static} type="body2" textAlign="center" color="textTertiary">
-      {t('battery.packages.disclaimer')}{' '}
+    <>
       <Text
-        onPress={handleRestorePurchases}
+        style={styles.text.static}
         type="body2"
         textAlign="center"
-        color="textSecondary"
+        color="textTertiary"
       >
-        {t('battery.packages.restore')}
+        {t('battery.packages.disclaimer')}{' '}
+        <Text
+          onPress={handleRestorePurchases}
+          type="body2"
+          textAlign="center"
+          color="textSecondary"
+        >
+          {t('battery.packages.restore')}
+        </Text>
+        .
       </Text>
-      .
-    </Text>
+      <Text
+        style={styles.text.static}
+        type="body2"
+        textAlign="center"
+        color="textTertiary"
+      >
+        <Text
+          onPress={openRefundsDApp}
+          type="body2"
+          textAlign="center"
+          color="textSecondary"
+        >
+          {t('battery.packages.refund')}
+        </Text>
+        .
+      </Text>
+    </>
   );
 });
 

@@ -48,8 +48,8 @@ export function openDAppsSearch(
   navigate(AppStackRouteNames.DAppsSearch, { initialQuery, onOpenUrl });
 }
 
-export function openDAppBrowser(url: string) {
-  const params = { url };
+export function openDAppBrowser(url: string, persistentQueryParams?: string) {
+  const params = { url, persistentQueryParams };
   if (getCurrentRoute()?.name === AppStackRouteNames.DAppsSearch) {
     replace(AppStackRouteNames.DAppBrowser, params);
   } else {

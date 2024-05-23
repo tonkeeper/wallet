@@ -48,6 +48,7 @@ export type AppConfigVars = {
 
   batteryHost: string;
   batteryTestnetHost: string;
+  batteryRefundEndpoint: string;
   batteryMeanFees: string;
   batteryReservedAmount: string;
   batteryMaxInputAmount: string;
@@ -107,6 +108,7 @@ const defaultConfig: Partial<AppConfigVars> = {
 
   batteryHost: 'https://battery.tonkeeper.com',
   batteryTestnetHost: 'https://testnet-battery.tonkeeper.com',
+  batteryRefundEndpoint: 'https://battery-refund-app.vercel.app',
   batteryMeanFees: '0.0055',
   batteryReservedAmount: '0.3',
   batteryMaxInputAmount: '3',
