@@ -260,10 +260,15 @@ export class Tonkeeper {
 
   public async createWallet(passcode: string) {
     const mnemonic = (await Mnemonic.generateMnemonic(24)).join(' ');
-    return await this.importWallet(mnemonic, passcode, [DEFAULT_WALLET_VERSION], {
-      workchain: 0,
-      network: WalletNetwork.mainnet,
-    });
+    return await this.importWallet(
+      mnemonic,
+      passcode,
+      [config.get('v5_enabled') ? WalletContractVersion.v5R1 : DEFAULT_WALLET_VERSION],
+      {
+        workchain: 0,
+        network: WalletNetwork.mainnet,
+      },
+    );
   }
 
   public async importWallet(
