@@ -25,6 +25,11 @@ export const DarkTheme = {
   iconTertiary: '#4E4E52',
   iconPrimaryAlternate: '#000000',
 
+  buttonOrangeBackground: '#F5A73B',
+  buttonOrangeForeground: '#FFFFFF',
+  buttonOrangeBackgroundHighlighted: '#F5AF4E',
+  buttonOrangeBackgroundDisabled: '#C2842F',
+
   buttonPrimaryBackground: '#45AEF5',
   buttonPrimaryForeground: '#FFFFFF',
   buttonSecondaryBackground: '#1B1B1F',
