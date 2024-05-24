@@ -212,15 +212,20 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
 
   const handleNewApproveStatus = useCallback(
     (approvalStatus: TokenApprovalStatus) => () => {
-      const address = nft.collection?.address ?? nft.address;
+      const address = Address.parse(nft.collection?.address ?? nft.address).toRaw();
 
       tk.wallet.tokenApproval.updateTokenStatus(
-        Address.parse(address).toRaw(),
+        address,
         approvalStatus,
         nft.collection ? TokenApprovalType.Collection : TokenApprovalType.Token,
       );
 
       if (approvalStatus === TokenApprovalStatus.Spam) {
+        if (!tk.wallet.isTestnet) {
+          fetch(`${config.get('scamEndpoint')}/${address}`, {
+            method: 'POST',
+          }).catch((e) => console.warn(e));
+        }
         Toast.success(
           t(`suspicious.status_update.spam.${nft.collection ? 'collection' : 'nft'}`),
         );

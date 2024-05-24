@@ -55,6 +55,8 @@ export type AppConfigVars = {
   batteryMeanPrice_jetton: string;
   batteryMeanPrice_nft: string;
 
+  scamEndpoint: string;
+
   holdersAppEndpoint: string;
   holdersService: string;
   aptabaseEndpoint: string;
@@ -120,6 +122,8 @@ const defaultConfig: Partial<AppConfigVars> = {
   disable_battery_promo_module: true,
   disable_battery_crypto_recharge_module: false,
   disable_signer: true,
+
+  scamEndpoint: 'https://scam.tonkeeper.com',
 
   telegram_global: 'https://t.me/tonkeeper_news',
   telegram_ru: 'https://t.me/tonkeeper_ru',

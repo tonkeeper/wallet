@@ -1300,6 +1300,7 @@ export type NftApprovedBy = NftApprovedByEnum[];
 /** @example "whitelist" */
 export enum TrustType {
   Whitelist = 'whitelist',
+  Graylist = 'graylist',
   Blacklist = 'blacklist',
   None = 'none',
 }

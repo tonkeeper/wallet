@@ -4,9 +4,10 @@ import { NFTCardItem } from './NFTCardItem';
 import { Steezy } from '$styles';
 import { useWindowDimensions } from 'react-native';
 import { useApprovedNfts } from '$hooks/useApprovedNfts';
-import { Screen } from '@tonkeeper/uikit';
+import { Icon, Screen, TouchableOpacity } from '@tonkeeper/uikit';
 import { t } from '@tonkeeper/shared/i18n';
 import { useTokenApproval } from '@tonkeeper/shared/hooks';
+import { openManageTokens } from '$navigation';
 
 const mockupCardSize = {
   width: 114,
@@ -30,7 +31,18 @@ export const Collectibles = memo(() => {
 
   return (
     <Screen>
-      <Screen.LargeHeader title={t('tab_collectibles')} />
+      <Screen.LargeHeader
+        rightContent={
+          <TouchableOpacity
+            onPress={() => openManageTokens('collectibles')}
+            activeOpacity={0.24}
+            style={styles.rightNavButton}
+          >
+            <Icon color="iconPrimary" name={'ic-sliders-16'} />
+          </TouchableOpacity>
+        }
+        title={t('tab_collectibles')}
+      />
       <Screen.FlashList
         contentContainerStyle={styles.collectiblesContainer.static}
         data={nfts.enabled}
@@ -46,7 +58,7 @@ export const Collectibles = memo(() => {
   );
 });
 
-const styles = Steezy.create({
+const styles = Steezy.create(({ colors }) => ({
   collectiblesContainer: {
     marginHorizontal: 16,
     gap: 8,
@@ -58,4 +70,13 @@ const styles = Steezy.create({
   columnWrapper: {
     gap: 8,
   },
-});
+  rightNavButton: {
+    marginTop: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 32,
+    width: 32,
+    borderRadius: 16,
+    backgroundColor: colors.buttonSecondaryBackground,
+  },
+}));
