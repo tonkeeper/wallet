@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   CurrencyAdditionalParams,
   InscriptionAdditionalParams,
@@ -32,6 +32,8 @@ import {
 import { t } from '@tonkeeper/shared/i18n';
 import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
 import { getRawTimeFromLiteserverSafely } from '@tonkeeper/shared/utils/blockchain';
+import { JettonBalanceModel } from '$wallet/models/JettonBalanceModel';
+import { useExternalState } from '@tonkeeper/shared/hooks/useExternalState';
 
 export interface SendCoreInitialParams {
   fee: string;
@@ -51,16 +53,50 @@ export interface SendCoreParams {
   expiryTimestamp?: number | null;
 }
 
+export interface CustomFeeCurrency {
+  decimals: number;
+  symbol?: string;
+  jetton_master: string;
+}
+
+export interface EmulateResult {
+  customFeeCurrency?: CustomFeeCurrency;
+  fee: string;
+  battery: boolean;
+  gasless?: boolean;
+  supportsGasless?: boolean;
+  feeJetton?: JettonBalanceModel;
+  isForcedGasless?: boolean;
+}
+
 export const useSendCore = (
   params: SendCoreParams,
   initialParams: SendCoreInitialParams,
 ) => {
+  const [customFeeCurrency, setCustomFeeCurrency] = useState<
+    CustomFeeCurrency | undefined
+  >(undefined);
   const [fee, setFee] = useState(initialParams.fee);
 
   const [isPreparing, setPreparing] = useState(false);
   const [isSending, setSending] = useState(false);
 
-  const [isBattery, setBattery] = useState(initialParams.isBattery);
+  const [relayerSendModes, setRelayerSendModes] = useState<{
+    isBattery: boolean;
+    isGasless: boolean;
+    isForcedGasless?: boolean;
+    supportsGasless?: boolean;
+  }>({
+    isBattery: initialParams.isBattery,
+    isForcedGasless: false,
+    isGasless: false,
+    supportsGasless: false,
+  });
+
+  const preferGasless = useExternalState(
+    tk.wallet.battery.state,
+    (state) => state.preferGasless,
+  );
 
   const estimateFee = useCallback(async () => {
     setPreparing(true);
@@ -85,7 +121,7 @@ export const useSendCore = (
         payload = comment(params.comment);
       }
 
-      let emulateResult: { fee: string; battery: boolean } | undefined;
+      let emulateResult: EmulateResult;
       if (params.tokenType === TokenType.TON) {
         emulateResult = await estimateTonTransferFee({
           recipient: params.recipient.address,
@@ -99,6 +135,7 @@ export const useSendCore = (
         );
 
         emulateResult = await estimateJettonTransferFee({
+          preferGasless,
           recipient: params.recipient.address,
           sendAmountNano: BigInt(toNano(parsedAmount, jetton?.metadata.decimals ?? 9)),
           jetton: jetton!,
@@ -126,8 +163,19 @@ export const useSendCore = (
         throw new Error('Failed to estimate fee');
       }
 
-      setFee(formatter.fromNano(emulateResult.fee));
-      setBattery(emulateResult.battery);
+      setCustomFeeCurrency(emulateResult.customFeeCurrency);
+      setFee(
+        formatter.fromNano(
+          emulateResult.fee,
+          emulateResult.gasless ? emulateResult.customFeeCurrency!.decimals : 9,
+        ),
+      );
+      setRelayerSendModes({
+        isBattery: emulateResult.battery,
+        isGasless: emulateResult.gasless ?? false,
+        supportsGasless: emulateResult.supportsGasless ?? false,
+        isForcedGasless: emulateResult.isForcedGasless ?? false,
+      });
       setPreparing(false);
       params.goTo(SendSteps.CONFIRM);
     } catch (error) {
@@ -135,11 +183,11 @@ export const useSendCore = (
         Toast.fail(error.message);
       }
       setFee('');
-      setBattery(false);
+      setRelayerSendModes({ isBattery: false, isGasless: false, supportsGasless: false });
     } finally {
       setPreparing(false);
     }
-  }, [params]);
+  }, [params, preferGasless]);
 
   const sendBoc = useCallback(
     async (onDone: () => void, onFail: (e?: Error) => void) => {
@@ -161,12 +209,12 @@ export const useSendCore = (
           return onFail(new CanceledActionError());
         }
 
-        const recipientPubKey = (
-          await tk.wallet.tonapi.accounts.getAccountPublicKey(params.recipient.address)
-        ).public_key;
-
         let payload: Cell | undefined;
         if (params.isCommentEncrypted) {
+          const recipientPubKey = (
+            await tk.wallet.tonapi.accounts.getAccountPublicKey(params.recipient.address)
+          ).public_key;
+
           payload = await encryptMessageComment(
             params.comment,
             Buffer.from(tk.wallet.pubkey, 'hex'),
@@ -197,7 +245,8 @@ export const useSendCore = (
 
           await sendJettonBoc({
             recipient: params.recipient.address,
-            shouldAttemptWithRelayer: isBattery,
+            shouldAttemptWithRelayer:
+              relayerSendModes.isGasless || relayerSendModes.isBattery,
             jettonTransferAmount: totalAmount,
             sendAmountNano: BigInt(toNano(parsedAmount, jetton?.metadata.decimals ?? 9)),
             jetton: jetton!,
@@ -227,13 +276,38 @@ export const useSendCore = (
         onDone();
       }
     },
-    [fee, isBattery, params],
+    [
+      fee,
+      params.additionalParams,
+      params.amount.all,
+      params.amount.value,
+      params.comment,
+      params.currency,
+      params.encryptedCommentPrivateKey,
+      params.expiryTimestamp,
+      params.isCommentEncrypted,
+      params.recipient,
+      params.tokenType,
+      relayerSendModes.isBattery,
+      relayerSendModes.isGasless,
+    ],
   );
 
+  const isFirstRenderSkipped = useRef(false);
+  useEffect(() => {
+    if (isFirstRenderSkipped.current) {
+      estimateFee();
+    }
+    isFirstRenderSkipped.current = true;
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [preferGasless]);
+
   return {
+    customFeeCurrency,
     fee,
     setFee,
-    isBattery,
+    relayerSendModes,
     isPreparing,
     setPreparing,
     isSending,

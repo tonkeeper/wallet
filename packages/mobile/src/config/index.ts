@@ -85,6 +85,7 @@ export type AppConfigVars = {
 
   usdt_jetton_master: string;
 
+  gasless_enabled: boolean;
   v5_enabled: boolean;
   v5_beta: boolean;
 };
@@ -148,6 +149,7 @@ const defaultConfig: Partial<AppConfigVars> = {
   usdt_jetton_master:
     '0:b113a994b5024a16719f69139328eb759596c38a25f59028b146fecdc3621dfe',
 
+  gasless_enabled: true,
   v5_enabled: false,
   v5_beta: true,
 };

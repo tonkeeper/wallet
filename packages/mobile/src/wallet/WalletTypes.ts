@@ -34,6 +34,34 @@ export enum WalletContractVersion {
   LockupV1 = 'lockup-0.1',
 }
 
+export enum WalletContractFeature {
+  GASLESS,
+}
+
+export const WalletContractFeatures: Record<
+  WalletContractVersion,
+  Record<WalletContractFeature, boolean>
+> = {
+  [WalletContractVersion.v5R1]: {
+    [WalletContractFeature.GASLESS]: true,
+  },
+  [WalletContractVersion.v4R2]: {
+    [WalletContractFeature.GASLESS]: false,
+  },
+  [WalletContractVersion.v4R1]: {
+    [WalletContractFeature.GASLESS]: false,
+  },
+  [WalletContractVersion.v3R2]: {
+    [WalletContractFeature.GASLESS]: false,
+  },
+  [WalletContractVersion.v3R1]: {
+    [WalletContractFeature.GASLESS]: false,
+  },
+  [WalletContractVersion.LockupV1]: {
+    [WalletContractFeature.GASLESS]: false,
+  },
+};
+
 export type TronAddresses = {
   proxy: string;
   owner: string;

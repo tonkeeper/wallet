@@ -255,25 +255,32 @@ export function useDeeplinkingResolvers() {
       }
 
       if (amount) {
-        const estimate = await estimateInscriptionTransferFee({
-          recipient: address,
-          sendAmountNano: BigInt(toNano(amount, inscription.decimals)),
-          inscription,
-          payload: comment ? makeCommentCell(comment) : undefined,
-        });
-        const options = {
-          currency: inscription.ticker,
-          address,
-          comment,
-          currencyAdditionalParams: { type: inscription.type },
-          amount: fromNano(amount, inscription.decimals),
-          tokenType: TokenType.Inscription,
-          fee: estimate.fee,
-          isInactive: false,
-          methodId: resolveParams.methodId,
-          redirectToActivity: resolveParams.redirectToActivity,
-        };
-        openSend(options);
+        try {
+          const estimate = await estimateInscriptionTransferFee({
+            recipient: address,
+            sendAmountNano: BigInt(toNano(amount, inscription.decimals)),
+            inscription,
+            payload: comment ? makeCommentCell(comment) : undefined,
+          });
+          const options = {
+            currency: inscription.ticker,
+            address,
+            comment,
+            currencyAdditionalParams: { type: inscription.type },
+            amount: fromNano(amount, inscription.decimals),
+            tokenType: TokenType.Inscription,
+            fee: fromNano(estimate.fee, 9),
+            isInactive: false,
+            methodId: resolveParams.methodId,
+            redirectToActivity: resolveParams.redirectToActivity,
+          };
+          openSend(options);
+        } catch (e) {
+          if (e.message) {
+            Toast.fail(e.message);
+          }
+          return;
+        }
       } else {
         openSend({
           currency: inscription.ticker,
@@ -384,50 +391,64 @@ export function useDeeplinkingResolvers() {
           return;
         }
 
-        const estimate = await estimateJettonTransferFee({
-          recipient: address,
-          sendAmountNano: BigInt(toNano(query.amount, decimals)),
-          jetton: jettonBalance,
-          payload: comment ? makeCommentCell(comment) : undefined,
-        });
-        const options = {
-          currency: query.jetton,
-          isBattery: estimate.battery,
-          address,
-          comment,
-          amount,
-          fee: estimate.fee,
-          isInactive: false,
-          tokenType: TokenType.Jetton,
-          expiryTimestamp,
-          redirectToActivity: resolveParams.redirectToActivity,
-        };
+        try {
+          const estimate = await estimateJettonTransferFee({
+            recipient: address,
+            sendAmountNano: BigInt(toNano(query.amount, decimals)),
+            jetton: jettonBalance,
+            payload: comment ? makeCommentCell(comment) : undefined,
+          });
+          const options = {
+            currency: query.jetton,
+            isBattery: estimate.battery,
+            address,
+            comment,
+            amount,
+            fee: fromNano(estimate.fee, 9),
+            isInactive: false,
+            tokenType: TokenType.Jetton,
+            expiryTimestamp,
+            redirectToActivity: resolveParams.redirectToActivity,
+          };
 
-        openSend(options);
-      } else {
-        const estimate = await estimateTonTransferFee({
-          recipient: address,
-          sendAmountNano: BigInt(query.amount.toString()),
-          isSendAll: false,
-          payload: comment ? makeCommentCell(comment) : undefined,
-        });
-        const amount = Ton.fromNano(query.amount.toString());
-        const options = {
-          currency,
-          address,
-          comment,
-          amount,
-          tokenType: TokenType.TON,
-          fee: estimate.fee,
-          isInactive: false,
-          methodId: resolveParams.methodId,
-          expiryTimestamp,
-          redirectToActivity: resolveParams.redirectToActivity,
-        };
-        if (options.methodId) {
-          nav.openModal('NewConfirmSending', options);
-        } else {
           openSend(options);
+        } catch (e) {
+          if (e.message) {
+            Toast.fail(e.message);
+          }
+          return;
+        }
+      } else {
+        try {
+          const estimate = await estimateTonTransferFee({
+            recipient: address,
+            sendAmountNano: BigInt(query.amount.toString()),
+            isSendAll: false,
+            payload: comment ? makeCommentCell(comment) : undefined,
+          });
+          const amount = Ton.fromNano(query.amount.toString());
+          const options = {
+            currency,
+            address,
+            comment,
+            amount,
+            tokenType: TokenType.TON,
+            fee: fromNano(estimate.fee, 9),
+            isInactive: false,
+            methodId: resolveParams.methodId,
+            expiryTimestamp,
+            redirectToActivity: resolveParams.redirectToActivity,
+          };
+          if (options.methodId) {
+            nav.openModal('NewConfirmSending', options);
+          } else {
+            openSend(options);
+          }
+        } catch (e) {
+          if (e.message) {
+            Toast.fail(e.message);
+          }
+          return;
         }
       }
     } else if (query.jetton) {

@@ -24,6 +24,7 @@ import { TokenType } from '$core/Send/Send.interface';
 import { useBalancesState, useWallet } from '@tonkeeper/shared/hooks';
 import { tk } from '$wallet';
 import { Steezy, WalletIcon, isAndroid } from '@tonkeeper/uikit';
+import { GaslessToggle } from '$core/Send/new/core/components/GaslessToggle';
 
 const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const {
@@ -38,6 +39,10 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     active,
     isInactive,
     isBattery,
+    isGasless,
+    isForcedGasless,
+    supportsGasless,
+    customFeeCurrency,
     amount,
     comment,
     isCommentEncrypted,
@@ -143,7 +148,11 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const fiatValue = useFiatValue(currency as CryptoCurrency, calculatedValue, decimals);
 
   const fiatFee = useFiatValue(
-    currency === 'usdt' ? 'USDT' : CryptoCurrencies.Ton,
+    customFeeCurrency
+      ? customFeeCurrency.jetton_master
+      : currency === 'usdt'
+      ? 'USDT'
+      : CryptoCurrencies.Ton,
     fee || '0',
     6,
     currency === 'usdt' ? 6 : Decimals[CryptoCurrencies.Ton],
@@ -156,11 +165,11 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
 
     return `≈ ${formatter.format(fee, {
       decimals: 3,
-      currency: feeCurrency.toUpperCase(),
+      currency: customFeeCurrency ? customFeeCurrency.symbol : feeCurrency.toUpperCase(),
       currencySeparator: 'wide',
       forceRespectDecimalPlaces: true,
     })}`;
-  }, [fee, feeCurrency]);
+  }, [customFeeCurrency, fee, feeCurrency]);
 
   const amountValue = useMemo(() => {
     const value = formatter.format(calculatedValue, {
@@ -295,6 +304,8 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
                   <S.ItemSubLabel>
                     {t('send_screen_steps.comfirm.will_be_paid_with_battery')}
                   </S.ItemSubLabel>
+                ) : supportsGasless && !isForcedGasless ? (
+                  <GaslessToggle currencyTitle={currencyTitle} isGasless={isGasless} />
                 ) : (
                   <S.ItemSubLabel />
                 )}

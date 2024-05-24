@@ -1358,5 +1358,8 @@
     "description": "Lower blockchain fees, gasless transactions and multi-transfers in the upcoming wallet standard W5. You can use both new and old wallet at the same time.",
     "add_button": "Add Wallet W5",
     "more_button": "Learn More"
+  },
+  "gasless": {
+    "switch_label": "Tap to pay in %{currency}"
   }
 }

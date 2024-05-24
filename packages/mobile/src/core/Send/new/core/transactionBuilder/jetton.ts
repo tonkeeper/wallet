@@ -20,6 +20,8 @@ import BigNumber from 'bignumber.js';
 import { JettonBalanceModel } from '$wallet/models/JettonBalanceModel';
 import { openInsufficientFundsModal } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
+import { WalletContractFeature, WalletContractFeatures } from '$wallet/WalletTypes';
+import { config } from '$config';
 
 export interface BuildJettonTransferParams {
   jettonWalletAddress: string;
@@ -94,6 +96,8 @@ export function buildJettonTransferBoc(
 }
 
 export interface JettonTransferParams {
+  preferGasless?: boolean;
+  forceGasless?: boolean;
   recipient: string;
   sendAmountNano: bigint;
   jetton: JettonBalanceModel;
@@ -105,6 +109,10 @@ export interface JettonTransferParams {
 export async function estimateJettonTransferFee(params: JettonTransferParams) {
   const seqno = await getWalletSeqno();
   const timeout = await getTimeoutFromLiteserverSafely();
+
+  const balance = toNano(tk.wallet.balances.state.data.ton);
+
+  const isPreferGasless = params.preferGasless ?? true;
 
   const boc = await buildJettonTransferBoc(SignerType.Signer, {
     timeout,
@@ -126,6 +134,46 @@ export async function estimateJettonTransferFee(params: JettonTransferParams) {
     compareAddresses(params.recipient, tk.wallet.battery.fundReceiver),
   );
 
+  const isWalletSupportsGasless =
+    WalletContractFeatures[tk.wallet.config.version][WalletContractFeature.GASLESS];
+
+  let isJettonSupportsGasless = false;
+  if (!battery && isWalletSupportsGasless && config.get('gasless_enabled')) {
+    try {
+      const rechargeMethods = await tk.wallet.battery.fetchRechargeMethods();
+
+      isJettonSupportsGasless = rechargeMethods.some(
+        (method) =>
+          method.support_gasless &&
+          compareAddresses(method.jetton_master, params.jetton.jettonAddress),
+      );
+    } catch {}
+
+    if (isPreferGasless || params.forceGasless) {
+      const estimatedCost = await tk.wallet.battery.estimateGaslessCost({
+        jettonMaster: params.jetton.jettonAddress,
+        amount: params.sendAmountNano.toString(),
+        toAddress: params.recipient,
+        battery: false,
+      });
+
+      if (estimatedCost?.commission) {
+        return {
+          fee: toNano(estimatedCost.commission, params.jetton.metadata.decimals),
+          customFeeCurrency: {
+            jetton_master: params.jetton.jettonAddress,
+            decimals: params.jetton.metadata.decimals,
+            symbol: params.jetton.metadata.symbol,
+          },
+          battery: false,
+          gasless: true,
+          isForcedGasless: params.forceGasless,
+          supportsGasless: isJettonSupportsGasless,
+        };
+      }
+    }
+  }
+
   const feeToCalculate = new BigNumber(emulateResult.event.extra)
     .multipliedBy(-1)
     .isNegative()
@@ -134,8 +182,11 @@ export async function estimateJettonTransferFee(params: JettonTransferParams) {
         .multipliedBy(-1)
         .plus(BASE_FORWARD_AMOUNT.toString());
 
-  const balance = toNano(tk.wallet.balances.state.data.ton);
   if (!battery && feeToCalculate.gt(balance)) {
+    if (isJettonSupportsGasless && !params.preferGasless) {
+      // Retry emulation with forced gasless
+      return estimateJettonTransferFee({ ...params, forceGasless: true });
+    }
     openInsufficientFundsModal({
       totalAmount: feeToCalculate.toString(),
       balance: balance.toString(),
@@ -146,6 +197,8 @@ export async function estimateJettonTransferFee(params: JettonTransferParams) {
   return {
     fee: new BigNumber(emulateResult.event.extra).multipliedBy(-1).toString(),
     battery,
+    gasless: false,
+    supportsGasless: isJettonSupportsGasless,
   };
 }
 

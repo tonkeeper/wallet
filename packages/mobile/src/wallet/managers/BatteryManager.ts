@@ -21,6 +21,8 @@ export interface BatteryState {
   balance?: string;
   reservedBalance?: string;
   excessesAccount?: string;
+  preferGasless: boolean;
+  hasTouchedGaslessToggle: boolean;
   fundReceiver?: string;
   supportedTransactions: Record<BatterySupportedTransaction, boolean>;
 }
@@ -32,6 +34,8 @@ export class BatteryManager {
     isLoading: false,
     balance: undefined,
     reservedBalance: '0',
+    preferGasless: true,
+    hasTouchedGaslessToggle: false,
     supportedTransactions: {
       [BatterySupportedTransaction.Swap]: true,
       [BatterySupportedTransaction.Jetton]: true,
@@ -49,10 +53,18 @@ export class BatteryManager {
     private isTestnet: boolean,
   ) {
     this.state.persist({
-      partialize: ({ balance, reservedBalance, supportedTransactions }) => ({
+      partialize: ({
         balance,
         reservedBalance,
         supportedTransactions,
+        preferGasless,
+        hasTouchedGaslessToggle,
+      }) => ({
+        balance,
+        reservedBalance,
+        supportedTransactions,
+        preferGasless,
+        hasTouchedGaslessToggle,
       }),
       storage: this.storage,
       key: `${this.persistPath}/battery`,
@@ -76,8 +88,10 @@ export class BatteryManager {
         rechargeMethods: rechargeMethods.methods,
         isRechargeMethodsLoading: false,
       });
+      return rechargeMethods.methods;
     } catch (e) {
       this.state.set({ rechargeMethods: [], isRechargeMethodsLoading: false });
+      return [];
     }
   }
 
@@ -131,10 +145,12 @@ export class BatteryManager {
     jettonMaster,
     toAddress,
     amount,
+    battery,
   }: {
     jettonMaster: string;
     toAddress: string;
     amount: string;
+    battery?: boolean;
   }) {
     try {
       if (!this.tonProof.tonProofToken) {
@@ -146,6 +162,7 @@ export class BatteryManager {
           to_address: toAddress,
           amount,
           excess_address: this.state.data.excessesAccount!,
+          battery,
         },
         {
           headers: {
@@ -156,6 +173,14 @@ export class BatteryManager {
     } catch (err) {
       this.logger.error(err);
     }
+  }
+
+  public togglePreferGasless() {
+    this.state.set((state) => ({
+      ...state,
+      preferGasless: !state.preferGasless,
+      hasTouchedGaslessToggle: true,
+    }));
   }
 
   public async applyPromo(promoCode: string) {

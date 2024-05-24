@@ -240,7 +240,11 @@ export const SendNew: FC<SendProps> = ({ route }) => {
           {(stepProps) => (
             <ConfirmStep
               isPreparing={sendCore.isPreparing}
-              isBattery={sendCore.isBattery}
+              isBattery={sendCore.relayerSendModes.isBattery}
+              isGasless={sendCore.relayerSendModes.isGasless}
+              isForcedGasless={sendCore.relayerSendModes.isForcedGasless}
+              supportsGasless={sendCore.relayerSendModes.supportsGasless}
+              customFeeCurrency={sendCore.customFeeCurrency}
               currencyTitle={currencyTitle}
               currency={currency}
               recipient={inputHandlers.recipient}

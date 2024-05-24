@@ -91,6 +91,8 @@ export interface Purchases {
     /** @example "2006-01-02T15:04:05Z07:00" */
     datetime: string;
     refund_information?: {
+      fully_refunded: boolean;
+      partially_refunded: boolean;
       pending_refund: boolean;
       refunded?: {
         /** @example "10.250" */
@@ -194,6 +196,7 @@ export enum PurchasesTypeEnum {
   Ios = 'ios',
   PromoCode = 'promo-code',
   Crypto = 'crypto',
+  Gift = 'gift',
 }
 
 /** @example "invalid-product-id" */
@@ -271,6 +274,8 @@ export interface EstimateGaslessCostParams {
   amount: string;
   excess_address: string;
   to_address: string;
+  /** @default true */
+  battery?: boolean;
   jettonMaster: string;
 }
 
