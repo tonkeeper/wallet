@@ -211,7 +211,7 @@
       },
       "disclaimer": "One charge covers the average transaction fee. Some transactions may cost more.",
       "restore": "Restore Purchases",
-      "refund": "Request a refund",
+      "refund": "Charge history",
       "buy": "Buy",
       "ok": "OK",
       "refilled": "Your battery is charged"
@@ -1133,8 +1133,8 @@
   },
   "suspicious": {
     "label": {
-      "short": "Suspicious",
-      "full": "Suspicious NFT"
+      "short": "Unverified",
+      "full": "Unverified NFT"
     },
     "buttons": {
       "report": "Report Spam",
@@ -1152,11 +1152,12 @@
     }
   },
   "suspiciousNFTDetails": {
-    "title": "Suspicious NFT",
-    "subtitle": "This NFT looks suspicious for one or several reasons.",
+    "title": "Unverified NFT",
+    "subtitle": "NFT may not be safe to use for one of the following reasons.",
     "paragraphs": {
       "p1": "Used for spam. Employed for sending unwanted and often irrelevant messages at scale.",
-      "p2": "Used for scam. NFT's name, description or image can lead users into deception."
+      "p2": "Used for scam. NFT's name, description or image can lead users into deception.",
+      "p3": "We know little about the author and history of this NFT."
     },
     "buttons": {
       "report": "Report Spam",

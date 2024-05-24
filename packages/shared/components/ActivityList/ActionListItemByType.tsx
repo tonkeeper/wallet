@@ -16,6 +16,7 @@ import {
   ActionType,
   AnyActionItem,
 } from '@tonkeeper/mobile/src/wallet/models/ActivityModel';
+import { ActionListItemWithNft } from './ActionListItemWithNFT';
 
 export const ActionListItemByType = memo<ActionListItemProps>((props) => {
   const { action } = props;
@@ -50,31 +51,8 @@ export const ActionListItemByType = memo<ActionListItemProps>((props) => {
         </ActionListItem>
       );
     case ActionType.NftItemTransfer:
-      return (
-        <ActionListItem {...pureProps} value="NFT">
-          <NftPreviewContent
-            disabled={props.disableNftPreview || props.disablePressable}
-            nftAddress={payload.nft}
-          />
-          {!!payload.comment && <ListItemContentText text={payload.comment.trim()} />}
-          {!!payload.encrypted_comment && (
-            <ListItemEncryptedComment
-              encryptedComment={payload.encrypted_comment}
-              actionId={action.action_id}
-              sender={action.payload.sender!}
-            />
-          )}
-        </ActionListItem>
-      );
     case ActionType.NftPurchase:
-      return (
-        <ActionListItem {...pureProps}>
-          <NftPreviewContent
-            disabled={props.disableNftPreview || props.disablePressable}
-            nftItem={payload.nft}
-          />
-        </ActionListItem>
-      );
+      return <ActionListItemWithNft {...pureProps} action={action} />;
     case ActionType.SmartContractExec:
       return (
         <ActionListItem

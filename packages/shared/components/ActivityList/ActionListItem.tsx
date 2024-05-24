@@ -48,6 +48,7 @@ export interface ActionListItemProps<TActionType extends ActionType = ActionType
   disablePressable?: boolean;
   disableNftPreview?: boolean;
   isSimplePreview?: boolean;
+  isScam?: boolean;
 }
 
 export const ActionListItem = memo<ActionListItemProps>((props) => {
@@ -60,13 +61,15 @@ export const ActionListItem = memo<ActionListItemProps>((props) => {
     ignoreFailed,
     disablePressable,
     isSimplePreview,
+    isScam: isScamProp,
   } = props;
   const { formatNano } = useHideableFormatter();
 
   const isScam =
-    action.event.is_scam ||
-    (isJettonTransferAction(action) &&
-      action.payload.jetton.verification === JettonVerificationType.Blacklist);
+    isScamProp ??
+    (action.event.is_scam ||
+      (isJettonTransferAction(action) &&
+        action.payload.jetton.verification === JettonVerificationType.Blacklist));
 
   const flags = useFlags(['address_style_nobounce']);
 

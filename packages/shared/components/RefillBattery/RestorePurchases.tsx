@@ -6,8 +6,13 @@ import { Platform } from 'react-native';
 import { tk } from '@tonkeeper/mobile/src/wallet';
 import { openDAppBrowser } from '@tonkeeper/mobile/src/navigation';
 import { config } from '@tonkeeper/mobile/src/config';
+import { useExternalState } from '../../hooks/useExternalState';
 
 export const RestorePurchases = memo(() => {
+  const reservedBalance = useExternalState(
+    tk.wallet.battery.state,
+    (state) => state.reservedBalance,
+  );
   const handleRestorePurchases = useCallback(async () => {
     try {
       const purchases = await getPendingPurchasesIOS();
@@ -75,22 +80,24 @@ export const RestorePurchases = memo(() => {
         </Text>
         .
       </Text>
-      <Text
-        style={styles.text.static}
-        type="body2"
-        textAlign="center"
-        color="textTertiary"
-      >
+      {!(!reservedBalance || reservedBalance === '0') && (
         <Text
-          onPress={openRefundsDApp}
+          style={styles.text.static}
           type="body2"
           textAlign="center"
-          color="textSecondary"
+          color="textTertiary"
         >
-          {t('battery.packages.refund')}
+          <Text
+            onPress={openRefundsDApp}
+            type="body2"
+            textAlign="center"
+            color="textSecondary"
+          >
+            {t('battery.packages.refund')}
+          </Text>
+          .
         </Text>
-        .
-      </Text>
+      )}
     </>
   );
 });
