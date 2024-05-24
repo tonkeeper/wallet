@@ -21,6 +21,7 @@ import { Screen, useTheme } from '@tonkeeper/uikit';
 export interface DAppBrowserProps {
   url: string;
   persistentQueryParams?: string;
+  disableSearchBar?: boolean;
 }
 
 const TONKEEPER_UTM = 'utm_source=tonkeeper';
@@ -185,6 +186,7 @@ const DAppBrowserComponent: FC<DAppBrowserProps> = (props) => {
     <Screen alternateBackground>
       <StatusBar barStyle={theme.isDark ? 'light-content' : 'dark-content'} />
       <BrowserNavBar
+        disableSearchBar={props.disableSearchBar}
         title={app?.name || title}
         url={currentUrl}
         isNotificationsEnabled={notificationsEnabled}

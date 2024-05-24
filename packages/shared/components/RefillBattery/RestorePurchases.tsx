@@ -52,6 +52,7 @@ export const RestorePurchases = memo(() => {
       config.get('batteryRefundEndpoint'),
       `token=${encodeURIComponent(tk.wallet.tonProof.tonProofToken)}` +
         `&testnet=${tk.wallet.isTestnet}`,
+      true,
     );
   }, []);
 

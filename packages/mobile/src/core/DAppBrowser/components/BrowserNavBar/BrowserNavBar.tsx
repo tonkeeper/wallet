@@ -38,6 +38,7 @@ interface Props {
   onRefreshPress: () => void;
   disconnect: () => Promise<void>;
   unsubscribeFromNotifications: () => Promise<void>;
+  disableSearchBar?: boolean;
 }
 
 const BrowserNavBarComponent: FC<Props> = (props) => {
@@ -147,7 +148,7 @@ const BrowserNavBarComponent: FC<Props> = (props) => {
           </S.BackButtonTouchable>
         ) : null}
       </S.LeftContainer>
-      <S.MiddleContainer onPress={onTitlePress}>
+      <S.MiddleContainer disabled={props.disableSearchBar} onPress={onTitlePress}>
         <S.Title>{title || '...'}</S.Title>
         {isConnected ? (
           <S.SubTitleRow>
