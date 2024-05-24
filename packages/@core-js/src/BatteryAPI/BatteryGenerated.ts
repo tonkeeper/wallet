@@ -33,6 +33,10 @@ export interface Config {
   excess_account: string;
 }
 
+export interface GaslessEstimation {
+  commission: string;
+}
+
 export interface Balance {
   /** @example "10.250" */
   balance: string;
@@ -59,26 +63,48 @@ export interface RechargeMethods {
     symbol: string;
     /** @example 6 */
     decimals: number;
+    /** @example true */
+    support_gasless: boolean;
   }[];
 }
 
 export interface Purchases {
   /** @example 1 */
   total_purchases: number;
-  /**
-   * if set, then there are more purchases to be loaded. Use this value as offset parameter in the next request.
-   * @example 10
-   */
-  next_offset?: number;
   purchases: {
     /** @example 2 */
-    id: number;
+    user_purchase_id: number;
     /** @example "android" */
     type: PurchasesTypeEnum;
-    /** @example "10.250" */
-    value: string;
+    /**
+     * Amount describes the amount paid by the user for this purchase when we know it. For crypto purchases it is always set.
+     * @example "10.250"
+     */
+    amount?: string;
+    /** @example 1200 */
+    charges: number;
+    /**
+     * Currency is set when we know it. For crypto purchases it is always set.
+     * @example "USDT"
+     */
+    currency?: string;
     /** @example "2006-01-02T15:04:05Z07:00" */
     datetime: string;
+    refund_information?: {
+      pending_refund: boolean;
+      refunded?: {
+        /** @example "10.250" */
+        amount: string;
+        /** @example 1200 */
+        charges: number;
+      };
+      refundable?: {
+        /** @example "10.250" */
+        amount: string;
+        /** @example 1200 */
+        charges: number;
+      };
+    };
   }[];
 }
 
@@ -164,8 +190,10 @@ export enum RechargeMethodsTypeEnum {
 
 /** @example "android" */
 export enum PurchasesTypeEnum {
-  RegularPurchase = 'regular-purchase',
+  Android = 'android',
+  Ios = 'ios',
   PromoCode = 'promo-code',
+  Crypto = 'crypto',
 }
 
 /** @example "invalid-product-id" */
@@ -236,6 +264,27 @@ export interface GetTransactionsParams {
   limit?: number;
   /** @default 0 */
   offset?: number;
+}
+
+export interface EstimateGaslessCostParams {
+  /** @default "10.250" */
+  amount: string;
+  excess_address: string;
+  to_address: string;
+  jettonMaster: string;
+}
+
+export interface ConfirmLargeRefundParams {
+  token: string;
+}
+
+export enum RemoveRefundStatusEnum {
+  Failed = 'failed',
+  Pending = 'pending',
+}
+
+export interface RemoveRefundParams {
+  token: string;
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -563,6 +612,26 @@ export class BatteryGenerated<SecurityDataType extends unknown> {
     });
 
   /**
+   * No description
+   *
+   * @name RequestRefund
+   * @request POST:/request-refund
+   */
+  requestRefund = (
+    data: {
+      /** @example 43 */
+      user_purchase_id: number;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.http.request<void, Error>({
+      path: `/request-refund`,
+      method: 'POST',
+      body: data,
+      ...params,
+    });
+
+  /**
    * @description This method returns a list of purchases made by a specific user.
    *
    * @name GetPurchases
@@ -592,6 +661,73 @@ export class BatteryGenerated<SecurityDataType extends unknown> {
       ...params,
     });
 
+  payload = {
+    /**
+     * @description Get a payload for further token receipt
+     *
+     * @tags Connect
+     * @name GetTonConnectPayload
+     * @request GET:/tonconnect/payload
+     */
+    getTonConnectPayload: (params: RequestParams = {}) =>
+      this.http.request<
+        {
+          /** @example "84jHVNLQmZsAAAAAZB0Zryi2wqVJI-KaKNXOvCijEi46YyYzkaSHyJrMPBMOkVZa" */
+          payload: string;
+        },
+        Error
+      >({
+        path: `/tonconnect/payload`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+  };
+  proof = {
+    /**
+     * @description Account verification and token issuance
+     *
+     * @tags Wallet
+     * @name TonConnectProof
+     * @request POST:/tonconnect/proof
+     */
+    tonConnectProof: (
+      data: {
+        /** @example "0:97146a46acc2654y27947f14c4a4b14273e954f78bc017790b41208b0043200b" */
+        address: string;
+        proof: {
+          /**
+           * @format int64
+           * @example "1678275313"
+           */
+          timestamp: number;
+          domain: {
+            /** @format int32 */
+            length_bytes?: number;
+            value: string;
+          };
+          signature: string;
+          /** @example "84jHVNLQmZsAAAAAZB0Zryi2wqVJI-KaKNXOvCijEi46YyYzkaSHyJrMPBMOkVZa" */
+          payload: string;
+          state_init?: string;
+        };
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<
+        {
+          /** @example "NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODQ3..." */
+          token: string;
+        },
+        Error
+      >({
+        path: `/tonconnect/proof`,
+        method: 'POST',
+        body: data,
+        format: 'json',
+        ...params,
+      }),
+  };
   emulate = {
     /**
      * @description Emulate sending message to blockchain
@@ -701,6 +837,73 @@ export class BatteryGenerated<SecurityDataType extends unknown> {
       this.http.request<PromoCodeBatteryPurchaseStatus, Error>({
         path: `/purchase-battery/promo-code`,
         method: 'POST',
+        body: data,
+        format: 'json',
+        ...params,
+      }),
+  };
+  estimateCost = {
+    /**
+     * No description
+     *
+     * @name EstimateGaslessCost
+     * @request GET:/gasless/estimate-cost/{jetton_master}
+     */
+    estimateGaslessCost: (
+      { jettonMaster, ...query }: EstimateGaslessCostParams,
+      params: RequestParams = {},
+    ) =>
+      this.http.request<GaslessEstimation, Error>({
+        path: `/gasless/estimate-cost/${jettonMaster}`,
+        method: 'GET',
+        query: query,
+        format: 'json',
+        ...params,
+      }),
+  };
+  confirmLargeRefund = {
+    /**
+     * No description
+     *
+     * @name ConfirmLargeRefund
+     * @request POST:/restricted/confirm-large-refund
+     */
+    confirmLargeRefund: (
+      query: ConfirmLargeRefundParams,
+      data: {
+        purchase_id: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<any, Error>({
+        path: `/restricted/confirm-large-refund`,
+        method: 'POST',
+        query: query,
+        body: data,
+        format: 'json',
+        ...params,
+      }),
+  };
+  removeRefund = {
+    /**
+     * No description
+     *
+     * @name RemoveRefund
+     * @request POST:/restricted/remove-refund
+     */
+    removeRefund: (
+      query: RemoveRefundParams,
+      data: {
+        purchase_id: number;
+        refund_id: number;
+        status: RemoveRefundStatusEnum;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<any, Error>({
+        path: `/restricted/remove-refund`,
+        method: 'POST',
+        query: query,
         body: data,
         format: 'json',
         ...params,

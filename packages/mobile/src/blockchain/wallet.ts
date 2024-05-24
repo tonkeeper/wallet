@@ -376,6 +376,7 @@ export class TonWallet {
   }
 
   async estimateJettonFee(
+    jettonMaster: string,
     jettonWalletAddress: string,
     address: string,
     amountNano: string,
@@ -389,6 +390,15 @@ export class TonWallet {
     } catch (e) {
       throw new Error(t('send_get_wallet_info_error'));
     }
+
+    const gaslessEstimation = await tk.wallet.battery.estimateGaslessCost({
+      jettonMaster,
+      toAddress: address,
+      amount: amountNano,
+    });
+
+    const isGassless =
+      gaslessEstimation?.commission && gaslessEstimation?.commission !== '0';
 
     const timeout = await getTimeoutFromLiteserverSafely();
 
@@ -413,7 +423,7 @@ export class TonWallet {
       compareAddresses(address, tk.wallet.battery.fundReceiver),
     );
 
-    return [Ton.fromNano(feeNano.toString()), isBattery];
+    return { feeNano: Ton.fromNano(feeNano.toString()), isBattery, isGassless };
   }
 
   async jettonTransfer(

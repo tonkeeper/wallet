@@ -32,7 +32,7 @@ export class WalletBase {
   public tronService: TronService;
 
   public tonapi: TonAPI;
-  protected batteryapi: BatteryAPI;
+  public batteryapi: BatteryAPI;
   protected tronapi: TronAPI;
 
   protected logger: NamespacedLogger;

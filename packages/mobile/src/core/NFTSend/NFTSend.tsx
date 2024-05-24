@@ -27,14 +27,7 @@ import {
 import { getWalletSeqno, setBalanceForEmulation } from '@tonkeeper/shared/utils/wallet';
 import { Buffer } from 'buffer';
 import { MessageConsequences } from '@tonkeeper/core/src/TonAPI';
-import {
-  Address,
-  Cell,
-  SendMode,
-  internal,
-  toNano,
-  comment as commentCell,
-} from '@ton/core';
+import { Cell, internal, toNano } from '@ton/core';
 import BigNumber from 'bignumber.js';
 import { Ton } from '$libs/Ton';
 import { delay } from '$utils';

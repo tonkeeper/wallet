@@ -20,8 +20,6 @@ import { SkeletonLine } from '$uikit/Skeleton/SkeletonLine';
 import { t } from '@tonkeeper/shared/i18n';
 import { openInactiveInfo } from '$core/ModalContainer/InfoAboutInactive/InfoAboutInactive';
 import { Address } from '@tonkeeper/core';
-import { useBatteryState } from '@tonkeeper/shared/query/hooks/useBatteryState';
-import { BatteryState } from '@tonkeeper/shared/utils/battery';
 import { TokenType } from '$core/Send/Send.interface';
 import { useBalancesState, useWallet } from '@tonkeeper/shared/hooks';
 import { tk } from '$wallet';
@@ -55,7 +53,6 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
 
   const balances = useBalancesState();
   const wallet = useWallet();
-  const batteryState = useBatteryState();
 
   const { Logo, liquidJettonPool } = useCurrencyToSend(currency, tokenType);
 
@@ -158,11 +155,12 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     }
 
     return `≈ ${formatter.format(fee, {
-      decimals: currency === 'usdt' ? 6 : Decimals[feeCurrency],
+      decimals: 3,
       currency: feeCurrency.toUpperCase(),
       currencySeparator: 'wide',
+      forceRespectDecimalPlaces: true,
     })}`;
-  }, [currency, fee, feeCurrency]);
+  }, [fee, feeCurrency]);
 
   const amountValue = useMemo(() => {
     const value = formatter.format(calculatedValue, {

@@ -5,6 +5,7 @@ import { State } from '@tonkeeper/core/src/utils/State';
 import { TonProofManager } from '$wallet/managers/TonProofManager';
 import { logger, NamespacedLogger } from '$logger';
 import { config } from '$config';
+import { Address } from '@tonkeeper/core';
 
 export enum BatterySupportedTransaction {
   Swap = 'swap',
@@ -121,6 +122,37 @@ export class BatteryManager {
         excessesAccount: data.excess_account,
         fundReceiver: data.fund_receiver,
       });
+    } catch (err) {
+      this.logger.error(err);
+    }
+  }
+
+  public async estimateGaslessCost({
+    jettonMaster,
+    toAddress,
+    amount,
+  }: {
+    jettonMaster: string;
+    toAddress: string;
+    amount: string;
+  }) {
+    try {
+      if (!this.tonProof.tonProofToken) {
+        throw new Error('No proof token');
+      }
+      return await this.batteryapi.estimateCost.estimateGaslessCost(
+        {
+          jettonMaster: Address.parse(jettonMaster).toRaw(),
+          to_address: toAddress,
+          amount,
+          excess_address: this.state.data.excessesAccount!,
+        },
+        {
+          headers: {
+            'X-TonConnect-Auth': this.tonProof.tonProofToken,
+          },
+        },
+      );
     } catch (err) {
       this.logger.error(err);
     }

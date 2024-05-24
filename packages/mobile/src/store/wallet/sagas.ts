@@ -130,6 +130,7 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
       onInsufficientFunds,
       tokenType = TokenType.TON,
       isSendAll,
+      jettonMaster,
       jettonWalletAddress,
       decimals = 0,
       currencyAdditionalParams,
@@ -174,6 +175,7 @@ function* confirmSendCoinsWorker(action: ConfirmSendCoinsAction) {
       if (tokenType === TokenType.Jetton) {
         const [estimatedFee, battery] = yield call(
           [wallet.ton, 'estimateJettonFee'],
+          jettonMaster,
           jettonWalletAddress,
           address,
           toNano(amount, decimals),
