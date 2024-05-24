@@ -5,6 +5,7 @@ import { Address } from '@tonkeeper/core/src/formatters/Address';
 export enum TokenApprovalStatus {
   Approved = 'approved',
   Declined = 'declined',
+  Spam = 'spam',
 }
 
 export enum TokenApprovalType {

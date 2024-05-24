@@ -110,6 +110,10 @@ const ProgrammableButtonsComponent = (props: ProgrammableButtonsProps) => {
     [openExternalLink, props.isApproved],
   );
 
+  if (!props.isApproved) {
+    return null;
+  }
+
   return (
     <View style={styles.container}>
       {buttons.map((button, idx) => (

@@ -19,7 +19,7 @@ import {
 } from '@tonkeeper/uikit';
 
 import { config } from '$config';
-import { useNftsState, useWallet } from '@tonkeeper/shared/hooks';
+import { useNftsState, useTokenApproval, useWallet } from '@tonkeeper/shared/hooks';
 import { tk } from '$wallet';
 import { Address } from '@tonkeeper/core';
 import { Linking, useWindowDimensions } from 'react-native';
@@ -38,6 +38,7 @@ const heightRatio = mockupCardSize.height / mockupCardSize.width;
 export const NotCoinVouchers: React.FC = () => {
   const nav = useNavigation();
 
+  const approvalStatuses = useTokenApproval((state) => state.tokens);
   const nfts = useNftsState((s) =>
     Object.values(s.accountNfts).filter(
       (nft) =>
@@ -199,7 +200,7 @@ export const NotCoinVouchers: React.FC = () => {
         columnWrapperStyle={styles.columnWrapper.static}
         renderItem={({ item }) => (
           <View style={size}>
-            <NFTCardItem item={item} />
+            <NFTCardItem approvalStatuses={approvalStatuses} item={item} />
           </View>
         )}
       />

@@ -98,6 +98,7 @@
     "blacklisted_token": "Токен в чёрном списке",
     "decline": "Отклонить",
     "declined": "Скрытые",
+    "spam": "Спам",
     "declined_at_collection": "Отклонена %{date}",
     "declined_at_token": "Отклонён %{date}",
     "details_collection": "Подробнее о коллекции",
@@ -111,6 +112,7 @@
     "move_to_declined": "Переместить в Отклонённые",
     "move_to_declined_collection": "Скрыть коллекцию из кошелька",
     "move_to_declined_token": "Скрыть токен из кошелька",
+    "not_spam": "Это не спам",
     "name": "Имя",
     "pending": "В ожидании",
     "show_all": "Показать все",
@@ -434,6 +436,46 @@
   "nft_unlink_domain_button": "Связан с {{address}}",
   "nft_unnamed_collection": "Коллекция без названия",
   "nft_view_in_explorer": "Подробнее",
+  "nft_actions": {
+    "hide":  {
+      "nft": "Скрыть NFT",
+      "collection": "Скрыть коллекцию"
+    },
+    "hide_and_report": "Скрыть и пожаловаться",
+    "view_on_explorer": "Открыть в Tonviewer"
+  },
+  "suspicious": {
+    "label": {
+      "short": "Подозрительный",
+      "full": "Подозрительный NFT"
+    },
+    "buttons": {
+      "report": "Пожаловаться",
+      "not_spam": "Это не спам"
+    },
+    "status_update": {
+      "spam": {
+        "nft": "NFT помечен как спам",
+        "collection": "Коллекция помечена как спам"
+      },
+      "hidden": {
+        "nft": "Токен скрыт",
+        "collection": "Коллекция скрыта"
+      }
+    }
+  },
+  "suspiciousNFTDetails": {
+    "title": "Подозрительный NFT",
+    "subtitle": "NFT выглядит подозрительным по одной или нескольким причинам.",
+    "paragraphs": {
+      "p1": "Используется для спама. Применяется для отправки нерелевантных сообщений в больших масштабах.",
+      "p2": "Используется в мошенничестве. Название NFT, информация или изображение может вводить пользователей в заблуждение."
+    },
+    "buttons": {
+      "report": "Пожаловаться на спам",
+      "not_spam": "Это не спам"
+    }
+  },
   "nokyc": "без KYC",
   "notifications": {
     "alert": {

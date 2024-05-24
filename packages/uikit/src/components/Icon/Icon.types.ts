@@ -20,6 +20,7 @@ export type IconNames =
   | 'ic-appearance-16'
   | 'ic-arrow-down-16'
   | 'ic-arrow-up-16'
+  | 'ic-block-16'
   | 'ic-chevron-16'
   | 'ic-chevron-down-16'
   | 'ic-chevron-left-16'
@@ -33,6 +34,7 @@ export type IconNames =
   | 'ic-done-bold-16'
   | 'ic-dot-16'
   | 'ic-ellipsis-16'
+  | 'ic-eye-disable-16'
   | 'ic-flash-16'
   | 'ic-flash-large-16'
   | 'ic-getgems-16'
@@ -221,6 +223,7 @@ export const AllIcons = [
   'ic-appearance-16',
   'ic-arrow-down-16',
   'ic-arrow-up-16',
+  'ic-block-16',
   'ic-chevron-16',
   'ic-chevron-down-16',
   'ic-chevron-left-16',
@@ -234,6 +237,7 @@ export const AllIcons = [
   'ic-done-bold-16',
   'ic-dot-16',
   'ic-ellipsis-16',
+  'ic-eye-disable-16',
   'ic-flash-16',
   'ic-flash-large-16',
   'ic-getgems-16',
@@ -423,6 +427,7 @@ export const IconSizes = {
   'ic-appearance-16': 16,
   'ic-arrow-down-16': 16,
   'ic-arrow-up-16': 16,
+  'ic-block-16': 16,
   'ic-chevron-16': 16,
   'ic-chevron-down-16': 16,
   'ic-chevron-left-16': 16,
@@ -436,6 +441,7 @@ export const IconSizes = {
   'ic-done-bold-16': 16,
   'ic-dot-16': 16,
   'ic-ellipsis-16': 16,
+  'ic-eye-disable-16': 16,
   'ic-flash-16': 16,
   'ic-flash-large-16': 16,
   'ic-getgems-16': 16,

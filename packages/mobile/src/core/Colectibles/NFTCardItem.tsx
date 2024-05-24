@@ -12,21 +12,33 @@ import { AnimationDirection, HideableAmount } from '$core/HideableAmount/Hideabl
 import { HideableImage } from '$core/HideableAmount/HideableImage';
 import { Address } from '@tonkeeper/shared/Address';
 import { DNS, KnownTLDs } from '@tonkeeper/core';
-import { useTheme } from '@tonkeeper/uikit';
+import { Text, useTheme } from '@tonkeeper/uikit';
+import { NFTModel } from '$store/models';
+import { TrustType } from '@tonkeeper/core/src/TonAPI';
+import {
+  ApprovalStatus,
+  TokenApprovalStatus,
+} from '$wallet/managers/TokenApprovalManager';
 
 interface NFTCardItemProps {
-  item: any;
+  item: NFTModel;
   onPress?: () => void;
+  approvalStatuses: Record<string, ApprovalStatus>;
 }
 
 export const NFTCardItem = memo<NFTCardItemProps>((props) => {
-  const { item } = props;
+  const { item, approvalStatuses } = props;
 
   const flags = useFlags(['disable_apperance']);
 
   const expiringDomains = useExpiringDomains((state) => state.domains);
   const isTonDiamondsNft = checkIsTonDiamondsNFT(item);
   const isOnSale = useMemo(() => !!item.sale, [item.sale]);
+
+  const approvalIdentifier = Address.parse(
+    item.collection?.address ?? item.address,
+  ).toRaw();
+  const nftApprovalStatus = approvalStatuses[approvalIdentifier];
 
   const isTG = DNS.getTLD(item.dns || item.name) === KnownTLDs.TELEGRAM;
   const isDNS = !!item.dns && !isTG;
@@ -82,18 +94,25 @@ export const NFTCardItem = memo<NFTCardItemProps>((props) => {
         >
           {title}
         </HideableAmount>
-        <HideableAmount
-          animationDirection={AnimationDirection.Left}
-          variant="body3"
-          color="textSecondary"
-          numberOfLines={1}
-        >
-          {isDNS
-            ? 'TON DNS'
-            : item?.collection
-            ? item.collection.name || t('nft_unnamed_collection')
-            : t('nft_single_nft')}
-        </HideableAmount>
+        {item.trust === TrustType.None &&
+        nftApprovalStatus?.current !== TokenApprovalStatus.Approved ? (
+          <Text numberOfLines={1} color={'accentOrange'} type="body3">
+            {t('suspicious.label.short')}
+          </Text>
+        ) : (
+          <HideableAmount
+            animationDirection={AnimationDirection.Left}
+            variant="body3"
+            color="textSecondary"
+            numberOfLines={1}
+          >
+            {isDNS
+              ? 'TON DNS'
+              : item?.collection
+              ? item.collection.name || t('nft_unnamed_collection')
+              : t('nft_single_nft')}
+          </HideableAmount>
+        )}
       </View>
     </Pressable>
   );

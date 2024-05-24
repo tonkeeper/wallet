@@ -185,7 +185,7 @@ export const NavBar: FC<NavBarProps> = (props) => {
               children
             )}
             <Animated.View style={subtitleAnimatedStyle}>
-              {subtitle ? (
+              {typeof subtitle === 'string' ? (
                 <Text
                   textAlign="center"
                   variant="body2"
@@ -197,6 +197,10 @@ export const NavBar: FC<NavBarProps> = (props) => {
                 >
                   {subtitle}
                 </Text>
+              ) : subtitle ? (
+                <View style={styles.subtitle.static} onLayout={handleSubtitleLayout}>
+                  {subtitle}
+                </View>
               ) : null}
             </Animated.View>
           </S.CenterContent>

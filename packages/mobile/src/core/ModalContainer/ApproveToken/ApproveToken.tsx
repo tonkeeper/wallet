@@ -1,7 +1,6 @@
 import { Modal } from '@tonkeeper/uikit';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
 import React, { memo, useCallback, useMemo } from 'react';
-import { JettonVerification } from '$store/models';
 import { Button, Icon, List, Spacer, View } from '$uikit';
 import { Steezy } from '$styles';
 import { t } from '@tonkeeper/shared/i18n';
@@ -24,10 +23,17 @@ export enum ImageType {
   ROUND = 'round',
   SQUARE = 'square',
 }
+
+export enum ApprovalVerification {
+  WHITELIST = 'whitelist',
+  NONE = 'none',
+  BLACKLIST = 'blacklist',
+}
+
 export interface ApproveTokenModalParams {
   tokenIdentifier: string;
   type: TokenApprovalType;
-  verification?: JettonVerification;
+  verification?: ApprovalVerification;
   imageType?: ImageType;
   name?: string;
   image?: string;
@@ -58,12 +64,14 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
 
   const modalState = useMemo(() => {
     if (
-      props.verification === JettonVerification.BLACKLIST ||
-      currentStatus?.current === TokenApprovalStatus.Declined
+      props.verification === ApprovalVerification.BLACKLIST ||
+      [TokenApprovalStatus.Spam, TokenApprovalStatus.Declined].includes(
+        currentStatus?.current,
+      )
     ) {
       return 'declined';
     } else if (
-      props.verification === JettonVerification.WHITELIST ||
+      props.verification === ApprovalVerification.WHITELIST ||
       currentStatus?.current === TokenApprovalStatus.Approved
     ) {
       return 'approved';
@@ -105,11 +113,13 @@ export const ApproveToken = memo((props: ApproveTokenModalParams) => {
             onPress={handleUpdateStatus(TokenApprovalStatus.Approved)}
             mode="secondary"
           >
-            {translateWithPrefix('move_to_accepted')}
+            {currentStatus?.current === TokenApprovalStatus.Spam
+              ? t('approval.not_spam')
+              : translateWithPrefix('move_to_accepted')}
           </Button>
         );
     }
-  }, [handleUpdateStatus, modalState, translateWithPrefix]);
+  }, [currentStatus, handleUpdateStatus, modalState, translateWithPrefix]);
 
   return (
     <Modal>

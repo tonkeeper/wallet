@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import {
+  ApprovalVerification,
   ImageType,
   openApproveTokenModal,
 } from '$core/ModalContainer/ApproveToken/ApproveToken';
@@ -15,6 +16,17 @@ import {
 } from '$wallet/managers/TokenApprovalManager';
 import { Address } from '@tonkeeper/core';
 import { TrustType } from '@tonkeeper/core/src/TonAPI';
+
+const mapNFTTrustToApprovalVerifiaction = (trust: TrustType) => {
+  switch (trust) {
+    case TrustType.Blacklist:
+      return ApprovalVerification.BLACKLIST;
+    case TrustType.None:
+      return ApprovalVerification.NONE;
+    case TrustType.Whitelist:
+      return ApprovalVerification.WHITELIST;
+  }
+};
 
 const baseNftCellData = (nft: NFTModel) => ({
   type: ContentType.Cell,
@@ -32,10 +44,7 @@ const baseNftCellData = (nft: NFTModel) => ({
       type: nft.collection?.address
         ? TokenApprovalType.Collection
         : TokenApprovalType.Token,
-      verification:
-        nft.trust === TrustType.Whitelist
-          ? JettonVerification.WHITELIST
-          : JettonVerification.NONE,
+      verification: mapNFTTrustToApprovalVerifiaction(nft.trust),
       tokenIdentifier: Address.parse(nft.collection?.address || nft.address).toRaw(),
       image: nft.content.image.baseUrl,
       name: nft.collection?.name,
@@ -63,7 +72,8 @@ export function groupByCollection(
 export function useNftData() {
   const [isExtendedEnabled, setIsExtendedEnabled] = useState(false);
   const [isExtendedDisabled, setIsExtendedDisabled] = useState(false);
-  const { enabled, disabled } = useApprovedNfts();
+  const [isExtendedSpam, setIsExtendedSpam] = useState(false);
+  const { enabled, disabled, spam } = useApprovedNfts();
   return useMemo(() => {
     const content: Content[] = [];
 
@@ -166,6 +176,40 @@ export function useNftData() {
       });
     }
 
+    if (spam.length) {
+      content.push({
+        id: 'spam',
+        type: ContentType.Title,
+        title: t('approval.spam'),
+      });
+      const groupedSpam = groupByCollection(spam);
+
+      content.push(
+        ...groupedSpam.slice(0, !isExtendedSpam ? 4 : undefined).map(
+          (nft, index, array) =>
+            ({
+              ...baseNftCellData(nft),
+              id: nft.address,
+              isFirst: index === 0,
+              isLast: index === array.length - 1,
+              chevron: true,
+            } as CellItem),
+        ),
+      );
+      if (!isExtendedSpam && groupedSpam.length > 4) {
+        content.push({
+          id: 'show_spam_nft',
+          onPress: () => setIsExtendedSpam(true),
+          type: ContentType.ShowAllButton,
+        });
+      }
+      content.push({
+        id: 'spacer_spam',
+        type: ContentType.Spacer,
+        bottom: 16,
+      });
+    }
+
     return content;
-  }, [disabled, enabled, isExtendedDisabled, isExtendedEnabled]);
+  }, [disabled, enabled, isExtendedDisabled, isExtendedEnabled, isExtendedSpam, spam]);
 }

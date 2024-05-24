@@ -14,14 +14,14 @@ export const Overlay = styled.TouchableOpacity.attrs({
   z-index: 1;
 `;
 
-export const Wrap = styled(Animated.View)`
+export const Wrap = styled(Animated.View)<{ width?: number }>`
   background: ${({ theme }) => theme.colors.backgroundTertiary};
   flex: 0 0 auto;
   align-self: flex-end;
   margin-horizontal: ${ns(16)}px;
   border-radius: ${({ theme }) => ns(theme.radius.normal)}px;
   box-shadow: 0px ${ns(8)}px ${ns(32)}px rgba(0, 0, 0, 0.16);
-  width: ${ns(160)}px;
+  width: ${({ width }) => ns(width ?? 160)}px;
   z-index: 2;
 `;
 

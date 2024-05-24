@@ -1,6 +1,6 @@
 import { useNftItemByAddress } from '../../../query/hooks/useNftItemByAddress';
-import { Icon, TouchableOpacity, View, useTheme } from '@tonkeeper/uikit';
-import { NftItem } from '@tonkeeper/core/src/TonAPI';
+import { Icon, TouchableOpacity, useTheme, View } from '@tonkeeper/uikit';
+import { NftItem, TrustType } from '@tonkeeper/core/src/TonAPI';
 import { memo, useCallback } from 'react';
 import { StyleSheet } from 'react-native';
 import { t } from '../../../i18n';
@@ -9,6 +9,9 @@ import { HideableImage } from '@tonkeeper/mobile/src/core/HideableAmount/Hideabl
 import { corners } from '@tonkeeper/uikit/src/styles/constants';
 import { openNftModal } from '@tonkeeper/mobile/src/core/NFT/NFT';
 import { HideableAmount } from '@tonkeeper/mobile/src/core/HideableAmount/HideableAmount';
+import { TokenApprovalStatus } from '@tonkeeper/mobile/src/wallet/managers/TokenApprovalManager';
+import { Address } from '../../../Address';
+import { useTokenApproval } from '../../../hooks';
 
 interface NftItemPayloadProps {
   nftAddress?: string;
@@ -18,6 +21,7 @@ interface NftItemPayloadProps {
 export const NftItemPayload = memo<NftItemPayloadProps>((props) => {
   const { data: nft } = useNftItemByAddress(props.nftAddress, { existingNft: props.nft });
   const theme = useTheme();
+  const approvalStatuses = useTokenApproval((state) => state.tokens);
 
   const handleOpenNftItem = useCallback(() => {
     if (nft) {
@@ -26,6 +30,21 @@ export const NftItemPayload = memo<NftItemPayloadProps>((props) => {
   }, []);
 
   if (!nft) {
+    return null;
+  }
+
+  const approvalIdentifier = Address.parse(
+    nft.collection?.address ?? nft.address,
+  ).toRaw();
+  const nftApprovalStatus = approvalStatuses[approvalIdentifier];
+
+  if (
+    [TokenApprovalStatus.Spam, TokenApprovalStatus.Declined].includes(
+      nftApprovalStatus?.current,
+    ) ||
+    (nft?.trust === TrustType.Blacklist &&
+      nftApprovalStatus?.current !== TokenApprovalStatus.Approved)
+  ) {
     return null;
   }
 
