@@ -27,10 +27,6 @@ export class ConnectReplyBuilder {
     this.manifest = manifest;
   }
 
-  private static getNetwork() {
-    return getChainName() === 'mainnet' ? CHAIN.MAINNET : CHAIN.TESTNET;
-  }
-
   private async createTonProofItem(
     address: string,
     secretKey: Uint8Array,

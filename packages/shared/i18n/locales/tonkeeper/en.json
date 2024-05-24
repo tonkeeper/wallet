@@ -1330,5 +1330,10 @@
       "minutes": "Exchange will be available in %{count} minutes",
       "seconds": "Exchange will be available in %{count} seconds"
     }
+  },
+  "tonconnect_error": {
+    "bad_request": "Bad request",
+    "wrong_network": "Wrong network",
+    "wrong_from": "Wrong 'from' parameter"
   }
 }
