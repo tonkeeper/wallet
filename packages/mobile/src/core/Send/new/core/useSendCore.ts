@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
   CurrencyAdditionalParams,
   InscriptionAdditionalParams,
@@ -29,11 +29,12 @@ import {
   estimateInscriptionTransferFee,
   sendInscriptionBoc,
 } from '$core/Send/new/core/transactionBuilder/inscription';
-import { TypeEnum } from '@tonkeeper/core/src/TonAPI';
+import { t } from '@tonkeeper/shared/i18n';
+import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
+import { getRawTimeFromLiteserverSafely } from '@tonkeeper/shared/utils/blockchain';
 
 export interface SendCoreInitialParams {
   fee: string;
-  isInactive: boolean;
   isBattery: boolean;
 }
 
@@ -47,6 +48,7 @@ export interface SendCoreParams {
   amount: SendAmount;
   encryptedCommentPrivateKey: Uint8Array | null;
   additionalParams?: CurrencyAdditionalParams;
+  expiryTimestamp?: number | null;
 }
 
 export const useSendCore = (
@@ -58,10 +60,9 @@ export const useSendCore = (
   const [isPreparing, setPreparing] = useState(false);
   const [isSending, setSending] = useState(false);
 
-  const [isInactive, setInactive] = useState(initialParams.isInactive);
   const [isBattery, setBattery] = useState(initialParams.isBattery);
 
-  const estimateFee = async () => {
+  const estimateFee = useCallback(async () => {
     setPreparing(true);
     const parsedAmount = parseLocaleNumber(params.amount.value);
 
@@ -128,96 +129,110 @@ export const useSendCore = (
       setFee(formatter.fromNano(emulateResult.fee));
       setBattery(emulateResult.battery);
       setPreparing(false);
+      params.goTo(SendSteps.CONFIRM);
     } catch (error) {
-      Toast.fail(error.message);
-      setFee('?');
+      if (error.message) {
+        Toast.fail(error.message);
+      }
+      setFee('');
       setBattery(false);
     } finally {
-      params.goTo(SendSteps.CONFIRM);
       setPreparing(false);
     }
-  };
+  }, [params]);
 
-  const sendBoc = async () => {
-    setSending(true);
-    const parsedAmount = parseLocaleNumber(params.amount.value);
+  const sendBoc = useCallback(
+    async (onDone: () => void, onFail: (e?: Error) => void) => {
+      setSending(true);
+      const parsedAmount = parseLocaleNumber(params.amount.value);
 
-    try {
-      if (!params.recipient) {
-        throw new Error('Recipient is required');
+      try {
+        if (!params.recipient) {
+          throw new Error('Recipient is required');
+        }
+
+        if (
+          params.expiryTimestamp &&
+          params.expiryTimestamp < (await getRawTimeFromLiteserverSafely())
+        ) {
+          setSending(false);
+          Toast.fail(t('transfer_deeplink_expired_error'));
+
+          return onFail(new CanceledActionError());
+        }
+
+        const recipientPubKey = (
+          await tk.wallet.tonapi.accounts.getAccountPublicKey(params.recipient.address)
+        ).public_key;
+
+        let payload: Cell | undefined;
+        if (params.isCommentEncrypted) {
+          payload = await encryptMessageComment(
+            params.comment,
+            Buffer.from(tk.wallet.pubkey, 'hex'),
+            Buffer.from(recipientPubKey, 'hex'),
+            params.encryptedCommentPrivateKey!,
+            tk.wallet.address.ton.raw,
+          );
+        } else if (params.comment) {
+          payload = comment(params.comment);
+        }
+
+        if (params.tokenType === TokenType.TON) {
+          await sendTonBoc({
+            recipient: params.recipient.address,
+            sendAmountNano: BigInt(toNano(parsedAmount)),
+            isSendAll: params.amount.all,
+            shouldAttemptWithRelayer: false,
+            payload,
+          });
+        } else if (params.tokenType === TokenType.Jetton) {
+          const jetton = tk.wallet.jettons.state.data.jettonBalances.find((jetton) =>
+            compareAddresses(params.currency, jetton.jettonAddress),
+          );
+
+          const totalAmount = new BigNumber(fee).isNegative()
+            ? BASE_FORWARD_AMOUNT
+            : BigInt(toNano(fee, 9)) + BASE_FORWARD_AMOUNT;
+
+          await sendJettonBoc({
+            recipient: params.recipient.address,
+            shouldAttemptWithRelayer: isBattery,
+            jettonTransferAmount: totalAmount,
+            sendAmountNano: BigInt(toNano(parsedAmount, jetton?.metadata.decimals ?? 9)),
+            jetton: jetton!,
+            payload,
+          });
+        } else if (params.tokenType === TokenType.Inscription) {
+          const currencyAdditionalParams =
+            params.additionalParams as InscriptionAdditionalParams;
+
+          const inscription = tk.wallet.tonInscriptions.state.data.items.find(
+            (item) =>
+              item.ticker === params.currency &&
+              item.type === currencyAdditionalParams.type,
+          )!;
+
+          await sendInscriptionBoc({
+            recipient: params.recipient.address,
+            sendAmountNano: BigInt(toNano(parsedAmount, inscription.decimals)),
+            inscription,
+            payload,
+          });
+        }
+      } catch (error) {
+        onFail(error);
+      } finally {
+        setSending(false);
+        onDone();
       }
-
-      const recipientPubKey = (
-        await tk.wallet.tonapi.accounts.getAccountPublicKey(params.recipient.address)
-      ).public_key;
-
-      let payload: Cell | undefined;
-      if (params.isCommentEncrypted) {
-        payload = await encryptMessageComment(
-          params.comment,
-          Buffer.from(tk.wallet.pubkey, 'hex'),
-          Buffer.from(recipientPubKey, 'hex'),
-          params.encryptedCommentPrivateKey!,
-          tk.wallet.address.ton.raw,
-        );
-      } else if (params.comment) {
-        payload = comment(params.comment);
-      }
-
-      if (params.tokenType === TokenType.TON) {
-        await sendTonBoc({
-          recipient: params.recipient.address,
-          sendAmountNano: BigInt(toNano(parsedAmount)),
-          isSendAll: params.amount.all,
-          shouldAttemptWithRelayer: false,
-          payload,
-        });
-      } else if (params.tokenType === TokenType.Jetton) {
-        const jetton = tk.wallet.jettons.state.data.jettonBalances.find((jetton) =>
-          compareAddresses(params.currency, jetton.jettonAddress),
-        );
-
-        const totalAmount = new BigNumber(fee).isNegative()
-          ? BASE_FORWARD_AMOUNT
-          : BigInt(toNano(fee, 9)) + BASE_FORWARD_AMOUNT;
-
-        await sendJettonBoc({
-          recipient: params.recipient.address,
-          shouldAttemptWithRelayer: isBattery,
-          jettonTransferAmount: totalAmount,
-          sendAmountNano: BigInt(toNano(parsedAmount, jetton?.metadata.decimals ?? 9)),
-          jetton: jetton!,
-          payload,
-        });
-      } else if (params.tokenType === TokenType.Inscription) {
-        const currencyAdditionalParams =
-          params.additionalParams as InscriptionAdditionalParams;
-
-        const inscription = tk.wallet.tonInscriptions.state.data.items.find(
-          (item) =>
-            item.ticker === params.currency &&
-            item.type === currencyAdditionalParams.type,
-        )!;
-
-        await sendInscriptionBoc({
-          recipient: params.recipient.address,
-          sendAmountNano: BigInt(toNano(parsedAmount, inscription.decimals)),
-          inscription,
-          payload,
-        });
-      }
-    } catch (error) {
-      Toast.fail(error.message);
-    } finally {
-      setSending(false);
-    }
-  };
+    },
+    [fee, isBattery, params],
+  );
 
   return {
     fee,
     setFee,
-    isInactive,
-    setInactive,
     isBattery,
     isPreparing,
     setPreparing,

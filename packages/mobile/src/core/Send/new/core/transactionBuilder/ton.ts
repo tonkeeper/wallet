@@ -1,7 +1,11 @@
 import { SignerType } from '$core/Send/new/core/transactionBuilder/common';
 import { tk } from '$wallet';
 import { Address, Cell, internal, SendMode } from '@ton/core';
-import { Address as AddressFormatter, TransactionService } from '@tonkeeper/core';
+import {
+  Address as AddressFormatter,
+  BASE_FORWARD_AMOUNT,
+  TransactionService,
+} from '@tonkeeper/core';
 import { getWalletSeqno } from '@tonkeeper/shared/utils/wallet';
 import {
   emulateBoc,
@@ -10,6 +14,11 @@ import {
 } from '@tonkeeper/shared/utils/blockchain';
 import BigNumber from 'bignumber.js';
 import { toNano as tonCoreToNano } from '@ton/core/dist/utils/convert';
+import { TokenType } from '$core/Send/Send.interface';
+import { toNano } from '$utils';
+import { call } from 'redux-saga/effects';
+import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
+import { openInsufficientFundsModal } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 
 export interface BuildTonTransferParams {
   bounce: boolean;
@@ -108,8 +117,22 @@ export async function estimateTonTransferFee(params: TonTransferParams) {
 
   const { emulateResult, battery } = await emulateBoc(boc, undefined, false);
 
+  const fee = new BigNumber(emulateResult.event.extra).multipliedBy(-1);
+
+  if (!params.isSendAll && !fee.isNegative()) {
+    const totalAmount = fee.plus(params.sendAmountNano.toString());
+    const balance = toNano(tk.wallet.balances.state.data.ton);
+    if (totalAmount.gt(balance)) {
+      openInsufficientFundsModal({
+        totalAmount: totalAmount.toString(),
+        balance: balance.toString(),
+      });
+      throw new CanceledActionError();
+    }
+  }
+
   return {
-    fee: new BigNumber(emulateResult.event.extra).multipliedBy(-1).toString(),
+    fee: fee.toString(),
     battery,
   };
 }

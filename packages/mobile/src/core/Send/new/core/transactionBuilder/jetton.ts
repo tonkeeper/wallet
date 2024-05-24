@@ -1,7 +1,12 @@
 import { SignerType } from '$core/Send/new/core/transactionBuilder/common';
 import { tk } from '$wallet';
 import { Address, Cell, internal, SendMode } from '@ton/core';
-import { ContractService, ONE_TON, TransactionService } from '@tonkeeper/core';
+import {
+  BASE_FORWARD_AMOUNT,
+  ContractService,
+  ONE_TON,
+  TransactionService,
+} from '@tonkeeper/core';
 import { getWalletSeqno, setBalanceForEmulation } from '@tonkeeper/shared/utils/wallet';
 import {
   emulateBoc,
@@ -13,6 +18,8 @@ import { BatterySupportedTransaction } from '$wallet/managers/BatteryManager';
 import { compareAddresses } from '$utils/address';
 import BigNumber from 'bignumber.js';
 import { JettonBalanceModel } from '$wallet/models/JettonBalanceModel';
+import { openInsufficientFundsModal } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
+import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
 
 export interface BuildJettonTransferParams {
   jettonWalletAddress: string;
@@ -118,6 +125,23 @@ export async function estimateJettonTransferFee(params: JettonTransferParams) {
     ],
     compareAddresses(params.recipient, tk.wallet.battery.fundReceiver),
   );
+
+  const feeToCalculate = new BigNumber(emulateResult.event.extra)
+    .multipliedBy(-1)
+    .isNegative()
+    ? new BigNumber(BASE_FORWARD_AMOUNT.toString())
+    : new BigNumber(emulateResult.event.extra)
+        .multipliedBy(-1)
+        .plus(BASE_FORWARD_AMOUNT.toString());
+
+  const balance = toNano(tk.wallet.balances.state.data.ton);
+  if (!battery && feeToCalculate.gt(balance)) {
+    openInsufficientFundsModal({
+      totalAmount: feeToCalculate.toString(),
+      balance: balance.toString(),
+    });
+    throw new CanceledActionError();
+  }
 
   return {
     fee: new BigNumber(emulateResult.event.extra).multipliedBy(-1).toString(),

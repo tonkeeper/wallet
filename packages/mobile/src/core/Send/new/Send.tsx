@@ -38,7 +38,6 @@ export const SendNew: FC<SendProps> = ({ route }) => {
     currencyAdditionalParams: initialCurrencyAdditionalParams,
     amount: initialAmount = '0',
     fee: initialFee = '0',
-    isInactive: initialIsInactive = false,
     from,
     expiryTimestamp,
     redirectToActivity = true,
@@ -71,6 +70,7 @@ export const SendNew: FC<SendProps> = ({ route }) => {
   const sendCore = useSendCore(
     {
       goTo: (step: SendSteps) => stepViewRef.current?.go(step),
+      expiryTimestamp,
       recipient: inputHandlers.recipient,
       tokenType,
       currency,
@@ -82,7 +82,6 @@ export const SendNew: FC<SendProps> = ({ route }) => {
     },
     {
       isBattery: initialIsBattery,
-      isInactive: initialIsInactive,
       fee: initialFee,
     },
   );
@@ -169,6 +168,12 @@ export const SendNew: FC<SendProps> = ({ route }) => {
     </Text>
   );
 
+  const handleSendBoc = useCallback(() => {
+    return new Promise<void>(async (resolve, reject) => {
+      sendCore.sendBoc(resolve, reject);
+    });
+  }, [sendCore]);
+
   return (
     <>
       <NavBar
@@ -244,10 +249,10 @@ export const SendNew: FC<SendProps> = ({ route }) => {
               decimals={decimals}
               tokenType={tokenType}
               fee={sendCore.fee}
-              isInactive={sendCore.isInactive}
+              isInactive={false}
               comment={inputHandlers.comment}
               isCommentEncrypted={inputHandlers.isCommentEncrypted}
-              onConfirm={sendCore.sendBoc}
+              onConfirm={handleSendBoc}
               redirectToActivity={redirectToActivity}
               {...stepProps}
             />
