@@ -37,6 +37,7 @@ export const SuspiciousNFTDetailsModal = memo<SuspiciousNFTDetailsModalProps>((p
           <Table>
             <Table.Paragraph>{t('suspiciousNFTDetails.paragraphs.p1')}</Table.Paragraph>
             <Table.Paragraph>{t('suspiciousNFTDetails.paragraphs.p2')}</Table.Paragraph>
+            <Table.Paragraph>{t('suspiciousNFTDetails.paragraphs.p3')}</Table.Paragraph>
           </Table>
           <Spacer y={32} />
           <Button
