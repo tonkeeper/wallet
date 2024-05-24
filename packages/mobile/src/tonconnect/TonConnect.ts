@@ -296,6 +296,8 @@ class TonConnectService {
     connection: WithWalletIdentifier<IConnectedAppConnection>,
   ): Promise<WalletResponse<'sendTransaction'>> {
     try {
+      const wallet = tk.wallets.get(connection.walletIdentifier)!;
+
       const params = JSON.parse(request.params[0]);
 
       const isValidRequest =
@@ -304,12 +306,12 @@ class TonConnectService {
         Array.isArray(params.messages) &&
         params.messages.every((msg) => !!msg.address && !!msg.amount);
 
-      const walletNetwork = tk.wallet.isTestnet ? CHAIN.TESTNET : CHAIN.MAINNET;
+      const walletNetwork = wallet.isTestnet ? CHAIN.TESTNET : CHAIN.MAINNET;
 
       const isValidNetwork = params.network ? params.network === walletNetwork : true;
 
       const isValidFrom = params.from
-        ? Address.compare(params.from, tk.wallet.address.ton.raw)
+        ? Address.compare(params.from, wallet.address.ton.raw)
         : true;
 
       if (!isValidRequest) {
@@ -352,12 +354,10 @@ class TonConnectService {
         );
       }
 
-      const currentWalletAddress = store.getState().wallet?.address?.ton;
-
       const txParams: SignRawParams = {
         valid_until,
         messages,
-        source: currentWalletAddress,
+        source: wallet.address.ton.raw,
       };
 
       const boc = await new Promise<string>(async (resolve, reject) => {
