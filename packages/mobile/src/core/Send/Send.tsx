@@ -279,8 +279,6 @@ export const Send: FC<SendProps> = ({ route }) => {
     trcPayload,
   ]);
 
-  console.log(currency);
-
   const unlockVault = useUnlockVault();
   const doSend = useCallback(
     async (onDone: () => void, onFail: (e?: Error) => void) => {

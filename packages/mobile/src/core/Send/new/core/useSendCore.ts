@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import {
+  CurrencyAdditionalParams,
+  InscriptionAdditionalParams,
   SendAmount,
   SendRecipient,
   SendSteps,
@@ -23,6 +25,11 @@ import { Toast } from '@tonkeeper/uikit';
 import { parseLocaleNumber, toNano } from '$utils';
 import { Buffer } from 'buffer';
 import BigNumber from 'bignumber.js';
+import {
+  estimateInscriptionTransferFee,
+  sendInscriptionBoc,
+} from '$core/Send/new/core/transactionBuilder/inscription';
+import { TypeEnum } from '@tonkeeper/core/src/TonAPI';
 
 export interface SendCoreInitialParams {
   fee: string;
@@ -39,6 +46,7 @@ export interface SendCoreParams {
   isCommentEncrypted: boolean;
   amount: SendAmount;
   encryptedCommentPrivateKey: Uint8Array | null;
+  additionalParams?: CurrencyAdditionalParams;
 }
 
 export const useSendCore = (
@@ -93,6 +101,22 @@ export const useSendCore = (
           recipient: params.recipient.address,
           sendAmountNano: BigInt(toNano(parsedAmount, jetton?.metadata.decimals ?? 9)),
           jetton: jetton!,
+          payload,
+        });
+      } else if (params.tokenType === TokenType.Inscription) {
+        const currencyAdditionalParams =
+          params.additionalParams as InscriptionAdditionalParams;
+
+        const inscription = tk.wallet.tonInscriptions.state.data.items.find(
+          (item) =>
+            item.ticker === params.currency &&
+            item.type === currencyAdditionalParams.type,
+        )!;
+
+        emulateResult = await estimateInscriptionTransferFee({
+          recipient: params.recipient.address,
+          sendAmountNano: BigInt(toNano(parsedAmount, inscription.decimals)),
+          inscription,
           payload,
         });
       }
@@ -165,6 +189,22 @@ export const useSendCore = (
           jetton: jetton!,
           payload,
         });
+      } else if (params.tokenType === TokenType.Inscription) {
+        const currencyAdditionalParams =
+          params.additionalParams as InscriptionAdditionalParams;
+
+        const inscription = tk.wallet.tonInscriptions.state.data.items.find(
+          (item) =>
+            item.ticker === params.currency &&
+            item.type === currencyAdditionalParams.type,
+        )!;
+
+        await sendInscriptionBoc({
+          recipient: params.recipient.address,
+          sendAmountNano: BigInt(toNano(parsedAmount, inscription.decimals)),
+          inscription,
+          payload,
+        });
       }
     } catch (error) {
       Toast.fail(error.message);
@@ -179,7 +219,6 @@ export const useSendCore = (
     isInactive,
     setInactive,
     isBattery,
-    setBattery,
     isPreparing,
     setPreparing,
     isSending,

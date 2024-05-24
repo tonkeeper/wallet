@@ -78,6 +78,7 @@ export const SendNew: FC<SendProps> = ({ route }) => {
       comment: inputHandlers.comment,
       amount: inputHandlers.amount,
       encryptedCommentPrivateKey: inputHandlers.encryptedCommentPrivateKey,
+      additionalParams: currencyAdditionalParams,
     },
     {
       isBattery: initialIsBattery,

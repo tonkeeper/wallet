@@ -62,8 +62,8 @@ export async function buildTonSignerTransferBoc(params: BuildTonTransferParams) 
       internal({
         to: params.recipient,
         bounce: params.bounce,
-        value: params.sendAmount,
-        body: params.payload,
+        value: BigInt(params.sendAmount),
+        body: params.payload ?? null,
       }),
     ],
   });
@@ -119,19 +119,6 @@ export async function sendTonBoc(params: TonTransferParams) {
   const timeout = await getTimeoutFromLiteserverSafely();
 
   const signerType = tk.wallet.isLedger ? SignerType.Ledger : SignerType.Signer;
-
-  console.log({
-    isEstimate: false,
-    timeout,
-    seqno,
-    recipient: params.recipient,
-    payload: params.payload,
-    sendAmount: params.sendAmountNano.toString(),
-    bounce: AddressFormatter.isBounceable(params.recipient),
-    sendMode: params.isSendAll
-      ? 128
-      : SendMode.IGNORE_ERRORS + SendMode.PAY_GAS_SEPARATELY,
-  });
 
   const boc = await buildTonTransferBoc(signerType, {
     isEstimate: false,
