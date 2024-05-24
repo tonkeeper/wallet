@@ -49,9 +49,20 @@ export const NftPreviewContent = memo<NftPreviewContentProps>((props) => {
     ).toRaw();
     const nftApprovalStatus = approvalStatuses[approvalIdentifier];
 
+    const isDisabled =
+      disabled || nftApprovalStatus?.current === TokenApprovalStatus.Spam;
+
+    if (
+      nftApprovalStatus?.current === TokenApprovalStatus.Spam ||
+      (nft?.trust === TrustType.Blacklist &&
+        nftApprovalStatus?.current !== TokenApprovalStatus.Approved)
+    ) {
+      return null;
+    }
+
     return (
       <Pressable
-        disabled={props.disabled}
+        disabled={isDisabled}
         onPress={handlePress}
         style={styles.container.static}
       >
