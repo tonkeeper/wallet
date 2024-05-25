@@ -51,8 +51,28 @@ export const ActionListItemByType = memo<ActionListItemProps>((props) => {
         </ActionListItem>
       );
     case ActionType.NftItemTransfer:
+      if (!action.payload.nft) {
+        return null;
+      }
+      return (
+        <ActionListItemWithNft
+          nftAddress={action.payload.nft}
+          {...pureProps}
+          action={action}
+        />
+      );
     case ActionType.NftPurchase:
-      return <ActionListItemWithNft {...pureProps} action={action} />;
+      if (!action.payload.nft?.address) {
+        return null;
+      }
+      return (
+        <ActionListItemWithNft
+          nftAddress={action.payload.nft.address}
+          nftItem={action.payload.nft}
+          {...pureProps}
+          action={action}
+        />
+      );
     case ActionType.SmartContractExec:
       return (
         <ActionListItem

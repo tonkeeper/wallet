@@ -5,20 +5,20 @@ import { ListItemEncryptedComment } from '@tonkeeper/uikit/src/components/List/L
 import { ActionListItem, ActionListItemProps } from './ActionListItem';
 import { ActionType } from '@tonkeeper/mobile/src/wallet/models/ActivityModel';
 import { useNftItemByAddress } from '../../query/hooks/useNftItemByAddress';
-import { TrustType } from '@tonkeeper/core/src/TonAPI';
+import { NftItem, TrustType } from '@tonkeeper/core/src/TonAPI';
 import { Address } from '../../Address';
 import { TokenApprovalStatus } from '@tonkeeper/mobile/src/wallet/managers/TokenApprovalManager';
 import { useTokenApproval } from '../../hooks';
 
 export interface ActionListItemWithNftProps
-  extends ActionListItemProps<ActionType.NftPurchase | ActionType.NftItemTransfer> {}
+  extends ActionListItemProps<ActionType.NftPurchase | ActionType.NftItemTransfer> {
+  nftAddress: string;
+  nftItem?: NftItem;
+}
 
 export const ActionListItemWithNft = memo<ActionListItemWithNftProps>((props) => {
-  const { action } = props;
+  const { action, nftAddress, nftItem } = props;
   const { payload, type } = action;
-
-  const nftAddress = type === ActionType.NftPurchase ? payload.nft.address : payload.nft;
-  const nftItem = type === ActionType.NftPurchase ? payload.nft : undefined;
 
   const { data: nft } = useNftItemByAddress(nftAddress, {
     existingNft: nftItem,
