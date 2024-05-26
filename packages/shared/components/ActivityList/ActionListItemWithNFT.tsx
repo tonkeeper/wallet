@@ -25,7 +25,7 @@ export const ActionListItemWithNft = memo<ActionListItemWithNftProps>((props) =>
   });
 
   const approvalStatuses = useTokenApproval((state) => state.tokens);
-  const approvalIdentifier = nft
+  const approvalIdentifier = nft?.address
     ? Address.parse(nft?.collection?.address ?? nft?.address).toRaw()
     : '';
   const nftApprovalStatus = approvalStatuses[approvalIdentifier];
@@ -40,7 +40,7 @@ export const ActionListItemWithNft = memo<ActionListItemWithNftProps>((props) =>
     case ActionType.NftItemTransfer:
       return (
         <ActionListItem {...props} isScam={isScam}>
-          {nft && !isScam && (
+          {nft && nft?.address && !isScam && (
             <NftPreviewContent
               nft={nft}
               disabled={props.disableNftPreview || props.disablePressable}
@@ -59,7 +59,7 @@ export const ActionListItemWithNft = memo<ActionListItemWithNftProps>((props) =>
     case ActionType.NftPurchase:
       return (
         <ActionListItem {...props} isScam={isScam}>
-          {nft && !isScam && (
+          {nft && nft?.address && !isScam && (
             <NftPreviewContent
               nft={nft}
               disabled={props.disableNftPreview || props.disablePressable}
