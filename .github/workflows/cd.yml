@@ -57,6 +57,15 @@ jobs:
          CERTIFICATE_BASE64: ${{ secrets.IOS_DIST_SIGNING_KEY }}
         run: |
          echo $CERTIFICATE_BASE64 | base64 --decode > signing-cert.p12
+         
+      - name: Create Test Details
+        id: changelog
+        run: |
+          branch=$(git rev-parse --abbrev-ref HEAD)
+          commit=$(git rev-parse HEAD)
+          commit_message=$(git log -1 --pretty=%B)
+          changelog="${branch}/${commit}\n\n${commit_message}"
+          echo "::set-output name=changelog::${changelog}"
 
       - name: Build & upload iOS binary
         working-directory: './packages/mobile/ios'
@@ -70,6 +79,7 @@ jobs:
           ASC_KEY: ${{ secrets.APPLE_KEY_CONTENT }}
           SIGNING_KEY_PASSWORD: ${{ secrets.IOS_DIST_SIGNING_KEY_PASSWORD }}
           SIGNING_KEY_FILE_PATH: signing-cert.p12
+          TEST_DETAILS: ${{ steps.changelog.outputs.changelog }}
 
       - name: Upload logs to artifacts
         uses: actions/upload-artifact@v3
