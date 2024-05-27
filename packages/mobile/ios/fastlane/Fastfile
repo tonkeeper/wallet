@@ -135,10 +135,15 @@ platform :ios do
   desc "Upload to TestFlight / ASC"
   lane :upload_release do
     api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
+    
+    branch = sh("git rev-parse --abbrev-ref HEAD").strip
+    hash = sh("git rev-parse --short HEAD").strip
+    message = sh("git log -1 --pretty=%B").strip
+    changelog = "#{branch}/#{hash}\n\n#{message}"
 
     upload_to_testflight(
         api_key: api_key,
-        changelog: ENV["TEST_DETAILS"],
+        changelog: changelog,
     )
   end
 
