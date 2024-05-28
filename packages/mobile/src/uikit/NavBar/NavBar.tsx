@@ -155,8 +155,8 @@ export const NavBar: FC<NavBarProps> = (props) => {
       {isTransparent && (
         <S.Gradient
           colors={[
-            theme.colors.backgroundPrimary,
-            convertHexToRGBA(theme.colors.backgroundPrimary, 0),
+            theme.colors.backgroundPage,
+            convertHexToRGBA(theme.colors.backgroundPage, 0),
           ]}
           locations={[0, 1]}
         />

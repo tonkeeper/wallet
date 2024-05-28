@@ -80,7 +80,7 @@ export const RestorePurchases = memo(() => {
         </Text>
         .
       </Text>
-      {!(!reservedBalance || reservedBalance === '0') && (
+
         <Text
           style={styles.text.static}
           type="body2"
@@ -97,7 +97,6 @@ export const RestorePurchases = memo(() => {
           </Text>
           .
         </Text>
-      )}
     </>
   );
 });

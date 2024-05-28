@@ -9,6 +9,7 @@ import React, {
   useState,
 } from 'react';
 import {
+  BackHandler,
   Dimensions,
   LayoutChangeEvent,
   Modal,
@@ -206,6 +207,18 @@ export function PopupSelectComponent<T>(props: PopupSelectProps<T>) {
       callback?.();
     });
   }, []);
+
+  useEffect(() => {
+    const callback = () => {
+      if (!visible) {
+        return false;
+      }
+      handleClose();
+      return true;
+    };
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', callback);
+    return () => backHandler.remove();
+  }, [visible]);
 
   const handlePressChildren = useCallback(() => {
     children.props?.onPress?.();

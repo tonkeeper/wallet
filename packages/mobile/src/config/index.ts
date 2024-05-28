@@ -27,6 +27,8 @@ export type AppConfigVars = {
   NFTOnExplorerUrl: string;
   flags: Record<string, boolean>;
   directSupportUrl: string;
+  faqUrlRu: string;
+  faqUrl: string;
   tonkeeperNewsUrl: string;
   stakingInfoUrl: string;
   tonCommunityUrl: string;
@@ -107,6 +109,9 @@ const defaultConfig: Partial<AppConfigVars> = {
   holdersService: 'https://card-dev.whales-api.com',
   tronapiHost: 'https://tron.tonkeeper.com',
   tronapiTestnetHost: 'https://testnet-tron.tonkeeper.com',
+
+  faqUrl: 'https://tonkeeper.helpscoutdocs.com',
+  faqUrlRu: 'https://tonkeeperru.helpscoutdocs.com',
 
   batteryHost: 'https://battery.tonkeeper.com',
   batteryTestnetHost: 'https://testnet-battery.tonkeeper.com',
