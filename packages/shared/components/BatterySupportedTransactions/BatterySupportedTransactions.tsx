@@ -8,6 +8,7 @@ import { useExternalState } from '../../hooks/useExternalState';
 import { tk } from '@tonkeeper/mobile/src/wallet';
 import { BatterySupportedTransaction } from '@tonkeeper/mobile/src/wallet/managers/BatteryManager';
 import { Platform } from 'react-native';
+import {NavBarHeight} from "@tonkeeper/mobile/src/shared/constants";
 
 export interface SupportedTransaction {
   type: BatterySupportedTransaction;
@@ -55,7 +56,7 @@ export const BatterySupportedTransactions = memo<BatterySupportedTransactionsPro
     );
 
     return (
-      <View>
+      <View style={styles.container}>
         {props.editable && (
           <View style={styles.textContainer}>
             <Text textAlign="center" type="h2">
@@ -106,4 +107,7 @@ const styles = Steezy.create({
     paddingHorizontal: 32,
     marginBottom: 32,
   },
+  container: {
+    paddingTop: NavBarHeight,
+  }
 });

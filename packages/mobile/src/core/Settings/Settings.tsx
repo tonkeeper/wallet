@@ -7,10 +7,9 @@ import { TapGestureHandler } from 'react-native-gesture-handler';
 
 import * as S from './Settings.style';
 import { Icon, PopupSelect, Spacer, Text } from '$uikit';
-import { Icon as NewIcon, Screen } from '@tonkeeper/uikit';
+import { Icon as NewIcon, Screen, List } from '@tonkeeper/uikit';
 import { useShouldShowTokensButton } from '$hooks/useShouldShowTokensButton';
 import { useNavigation } from '@tonkeeper/router';
-import { List } from '@tonkeeper/uikit';
 import {
   AppStackRouteNames,
   MainStackRouteNames,
@@ -120,6 +119,10 @@ export const Settings: FC = () => {
 
   const handleSupport = useCallback(() => {
     Linking.openURL(config.get('directSupportUrl')).catch((err) => console.log(err));
+  }, []);
+
+  const handleFAQ = useCallback(() => {
+    Linking.openURL(i18n.locale === 'ru' ? config.get('faqUrlRu') : config.get('faqUrl')).catch((err) => console.log(err));
   }, []);
 
   const handleResetWallet = useCallback(() => {
@@ -451,6 +454,17 @@ export const Settings: FC = () => {
           </List>
           <Spacer y={16} />
           <List>
+            <List.Item
+              onPress={handleFAQ}
+              value={
+                <NewIcon
+                  style={styles.icon.static}
+                  color="accentBlue"
+                  name={'ic-question-28'}
+                />
+              }
+              title={t('settings_faq')}
+            />
             {!flags.disable_support_button ? (
               <List.Item
                 onPress={handleSupport}

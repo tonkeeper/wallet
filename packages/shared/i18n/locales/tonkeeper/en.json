@@ -169,6 +169,7 @@
     },
     "recharge_by_crypto": {
       "title": "Recharge",
+      "title_gift": "Gift",
       "tokens": "Tokens",
       "continue": "Continue",
       "other": {
@@ -182,8 +183,8 @@
         "subtitle": "Using %{methods}"
       },
       "gift": {
-        "title": "Send a Gift",
-        "subtitle": "To friends and family"
+        "title": "Battery Gift",
+        "subtitle": "Share with friends"
       },
       "promo": {
         "title": "Enter Promo Code",
@@ -688,8 +689,8 @@
     "system": "System"
   },
   "settings_backup_seed": "Backup",
-  "settings_contact_support": "Contact us",
-  "settings_delete_account": "Delete account",
+  "settings_contact_support": "Contact Us",
+  "settings_delete_account": "Delete Account",
   "settings_jettons_list": "Tokens",
   "settings_legal_documents": "Legal",
   "language": {
@@ -708,7 +709,7 @@
     }
   },
   "settings_network_alert_title": "Select network",
-  "settings_news": "Tonkeeper news",
+  "settings_news": "Tonkeeper News",
   "settings_notifications": "Notifications",
   "settings_primary_currency": "Currency",
   "settings_bank_card": "Bank card",
@@ -727,6 +728,7 @@
   "settings_security": "Security",
   "settings_subscriptions": "Subscriptions",
   "settings_support": "Support",
+  "settings_faq": "FAQ",
   "settings_title": "Settings",
   "settings_to_mainnet": "Switch to Mainnet",
   "settings_to_testnet": "Switch to Testnet",
@@ -1217,7 +1219,7 @@
   "stop_watch": "Delete Watch Account",
   "customize": "Customize",
   "customize_modal": {
-    "title": "Customize your Wallet",
+    "title": "Customize your wallet",
     "subtitle": "Wallet name and icon are stored locally on your device.",
     "wallet_name": "Wallet Name",
     "save": "Save"

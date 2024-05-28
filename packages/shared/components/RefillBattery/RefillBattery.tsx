@@ -25,6 +25,7 @@ import { RefillBatterySettingsWidget } from './RefillBatterySettingsWidget';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Tag } from '@tonkeeper/mobile/src/uikit';
+import {NavBarHeight} from "@tonkeeper/mobile/src/shared/constants";
 
 export interface RefillBatteryProps {
   navigateToTransactions: () => void;
@@ -44,7 +45,7 @@ export const RefillBattery = memo<RefillBatteryProps>((props) => {
   return (
     <Animated.ScrollView
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingBottom: bottomInsets + 16 }}
+      contentContainerStyle={{ paddingBottom: bottomInsets + 16, paddingTop: NavBarHeight }}
     >
       <View style={styles.contentContainer}>
         <View style={styles.animatedBatteryContainer}>

@@ -8,7 +8,6 @@ import {
   List,
   Radio,
   Screen,
-  Spacer,
   Steezy,
   Toast,
   TouchableOpacity,
@@ -367,14 +366,17 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
             </View>
           }
           isModal={Platform.OS === 'ios'}
-          title={t('battery.recharge_by_crypto.title')}
+          title={
+            initialRecipientAddress
+              ? t('battery.recharge_by_crypto.title')
+              : t('battery.recharge_by_crypto.title_gift')
+          }
         />
         <Screen.ScrollView
           ref={scrollRef}
           keyboardShouldPersistTaps="handled"
           withBottomInset
         >
-          <Spacer y={8} />
           <View style={styles.contentContainer}>
             {!initialRecipientAddress ? (
               <AddressInput
@@ -484,6 +486,7 @@ const styles = Steezy.create(({ colors }) => ({
   },
   inputContainer: {
     height: 240,
+    marginBottom: 16,
   },
   headerRightContent: {
     flexDirection: 'row',

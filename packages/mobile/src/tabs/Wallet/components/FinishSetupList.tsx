@@ -1,7 +1,7 @@
 import {
   Button,
   Haptics,
-  Icon,
+  Icon, IconColors,
   IconNames,
   List,
   Spacer,
@@ -15,9 +15,10 @@ import { useBiometrySettings, useWallet, useWalletSetup } from '@tonkeeper/share
 import { useNavigation } from '@tonkeeper/router';
 import { useNotificationsSwitch } from '$hooks/useNotificationsSwitch';
 import { LayoutAnimation, Linking } from 'react-native';
-import { getBiometryIcon, getBiometryName } from '$utils';
+import {convertHexToRGBA, getBiometryIcon, getBiometryName} from '$utils';
 import { config } from '$config';
 import { tk } from '$wallet';
+import {useTheme} from "$hooks/useTheme";
 
 enum SetupItemType {
   Backup = 'Backup',
@@ -29,6 +30,7 @@ enum SetupItemType {
 interface SetupItem {
   type: SetupItemType;
   iconName: IconNames;
+  iconColor: IconColors;
   title: string;
   switch: boolean | null;
   onPress: () => void;
@@ -38,6 +40,7 @@ export const FinishSetupList = memo(() => {
   const { lastBackupAt, setupDismissed, hasOpenedTelegramChannel } = useWalletSetup();
   const wallet = useWallet();
   const nav = useNavigation();
+  const theme = useTheme();
 
   const biometry = useBiometrySettings();
 
@@ -76,6 +79,7 @@ export const FinishSetupList = memo(() => {
     if (initialItems.includes(SetupItemType.Notifications)) {
       list.push({
         type: SetupItemType.Notifications,
+        iconColor: 'accentGreen',
         iconName: 'ic-bell-28',
         title: t('finish_setup.enable_notifications'),
         switch: notifications.isSubscribed,
@@ -92,6 +96,7 @@ export const FinishSetupList = memo(() => {
     if (initialItems.includes(SetupItemType.Biometry)) {
       list.push({
         type: SetupItemType.Biometry,
+        iconColor: 'accentGreen',
         iconName: getBiometryIcon(biometry.type),
         title: t('finish_setup.use_biometry', {
           name: getBiometryName(biometry.type, { accusative: true }),
@@ -105,6 +110,7 @@ export const FinishSetupList = memo(() => {
       list.push({
         type: SetupItemType.JoinTonkeeper,
         iconName: 'ic-telegram-28',
+        iconColor: 'accentBlue',
         title: t('finish_setup.join_tg'),
         switch: null,
         onPress: () => {
@@ -121,6 +127,7 @@ export const FinishSetupList = memo(() => {
     if (lastBackupAt === null) {
       list.push({
         type: SetupItemType.Backup,
+        iconColor: 'accentOrange',
         iconName: 'ic-key-28',
         title: t('finish_setup.backup'),
         switch: null,
@@ -198,8 +205,15 @@ export const FinishSetupList = memo(() => {
             titleNumberOfLines={3}
             titleTextType="body2"
             leftContent={
-              <View style={styles.iconContainer}>
-                <Icon name={item.iconName} />
+              <View
+                style={[
+                  styles.iconContainer,
+                  {
+                    backgroundColor: convertHexToRGBA(theme.colors[item.iconColor], 0.12),
+                  },
+                ]}
+              >
+                <Icon color={item.iconColor} name={item.iconName} />
               </View>
             }
             rightContent={

@@ -116,6 +116,7 @@ export const IconList = {
   'ic-plus-outline-28': require('../../../assets/icons/png/ic-plus-outline-28.png'),
   'ic-purchases-28': require('../../../assets/icons/png/ic-purchases-28.png'),
   'ic-qr-viewfinder-outline-28': require('../../../assets/icons/png/ic-qr-viewfinder-outline-28.png'),
+  'ic-question-28': require('../../../assets/icons/png/ic-question-28.png'),
   'ic-reorder-28': require('../../../assets/icons/png/ic-reorder-28.png'),
   'ic-return-28': require('../../../assets/icons/png/ic-return-28.png'),
   'ic-secure-28': require('../../../assets/icons/png/ic-secure-28.png'),

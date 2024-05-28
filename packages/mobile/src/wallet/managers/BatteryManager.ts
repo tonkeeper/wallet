@@ -285,7 +285,11 @@ export class BatteryManager {
   }
 
   public async load() {
-    return await Promise.all([this.fetchBalance(), this.loadBatteryConfig()]);
+    return await Promise.all([
+      this.fetchBalance(),
+      this.loadBatteryConfig(),
+      this.fetchRechargeMethods(),
+    ]);
   }
 
   public async rehydrate() {

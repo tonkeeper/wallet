@@ -116,6 +116,7 @@ export type IconNames =
   | 'ic-plus-outline-28'
   | 'ic-purchases-28'
   | 'ic-qr-viewfinder-outline-28'
+  | 'ic-question-28'
   | 'ic-reorder-28'
   | 'ic-return-28'
   | 'ic-secure-28'
@@ -319,6 +320,7 @@ export const AllIcons = [
   'ic-plus-outline-28',
   'ic-purchases-28',
   'ic-qr-viewfinder-outline-28',
+  'ic-question-28',
   'ic-reorder-28',
   'ic-return-28',
   'ic-secure-28',
@@ -523,6 +525,7 @@ export const IconSizes = {
   'ic-plus-outline-28': 28,
   'ic-purchases-28': 28,
   'ic-qr-viewfinder-outline-28': 28,
+  'ic-question-28': 28,
   'ic-reorder-28': 28,
   'ic-return-28': 28,
   'ic-secure-28': 28,

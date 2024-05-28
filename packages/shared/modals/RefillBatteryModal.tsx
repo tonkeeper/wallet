@@ -62,6 +62,7 @@ export const RefillBatteryModal = memo(() => {
   return (
     <>
       <NavBar
+        isTransparent
         isModal
         isClosedButton
         isForceBackIcon
