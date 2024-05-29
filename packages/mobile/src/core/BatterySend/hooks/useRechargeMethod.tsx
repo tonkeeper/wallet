@@ -1,6 +1,6 @@
 import { RechargeMethodsTypeEnum } from '@tonkeeper/core/src/BatteryAPI';
 import BigNumber from 'bignumber.js';
-import { useRates, useWalletCurrency } from '@tonkeeper/shared/hooks';
+import { useBalancesState, useRates, useWalletCurrency } from '@tonkeeper/shared/hooks';
 import { useCallback, useMemo } from 'react';
 import { formatter } from '@tonkeeper/shared/formatter';
 import { tk } from '$wallet';
@@ -8,6 +8,8 @@ import { compareAddresses } from '$utils/address';
 import { RechargeMethod } from '$core/BatterySend/types';
 import { ImageProps } from 'react-native';
 import { config } from '$config';
+import {useBatteryBalance} from "@tonkeeper/shared/query/hooks/useBatteryBalance";
+import {toNano} from "$utils";
 
 export interface IRechargeMethod extends RechargeMethod {
   formattedTonFiatAmount: (amount: number | string) => string;

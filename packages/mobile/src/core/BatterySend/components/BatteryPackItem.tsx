@@ -15,6 +15,7 @@ export interface BatteryPackItemProps {
   isManualAmountInput: boolean;
   inputtedAmount: string;
   shouldMinusReservedAmount: boolean;
+  willBePaidManually: boolean;
 }
 
 export const BatteryPackItem = memo<BatteryPackItemProps>((props) => {
@@ -24,13 +25,22 @@ export const BatteryPackItem = memo<BatteryPackItemProps>((props) => {
     props.rechargeMethod.balance,
   );
 
+  const isAvailableToBuy =
+    props.willBePaidManually ||
+    (props.rechargeMethod.min_bootstrap_value &&
+      new BigNumber(amountInToken).isGreaterThanOrEqualTo(
+        props.rechargeMethod.min_bootstrap_value,
+      ));
+
+  const isDisabled = !isEnoughBalance || !isAvailableToBuy;
+
   return (
     <List.Item
-      disabled={!isEnoughBalance}
+      disabled={isDisabled}
       onPress={props.onAmountSelect(amountInToken)}
       rightContent={
         <Radio
-          disabled={!isEnoughBalance}
+          disabled={isDisabled}
           onSelect={() => null}
           isSelected={
             !props.isManualAmountInput &&

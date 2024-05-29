@@ -42,6 +42,7 @@ import { AnimatedScrollView } from 'react-native-reanimated/lib/typescript/reani
 import { BatteryPackItem } from '$core/BatterySend/components';
 import { t } from '@tonkeeper/shared/i18n';
 import { Keyboard, Platform } from 'react-native';
+import { useBalancesState } from '@tonkeeper/shared/hooks';
 
 let dnsAbortController: null | AbortController = null;
 
@@ -91,9 +92,14 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
   const [dnsLoading, setDnsLoading] = useState(false);
   const [isManualAmountInput, setIsManualAmountInput] = useState(false);
 
+  const batteryState = useExternalState(tk.wallet.battery.state, (state) => state);
   const shouldMinusReservedAmount =
-    useExternalState(tk.wallet.battery.state, (state) => state.reservedBalance) === '0' ||
-    !initialRecipientAddress;
+    batteryState.reservedBalance === '0' || !initialRecipientAddress;
+
+  const hasBatteryBalance = !!(batteryState.balance && batteryState.balance !== '0');
+
+  const tonBalance = useBalancesState().ton;
+  const hasEnoughTonBalance = new BigNumber(tonBalance).isGreaterThanOrEqualTo('0.1');
 
   const [selectedJettonMaster, setSelectedJettonMaster] = useState<string | undefined>(
     initialJettonMaster,
@@ -146,7 +152,8 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
             },
           ],
         },
-        { experimentalWithBattery: true, forceRelayerUse: true },
+        {},
+        () => Toast.success(t('battery.please_wait')),
       );
     }
 
@@ -163,6 +170,15 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
       forwardBody: commentCell,
     });
 
+    const sendWithBattery =
+      hasBatteryBalance ||
+      !!(
+        rechargeMethod.min_bootstrap_value &&
+        new BigNumber(parsedAmount).isGreaterThanOrEqualTo(
+          rechargeMethod.min_bootstrap_value,
+        )
+      );
+
     await openSignRawModal(
       {
         messages: [
@@ -173,12 +189,17 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
           },
         ],
       },
-      { experimentalWithBattery: true, forceRelayerUse: true },
+      { experimentalWithBattery: sendWithBattery, forceRelayerUse: true },
+      () => Toast.success(t('battery.please_wait')),
     );
   }, [
     amount.value,
+    hasBatteryBalance,
     rechargeMethod.decimals,
     rechargeMethod.isTon,
+    rechargeMethod.maxInputAmount,
+    rechargeMethod.min_bootstrap_value,
+    rechargeMethod.symbol,
     recipient?.address,
     selectedJettonMaster,
   ]);
@@ -344,7 +365,7 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
   const isGreaterThanBalance = new BigNumber(localeAmount).isGreaterThan(
     rechargeMethod.balance,
   );
-
+  
   return (
     <>
       <Screen>
@@ -391,6 +412,7 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
             <List style={styles.list} indent={false}>
               {packs.map((pack) => (
                 <BatteryPackItem
+                  willBePaidManually={hasBatteryBalance || hasEnoughTonBalance}
                   key={pack.key}
                   tonAmount={pack.tonAmount}
                   icon={pack.icon}
@@ -438,9 +460,13 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
                       shouldMinusReservedAmount ? rechargeMethod.minInputAmount : '0'
                     }
                     minAmount={
-                      shouldMinusReservedAmount
+                      !hasBatteryBalance &&
+                      !hasEnoughTonBalance &&
+                      rechargeMethod.min_bootstrap_value
+                        ? rechargeMethod.min_bootstrap_value
+                        : shouldMinusReservedAmount
                         ? rechargeMethod.minInputAmount
-                        : undefined
+                        : '0'
                     }
                     decimals={rechargeMethod.decimals}
                     balance={rechargeMethod.balance}

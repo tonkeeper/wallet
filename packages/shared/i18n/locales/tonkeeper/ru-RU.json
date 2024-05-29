@@ -1118,6 +1118,7 @@
   "region_nokyc": "Нейтральные воды",
   "nokyc": "без KYC",
   "battery": {
+    "please_wait": "Батарейка зарядится за пару минут",
     "max_input_amount": "Максимальная сумма: %{amount}",
     "send_widget": {
       "battery": "Батарейка"

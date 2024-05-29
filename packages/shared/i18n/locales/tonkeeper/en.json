@@ -126,6 +126,7 @@
   "auth_failed": "Authentication failed",
   "balances_setup_wallet": "Set up wallet",
   "battery": {
+    "please_wait": "Battery will charge in a few minutes",
     "max_input_amount": "Max input amount is %{amount}",
     "send_widget": {
       "battery": "Battery"
