@@ -3,7 +3,6 @@ import { Ton } from '$libs/Ton';
 import { useDispatch } from 'react-redux';
 import { DeeplinkOrigin, DeeplinkingResolver, useDeeplinking } from '$libs/deeplinking';
 import { CryptoCurrencies } from '$shared/constants';
-import { walletActions } from '$store/wallet';
 import { Base64, delay, fromNano, toNano } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { Toast } from '$store';
@@ -45,6 +44,10 @@ import { ActionSource } from '$wallet/models/ActivityModel';
 import { StakingTransactionType } from '$core/StakingSend/types';
 import { ImportWalletInfo, WalletContractVersion } from '$wallet/WalletTypes';
 import { ImportWalletStackRouteNames } from '$navigation/ImportWalletStack/types';
+import { estimateInscriptionTransferFee } from '$core/Send/new/core/transactionBuilder/inscription';
+import { comment as makeCommentCell } from '@ton/core';
+import { estimateJettonTransferFee } from '$core/Send/new/core/transactionBuilder/jetton';
+import { estimateTonTransferFee } from '$core/Send/new/core/transactionBuilder/ton';
 
 const getExpiresSec = () => {
   return getTimeSec() + 10 * 60;
@@ -252,31 +255,32 @@ export function useDeeplinkingResolvers() {
       }
 
       if (amount) {
-        dispatch(
-          walletActions.confirmSendCoins({
+        try {
+          const estimate = await estimateInscriptionTransferFee({
+            recipient: address,
+            sendAmountNano: BigInt(toNano(amount, inscription.decimals)),
+            inscription,
+            payload: comment ? makeCommentCell(comment) : undefined,
+          });
+          const options = {
             currency: inscription.ticker,
-            amount: fromNano(amount, inscription.decimals),
             address,
             comment,
-            tokenType: TokenType.Inscription,
             currencyAdditionalParams: { type: inscription.type },
-            onNext: (details) => {
-              const options = {
-                currency: inscription.ticker,
-                address,
-                comment,
-                currencyAdditionalParams: { type: inscription.type },
-                amount: fromNano(amount, inscription.decimals),
-                tokenType: TokenType.Inscription,
-                fee: details.fee,
-                isInactive: details.isInactive,
-                methodId: resolveParams.methodId,
-                redirectToActivity: resolveParams.redirectToActivity,
-              };
-              openSend(options);
-            },
-          }),
-        );
+            amount: fromNano(amount, inscription.decimals),
+            tokenType: TokenType.Inscription,
+            fee: fromNano(estimate.fee, 9),
+            isInactive: false,
+            methodId: resolveParams.methodId,
+            redirectToActivity: resolveParams.redirectToActivity,
+          };
+          openSend(options);
+        } catch (e) {
+          if (e.message) {
+            Toast.fail(e.message);
+          }
+          return;
+        }
       } else {
         openSend({
           currency: inscription.ticker,
@@ -387,64 +391,69 @@ export function useDeeplinkingResolvers() {
           return;
         }
 
-        dispatch(
-          walletActions.confirmSendCoins({
-            decimals,
-            currency,
-            amount,
+        try {
+          const estimate = await estimateJettonTransferFee({
+            recipient: address,
+            sendAmountNano: BigInt(toNano(query.amount, decimals)),
+            jetton: jettonBalance,
+            payload: comment ? makeCommentCell(comment) : undefined,
+          });
+          const options = {
+            currency: query.jetton,
+            isBattery: estimate.battery,
+            isGasless: estimate.gasless,
+            isForcedGasless: estimate.isForcedGasless,
+            supportsGasless: estimate.supportsGasless,
+            customFeeCurrency: estimate.customFeeCurrency,
             address,
             comment,
-            jettonWalletAddress: jettonBalance.walletAddress,
+            amount,
+            fee: fromNano(estimate.fee, 9),
+            isInactive: false,
             tokenType: TokenType.Jetton,
-            onInsufficientFunds: openInsufficientFundsModal,
-            onNext: (details) => {
-              const options = {
-                currency: query.jetton,
-                isBattery: details.isBattery,
-                address,
-                comment,
-                amount,
-                fee: details.fee,
-                isInactive: details.isInactive,
-                tokenType: TokenType.Jetton,
-                expiryTimestamp,
-                redirectToActivity: resolveParams.redirectToActivity,
-              };
+            expiryTimestamp,
+            redirectToActivity: resolveParams.redirectToActivity,
+          };
 
-              openSend(options);
-            },
-          }),
-        );
+          openSend(options);
+        } catch (e) {
+          if (e.message) {
+            Toast.fail(e.message);
+          }
+          return;
+        }
       } else {
-        const amount = Ton.fromNano(query.amount.toString());
-        dispatch(
-          walletActions.confirmSendCoins({
+        try {
+          const estimate = await estimateTonTransferFee({
+            recipient: address,
+            sendAmountNano: BigInt(query.amount.toString()),
+            isSendAll: false,
+            payload: comment ? makeCommentCell(comment) : undefined,
+          });
+          const amount = Ton.fromNano(query.amount.toString());
+          const options = {
             currency,
-            amount,
             address,
             comment,
-            onInsufficientFunds: openInsufficientFundsModal,
-            onNext: (details) => {
-              const options = {
-                currency,
-                address,
-                comment,
-                amount,
-                tokenType: TokenType.TON,
-                fee: details.fee,
-                isInactive: details.isInactive,
-                methodId: resolveParams.methodId,
-                expiryTimestamp,
-                redirectToActivity: resolveParams.redirectToActivity,
-              };
-              if (options.methodId) {
-                nav.openModal('NewConfirmSending', options);
-              } else {
-                openSend(options);
-              }
-            },
-          }),
-        );
+            amount,
+            tokenType: TokenType.TON,
+            fee: fromNano(estimate.fee, 9),
+            isInactive: false,
+            methodId: resolveParams.methodId,
+            expiryTimestamp,
+            redirectToActivity: resolveParams.redirectToActivity,
+          };
+          if (options.methodId) {
+            nav.openModal('NewConfirmSending', options);
+          } else {
+            openSend(options);
+          }
+        } catch (e) {
+          if (e.message) {
+            Toast.fail(e.message);
+          }
+          return;
+        }
       }
     } else if (query.jetton) {
       if (!Address.isValid(query.jetton)) {

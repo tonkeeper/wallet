@@ -376,6 +376,7 @@ export class TonWallet {
   }
 
   async estimateJettonFee(
+    jettonMaster: string,
     jettonWalletAddress: string,
     address: string,
     amountNano: string,
@@ -413,7 +414,7 @@ export class TonWallet {
       compareAddresses(address, tk.wallet.battery.fundReceiver),
     );
 
-    return [Ton.fromNano(feeNano.toString()), isBattery];
+    return { feeNano: Ton.fromNano(feeNano.toString()), isBattery };
   }
 
   async jettonTransfer(

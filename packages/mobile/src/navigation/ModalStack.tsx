@@ -45,6 +45,7 @@ import SystemNavigationBar from 'react-native-system-navigation-bar';
 import { RechargeByPromoModal } from '@tonkeeper/shared/modals/ActivityActionModal/RechargeByPromoModal';
 import { BatterySend } from '$core/BatterySend';
 import { SignerConfirmScreen, W5StoriesScreen } from '../screens';
+import { SendNew } from '$core/Send/new/Send';
 
 const Stack = createModalStackNavigator(ProvidersWithNavigation);
 
@@ -110,7 +111,7 @@ export const ModalStack = React.memo(() => (
         path={AppStackRouteNames.RefillBattery}
       />
       {/* <Stack.Modal component={Receive} path={AppStackRouteNames.Receive} /> */}
-      <Stack.Modal component={Send} path={AppStackRouteNames.Send} />
+      <Stack.Modal component={SendNew} path={AppStackRouteNames.Send} />
       <Stack.Modal component={RenewAllDomainModal} path="RenewAllDomains" />
       <Stack.Modal component={ChooseCountry} path={AppStackRouteNames.ChooseCountry} />
       <Stack.Modal component={StakingSend} path={AppStackRouteNames.StakingSend} />

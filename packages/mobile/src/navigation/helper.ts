@@ -27,6 +27,9 @@ export interface OpenSendParams {
   comment?: string;
   withGoBack?: boolean;
   tokenType?: TokenType;
+  isForcedGasless?: boolean;
+  isGasless?: boolean;
+  supportsGasless?: boolean;
   amount?: string;
   fee?: string;
   isInactive?: boolean;

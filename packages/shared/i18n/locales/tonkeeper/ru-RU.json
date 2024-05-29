@@ -1117,6 +1117,9 @@
   "all_regions": "Все регионы",
   "region_nokyc": "Нейтральные воды",
   "nokyc": "без KYC",
+  "gasless": {
+    "switch_label": "Оплатить в %{currency}"
+  },
   "battery": {
     "max_input_amount": "Максимальная сумма: %{amount}",
     "send_widget": {

@@ -2,6 +2,8 @@ import { TonAPI } from '@tonkeeper/core/src/TonAPI';
 import {
   WalletAddress,
   WalletConfig,
+  WalletContractFeature,
+  WalletContractFeatures,
   WalletContractVersion,
   WalletNetwork,
   WalletType,
@@ -32,7 +34,7 @@ export class WalletBase {
   public tronService: TronService;
 
   public tonapi: TonAPI;
-  protected batteryapi: BatteryAPI;
+  public batteryapi: BatteryAPI;
   protected tronapi: TronAPI;
 
   protected logger: NamespacedLogger;
@@ -117,6 +119,10 @@ export class WalletBase {
 
   public get isLedger() {
     return this.config.type === WalletType.Ledger;
+  }
+
+  public isSupportedByContract(feature: WalletContractFeature) {
+    return WalletContractFeatures[this.config.version][feature];
   }
 
   public get isSigner() {

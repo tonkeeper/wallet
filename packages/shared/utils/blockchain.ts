@@ -7,6 +7,21 @@ import { Alert } from 'react-native';
 
 export class IndexerLatencyError extends Error {}
 
+export async function sendBocToRelayer(boc) {
+  const { rest_online, indexing_latency } =
+    (await tk.wallet.tonapi.status.status()) as ServiceStatus;
+
+  if (!rest_online || indexing_latency > TransactionService.TTL - 30) {
+    throw new IndexerLatencyError(t('indexer_latency_error'));
+  }
+
+  try {
+    return await tk.wallet.battery.sendMessage(boc);
+  } catch (err) {
+    throw err;
+  }
+}
+
 export async function sendBoc(boc, attemptWithRelayer = true) {
   const { rest_online, indexing_latency } =
     (await tk.wallet.tonapi.status.status()) as ServiceStatus;
@@ -24,7 +39,7 @@ export async function sendBoc(boc, attemptWithRelayer = true) {
       throw new Error('Battery disabled');
     }
 
-    return await tk.wallet.battery.sendMessage(boc);
+    return await sendBocToRelayer(boc);
   } catch (err) {
     return await tk.wallet.tonapi.blockchain.sendBlockchainMessage(
       {
@@ -33,6 +48,22 @@ export async function sendBoc(boc, attemptWithRelayer = true) {
       { type: ContentType.Json, format: 'text' },
     );
   }
+}
+
+export async function emulateBocWithRelayer(boc, forceRelayer = false) {
+  if (config.get('disable_battery') || config.get('disable_battery_send')) {
+    throw new Error('Battery disabled');
+  }
+
+  if (
+    !forceRelayer &&
+    (!tk.wallet.battery?.state?.data?.balance ||
+      tk.wallet.battery.state.data.balance === '0')
+  ) {
+    throw new Error('Zero balance');
+  }
+  const { consequences, withBattery } = await tk.wallet.battery.emulate(boc);
+  return { emulateResult: consequences, battery: withBattery };
 }
 
 export async function emulateBoc(

@@ -16,10 +16,6 @@ import {
   SingedAuthWallet4SendArgs,
 } from '@ton/ton/dist/wallets/WalletContractV4';
 import { createWalletTransferV4 } from '@ton/ton/dist/wallets/signing/createWalletTransfer';
-import {
-  ExternallySingedAuthSendArgs,
-  SingedAuthSendArgs,
-} from '@ton/ton/dist/wallets/signing/singer';
 
 export class WalletContractV4R1 implements Contract {
   static create(args: {
