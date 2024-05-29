@@ -1,10 +1,10 @@
 import { SignerType } from '$core/Send/new/core/transactionBuilder/common';
 import { tk } from '$wallet';
-import { Address, Cell, internal, MessageRelaxed, SendMode } from '@ton/core';
+import {Address, beginCell, Cell, internal, MessageRelaxed, SendMode} from '@ton/core';
 import {
   BASE_FORWARD_AMOUNT,
   ContractService,
-  ONE_TON, POINT_ONE_TON,
+  ONE_TON, OpCodes, POINT_ONE_TON,
   TransactionService,
 } from '@tonkeeper/core';
 import { getWalletSeqno, setBalanceForEmulation } from '@tonkeeper/shared/utils/wallet';
@@ -52,6 +52,7 @@ export const gaslessInternal = (
       forwardAmount: 0,
       receiverAddress: batteryAddress,
       excessesAddress: batteryAddress,
+      forwardBody: beginCell().storeUint(OpCodes.TK_RELAYER_FEE, 32).endCell(),
     }),
   });
 };
@@ -189,7 +190,7 @@ export async function estimateJettonTransferFee(params: JettonTransferParams) {
     config.get('gasless_enabled')
   ) {
     try {
-      const rechargeMethods = await tk.wallet.battery.fetchRechargeMethods();
+      const rechargeMethods = await tk.wallet.battery.getRechargeMethods();
 
       isJettonSupportsGasless = rechargeMethods.some(
         (method) =>
