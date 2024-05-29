@@ -165,8 +165,10 @@ export class TransactionService {
     contract: WalletContract,
     signer: Signer,
     transferParams: TransferParams,
+    authType?: 'external' | 'internal',
   ) {
     const transfer = await contract.createTransferAndSignRequestAsync({
+      authType,
       timeout: transferParams.timeout ?? TransactionService.getTimeout(),
       seqno: transferParams.seqno,
       signer,

@@ -27,14 +27,7 @@ import {
 import { getWalletSeqno, setBalanceForEmulation } from '@tonkeeper/shared/utils/wallet';
 import { Buffer } from 'buffer';
 import { MessageConsequences } from '@tonkeeper/core/src/TonAPI';
-import {
-  Address,
-  Cell,
-  SendMode,
-  internal,
-  toNano,
-  comment as commentCell,
-} from '@ton/core';
+import { Cell, internal, toNano } from '@ton/core';
 import BigNumber from 'bignumber.js';
 import { Ton } from '$libs/Ton';
 import { delay } from '$utils';
@@ -43,8 +36,10 @@ import axios from 'axios';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
 import {
   emulateBoc,
+  emulateBocWithRelayer,
   getTimeoutFromLiteserverSafely,
   sendBoc,
+  sendBocToRelayer,
 } from '@tonkeeper/shared/utils/blockchain';
 import {
   checkIsInsufficient,
@@ -59,6 +54,7 @@ import { useIsEnabledForBattery, useWallet } from '@tonkeeper/shared/hooks';
 import { tk } from '$wallet';
 import { config } from '$config';
 import { BatterySupportedTransaction } from '$wallet/managers/BatteryManager';
+import { WalletContractFeature } from '$wallet/WalletTypes';
 
 interface Props {
   route: RouteProp<AppStackParamList, AppStackRouteNames.NFTSend>;
@@ -127,77 +123,95 @@ export const NFTSend: FC<Props> = (props) => {
 
   const unlockVault = useUnlockVault();
 
-  const prepareConfirmSending = useCallback(async () => {
-    try {
-      setPreparing(true);
+  const prepareConfirmSending = useCallback(
+    async (shouldAttemptWithRelayer = isNFTSendEnabledWithRelayer) => {
+      try {
+        setPreparing(true);
 
-      let commentValue: Cell | string = comment;
-      if (isCommentEncrypted) {
-        const tempKeyPair = nacl.sign.keyPair();
-        commentValue = await encryptMessageComment(
-          comment,
-          tempKeyPair.publicKey,
-          tempKeyPair.publicKey,
-          tempKeyPair.secretKey,
-          wallet.address.ton.raw,
+        let commentValue: Cell | string = comment;
+        if (isCommentEncrypted) {
+          const tempKeyPair = nacl.sign.keyPair();
+          commentValue = await encryptMessageComment(
+            comment,
+            tempKeyPair.publicKey,
+            tempKeyPair.publicKey,
+            tempKeyPair.secretKey,
+            wallet.address.ton.raw,
+          );
+        }
+
+        const seqno = await getWalletSeqno();
+
+        const timeout = await getTimeoutFromLiteserverSafely();
+
+        const signer = await tk.wallet.signer.getSigner(true);
+
+        const boc = await TransactionService.createTransfer(
+          wallet.contract,
+          signer,
+          {
+            timeout,
+            messages: [
+              internal({
+                to: nftAddress,
+                value: ONE_TON,
+                body: ContractService.createNftTransferBody({
+                  newOwnerAddress: recipient!.address,
+                  excessesAddress: wallet.address.ton.raw,
+                  forwardBody: commentValue,
+                }),
+                bounce: true,
+              }),
+            ],
+            seqno,
+          },
+          shouldAttemptWithRelayer ? 'internal' : 'external',
         );
+
+        let emulateResponse: { emulateResult: MessageConsequences; battery: boolean };
+        if (shouldAttemptWithRelayer) {
+          try {
+            emulateResponse = await emulateBocWithRelayer(boc);
+          } catch (e) {
+            return await prepareConfirmSending(false);
+          }
+        } else {
+          emulateResponse = await emulateBoc(
+            boc,
+            [setBalanceForEmulation(toNano('2'))], // Emulate with higher balance to calculate fair amount to send
+            false,
+          );
+        }
+
+        setConsequences(emulateResponse.emulateResult);
+        setIsBattery(emulateResponse.battery);
+
+        Keyboard.dismiss();
+        await delay(100);
+
+        stepViewRef.current?.go(NFTSendSteps.CONFIRM);
+      } catch (e) {
+        Toast.fail(
+          axios.isAxiosError(e) && e.message === 'Network Error'
+            ? t('error_network')
+            : t('error_occurred'),
+        );
+
+        console.log(e);
+      } finally {
+        setPreparing(false);
       }
-
-      const seqno = await getWalletSeqno();
-
-      const timeout = await getTimeoutFromLiteserverSafely();
-
-      const signer = await tk.wallet.signer.getSigner(true);
-
-      const boc = await TransactionService.createTransfer(wallet.contract, signer, {
-        timeout,
-        messages: [
-          internal({
-            to: nftAddress,
-            value: ONE_TON,
-            body: ContractService.createNftTransferBody({
-              newOwnerAddress: recipient!.address,
-              excessesAddress: wallet.address.ton.raw,
-              forwardBody: commentValue,
-            }),
-            bounce: true,
-          }),
-        ],
-        seqno,
-      });
-
-      const response = await emulateBoc(
-        boc,
-        [setBalanceForEmulation(toNano('2'))], // Emulate with higher balance to calculate fair amount to send
-        isNFTSendEnabledWithRelayer,
-      );
-
-      setConsequences(response.emulateResult);
-      setIsBattery(response.battery);
-
-      Keyboard.dismiss();
-      await delay(100);
-
-      stepViewRef.current?.go(NFTSendSteps.CONFIRM);
-    } catch (e) {
-      Toast.fail(
-        axios.isAxiosError(e) && e.message === 'Network Error'
-          ? t('error_network')
-          : t('error_occurred'),
-      );
-
-      console.log(e);
-    } finally {
-      setPreparing(false);
-    }
-  }, [
-    comment,
-    isCommentEncrypted,
-    isNFTSendEnabledWithRelayer,
-    nftAddress,
-    recipient,
-    wallet,
-  ]);
+    },
+    [
+      comment,
+      isCommentEncrypted,
+      isNFTSendEnabledWithRelayer,
+      nftAddress,
+      recipient,
+      wallet.address.ton.raw,
+      wallet.contract,
+    ],
+  );
 
   const accountsApi = useInstance(() => {
     const tonApiConfiguration = new Configuration({
@@ -346,23 +360,35 @@ export const NFTSend: FC<Props> = (props) => {
 
       const signer = await tk.wallet.signer.getSigner();
 
-      boc = await TransactionService.createTransfer(wallet.contract, signer, {
-        timeout,
-        messages: [
-          internal({
-            to: nftAddress,
-            value: totalAmount,
-            body: ContractService.createNftTransferBody({
-              newOwnerAddress: recipient!.address,
-              excessesAddress: excessesAccount || wallet.address.ton.raw,
-              forwardBody: commentValue,
+      boc = await TransactionService.createTransfer(
+        wallet.contract,
+        signer,
+        {
+          timeout,
+          messages: [
+            internal({
+              to: nftAddress,
+              value: totalAmount,
+              body: ContractService.createNftTransferBody({
+                newOwnerAddress: recipient!.address,
+                excessesAddress: excessesAccount || wallet.address.ton.raw,
+                forwardBody: commentValue,
+              }),
+              bounce: true,
             }),
-            bounce: true,
-          }),
-        ],
-        seqno,
-        sendMode: 3,
-      });
+          ],
+          seqno,
+          sendMode: 3,
+        },
+        isBattery ? 'internal' : 'external',
+      );
+
+      if (
+        isBattery &&
+        tk.wallet.isSupportedByContract(WalletContractFeature.SIGNED_INTERNALS)
+      ) {
+        return await sendBocToRelayer(boc);
+      }
 
       await sendBoc(boc, isBattery);
     } catch (e) {

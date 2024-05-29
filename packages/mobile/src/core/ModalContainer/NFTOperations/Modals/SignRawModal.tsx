@@ -49,12 +49,14 @@ import { ModalStackRouteNames } from '$navigation';
 import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
 import {
   emulateBoc,
+  emulateBocWithRelayer,
   getTimeoutFromLiteserverSafely,
   sendBoc,
 } from '@tonkeeper/shared/utils/blockchain';
 import { openAboutRiskAmountModal } from '@tonkeeper/shared/modals/AboutRiskAmountModal';
-import { toNano } from '@ton/core';
+import { MessageRelaxed, toNano } from '@ton/core';
 import BigNumber from 'bignumber.js';
+import { Wallet } from '$wallet/Wallet';
 
 interface SignRawModalProps {
   consequences?: MessageConsequences;
@@ -107,15 +109,20 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
 
     const signer = await wallet.signer.getSigner();
 
-    const boc = await TransactionService.createTransfer(wallet.contract, signer, {
-      timeout,
-      messages: TransactionService.parseSignRawMessages(
-        params.messages,
-        isBattery ? tk.wallet.battery.excessesAccount : undefined,
-      ),
-      seqno: await getWalletSeqno(wallet),
-      sendMode: 3,
-    });
+    const boc = await TransactionService.createTransfer(
+      wallet.contract,
+      signer,
+      {
+        timeout,
+        messages: TransactionService.parseSignRawMessages(
+          params.messages,
+          isBattery ? tk.wallet.battery.excessesAccount : undefined,
+        ),
+        seqno: await getWalletSeqno(wallet),
+        sendMode: 3,
+      },
+      isBattery ? 'internal' : 'external',
+    );
 
     await sendBoc(boc, isBattery);
 
@@ -354,6 +361,40 @@ function isValidMessage(message: SignRawMessage): boolean {
   return Address.isValid(message.address) && new BigNumber(message.amount).gt('0');
 }
 
+export async function emulateSignRaw(
+  wallet: Wallet,
+  messages: SignRawMessage[],
+  withRelayer?: boolean,
+  forceRelayer?: boolean,
+) {
+  const signer = await wallet.signer.getSigner(true);
+  const timeout = await getTimeoutFromLiteserverSafely();
+  const boc = await TransactionService.createTransfer(
+    wallet.contract,
+    signer,
+    {
+      timeout,
+      messages: TransactionService.parseSignRawMessages(messages),
+      seqno: await getWalletSeqno(wallet),
+    },
+    withRelayer ? 'internal' : 'external',
+  );
+  if (withRelayer || forceRelayer) {
+    try {
+      return await emulateBocWithRelayer(boc, forceRelayer);
+    } catch {
+      return emulateSignRaw(wallet, messages, false, false);
+    }
+  } else {
+    const totalAmount = calculateMessageTransferAmount(messages);
+    return await emulateBoc(boc, [
+      setBalanceForEmulation(
+        new BigNumber(totalAmount).plus(toNano('2').toString()).toString(),
+      ),
+    ]);
+  }
+}
+
 export const openSignRawModal = async (
   params: SignRawParams,
   options: TxBodyOptions,
@@ -383,24 +424,9 @@ export const openSignRawModal = async (
     let consequences: MessageConsequences | null = null;
     let isBattery = false;
     try {
-      const timeout = await getTimeoutFromLiteserverSafely();
-
-      const signer = await wallet.signer.getSigner(true);
-
-      const boc = await TransactionService.createTransfer(wallet.contract, signer, {
-        timeout,
-        messages: TransactionService.parseSignRawMessages(params.messages),
-        seqno: await getWalletSeqno(wallet),
-      });
-
-      const totalAmount = calculateMessageTransferAmount(params.messages);
-      const { emulateResult, battery } = await emulateBoc(
-        boc,
-        [
-          setBalanceForEmulation(
-            new BigNumber(totalAmount).plus(toNano('2').toString()).toString(),
-          ),
-        ], // Emulate with higher balance to calculate fair amount to send
+      const { emulateResult, battery } = await emulateSignRaw(
+        wallet,
+        params.messages,
         options.experimentalWithBattery,
         options.forceRelayerUse,
       );
@@ -408,6 +434,7 @@ export const openSignRawModal = async (
       isBattery = battery;
 
       if (!isBattery) {
+        const totalAmount = calculateMessageTransferAmount(params.messages);
         const checkResult = await checkIsInsufficient(totalAmount, wallet);
         if (checkResult.insufficient) {
           Toast.hide();

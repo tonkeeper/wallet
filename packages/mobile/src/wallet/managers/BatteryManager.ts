@@ -20,6 +20,8 @@ export interface BatteryState {
   balance?: string;
   reservedBalance?: string;
   excessesAccount?: string;
+  preferGasless: boolean;
+  hasTouchedGaslessToggle: boolean;
   fundReceiver?: string;
   supportedTransactions: Record<BatterySupportedTransaction, boolean>;
 }
@@ -31,6 +33,8 @@ export class BatteryManager {
     isLoading: false,
     balance: undefined,
     reservedBalance: '0',
+    preferGasless: true,
+    hasTouchedGaslessToggle: false,
     supportedTransactions: {
       [BatterySupportedTransaction.Swap]: true,
       [BatterySupportedTransaction.Jetton]: true,
@@ -48,10 +52,18 @@ export class BatteryManager {
     private isTestnet: boolean,
   ) {
     this.state.persist({
-      partialize: ({ balance, reservedBalance, supportedTransactions }) => ({
+      partialize: ({
         balance,
         reservedBalance,
         supportedTransactions,
+        preferGasless,
+        hasTouchedGaslessToggle,
+      }) => ({
+        balance,
+        reservedBalance,
+        supportedTransactions,
+        preferGasless,
+        hasTouchedGaslessToggle,
       }),
       storage: this.storage,
       key: `${this.persistPath}/battery`,
@@ -61,6 +73,14 @@ export class BatteryManager {
 
   get excessesAccount() {
     return this.state.data.excessesAccount;
+  }
+
+  public async getExcessesAccount(): Promise<string> {
+    if (!this.excessesAccount) {
+      await this.loadBatteryConfig();
+    }
+
+    return this.excessesAccount!;
   }
 
   get fundReceiver() {
@@ -75,8 +95,10 @@ export class BatteryManager {
         rechargeMethods: rechargeMethods.methods,
         isRechargeMethodsLoading: false,
       });
+      return rechargeMethods.methods;
     } catch (e) {
       this.state.set({ rechargeMethods: [], isRechargeMethodsLoading: false });
+      return [];
     }
   }
 
@@ -124,6 +146,44 @@ export class BatteryManager {
     } catch (err) {
       this.logger.error(err);
     }
+  }
+
+  public async estimateGaslessCost({
+    jettonMaster,
+    payload,
+    battery,
+  }: {
+    jettonMaster: string;
+    payload: string;
+    battery?: boolean;
+  }) {
+    try {
+      if (!this.tonProof.tonProofToken) {
+        throw new Error('No proof token');
+      }
+      return await this.batteryapi.estimateCost.estimateGaslessCost(
+        jettonMaster,
+        {
+          battery,
+          payload,
+        },
+        {
+          headers: {
+            'X-TonConnect-Auth': this.tonProof.tonProofToken,
+          },
+        },
+      );
+    } catch (err) {
+      this.logger.error(err);
+    }
+  }
+
+  public togglePreferGasless() {
+    this.state.set((state) => ({
+      ...state,
+      preferGasless: !state.preferGasless,
+      hasTouchedGaslessToggle: true,
+    }));
   }
 
   public async applyPromo(promoCode: string) {
@@ -271,6 +331,10 @@ export class BatteryManager {
         },
       );
 
+      if (res.status >= 400) {
+        throw new Error('Bat response');
+      }
+
       const data: MessageConsequences = await res.json();
 
       const withBattery =
@@ -279,7 +343,7 @@ export class BatteryManager {
 
       return { consequences: data, withBattery };
     } catch (err) {
-      console.log(err);
+      this.logger.error(err);
       throw new Error(err);
     }
   }

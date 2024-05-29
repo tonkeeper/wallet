@@ -1,5 +1,10 @@
 import { network } from '@tonkeeper/core/src/utils/network';
-import { TonRawAddress } from '../WalletTypes';
+import {
+  TonRawAddress,
+  WalletContractFeature,
+  WalletContractFeatures,
+  WalletContractVersion,
+} from '../WalletTypes';
 import { State, Storage } from '@tonkeeper/core';
 import { config } from '$config';
 
@@ -35,6 +40,7 @@ export interface SubscriptionsResponse {
 
 export class SubscriptionsManager {
   constructor(
+    private contractVersion: WalletContractVersion,
     private persistPath: string,
     private tonRawAddress: TonRawAddress,
     private storage: Storage,
@@ -57,6 +63,10 @@ export class SubscriptionsManager {
 
   public async load() {
     try {
+      // We should load subscriptions only for contracts with plugins feature
+      if (!WalletContractFeatures[this.contractVersion][WalletContractFeature.PLUGINS]) {
+        return;
+      }
       this.state.set({ isLoading: true });
       const { data: subscriptions } = await network.get<SubscriptionsResponse>(
         `${config.get('subscriptionsHost')}/v1/subscriptions`,

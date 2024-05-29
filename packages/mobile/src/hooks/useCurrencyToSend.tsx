@@ -74,6 +74,7 @@ export function useCurrencyToSend(
             jetton?.metadata?.symbol || Address.toShort(jetton?.jettonAddress),
           Logo,
           jettonWalletAddress: jetton?.walletAddress,
+          jettonMaster: jetton?.jettonAddress,
           isLiquidJetton: !!liquidJettonPool,
         };
       // case TokenType.USDT:
@@ -96,6 +97,7 @@ export function useCurrencyToSend(
           currencyTitle: currency.toUpperCase(),
           Logo,
           jettonWalletAddress: undefined,
+          jettonMaster: undefined,
           isLiquidJetton: false,
           liquidJettonPool: null,
         };
