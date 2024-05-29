@@ -414,7 +414,7 @@ export class TonWallet {
       compareAddresses(address, tk.wallet.battery.fundReceiver),
     );
 
-    return { feeNano: Ton.fromNano(feeNano.toString()), isBattery };
+    return [Ton.fromNano(feeNano.toString()), isBattery];
   }
 
   async jettonTransfer(
