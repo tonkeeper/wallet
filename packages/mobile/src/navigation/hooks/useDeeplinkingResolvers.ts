@@ -258,7 +258,7 @@ export function useDeeplinkingResolvers() {
         try {
           const estimate = await estimateInscriptionTransferFee({
             recipient: address,
-            sendAmountNano: BigInt(toNano(amount, inscription.decimals)),
+            sendAmountNano: BigInt(amount),
             inscription,
             payload: comment ? makeCommentCell(comment) : undefined,
           });
@@ -394,7 +394,7 @@ export function useDeeplinkingResolvers() {
         try {
           const estimate = await estimateJettonTransferFee({
             recipient: address,
-            sendAmountNano: BigInt(toNano(query.amount, decimals)),
+            sendAmountNano: BigInt(query.amount),
             jetton: jettonBalance,
             payload: comment ? makeCommentCell(comment) : undefined,
           });
