@@ -139,15 +139,16 @@ export const useSendCore = (
         const jetton = tk.wallet.jettons.state.data.jettonBalances.find((jetton) =>
           compareAddresses(params.currency, jetton.jettonAddress),
         );
-
+        const sendAmountNano = toNano(parsedAmount, jetton?.metadata.decimals ?? 9);
         emulateResult = await estimateJettonTransferFee({
+          isSendAll: params.amount.all,
           shouldAttemptWithRelayer:
             tk.wallet.battery.state.data.supportedTransactions[
               BatterySupportedTransaction.Jetton
             ],
           preferGasless,
           recipient: params.recipient.address,
-          sendAmountNano: BigInt(toNano(parsedAmount, jetton?.metadata.decimals ?? 9)),
+          sendAmountNano: BigInt(sendAmountNano),
           jetton: jetton!,
           payload,
         });
@@ -255,14 +256,25 @@ export const useSendCore = (
                 ? BASE_FORWARD_AMOUNT
                 : BigInt(toNano(fee, 9)) + BASE_FORWARD_AMOUNT;
 
+            const amountNano = BigInt(
+              toNano(parsedAmount, jetton?.metadata.decimals ?? 9),
+            );
+
+            const sendAmountNano =
+              relayerSendModes.isGasless && params.amount.all
+                ? BigInt(
+                    new BigNumber(amountNano.toString())
+                      .minus(toNano(fee, jetton?.metadata.decimals ?? 9))
+                      .toString(),
+                  )
+                : amountNano;
+
             const jettonSendParams = {
               commission: BigInt(toNano(fee, jetton?.metadata.decimals ?? 9)),
               recipient: params.recipient.address,
               shouldAttemptWithRelayer: relayerSendModes.isBattery,
               jettonTransferAmount: totalAmount,
-              sendAmountNano: BigInt(
-                toNano(parsedAmount, jetton?.metadata.decimals ?? 9),
-              ),
+              sendAmountNano: sendAmountNano,
               jetton: jetton!,
               payload,
             };

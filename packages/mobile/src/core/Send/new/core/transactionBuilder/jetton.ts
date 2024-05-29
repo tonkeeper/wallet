@@ -1,10 +1,12 @@
 import { SignerType } from '$core/Send/new/core/transactionBuilder/common';
 import { tk } from '$wallet';
-import {Address, beginCell, Cell, internal, MessageRelaxed, SendMode} from '@ton/core';
+import { Address, beginCell, Cell, internal, MessageRelaxed, SendMode } from '@ton/core';
 import {
   BASE_FORWARD_AMOUNT,
   ContractService,
-  ONE_TON, OpCodes, POINT_ONE_TON,
+  ONE_TON,
+  OpCodes,
+  POINT_ONE_TON,
   TransactionService,
 } from '@tonkeeper/core';
 import { getWalletSeqno, setBalanceForEmulation } from '@tonkeeper/shared/utils/wallet';
@@ -130,6 +132,7 @@ export function buildJettonTransferBoc(
 
 export interface JettonTransferParams {
   preferGasless?: boolean;
+  isSendAll?: boolean;
   forceGasless?: boolean;
   recipient: string;
   sendAmountNano: bigint;
@@ -207,7 +210,7 @@ export async function estimateJettonTransferFee(params: JettonTransferParams) {
           recipient: params.recipient,
           isEstimate: true,
           jettonTransferAmount: POINT_ONE_TON,
-          jettonAmount: params.sendAmountNano,
+          jettonAmount: params.isSendAll ? BigInt(1) : params.sendAmountNano,
           jettonWalletAddress: params.jetton.walletAddress,
           payload: params.payload,
           excessesAccount: await tk.wallet.battery.getExcessesAccount(),
@@ -224,11 +227,14 @@ export async function estimateJettonTransferFee(params: JettonTransferParams) {
 
       if (
         estimatedCost?.commission &&
-        new BigNumber(
-          toNano(params.jetton.balance, params.jetton.metadata.decimals ?? 9),
-        ).isGreaterThanOrEqualTo(
-          new BigNumber(estimatedCost?.commission).plus(params.sendAmountNano.toString()),
-        )
+        (params.isSendAll ||
+          new BigNumber(
+            toNano(params.jetton.balance, params.jetton.metadata.decimals ?? 9),
+          ).isGreaterThanOrEqualTo(
+            new BigNumber(estimatedCost?.commission).plus(
+              params.sendAmountNano.toString(),
+            ),
+          ))
       ) {
         return {
           fee: estimatedCost.commission,
