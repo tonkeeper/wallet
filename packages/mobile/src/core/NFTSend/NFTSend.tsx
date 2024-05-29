@@ -124,7 +124,11 @@ export const NFTSend: FC<Props> = (props) => {
   const unlockVault = useUnlockVault();
 
   const prepareConfirmSending = useCallback(
-    async (shouldAttemptWithRelayer = isNFTSendEnabledWithRelayer) => {
+    async (
+      shouldAttemptWithRelayer = isNFTSendEnabledWithRelayer,
+      _seqno?: number,
+      _timeout?: number,
+    ) => {
       try {
         setPreparing(true);
 
@@ -140,9 +144,8 @@ export const NFTSend: FC<Props> = (props) => {
           );
         }
 
-        const seqno = await getWalletSeqno();
-
-        const timeout = await getTimeoutFromLiteserverSafely();
+        const seqno = _seqno ?? (await getWalletSeqno());
+        const timeout = _timeout ?? (await getTimeoutFromLiteserverSafely());
 
         const signer = await tk.wallet.signer.getSigner(true);
 
@@ -173,7 +176,7 @@ export const NFTSend: FC<Props> = (props) => {
           try {
             emulateResponse = await emulateBocWithRelayer(boc);
           } catch (e) {
-            return await prepareConfirmSending(false);
+            return await prepareConfirmSending(false, seqno, timeout);
           }
         } else {
           emulateResponse = await emulateBoc(

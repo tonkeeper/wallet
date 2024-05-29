@@ -366,16 +366,19 @@ export async function emulateSignRaw(
   messages: SignRawMessage[],
   withRelayer?: boolean,
   forceRelayer?: boolean,
+  _seqno?: number,
+  _timeout?: number,
 ) {
   const signer = await wallet.signer.getSigner(true);
-  const timeout = await getTimeoutFromLiteserverSafely();
+  const timeout = _timeout ?? (await getTimeoutFromLiteserverSafely());
+  const seqno = _seqno ?? (await getWalletSeqno(wallet));
   const boc = await TransactionService.createTransfer(
     wallet.contract,
     signer,
     {
       timeout,
+      seqno,
       messages: TransactionService.parseSignRawMessages(messages),
-      seqno: await getWalletSeqno(wallet),
     },
     withRelayer ? 'internal' : 'external',
   );
