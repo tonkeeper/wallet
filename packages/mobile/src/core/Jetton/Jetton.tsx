@@ -243,7 +243,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
             <View style={styles.row}>
               <View style={styles.flexOne}>
                 <Text variant="label1">{t('upgrade_to_w5.title')}</Text>
-                <Text variant="body2" style={styles.upgradeDescription.static}>
+                <Text variant="body2" color="textSecondary">
                   {t('upgrade_to_w5.description')}
                 </Text>
               </View>
@@ -306,8 +306,10 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
     handlePressSwap,
     showSwap,
     flags.disable_swap,
+    isW5BlockHidden,
     isStoriesShown,
     openW5Stories,
+    hideW5Block,
     shouldShowChart,
     shouldExcludeChartPeriods,
     fiatCurrency,
@@ -416,8 +418,5 @@ const styles = Steezy.create(({ colors, corners }) => ({
   upgradeButtons: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  upgradeDescription: {
-    opacity: 0.56,
   },
 }));
