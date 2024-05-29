@@ -59,6 +59,11 @@ export function useSendInputHandlers(initialParams: InitialParams) {
         lastActivity: accountInfoResponse.value!.last_activity,
         getMethods: accountInfoResponse.value!.get_methods,
         status: accountInfoResponse.value!.status,
+        memoRequired: accountInfoResponse.value!.memo_required,
+        name: accountInfoResponse.value!.name,
+        isScam: accountInfoResponse.value!.is_scam,
+        interfaces: accountInfoResponse.value!.interfaces,
+        icon: accountInfoResponse.value!.icon,
       });
     } catch {}
   }, [recipient]);
