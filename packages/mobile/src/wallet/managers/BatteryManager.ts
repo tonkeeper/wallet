@@ -33,7 +33,7 @@ export class BatteryManager {
     isLoading: false,
     balance: undefined,
     reservedBalance: '0',
-    preferGasless: true,
+    preferGasless: false,
     hasTouchedGaslessToggle: false,
     supportedTransactions: {
       [BatterySupportedTransaction.Swap]: true,
@@ -100,6 +100,14 @@ export class BatteryManager {
       this.state.set({ rechargeMethods: [], isRechargeMethodsLoading: false });
       return [];
     }
+  }
+
+  public async getRechargeMethods() {
+    if (!this.state.data.rechargeMethods.length) {
+      await this.fetchRechargeMethods();
+    }
+
+    return this.state.data.rechargeMethods;
   }
 
   public async fetchBalance() {
