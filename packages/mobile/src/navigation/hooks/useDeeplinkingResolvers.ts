@@ -383,7 +383,10 @@ export function useDeeplinkingResolvers() {
           ).lt(query.amount)
         ) {
           openInsufficientFundsModal({
-            balance: jettonBalance.balance ?? 0,
+            balance: toNano(
+              jettonBalance.balance ?? 0,
+              jettonBalance.metadata.decimals ?? 9,
+            ),
             totalAmount: query.amount,
             decimals,
             currency: jettonBalance.metadata.symbol,
@@ -408,7 +411,10 @@ export function useDeeplinkingResolvers() {
             address,
             comment,
             amount,
-            fee: fromNano(estimate.fee, 9),
+            fee: fromNano(
+              estimate.fee,
+              estimate.gasless ? jettonBalance.metadata.decimals : 9,
+            ),
             isInactive: false,
             tokenType: TokenType.Jetton,
             expiryTimestamp,
