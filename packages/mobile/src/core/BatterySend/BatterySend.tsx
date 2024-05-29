@@ -136,10 +136,12 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
       );
     }
 
-    const commentCell = beginCell()
-      .storeUint(0, 32)
-      .storeStringTail(recipient?.address ?? '')
-      .endCell();
+    const commentCell = initialRecipientAddress
+      ? undefined
+      : beginCell()
+          .storeUint(0, 32)
+          .storeStringTail(recipient?.address ?? '')
+          .endCell();
 
     if (rechargeMethod.isTon) {
       return await openSignRawModal(
@@ -148,7 +150,7 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
             {
               amount: AmountFormatter.toNano(parsedAmount, rechargeMethod.decimals),
               address: tk.wallet.battery.fundReceiver!,
-              payload: commentCell.toBoc().toString('base64'),
+              payload: commentCell && commentCell.toBoc().toString('base64'),
             },
           ],
         },
@@ -195,10 +197,10 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
   }, [
     amount.value,
     hasBatteryBalance,
+    initialRecipientAddress,
     rechargeMethod.decimals,
     rechargeMethod.isTon,
     rechargeMethod.maxInputAmount,
-    rechargeMethod.min_bootstrap_value,
     rechargeMethod.symbol,
     recipient?.address,
     selectedJettonMaster,

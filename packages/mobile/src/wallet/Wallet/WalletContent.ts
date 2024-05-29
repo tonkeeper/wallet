@@ -102,6 +102,7 @@ export class WalletContent extends WalletBase {
       this.storage,
     );
     this.subscriptions = new SubscriptionsManager(
+      this.config.version,
       this.persistPath,
       tonRawAddress,
       this.storage,

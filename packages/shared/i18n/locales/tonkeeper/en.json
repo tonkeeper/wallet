@@ -125,6 +125,9 @@
   },
   "auth_failed": "Authentication failed",
   "balances_setup_wallet": "Set up wallet",
+  "gasless": {
+    "switch_label": "Tap to pay in %{currency}"
+  },
   "battery": {
     "please_wait": "Battery will charge in a few minutes",
     "max_input_amount": "Max input amount is %{amount}",

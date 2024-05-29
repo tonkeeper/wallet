@@ -376,6 +376,7 @@ export class TonWallet {
   }
 
   async estimateJettonFee(
+    jettonMaster: string,
     jettonWalletAddress: string,
     address: string,
     amountNano: string,

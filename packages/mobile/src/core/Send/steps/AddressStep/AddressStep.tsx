@@ -263,6 +263,10 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
     }
   }, [isReadyToContinue, onContinue]);
 
+  const handleContinue = useCallback(() => {
+    onContinue();
+  }, [onContinue]);
+
   const handleAddressSubmit = useCallback(() => {
     commentInputRef.current?.focus();
   }, []);
@@ -323,7 +327,7 @@ const AddressStepComponent: FC<AddressStepProps> = (props) => {
         </StepScrollView>
 
         <BottomButtonWrap>
-          <Button disabled={!isReadyToContinue} onPress={onContinue}>
+          <Button disabled={!isReadyToContinue} onPress={handleContinue}>
             {t('continue')}
           </Button>
         </BottomButtonWrap>

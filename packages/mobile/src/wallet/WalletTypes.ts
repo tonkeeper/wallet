@@ -34,6 +34,48 @@ export enum WalletContractVersion {
   LockupV1 = 'lockup-0.1',
 }
 
+export enum WalletContractFeature {
+  GASLESS,
+  SIGNED_INTERNALS,
+  PLUGINS,
+}
+
+export const WalletContractFeatures: Record<
+  WalletContractVersion,
+  Record<WalletContractFeature, boolean>
+> = {
+  [WalletContractVersion.v5R1]: {
+    [WalletContractFeature.GASLESS]: true,
+    [WalletContractFeature.SIGNED_INTERNALS]: true,
+    [WalletContractFeature.PLUGINS]: true,
+  },
+  [WalletContractVersion.v4R2]: {
+    [WalletContractFeature.GASLESS]: false,
+    [WalletContractFeature.SIGNED_INTERNALS]: false,
+    [WalletContractFeature.PLUGINS]: true,
+  },
+  [WalletContractVersion.v4R1]: {
+    [WalletContractFeature.GASLESS]: false,
+    [WalletContractFeature.SIGNED_INTERNALS]: false,
+    [WalletContractFeature.PLUGINS]: false,
+  },
+  [WalletContractVersion.v3R2]: {
+    [WalletContractFeature.GASLESS]: false,
+    [WalletContractFeature.SIGNED_INTERNALS]: false,
+    [WalletContractFeature.PLUGINS]: false,
+  },
+  [WalletContractVersion.v3R1]: {
+    [WalletContractFeature.GASLESS]: false,
+    [WalletContractFeature.SIGNED_INTERNALS]: false,
+    [WalletContractFeature.PLUGINS]: false,
+  },
+  [WalletContractVersion.LockupV1]: {
+    [WalletContractFeature.GASLESS]: false,
+    [WalletContractFeature.SIGNED_INTERNALS]: false,
+    [WalletContractFeature.PLUGINS]: false,
+  },
+};
+
 export type TronAddresses = {
   proxy: string;
   owner: string;
