@@ -67,136 +67,144 @@ export const AddWalletModal = memo<AddWalletModalProps>(({ isTonConnect, isImpor
   return (
     <Modal>
       <Modal.Header />
-      <Modal.Content safeArea>
-        <View style={styles.caption}>
-          <Text type="h2" textAlign="center">
-            {isImport ? t('add_wallet_modal.import_title') : t('add_wallet_modal.title')}
-          </Text>
-          <Spacer y={4} />
-          <Text type="body1" color="textSecondary" textAlign="center">
-            {isImport
-              ? t('add_wallet_modal.import_subtitle')
-              : t('add_wallet_modal.subtitle')}
-          </Text>
-        </View>
-        <View style={styles.listContainer}>
-          {!isImport ? (
-            <List style={styles.list}>
-              <List.Item
-                onPress={handleCreatePress}
-                leftContentStyle={styles.iconContainer}
-                leftContent={<Icon name="ic-plus-outline-28" color="accentBlue" />}
-                title={t('add_wallet_modal.create.title')}
-                subtitle={t('add_wallet_modal.create.subtitle')}
-                subtitleNumberOfLines={3}
-                chevron
-              />
-            </List>
-          ) : null}
-          <List style={styles.list}>
-            <List.Item
-              onPress={() => {
-                nav.goBack();
-                InteractionManager.runAfterInteractions(() => {
-                  nav.navigate('ImportWalletStack');
-                });
-              }}
-              leftContentStyle={styles.iconContainer}
-              leftContent={<Icon name="ic-import-wallet-outline-28" color="accentBlue" />}
-              title={t('add_wallet_modal.import.title')}
-              subtitle={t('add_wallet_modal.import.subtitle')}
-              subtitleNumberOfLines={3}
-              chevron
-            />
-          </List>
-          {!isTonConnect &&
-          (!config.get('disable_signer') || !getFlag('disable_signer')) ? (
+      <Modal.ScrollView>
+        <Modal.Content safeArea>
+          <View style={styles.caption}>
+            <Text type="h2" textAlign="center">
+              {isImport
+                ? t('add_wallet_modal.import_title')
+                : t('add_wallet_modal.title')}
+            </Text>
+            <Spacer y={4} />
+            <Text type="body1" color="textSecondary" textAlign="center">
+              {isImport
+                ? t('add_wallet_modal.import_subtitle')
+                : t('add_wallet_modal.subtitle')}
+            </Text>
+          </View>
+          <View style={styles.listContainer}>
+            {!isImport ? (
+              <List style={styles.list}>
+                <List.Item
+                  onPress={handleCreatePress}
+                  leftContentStyle={styles.iconContainer}
+                  leftContent={<Icon name="ic-plus-outline-28" color="accentBlue" />}
+                  title={t('add_wallet_modal.create.title')}
+                  subtitle={t('add_wallet_modal.create.subtitle')}
+                  subtitleNumberOfLines={3}
+                  chevron
+                />
+              </List>
+            ) : null}
             <List style={styles.list}>
               <List.Item
                 onPress={() => {
                   nav.goBack();
                   InteractionManager.runAfterInteractions(() => {
-                    nav.navigate('ImportWalletStack', {
-                      screen: 'PairSignerScreen',
-                    });
+                    nav.navigate('ImportWalletStack');
                   });
                 }}
                 leftContentStyle={styles.iconContainer}
-                leftContent={<Icon name="ic-globe-outline-28" color="accentBlue" />}
-                title={t('add_wallet_modal.signer.title')}
-                subtitle={t('add_wallet_modal.signer.subtitle')}
+                leftContent={
+                  <Icon name="ic-import-wallet-outline-28" color="accentBlue" />
+                }
+                title={t('add_wallet_modal.import.title')}
+                subtitle={t('add_wallet_modal.import.subtitle')}
                 subtitleNumberOfLines={3}
                 chevron
               />
             </List>
-          ) : null}
-          {!isTonConnect && !getFlag('disable_ledger') ? (
-            <List style={styles.list}>
-              <List.Item
-                onPress={() => {
-                  nav.replaceModal('/pair-ledger');
-                }}
-                leftContentStyle={styles.iconContainer}
-                leftContent={<Icon name="ic-ledger-28" color="accentBlue" />}
-                title={t('add_wallet_modal.ledger.title')}
-                subtitle={t('add_wallet_modal.ledger.subtitle')}
-                subtitleNumberOfLines={3}
-                chevron
-              />
-            </List>
-          ) : null}
-          {!isTonConnect || config.get('devmode_enabled') ? (
-            <>
-              <Spacer y={12} />
-              <Text textAlign="center" color="textSecondary">
-                {t('add_wallet_modal.other_options')}
-              </Text>
-              <Spacer y={20} />
-              {!isTonConnect ? (
-                <List style={styles.list}>
-                  <List.Item
-                    onPress={() => {
-                      nav.goBack();
-                      InteractionManager.runAfterInteractions(() => {
-                        nav.navigate('AddWatchOnlyStack');
+            {!isTonConnect &&
+            (!config.get('disable_signer') || !getFlag('disable_signer')) ? (
+              <List style={styles.list}>
+                <List.Item
+                  onPress={() => {
+                    nav.goBack();
+                    InteractionManager.runAfterInteractions(() => {
+                      nav.navigate('ImportWalletStack', {
+                        screen: 'PairSignerScreen',
                       });
-                    }}
-                    leftContentStyle={styles.iconContainer}
-                    leftContent={
-                      <Icon name="ic-magnifying-glass-outline-28" color="accentBlue" />
-                    }
-                    title={t('add_wallet_modal.watch_only.title')}
-                    subtitle={t('add_wallet_modal.watch_only.subtitle')}
-                    subtitleNumberOfLines={3}
-                    chevron
-                  />
-                </List>
-              ) : null}
-              {config.get('devmode_enabled') ? (
-                <List style={styles.list}>
-                  <List.Item
-                    onPress={() => {
-                      nav.goBack();
-                      InteractionManager.runAfterInteractions(() => {
-                        nav.navigate('ImportWalletStack', {
-                          screen: 'ImportWallet',
-                          params: { testnet: true },
+                    });
+                  }}
+                  leftContentStyle={styles.iconContainer}
+                  leftContent={<Icon name="ic-globe-outline-28" color="accentBlue" />}
+                  title={t('add_wallet_modal.signer.title')}
+                  subtitle={t('add_wallet_modal.signer.subtitle')}
+                  subtitleNumberOfLines={3}
+                  chevron
+                />
+              </List>
+            ) : null}
+            {!isTonConnect && !getFlag('disable_ledger') ? (
+              <List style={styles.list}>
+                <List.Item
+                  onPress={() => {
+                    nav.replaceModal('/pair-ledger');
+                  }}
+                  leftContentStyle={styles.iconContainer}
+                  leftContent={<Icon name="ic-ledger-28" color="accentBlue" />}
+                  title={t('add_wallet_modal.ledger.title')}
+                  subtitle={t('add_wallet_modal.ledger.subtitle')}
+                  subtitleNumberOfLines={3}
+                  chevron
+                />
+              </List>
+            ) : null}
+            {!isTonConnect || config.get('devmode_enabled') ? (
+              <>
+                <Spacer y={12} />
+                <Text textAlign="center" color="textSecondary">
+                  {t('add_wallet_modal.other_options')}
+                </Text>
+                <Spacer y={20} />
+                {!isTonConnect ? (
+                  <List style={styles.list}>
+                    <List.Item
+                      onPress={() => {
+                        nav.goBack();
+                        InteractionManager.runAfterInteractions(() => {
+                          nav.navigate('AddWatchOnlyStack');
                         });
-                      });
-                    }}
-                    leftContentStyle={styles.iconContainer}
-                    leftContent={<Icon name="ic-testnet-outline-28" color="accentBlue" />}
-                    title={t('add_wallet_modal.testnet.title')}
-                    subtitle={t('add_wallet_modal.testnet.subtitle')}
-                    subtitleNumberOfLines={3}
-                    chevron
-                  />
-                </List>
-              ) : null}
-            </>
-          ) : null}
-        </View>
-      </Modal.Content>
+                      }}
+                      leftContentStyle={styles.iconContainer}
+                      leftContent={
+                        <Icon name="ic-magnifying-glass-outline-28" color="accentBlue" />
+                      }
+                      title={t('add_wallet_modal.watch_only.title')}
+                      subtitle={t('add_wallet_modal.watch_only.subtitle')}
+                      subtitleNumberOfLines={3}
+                      chevron
+                    />
+                  </List>
+                ) : null}
+                {config.get('devmode_enabled') ? (
+                  <List style={styles.list}>
+                    <List.Item
+                      onPress={() => {
+                        nav.goBack();
+                        InteractionManager.runAfterInteractions(() => {
+                          nav.navigate('ImportWalletStack', {
+                            screen: 'ImportWallet',
+                            params: { testnet: true },
+                          });
+                        });
+                      }}
+                      leftContentStyle={styles.iconContainer}
+                      leftContent={
+                        <Icon name="ic-testnet-outline-28" color="accentBlue" />
+                      }
+                      title={t('add_wallet_modal.testnet.title')}
+                      subtitle={t('add_wallet_modal.testnet.subtitle')}
+                      subtitleNumberOfLines={3}
+                      chevron
+                    />
+                  </List>
+                ) : null}
+              </>
+            ) : null}
+          </View>
+        </Modal.Content>
+      </Modal.ScrollView>
     </Modal>
   );
 });

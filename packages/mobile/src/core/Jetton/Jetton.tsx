@@ -153,11 +153,11 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
 
   const hideW5Block = useCallback(() => {
     tk.wallets.forEach((w) => {
-      if (w.pubkey === wallet.pubkey) {
+      if (w.pubkey === wallet.pubkey && w.network === wallet.network) {
         w.hideW5Block();
       }
     });
-  }, [wallet.pubkey]);
+  }, [wallet.network, wallet.pubkey]);
 
   const isW5BlockHidden = useWalletStatus((s) => s.isW5BlockHidden);
 

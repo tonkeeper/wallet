@@ -801,7 +801,10 @@ export class Tonkeeper {
     }
 
     return Array.from(this.wallets.values()).some(
-      (wallet) => wallet.isW5 && wallet.pubkey === this.wallet.pubkey,
+      (wallet) =>
+        wallet.isW5 &&
+        wallet.pubkey === this.wallet.pubkey &&
+        wallet.network === this.wallet.network,
     );
   }
 }

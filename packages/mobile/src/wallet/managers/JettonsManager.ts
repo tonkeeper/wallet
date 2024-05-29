@@ -56,12 +56,14 @@ export class JettonsManager {
       const rate = response.rates[jettonAddress];
 
       this.state.set({
-        ...this.state.data.jettonRates,
-        [jettonAddress]: {
-          fiat: rate?.prices![currency],
-          usd: rate?.prices!.USD,
-          ton: rate?.prices!.TON,
-          diff_24h: rate?.diff_24h![currency],
+        jettonRates: {
+          ...this.state.data.jettonRates,
+          [jettonAddress]: {
+            fiat: rate?.prices![currency],
+            usd: rate?.prices!.USD,
+            ton: rate?.prices!.TON,
+            diff_24h: rate?.diff_24h![currency],
+          },
         },
       });
     } catch {}
