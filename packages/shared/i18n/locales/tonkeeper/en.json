@@ -155,7 +155,7 @@
     },
     "refilled": "Battery refilled",
     "screen_title": "Battery",
-    "settings": "Battery %{betaLabel}",
+    "settings": "Battery",
     "ok": "OK",
     "title": "Tonkeeper Battery",
     "description": {
@@ -1126,7 +1126,7 @@
     }
   },
   "nft_actions": {
-    "hide":  {
+    "hide": {
       "nft": "Hide NFT",
       "collection": "Hide Collection"
     },
@@ -1231,9 +1231,11 @@
   },
   "choose_wallets": {
     "title": "Choose Wallets",
-    "subtitle": "Choose wallets you want to add.",
+    "subtitle": "Choose wallets to add.",
     "tokens": "tokens",
-    "already_added": "Already added"
+    "already_added": "Already added",
+    "w5_subtitle": "Lower blockchain fees, gasless transactions and multi-transfers.",
+    "w5_subtitle_link": "Learn more"
   },
   "old_wallet_error": "Use wallet with v4R2 version",
   "migration": {
@@ -1381,5 +1383,36 @@
     "bad_request": "Bad request",
     "wrong_network": "Wrong network",
     "wrong_from": "Wrong 'from' parameter"
+  },
+  "w5_stories": {
+    "0": {
+      "title": "Reduced Blockchain Fees",
+      "description": "W5 employs a more efficient transaction processing approach, which means up to 25% lower gas costs."
+    },
+    "1": {
+      "title": "Up to 255 Operations in One Transaction",
+      "description": "W5 increases the number of simultaneous operations from 4 to 255, which can save on fee costs."
+    },
+    "2": {
+      "title": "Gasless USDT Transfers",
+      "description": "Send USDT without having TON – transaction fees will be covered by a few cents of USDT automatically."
+    },
+    "3": {
+      "title": "Recovery Phrase Does Not Change",
+      "description": "Old accounts and W5 use the same recovery phrase – when restoring accounts on a new device, both old and new will appear automatically."
+    },
+    "4": {
+      "title": "W5 is Beta",
+      "description": "W5 standard is not final. Gasless transactions are offered as an experimental feature to test how it works. Do not move all your assets to the W5 wallet until final release.",
+      "button": "Add W5 Wallet"
+    }
+  },
+  "upgrade_to_w5": {
+    "settings": "Wallet W5",
+    "title": "Gasless Transfers",
+    "description": "Try the brand-new W5 wallet standard with support for gasless USDT payments and other cool features.",
+    "try_button": "Try W5 Wallet",
+    "about_button": "About W5 Wallet",
+    "hide_button": "Hide"
   }
 }

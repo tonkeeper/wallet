@@ -12,6 +12,7 @@ export interface WalletStatusState {
   isReloading: boolean;
   isLoading: boolean;
   updatedAt: number;
+  isW5BlockHidden: boolean;
 }
 
 export interface WalletSetupState {
@@ -25,6 +26,7 @@ export class Wallet extends WalletContent {
     isReloading: false,
     isLoading: false,
     updatedAt: Date.now(),
+    isW5BlockHidden: false,
   };
 
   static readonly INITIAL_SETUP_STATE: WalletSetupState = {
@@ -78,6 +80,10 @@ export class Wallet extends WalletContent {
 
   public toggleTgJoined() {
     this.setup.set({ hasOpenedTelegramChannel: true });
+  }
+
+  public hideW5Block() {
+    this.status.set({ isW5BlockHidden: true });
   }
 
   public async rehydrate() {

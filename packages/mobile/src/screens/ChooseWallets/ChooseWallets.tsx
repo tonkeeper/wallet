@@ -2,10 +2,19 @@ import {
   ImportWalletStackParamList,
   ImportWalletStackRouteNames,
 } from '$navigation/ImportWalletStack/types';
-import { Checkbox } from '$uikit';
+import { Checkbox, Tag } from '$uikit';
 import { WalletContractVersion } from '$wallet/WalletTypes';
 import { t } from '@tonkeeper/shared/i18n';
-import { Button, List, Screen, Spacer, Steezy, Text, isAndroid } from '@tonkeeper/uikit';
+import {
+  Button,
+  List,
+  Screen,
+  Spacer,
+  Steezy,
+  Text,
+  View,
+  isAndroid,
+} from '@tonkeeper/uikit';
 import { FC, useCallback, useState } from 'react';
 import { RouteProp } from '@react-navigation/native';
 import { Address } from '@tonkeeper/shared/Address';
@@ -88,10 +97,19 @@ export const ChooseWallets: FC<{
           {walletsInfo.map((walletInfo) => (
             <List.Item
               key={walletInfo.version}
-              title={Address.parse(walletInfo.address, {
-                bounceable: false,
-                testOnly: isTestnet,
-              }).toShort()}
+              title={
+                <View style={styles.titleContainer}>
+                  <Text type="label1">
+                    {Address.parse(walletInfo.address, {
+                      bounceable: false,
+                      testOnly: isTestnet,
+                    }).toShort()}
+                  </Text>
+                  {walletInfo.version === WalletContractVersion.v5R1 ? (
+                    <Tag type="positive">W5 Beta</Tag>
+                  ) : null}
+                </View>
+              }
               subtitle={`${walletInfo.version} · ${formatter.formatNano(
                 walletInfo.balance,
               )} TON${walletInfo.tokens ? tokensText : ''}`}
@@ -123,5 +141,9 @@ export const ChooseWallets: FC<{
 const styles = Steezy.create(() => ({
   contentContainer: {
     paddingHorizontal: 32,
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 }));

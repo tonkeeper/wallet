@@ -56,6 +56,10 @@ export class BalancesManager {
 
   public async getLockupBalances() {
     try {
+      if (this.walletConfig.version !== WalletContractVersion.LockupV1) {
+        return ['0', '0', '0'];
+      }
+
       const isTestnet = this.walletConfig.network === WalletNetwork.testnet;
 
       const tonweb = new TonWeb(
@@ -64,12 +68,10 @@ export class BalancesManager {
         }),
       );
 
-      const tonPublicKey = Uint8Array.from(Buffer.from(this.walletConfig.pubkey, 'hex'));
-
       const tonWallet: LockupWalletV1 = new tonweb.lockupWallet.all[
         this.walletConfig.version
       ](tonweb.provider, {
-        publicKey: tonPublicKey,
+        publicKey: Buffer.from(this.walletConfig.pubkey, 'hex'),
         wc: this.walletConfig.workchain ?? 0,
         config: {
           wallet_type: this.walletConfig.version,

@@ -3199,15 +3199,6 @@
     teslabot "^1.3.0"
     zod "^3.21.4"
 
-"@tonapps/tonlogin-client@0.2.5":
-  version "0.2.5"
-  resolved "https://registry.yarnpkg.com/@tonapps/tonlogin-client/-/tonlogin-client-0.2.5.tgz#08ef432209ee879d5d937272f97358dc7453da69"
-  integrity sha512-eM7ROa5mb3OepdHf15ovplboUYJXht4W/n+n/aYtPUFp4mF8pZvTJHuJpZMzV1BZCEG6eZoctRty3aTc96tGSw==
-  dependencies:
-    create-hmac "^1.1.7"
-    tweetnacl "^1.0.3"
-    tweetnacl-util "^0.15.1"
-
 "@tonconnect/protocol@^2.2.6":
   version "2.2.6"
   resolved "https://registry.yarnpkg.com/@tonconnect/protocol/-/protocol-2.2.6.tgz#24b3fbcde6003e65fb5840a190072db5378699db"

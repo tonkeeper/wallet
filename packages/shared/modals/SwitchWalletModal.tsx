@@ -1,14 +1,27 @@
 import { useNavigation } from '@tonkeeper/router';
-import { Button, Haptics, Icon, List, Modal, Steezy, View } from '@tonkeeper/uikit';
-import { FC, memo, useCallback, useMemo } from 'react';
+import {
+  Button,
+  Flash,
+  Haptics,
+  Icon,
+  List,
+  Modal,
+  Steezy,
+  View,
+  deviceHeight,
+} from '@tonkeeper/uikit';
+import { FC, memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useWalletCurrency, useWallets } from '../hooks';
 import { tk } from '@tonkeeper/mobile/src/wallet';
 import { t } from '../i18n';
 import { formatter } from '../formatter';
 import { WalletListItem } from '../components';
 import { HideableAmount } from '@tonkeeper/mobile/src/core/HideableAmount/HideableAmount';
+import { StatusBar } from 'react-native';
+import { SheetModalScrollViewRef } from '@tonkeeper/uikit/src/containers/Modal/SheetModal/SheetModalScrollView';
 
 interface Props {
+  withW5Flash?: boolean;
   selected?: string;
   onSelect?: (identifier: string) => void;
 }
@@ -26,6 +39,8 @@ export const SwitchWalletModal: FC<Props> = memo((props) => {
   );
   const currency = useWalletCurrency();
 
+  const scrollViewRef = useRef<SheetModalScrollViewRef>(null);
+
   const handlePress = useCallback(
     (identifier: string) => () => {
       if (props.onSelect) {
@@ -39,34 +54,59 @@ export const SwitchWalletModal: FC<Props> = memo((props) => {
     [],
   );
 
+  const delay =
+    deviceHeight - (StatusBar.currentHeight ?? 0) < selectableWallets.length * 76
+      ? 1400
+      : 600;
+
+  useEffect(() => {
+    if (!props.withW5Flash) {
+      return;
+    }
+
+    setTimeout(() => {
+      scrollViewRef.current?.scrollToEnd();
+    }, 800);
+  }, []);
+
   return (
     <Modal>
       <Modal.Header title={t('wallets')} />
-      <Modal.ScrollView>
+      <Modal.ScrollView ref={scrollViewRef}>
         <Modal.Content safeArea>
           <List>
-            {selectableWallets.map((wallet) => (
-              <WalletListItem
+            {selectableWallets.map((wallet, index) => (
+              <Flash
+                disabled={
+                  !wallet.isW5 ||
+                  index + 1 < selectableWallets.length ||
+                  !props.withW5Flash
+                }
+                delay={delay}
                 key={wallet.identifier}
-                wallet={wallet}
-                onPress={handlePress(wallet.identifier)}
-                subtitle={
-                  <HideableAmount variant="body2" color="textSecondary">
-                    {formatter.format(wallet.totalFiat, { currency })}
-                  </HideableAmount>
-                }
-                rightContent={
-                  selectedIdentifier === wallet.identifier && (
-                    <View style={styles.checkmark}>
-                      <Icon
-                        style={styles.checkmarkIcon.static}
-                        name="ic-donemark-thin-28"
-                        color="accentBlue"
-                      />
-                    </View>
-                  )
-                }
-              />
+              >
+                <WalletListItem
+                  key={wallet.identifier}
+                  wallet={wallet}
+                  onPress={handlePress(wallet.identifier)}
+                  subtitle={
+                    <HideableAmount variant="body2" color="textSecondary">
+                      {formatter.format(wallet.totalFiat, { currency })}
+                    </HideableAmount>
+                  }
+                  rightContent={
+                    selectedIdentifier === wallet.identifier && (
+                      <View style={styles.checkmark}>
+                        <Icon
+                          style={styles.checkmarkIcon.static}
+                          name="ic-donemark-thin-28"
+                          color="accentBlue"
+                        />
+                      </View>
+                    )
+                  }
+                />
+              </Flash>
             ))}
           </List>
           <View style={styles.buttons}>

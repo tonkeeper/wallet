@@ -26,7 +26,6 @@ import { TonProofManager } from '../managers/TonProofManager';
 import { JettonVerification } from '../models/JettonBalanceModel';
 import { CardsManager } from '$wallet/managers/CardsManager';
 import { JettonQuantity } from '@tonkeeper/core/src/TonAPI';
-import { WalletContentReceiver } from '../../tabs/Wallet/content-providers/utils/receiver';
 import { SignerManager } from '$wallet/managers/SignerManager';
 
 export interface WalletStatusState {
@@ -65,7 +64,7 @@ export class WalletContent extends WalletBase {
 
     this.activityLoader = new ActivityLoader(tonRawAddress, this.tonapi, this.tronapi);
 
-    this.tonProof = new TonProofManager(this.identifier, this.tonapi);
+    this.tonProof = new TonProofManager(this.identifier, this.network, this.tonapi);
     this.tokenApproval = new TokenApprovalManager(this.persistPath, this.storage);
     this.balances = new BalancesManager(
       this.persistPath,

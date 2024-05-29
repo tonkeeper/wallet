@@ -23,7 +23,7 @@ export class VouchersContentProvider extends ContentProviderPrototype<{
   vouchers: NotCoinVouchersDependency;
 }> {
   name = Providers.NotCoinVouchers;
-  renderPriority = 998;
+  renderPriority = 997;
 
   constructor(
     tonPrice: TonPriceDependency,

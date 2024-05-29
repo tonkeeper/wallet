@@ -130,26 +130,11 @@ export const WalletScreen = memo(({ navigation }) => {
                 </Text>
               </View>
             ) : null}
-            {wallet && wallet.isTestnet ? (
-              <>
-                <Tag type="warning">Testnet</Tag>
-              </>
-            ) : null}
-            {isWatchOnly ? (
-              <>
-                <Tag type="warning">{t('watch_only')}</Tag>
-              </>
-            ) : null}
-            {wallet && wallet.isSigner ? (
-              <>
-                <Tag type="purple">Signer</Tag>
-              </>
-            ) : null}
-            {wallet && wallet.isLedger ? (
-              <>
-                <Tag type="positive">Ledger</Tag>
-              </>
-            ) : null}
+            {wallet && wallet.isW5 ? <Tag type="positive">W5 Beta</Tag> : null}
+            {isWatchOnly ? <Tag type="warning">{t('watch_only')}</Tag> : null}
+            {wallet && wallet.isSigner ? <Tag type="purple">Signer</Tag> : null}
+            {wallet && wallet.isLedger ? <Tag type="positive">Ledger</Tag> : null}
+            {wallet && wallet.isTestnet ? <Tag type="warning">Testnet</Tag> : null}
           </View>
         </View>
         <WalletActionButtons />

@@ -52,6 +52,7 @@ export class WalletBase {
       contractVersionsMap[config.version],
       Buffer.from(this.pubkey, 'hex'),
       config.workchain,
+      this.network,
       {
         lockupPubKey: config.configPubKey,
         allowedDestinations: config.allowedDestinations,
@@ -82,16 +83,32 @@ export class WalletBase {
     this.config = config;
   }
 
-  public isV4() {
-    return this.config.version === WalletContractVersion.v4R2;
+  public get version() {
+    return this.config.version;
+  }
+
+  public get isV4() {
+    return this.version === WalletContractVersion.v4R2;
+  }
+
+  public get isW5() {
+    return this.version === WalletContractVersion.v5R1;
   }
 
   public get isLockup() {
-    return this.config.version === WalletContractVersion.LockupV1;
+    return this.version === WalletContractVersion.LockupV1;
+  }
+
+  public get network() {
+    return this.config.network;
   }
 
   public get isTestnet() {
-    return this.config.network === WalletNetwork.testnet;
+    return this.network === WalletNetwork.testnet;
+  }
+
+  public get isMnemonic() {
+    return this.config.type === WalletType.Regular;
   }
 
   public get isWatchOnly() {
@@ -115,7 +132,7 @@ export class WalletBase {
 
   public getLockupConfig() {
     return {
-      wallet_type: this.config.version,
+      wallet_type: this.version,
       workchain: this.config.workchain,
       config_pubkey: this.config.configPubKey,
       allowed_destinations: this.config.allowedDestinations,

@@ -87,6 +87,10 @@ export type AppConfigVars = {
   notcoin_burn_addresses: string[];
   notcoin_burn_date: number;
   notcoin_burn: boolean;
+
+  usdt_jetton_master: string;
+
+  v5_beta: boolean;
 };
 
 const defaultConfig: Partial<AppConfigVars> = {
@@ -150,6 +154,11 @@ const defaultConfig: Partial<AppConfigVars> = {
   notcoin_nft_collection:
     '0:e6923eb901bfe6d1a65a5bc2292b0e2462a220213c3f1d1b2d60491543a34860',
   notcoin_bot_url: 'https://t.me/notcoin_bot',
+
+  usdt_jetton_master:
+    '0:b113a994b5024a16719f69139328eb759596c38a25f59028b146fecdc3621dfe',
+
+  v5_beta: true,
 };
 
 export const config = new AppConfig<AppConfigVars>({

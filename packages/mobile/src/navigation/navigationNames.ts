@@ -29,6 +29,7 @@ export enum AppStackRouteNames {
   Swap = 'Swap',
   ReceiveInscription = 'ReceiveInscription',
   CustomizeWallet = 'CustomizeWallet',
+  W5StoriesScreen = 'W5StoriesScreen',
 }
 
 export enum MainStackRouteNames {

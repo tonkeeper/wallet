@@ -13,6 +13,7 @@ import { AppState, Linking } from 'react-native';
 import { FC } from 'react';
 import { TonTransport } from '@ton-community/ton-ledger';
 import { t } from '@tonkeeper/shared/i18n';
+import { getLastEnteredPasscode } from '$store/wallet/sagas';
 
 let ledgerConfirmModalRef: FC<any> | null = null;
 
@@ -54,6 +55,30 @@ export class SignerManager {
     const keyPair = await vault.getKeyPair();
 
     return Buffer.from(keyPair.secretKey);
+  }
+
+  public async getMnemonic(): Promise<{
+    mnemonic: string;
+    passcode: string;
+    keyPair: nacl.SignKeyPair;
+  }> {
+    if (this.config.type !== WalletType.Regular) {
+      throw new SignerError('Only regular wallets have mnemonics');
+    }
+
+    const vault = await new Promise<UnlockedVault>((resolve, reject) => {
+      store.dispatch(
+        walletActions.walletGetUnlockedVault({
+          onDone: (vault) => resolve(vault),
+          onFail: (err) => reject(err),
+          walletIdentifier: this.config.identifier,
+        }),
+      );
+    });
+
+    const keyPair = await vault.getKeyPair();
+
+    return { mnemonic: vault.mnemonic, passcode: getLastEnteredPasscode(), keyPair };
   }
 
   private async signWithMnemonic(message: Cell): Promise<Buffer> {

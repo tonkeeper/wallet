@@ -26,6 +26,7 @@ export enum WalletType {
 }
 
 export enum WalletContractVersion {
+  v5R1 = 'v5R1',
   v4R2 = 'v4R2',
   v4R1 = 'v4R1',
   v3R2 = 'v3R2',

@@ -14,8 +14,15 @@ import { Loader } from './Loader';
 import { Text } from './Text';
 import { ns } from '../utils';
 import { IconNames, Icon, IconColors } from './Icon';
+import { convertHexToRGBA } from '@tonkeeper/mobile/src/utils';
 
-export type ButtonColors = 'green' | 'primary' | 'secondary' | 'tertiary' | 'orange';
+export type ButtonColors =
+  | 'green'
+  | 'greenTransparent'
+  | 'primary'
+  | 'secondary'
+  | 'tertiary'
+  | 'orange';
 export type ButtonSizes =
   | 'large'
   | 'medium'
@@ -113,7 +120,7 @@ export const Button = memo<ButtonProps>((props) => {
           <Loader
             size="medium"
             color={
-              ['primary', 'green'].includes(color)
+              ['primary', 'green', 'greenTransparent'].includes(color)
                 ? 'buttonPrimaryForeground'
                 : 'textPrimary'
             }
@@ -131,7 +138,7 @@ export const Button = memo<ButtonProps>((props) => {
                   style={titleStyle}
                   type={textType}
                   color={
-                    ['primary', 'green'].includes(color)
+                    ['primary', 'green', 'greenTransparent'].includes(color)
                       ? 'buttonPrimaryForeground'
                       : 'textPrimary'
                   }
@@ -293,6 +300,11 @@ const getButtonColors = (theme: Theme) => ({
     disable: theme.buttonPrimaryBackgroundGreenDisabled,
     background: theme.buttonPrimaryBackgroundGreen,
   },
+  greenTransparent: {
+    highlighted: convertHexToRGBA(theme.buttonPrimaryBackgroundGreenHighlighted, 0.18),
+    disable: convertHexToRGBA(theme.buttonPrimaryBackgroundGreenDisabled, 0.06),
+    background: convertHexToRGBA(theme.buttonPrimaryBackgroundGreen, 0.12),
+  },
 });
 
 const iconColors: { [key: string]: IconColors } = {
@@ -300,6 +312,7 @@ const iconColors: { [key: string]: IconColors } = {
   secondary: 'iconTertiary',
   tertiary: 'iconTertiary',
   green: 'constantWhite',
+  greenTransparent: 'constantWhite',
 };
 
 const getIndentTopStyle = (indentTop?: number | boolean) => {

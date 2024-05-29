@@ -15,10 +15,11 @@ const FlashSource = require('../../../assets/flash.png');
 interface Props extends WithStyleProp<ViewProps> {
   children: ReactNode;
   disabled?: boolean;
+  delay?: number;
 }
 
 const FlashComponent: FC<Props> = (props) => {
-  const { children, disabled, style, ...viewProps } = props;
+  const { children, disabled, delay = 600, style, ...viewProps } = props;
 
   const shouldAnimate = useSharedValue(false);
 
@@ -29,7 +30,7 @@ const FlashComponent: FC<Props> = (props) => {
       transform: [
         {
           translateX: shouldAnimate.value
-            ? withDelay(600, withTiming(width, { duration: 850 }))
+            ? withDelay(delay, withTiming(width, { duration: 850 }))
             : -168,
         },
       ],

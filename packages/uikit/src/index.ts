@@ -34,6 +34,7 @@ export { WalletIcon } from './components/WalletIcon';
 export * from './components/SlideButton';
 export * from './components/Radio';
 export * from './components/HeaderSwitch';
+export * from './components/StoriesView';
 
 // Containers
 export { HeaderButtonHitSlop } from './containers/Screen/utils/constants';

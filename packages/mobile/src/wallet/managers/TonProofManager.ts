@@ -6,17 +6,23 @@ import { Buffer } from 'buffer';
 import { beginCell } from '@ton/core';
 import { storeStateInit } from '@ton/ton';
 import { signProofForTonkeeper } from '@tonkeeper/core/src/utils/tonProof';
+import { WalletNetwork } from '../WalletTypes';
 
 export class TonProofManager {
   public tonProofToken: string | null = null;
 
-  constructor(public identifier: string, public tonapi: TonAPI) {}
+  constructor(
+    public identifier: string,
+    public network: WalletNetwork,
+    public tonapi: TonAPI,
+  ) {}
 
   public async obtainProof(keyPair: nacl.SignKeyPair) {
     const contract = ContractService.getWalletContract(
       WalletVersion.v4R2,
       Buffer.from(keyPair.publicKey),
       0,
+      this.network,
     );
     const stateInitCell = beginCell().store(storeStateInit(contract.init)).endCell();
     const rawAddress = contract.address.toRawString();

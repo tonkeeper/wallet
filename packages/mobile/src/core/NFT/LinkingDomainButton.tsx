@@ -152,7 +152,7 @@ export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) 
 
   const handlePressButton = React.useCallback(async () => {
     Toast.loading();
-    const currentWalletAddress = wallet.tonAllAddresses[wallet.config.version].friendly;
+    const currentWalletAddress = wallet.tonAllAddresses[wallet.version].friendly;
     const linkingActions = new LinkingDomainActions(
       props.domainAddress,
       isLinked ? undefined : currentWalletAddress,
@@ -201,7 +201,7 @@ export const LinkingDomainButton = React.memo<LinkingDomainButtonProps>((props) 
         });
       },
     });
-  }, [wallet.tonAllAddresses, wallet.config.version, props, isLinked, dispatch]);
+  }, [wallet.tonAllAddresses, wallet.version, props, isLinked, dispatch]);
 
   const buttonTitle = React.useMemo(() => {
     if (record.walletAddress) {

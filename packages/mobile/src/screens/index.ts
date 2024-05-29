@@ -12,3 +12,4 @@ export * from './BackupPhraseScreen';
 export * from './BackupCheckPhraseScreen';
 export * from './PairSignerScreen';
 export * from './SignerConfirmScreen';
+export * from './W5StoriesScreen';

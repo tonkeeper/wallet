@@ -1,12 +1,12 @@
 import React, { FC, useCallback, useMemo, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import Rate, { AndroidMarket } from 'react-native-rate';
-import { Alert, Linking, Platform, View } from 'react-native';
+import { Alert, InteractionManager, Linking, Platform, View } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import { TapGestureHandler } from 'react-native-gesture-handler';
 
 import * as S from './Settings.style';
-import { Icon, PopupSelect, Spacer, Text } from '$uikit';
+import { Icon, PopupSelect, Spacer, Tag, Text } from '$uikit';
 import { Icon as NewIcon, Screen, List } from '@tonkeeper/uikit';
 import { useShouldShowTokensButton } from '$hooks/useShouldShowTokensButton';
 import { useNavigation } from '@tonkeeper/router';
@@ -46,6 +46,7 @@ import { WalletListItem } from '@tonkeeper/shared/components';
 import { useSubscriptions } from '@tonkeeper/shared/hooks/useSubscriptions';
 import { nativeLocaleNames } from '@tonkeeper/shared/i18n/translations';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { reset } from '$navigation/imperative';
 
 export const Settings: FC = () => {
   const animationRef = useRef<AnimatedLottieView>(null);
@@ -122,7 +123,9 @@ export const Settings: FC = () => {
   }, []);
 
   const handleFAQ = useCallback(() => {
-    Linking.openURL(i18n.locale === 'ru' ? config.get('faqUrlRu') : config.get('faqUrl')).catch((err) => console.log(err));
+    Linking.openURL(
+      i18n.locale === 'ru' ? config.get('faqUrlRu') : config.get('faqUrl'),
+    ).catch((err) => console.log(err));
   }, []);
 
   const handleResetWallet = useCallback(() => {
@@ -253,6 +256,28 @@ export const Settings: FC = () => {
     return hasDiamods && !flags.disable_apperance;
   }, [hasDiamods, flags.disable_apperance]);
 
+  const openW5Stories = useCallback(() => {
+    nav.navigate(AppStackRouteNames.W5StoriesScreen, {
+      onPressButton: wallet.isW5
+        ? undefined
+        : () => {
+            InteractionManager.runAfterInteractions(async () => {
+              try {
+                await tk.addWalletV5();
+
+                reset(MainStackRouteNames.Tabs);
+
+                setTimeout(() => {
+                  nav.openModal('/switch-wallet', {
+                    withW5Flash: true,
+                  });
+                }, 300);
+              } catch {}
+            });
+          },
+    });
+  }, [nav]);
+
   return (
     <S.Wrap>
       <Screen>
@@ -360,10 +385,31 @@ export const Settings: FC = () => {
                     name={'ic-battery-28'}
                   />
                 }
-                title={t('battery.settings', {
-                  betaLabel: config.get('battery_beta') ? '(Beta)' : '',
-                })}
+                title={
+                  <View style={styles.row.static}>
+                    <Text variant="label1">{t('battery.settings')}</Text>
+                    {config.get('battery_beta') ? <Tag>Beta</Tag> : null}
+                  </View>
+                }
                 onPress={handleBattery}
+              />
+            )}
+            {wallet.isMnemonic && (!tk.hasW5WithCurrentPubkey || wallet.isW5) && (
+              <List.Item
+                value={
+                  <NewIcon
+                    style={styles.icon.static}
+                    color="accentBlue"
+                    name={'ic-wallet-28'}
+                  />
+                }
+                title={
+                  <View style={styles.row.static}>
+                    <Text variant="label1">{t('upgrade_to_w5.settings')}</Text>
+                    {config.get('v5_beta') ? <Tag>Beta</Tag> : null}
+                  </View>
+                }
+                onPress={openW5Stories}
               />
             )}
             {!config.get('disable_holders_cards') && !!wallet && !wallet.isWatchOnly && (
@@ -607,5 +653,9 @@ const styles = Steezy.create({
     paddingTop: 9.5,
     paddingBottom: 6.5,
     marginLeft: 8,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });

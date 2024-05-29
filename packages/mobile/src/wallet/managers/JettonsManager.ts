@@ -1,4 +1,4 @@
-import { TonAPI } from '@tonkeeper/core/src/TonAPI';
+import { JettonVerificationType, TonAPI } from '@tonkeeper/core/src/TonAPI';
 import { Storage } from '@tonkeeper/core/src/declarations/Storage';
 import { TokenRate, TonRawAddress } from '../WalletTypes';
 import { Logger } from '@tonkeeper/core/src/utils/Logger';
@@ -7,6 +7,7 @@ import { JettonBalanceModel } from '../models/JettonBalanceModel';
 import { Address } from '@tonkeeper/core/src/formatters/Address';
 import { TokenApprovalManager } from './TokenApprovalManager';
 import { TonPriceManager } from './TonPriceManager';
+import { config } from '$config';
 
 export type JettonsState = {
   jettonBalances: JettonBalanceModel[];
@@ -77,11 +78,17 @@ export class JettonsManager {
         currencies: ['TON', 'USD', currency].join(','),
       });
 
+      let hasUSDT = false;
+
       const jettonBalances = accountJettons.balances
         .filter((item) => {
           return item.balance !== '0' || (item.lock && item.lock.amount !== '0');
         })
         .map((item) => {
+          if (item.jetton.address === config.get('usdt_jetton_master')) {
+            hasUSDT = true;
+          }
+
           return new JettonBalanceModel(item);
         });
 
@@ -117,6 +124,40 @@ export class JettonsManager {
         },
         {},
       );
+
+      if (!hasUSDT) {
+        try {
+          const [response] = await Promise.all([
+            this.tonapi.blockchain.execGetMethodForBlockchainAccount({
+              accountId: config.get('usdt_jetton_master'),
+              methodName: 'get_wallet_address',
+              args: [this.tonRawAddress],
+            }),
+            this.loadRate(config.get('usdt_jetton_master')),
+          ]);
+          const walletAddress = response.decoded.jetton_wallet_address as string;
+
+          jettonBalances.push(
+            new JettonBalanceModel({
+              wallet_address: {
+                address: walletAddress,
+                is_scam: false,
+                is_wallet: false,
+              },
+              balance: '0',
+              jetton: {
+                verification: JettonVerificationType.Whitelist,
+                address: config.get('usdt_jetton_master'),
+                name: 'Tether USD',
+                symbol: 'USD₮',
+                decimals: 6,
+                image:
+                  'https://cache.tonapi.io/imgproxy/T3PB4s7oprNVaJkwqbGg54nexKE0zzKhcrPv8jcWYzU/rs:fill:200:200:1/g:no/aHR0cHM6Ly90ZXRoZXIudG8vaW1hZ2VzL2xvZ29DaXJjbGUucG5n.webp',
+              },
+            }),
+          );
+        } catch {}
+      }
 
       this.state.set({
         isLoading: false,
