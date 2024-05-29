@@ -142,10 +142,13 @@ export interface JettonTransferParams {
   shouldAttemptWithRelayer?: boolean;
 }
 
-export async function estimateJettonTransferFee(params: JettonTransferParams) {
-  const seqno = await getWalletSeqno();
-  const timeout = await getTimeoutFromLiteserverSafely();
-
+export async function estimateJettonTransferFee(
+  params: JettonTransferParams,
+  _seqno?: number,
+  _timeout?: number,
+) {
+  const seqno = _seqno ?? (await getWalletSeqno());
+  const timeout = _timeout ?? (await getTimeoutFromLiteserverSafely());
   const balance = toNano(tk.wallet.balances.state.data.ton);
 
   const isPreferGasless = params.preferGasless ?? true;
@@ -166,6 +169,7 @@ export async function estimateJettonTransferFee(params: JettonTransferParams) {
   );
 
   let emulateResponse: { emulateResult: MessageConsequences; battery: boolean };
+
   if (params.shouldAttemptWithRelayer) {
     try {
       emulateResponse = await emulateBocWithRelayer(
@@ -173,7 +177,11 @@ export async function estimateJettonTransferFee(params: JettonTransferParams) {
         compareAddresses(params.recipient, tk.wallet.battery.fundReceiver),
       );
     } catch {
-      return estimateJettonTransferFee({ ...params, shouldAttemptWithRelayer: false });
+      return estimateJettonTransferFee(
+        { ...params, shouldAttemptWithRelayer: false },
+        seqno,
+        timeout,
+      );
     }
   } else {
     emulateResponse = await emulateBoc(
@@ -264,7 +272,7 @@ export async function estimateJettonTransferFee(params: JettonTransferParams) {
   if (!emulateResponse.battery && feeToCalculate.gt(balance)) {
     if (isJettonSupportsGasless && !params.preferGasless && !params.forceGasless) {
       // Retry emulation with forced gasless
-      return estimateJettonTransferFee({ ...params, forceGasless: true });
+      return estimateJettonTransferFee({ ...params, forceGasless: true }, seqno, timeout);
     }
     openInsufficientFundsModal({
       totalAmount: feeToCalculate.toString(),
