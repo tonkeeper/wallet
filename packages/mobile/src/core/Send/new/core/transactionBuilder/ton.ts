@@ -1,11 +1,7 @@
 import { SignerType } from '$core/Send/new/core/transactionBuilder/common';
 import { tk } from '$wallet';
 import { Address, Cell, internal, SendMode } from '@ton/core';
-import {
-  Address as AddressFormatter,
-  BASE_FORWARD_AMOUNT,
-  TransactionService,
-} from '@tonkeeper/core';
+import { Address as AddressFormatter, TransactionService } from '@tonkeeper/core';
 import { getWalletSeqno } from '@tonkeeper/shared/utils/wallet';
 import {
   emulateBoc,
@@ -14,9 +10,7 @@ import {
 } from '@tonkeeper/shared/utils/blockchain';
 import BigNumber from 'bignumber.js';
 import { toNano as tonCoreToNano } from '@ton/core/dist/utils/convert';
-import { TokenType } from '$core/Send/Send.interface';
 import { toNano } from '$utils';
-import { call } from 'redux-saga/effects';
 import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
 import { openInsufficientFundsModal } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 
@@ -111,7 +105,7 @@ export async function estimateTonTransferFee(params: TonTransferParams) {
     sendAmount: params.sendAmountNano.toString(),
     bounce: AddressFormatter.isBounceable(params.recipient),
     sendMode: params.isSendAll
-      ? 128
+      ? SendMode.CARRY_ALL_REMAINING_BALANCE + SendMode.IGNORE_ERRORS
       : SendMode.IGNORE_ERRORS + SendMode.PAY_GAS_SEPARATELY,
   });
 
@@ -152,7 +146,7 @@ export async function sendTonBoc(params: TonTransferParams) {
     sendAmount: params.sendAmountNano.toString(),
     bounce: AddressFormatter.isBounceable(params.recipient),
     sendMode: params.isSendAll
-      ? 128
+      ? SendMode.CARRY_ALL_REMAINING_BALANCE + SendMode.IGNORE_ERRORS
       : SendMode.IGNORE_ERRORS + SendMode.PAY_GAS_SEPARATELY,
   });
 
