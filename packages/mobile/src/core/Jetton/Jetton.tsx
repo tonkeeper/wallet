@@ -255,8 +255,6 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
             ],
         },
       );
-
-      console.log(estimatedSwap);
     } catch (e) {
       console.log(e);
       Toast.show('Cannot swap');
