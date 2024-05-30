@@ -77,32 +77,15 @@ export const ExchangeItem: FC<ExchangeItemProps> = ({
               <Text variant="label1">{method.title}</Text>
               {isBot ? <S.LabelBadge>{t('exchange_telegram_bot')}</S.LabelBadge> : null}
             </S.LabelContainer>
-            {method.assets ? (
-              <S.AssetsContainer>
-                {method.assets.slice(0, 3).map((asset, index) => (
-                  <S.Asset key={asset} style={{ zIndex: 3 - index }}>
-                    <S.AssetImage source={getCryptoAssetIconSource(asset)} />
-                  </S.Asset>
-                ))}
-                {method.assets.length > 3 ? (
-                  <S.AssetsCount>
-                    <Text variant="label3" color="textSecondary">
-                      + {method.assets.length}
-                    </Text>
-                  </S.AssetsCount>
-                ) : null}
-              </S.AssetsContainer>
-            ) : (
-              <Text
-                style={{ overflow: 'hidden' }}
-                color="foregroundSecondary"
-                numberOfLines={5}
-                ellipsizeMode="tail"
-                variant="body2"
-              >
-                {method.subtitle}
-              </Text>
-            )}
+            <Text
+              style={{ overflow: 'hidden' }}
+              color="foregroundSecondary"
+              numberOfLines={5}
+              ellipsizeMode="tail"
+              variant="body2"
+            >
+              {method.subtitle}
+            </Text>
           </S.Contain>
           <S.IconContain>
             <Icon name="ic-chevron-16" color="foregroundTertiary" />

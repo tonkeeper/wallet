@@ -1,33 +1,12 @@
 import FastImage from 'react-native-fast-image';
 
-import styled, { RADIUS } from '$styled';
-import { Badge as UIBadge, Pressable } from '$uikit';
-import { hNs, nfs, ns } from '$utils';
+import styled from '$styled';
+import { Badge as UIBadge } from '$uikit';
+import { hNs, ns } from '$utils';
 
 export const Wrap = styled.View`
   position: relative;
 `;
-
-const radius = (topRadius: boolean, bottomRadius: boolean) => {
-  return `
-    ${
-      topRadius
-        ? `
-        border-top-left-radius: ${ns(RADIUS.normal)}px;
-        border-top-right-radius: ${ns(RADIUS.normal)}px;
-      `
-        : ''
-    }
-  ${
-    bottomRadius
-      ? `
-        border-bottom-left-radius: ${ns(RADIUS.normal)}px;
-        border-bottom-right-radius: ${ns(RADIUS.normal)}px;
-      `
-      : ''
-  }
-  `;
-};
 
 export const CardIn = styled.View`
   flex-direction: row;
@@ -74,36 +53,4 @@ export const Badge = styled.View`
   top: ${hNs(16 + 8)}px;
   right: ${ns(3)}px;
   z-index: 3;
-`;
-
-export const AssetsContainer = styled.View`
-  flex-direction: row;
-  margin-top: ${ns(4)}px;
-  margin-left: -${ns(2)}px;
-`;
-
-export const Asset = styled.View`
-  width: ${ns(28)}px;
-  height: ${ns(28)}px;
-  border-radius: ${ns(28) / 2}px;
-  border-width: ${ns(2)}px;
-  border-color: ${({ theme }) => theme.colors.backgroundSecondary};
-  background: ${({ theme }) => theme.colors.backgroundTertiary};
-  margin-right: -${ns(8)}px;
-  overflow: hidden;
-`;
-
-export const AssetImage = styled.Image`
-  width: ${ns(24)}px;
-  height: ${ns(24)}px;
-`;
-
-export const AssetsCount = styled.View`
-  height: ${ns(24)}px;
-  border-radius: ${ns(24) / 2}px;
-  padding: 0 ${ns(8)}px;
-  justify-content: center;
-  background: ${({ theme }) => theme.colors.backgroundTertiary};
-  margin-left: ${ns(14)}px;
-  margin-top: ${ns(2)}px;
 `;

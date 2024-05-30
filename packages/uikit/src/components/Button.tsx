@@ -22,7 +22,9 @@ export type ButtonColors =
   | 'primary'
   | 'secondary'
   | 'tertiary'
-  | 'orange';
+  | 'orange'
+  | 'tether';
+
 export type ButtonSizes =
   | 'large'
   | 'medium'
@@ -304,6 +306,11 @@ const getButtonColors = (theme: Theme) => ({
     highlighted: convertHexToRGBA(theme.buttonPrimaryBackgroundGreenHighlighted, 0.18),
     disable: convertHexToRGBA(theme.buttonPrimaryBackgroundGreenDisabled, 0.06),
     background: convertHexToRGBA(theme.buttonPrimaryBackgroundGreen, 0.12),
+  },
+  tether: {
+    highlighted: theme.buttonTetherBackgroundHighlighted,
+    disable: theme.buttonTetherBackgroundDisabled,
+    background: theme.buttonTetherBackground,
   },
 });
 

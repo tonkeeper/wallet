@@ -46,6 +46,9 @@ import { formatDate } from '@tonkeeper/shared/utils/date';
 import { reset } from '$navigation/imperative';
 import { InteractionManager } from 'react-native';
 import { DevFeature, useDevFeatureEnabled } from '$store';
+import { compareAddresses } from '$utils/address';
+import { changeAlphaValue } from '$utils';
+import LinearGradient from 'react-native-linear-gradient';
 
 const W5Icon = () => {
   const theme = useTheme();
@@ -99,6 +102,11 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
 
   const shouldShowChart = jettonPrice.fiat !== 0;
   const showSwap = jettonPrice.fiat !== 0;
+
+  const handleOpenExchange = () =>
+    nav.openModal('Exchange', { filterMethods: ['buy_usdt'], hideBuySellSwitch: true });
+
+  const theme = useTheme();
 
   const handleSend = useCallback(() => {
     trackEvent(Events.SendOpen, { from: SendAnalyticsFrom.TokenScreen });
@@ -371,11 +379,23 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
         hasMore={jettonActivityList.hasMore}
         error={jettonActivityList.error}
       />
+      {compareAddresses(route.params.jettonAddress, config.get('usdt_jetton_master')) &&
+        jettonActivityList.sections.length === 0 && (
+          <View style={styles.buttonContainer}>
+            <LinearGradient
+              style={styles.buyButtonGradient.static}
+              colors={['transparent', theme.backgroundPage, theme.backgroundPage]}
+            />
+            <View style={styles.buyButtonContent}>
+              <Button onPress={handleOpenExchange} color="tether" title={'Buy USD₮'} />
+            </View>
+          </View>
+        )}
     </Screen>
   );
 };
 
-const styles = Steezy.create(({ colors, corners }) => ({
+const styles = Steezy.create(({ colors, safeArea, corners }) => ({
   subtitleContainer: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -418,5 +438,25 @@ const styles = Steezy.create(({ colors, corners }) => ({
   upgradeButtons: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  buttonContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  buyButtonGradient: {
+    position: 'absolute',
+    zIndex: 9999,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 140,
+    width: '100%',
+  },
+  buyButtonContent: {
+    bottom: safeArea.bottom,
+    padding: 16,
+    zIndex: 10000,
   },
 }));
