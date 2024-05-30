@@ -182,6 +182,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   const shouldMigrateFromBridgedToken =
     config.get('enable_jusdt_migration') &&
     jetton.balance === '0' &&
+    jusdtBalance?.balance &&
     jusdtBalance?.balance !== '0';
 
   const handleMigrate = useCallback(async () => {
