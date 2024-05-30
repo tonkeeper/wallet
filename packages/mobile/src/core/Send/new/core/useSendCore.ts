@@ -287,7 +287,6 @@ export const useSendCore = (
                 : amountNano;
 
             const jettonSendParams = {
-              commission: BigInt(toNano(fee, jetton?.metadata.decimals ?? 9)),
               recipient: params.recipient.address,
               shouldAttemptWithRelayer: relayerSendModes.isBattery,
               jettonTransferAmount: totalAmount,
@@ -297,8 +296,12 @@ export const useSendCore = (
             };
 
             if (relayerSendModes.isGasless) {
-              return await sendGaslessJettonBoc(jettonSendParams);
+              return await sendGaslessJettonBoc({
+                ...jettonSendParams,
+                commission: BigInt(toNano(fee, jetton?.metadata.decimals ?? 9)),
+              });
             }
+
             return await sendJettonBoc(jettonSendParams);
           case TokenType.Inscription:
             const currencyAdditionalParams =
