@@ -49,7 +49,7 @@ import { SendNew } from '$core/Send/new/Send';
 
 const Stack = createModalStackNavigator(ProvidersWithNavigation);
 
-const SwapWithTheme = memo(() => {
+const SwapWithTheme = memo((props: any) => {
   const theme = useTheme();
 
   useEffect(() => {
@@ -70,7 +70,7 @@ const SwapWithTheme = memo(() => {
 
   return (
     <ThemeProvider theme={BlueTheme}>
-      <Swap />
+      <Swap {...props} />
     </ThemeProvider>
   );
 });
