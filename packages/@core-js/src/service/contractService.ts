@@ -62,7 +62,7 @@ export interface CreateNftTransferBodyParams {
   newOwnerAddress: AnyAddress;
   forwardBody?: Cell | string;
   /* Query id. Defaults to Tonkeeper signature query id with 32 random bits */
-  queryId?: number;
+  queryId?: number | bigint;
 }
 
 export interface CreateJettonTransferBodyParams {
@@ -73,7 +73,15 @@ export interface CreateJettonTransferBodyParams {
   jettonAmount: number | bigint;
   forwardBody?: Cell | string;
   /* Query id. Defaults to Tonkeeper signature query id with 32 random bits */
-  queryId?: number;
+  queryId?: number | bigint;
+}
+
+export interface CreateStonfiSwapBodyParams {
+  assetToSwap: AnyAddress;
+  // TODO: should be nullable
+  referralAddress: AnyAddress;
+  userWalletAddress: AnyAddress;
+  minAskAmount: number | bigint;
 }
 
 export class ContractService {
@@ -115,6 +123,13 @@ export class ContractService {
     return BigInt('0x' + value.toString('hex'));
   }
 
+  public static getMigrationQueryId() {
+    // crc32('jusdt_migration')
+    const signature = (0x93b5fcdf).toString(16);
+    const value = Buffer.concat([Buffer.from(signature, 'hex'), nacl.randomBytes(4)]);
+    return BigInt('0x' + value.toString('hex'));
+  }
+
   static prepareForwardBody(body?: Cell | string) {
     return typeof body === 'string' ? comment(body) : body;
   }
@@ -149,6 +164,17 @@ export class ContractService {
       .storeBit(false) // null custom_payload
       .storeCoins(createJettonTransferBodyParams.forwardAmount ?? 1n)
       .storeMaybeRef(this.prepareForwardBody(createJettonTransferBodyParams.forwardBody))
+      .endCell();
+  }
+
+  static createStonfiSwapBody(createStonfiSwapBodyParams: CreateStonfiSwapBodyParams) {
+    return beginCell()
+      .storeUint(OpCodes.STONFI_SWAP, 32)
+      .storeAddress(tonAddress(createStonfiSwapBodyParams.assetToSwap))
+      .storeCoins(createStonfiSwapBodyParams.minAskAmount)
+      .storeAddress(tonAddress(createStonfiSwapBodyParams.userWalletAddress))
+      .storeBit(true)
+      .storeAddress(tonAddress(createStonfiSwapBodyParams.referralAddress))
       .endCell();
   }
 

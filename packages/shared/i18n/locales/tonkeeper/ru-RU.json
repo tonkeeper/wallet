@@ -349,6 +349,8 @@
   "intro_title": "Встречайте\n",
   "jetton_id": "ID токена: %{jettonAddress}",
   "jetton_id_copied": "ID токена скопирован",
+  "jetton_buy_tether": "Купить USD₮",
+  "jetton_migrate_tether": "Обменять jUSDT на USD₮",
   "jetton_name": "%{name} Токен",
   "jetton_open_explorer": "Подробнее",
   "jetton_price": "Цена:",

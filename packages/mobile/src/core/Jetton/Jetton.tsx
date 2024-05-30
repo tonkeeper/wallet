@@ -18,7 +18,7 @@ import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { Events, JettonVerification, SendAnalyticsFrom } from '$store/models';
 import { t } from '@tonkeeper/shared/i18n';
 import { trackEvent } from '$utils/stats';
-import { Address } from '@tonkeeper/core';
+import { Address, ContractService, STONFI_CONSTANTS } from '@tonkeeper/core';
 import {
   ActionButtons,
   Button,
@@ -26,11 +26,12 @@ import {
   Screen,
   Spacer,
   Steezy,
+  Toast,
   TouchableOpacity,
-  View,
   useTheme,
+  View,
 } from '@tonkeeper/uikit';
-import Svg, { G, Rect, Path, Defs, ClipPath } from 'react-native-svg';
+import Svg, { ClipPath, Defs, G, Path, Rect } from 'react-native-svg';
 
 import { useJettonActivityList } from '@tonkeeper/shared/query/hooks/useJettonActivityList';
 import { ActivityList } from '@tonkeeper/shared/components';
@@ -47,8 +48,12 @@ import { reset } from '$navigation/imperative';
 import { InteractionManager } from 'react-native';
 import { DevFeature, useDevFeatureEnabled } from '$store';
 import { compareAddresses } from '$utils/address';
-import { changeAlphaValue } from '$utils';
 import LinearGradient from 'react-native-linear-gradient';
+import { useJettonBalances } from '$hooks/useJettonBalances';
+import { toNano } from '$utils';
+import { ProviderEnum1 } from '@tonkeeper/core/src/SwapAPI';
+import { openSignRawModal } from '$core/ModalContainer/NFTOperations/Modals/SignRawModal';
+import { BatterySupportedTransaction } from '$wallet/managers/BatteryManager';
 
 const W5Icon = () => {
   const theme = useTheme();
@@ -168,6 +173,94 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   }, [wallet.network, wallet.pubkey]);
 
   const isW5BlockHidden = useWalletStatus((s) => s.isW5BlockHidden);
+
+  const jettonBalances = useJettonBalances();
+  const jusdtBalance = jettonBalances.enabled.find((item) =>
+    compareAddresses(item.jettonAddress, config.get('jusdt_jetton_master')),
+  );
+
+  const shouldMigrateFromBridgedToken =
+    config.get('enable_jusdt_migration') &&
+    jetton.balance === '0' &&
+    jusdtBalance?.balance !== '0';
+
+  const handleMigrate = useCallback(async () => {
+    try {
+      if (!jusdtBalance) {
+        return;
+      }
+      const fromAsset = config.get('jusdt_jetton_master');
+      const toAsset = config.get('usdt_jetton_master');
+      const fromAmount = toNano(jusdtBalance?.balance, jusdtBalance?.metadata.decimals);
+
+      const estimatedSwap = await tk.swapapi.mainnet.swap.calculateSwap({
+        fromAsset,
+        fromAmount,
+        toAsset,
+        provider: ProviderEnum1.Stonfi,
+        referral: config.get('swaps_referral_address'),
+      });
+
+      const [fromExecResult, toExecResult] = await Promise.all([
+        tk.wallet.tonapi.blockchain.execGetMethodForBlockchainAccount({
+          accountId: fromAsset,
+          methodName: 'get_wallet_address',
+          args: [tk.wallet.address.ton.raw],
+        }),
+        tk.wallet.tonapi.blockchain.execGetMethodForBlockchainAccount({
+          accountId: toAsset,
+          methodName: 'get_wallet_address',
+          args: [STONFI_CONSTANTS.routerAddress],
+        }),
+      ]);
+
+      const walletAddressFrom = fromExecResult.decoded.jetton_wallet_address as string;
+      const walletAddressTo = toExecResult.decoded.jetton_wallet_address as string;
+
+      const trade = estimatedSwap.trades[0];
+
+      // slippage 1%
+      const shiftedToAmount =
+        BigInt(trade.toAmount) - (BigInt(trade.toAmount) / 100n) * 1n;
+
+      const message = ContractService.createJettonTransferBody({
+        queryId: ContractService.getMigrationQueryId(),
+        receiverAddress: STONFI_CONSTANTS.routerAddress,
+        excessesAddress: tk.wallet.address.ton.raw,
+        jettonAmount: BigInt(fromAmount),
+        forwardAmount: STONFI_CONSTANTS.JettonToJettonSwapFees.forwardGasAmount,
+        forwardBody: ContractService.createStonfiSwapBody({
+          assetToSwap: walletAddressTo,
+          minAskAmount: shiftedToAmount,
+          referralAddress: config.get('swaps_referral_address'),
+          userWalletAddress: tk.wallet.address.ton.raw,
+        }),
+      });
+
+      await openSignRawModal(
+        {
+          messages: [
+            {
+              amount: STONFI_CONSTANTS.JettonToJettonSwapFees.gasAmount.toString(),
+              address: walletAddressFrom,
+              payload: message.toBoc().toString('base64'),
+            },
+          ],
+        },
+        {
+          experimentalWithBattery:
+            tk.wallet.battery.state.data.supportedTransactions[
+              BatterySupportedTransaction.Swap
+            ],
+        },
+      );
+
+      console.log(estimatedSwap);
+    } catch (e) {
+      console.log(e);
+      Toast.show('Cannot swap');
+    }
+  }, [jusdtBalance]);
 
   const renderHeader = useMemo(() => {
     if (!jetton) {
@@ -380,14 +473,26 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
         error={jettonActivityList.error}
       />
       {compareAddresses(route.params.jettonAddress, config.get('usdt_jetton_master')) &&
-        jettonActivityList.sections.length === 0 && (
+        jetton.balance === '0' && (
           <View style={styles.buttonContainer}>
             <LinearGradient
               style={styles.buyButtonGradient.static}
               colors={['transparent', theme.backgroundPage, theme.backgroundPage]}
             />
             <View style={styles.buyButtonContent}>
-              <Button onPress={handleOpenExchange} color="tether" title={'Buy USD₮'} />
+              {shouldMigrateFromBridgedToken ? (
+                <Button
+                  onPress={handleMigrate}
+                  color="tether"
+                  title={t('jetton_migrate_tether')}
+                />
+              ) : (
+                <Button
+                  onPress={handleOpenExchange}
+                  color="tether"
+                  title={t('jetton_buy_tether')}
+                />
+              )}
             </View>
           </View>
         )}
