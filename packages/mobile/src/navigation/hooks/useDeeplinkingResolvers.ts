@@ -48,6 +48,7 @@ import { estimateInscriptionTransferFee } from '$core/Send/new/core/transactionB
 import { comment as makeCommentCell } from '@ton/core';
 import { estimateJettonTransferFee } from '$core/Send/new/core/transactionBuilder/jetton';
 import { estimateTonTransferFee } from '$core/Send/new/core/transactionBuilder/ton';
+import { BatterySupportedTransaction } from '$wallet/managers/BatteryManager';
 
 const getExpiresSec = () => {
   return getTimeSec() + 10 * 60;
@@ -398,6 +399,10 @@ export function useDeeplinkingResolvers() {
           const estimate = await estimateJettonTransferFee({
             recipient: address,
             sendAmountNano: BigInt(query.amount),
+            shouldAttemptWithRelayer:
+              tk.wallet.battery.state.data.supportedTransactions[
+                BatterySupportedTransaction.Jetton
+              ],
             jetton: jettonBalance,
             payload: comment ? makeCommentCell(comment) : undefined,
           });

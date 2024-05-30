@@ -23,7 +23,7 @@ import {
   sendTonBoc,
 } from '$core/Send/new/core/transactionBuilder/ton';
 import { Toast } from '@tonkeeper/uikit';
-import { parseLocaleNumber, toNano } from '$utils';
+import { delay, parseLocaleNumber, toNano } from '$utils';
 import { Buffer } from 'buffer';
 import BigNumber from 'bignumber.js';
 import {
@@ -204,6 +204,23 @@ export const useSendCore = (
     async (onDone: () => void, onFail: (e?: Error) => void) => {
       setSending(true);
       const parsedAmount = parseLocaleNumber(params.amount.value);
+
+      const isCommentValid = tk.wallet.isLedger
+        ? /^[ -~]*$/gm.test(params.comment)
+        : true;
+
+      if (!isCommentValid) {
+        Toast.fail(t('send_screen_steps.comfirm.comment_ascii_text'));
+
+        return onFail(new CanceledActionError());
+      }
+
+      const pendingTransactions = await tk.wallet.battery.getStatus();
+      if (pendingTransactions.length) {
+        Toast.fail(t('transfer_pending_by_battery_error'));
+        await delay(200);
+        return onFail(new CanceledActionError());
+      }
 
       try {
         if (!params.recipient) {
