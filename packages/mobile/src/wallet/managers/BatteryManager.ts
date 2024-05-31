@@ -290,7 +290,7 @@ export class BatteryManager {
         },
       });
 
-      return data.pending_transactions;
+      return data.pending_transactions ?? [];
     } catch (err) {
       logger.error('getStatus error');
       return [];
