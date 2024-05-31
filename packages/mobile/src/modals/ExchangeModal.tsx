@@ -14,8 +14,14 @@ import { useSelectedCountry } from '$store/zustand/methodsToBuy/useSelectedCount
 import { CountryButton } from '@tonkeeper/shared/components';
 import { config } from '$config';
 import { useWallet } from '@tonkeeper/shared/hooks';
+import { getCryptoAssetIconSource } from '@tonkeeper/uikit/assets/cryptoAssets';
 
-export const ExchangeModal = () => {
+export interface ExchangeModalParams {
+  filterMethods?: string[];
+  hideBuySellSwitch?: boolean;
+}
+
+export const ExchangeModal = (params: ExchangeModalParams) => {
   const [showAll, setShowAll] = React.useState(false);
   const { defaultLayout, layoutByCountry, buy, sell } = useMethodsToBuyStore(
     (state) => state,
@@ -33,33 +39,44 @@ export const ExchangeModal = () => {
       defaultLayout;
 
     return [buy, sell].map((tab) =>
-      tab.map((category) => {
-        if (category.type !== CategoryType.BUY) {
-          return category;
-        }
+      tab
+        .filter((cat) => !params.filterMethods || params.filterMethods.includes(cat.type))
+        .map((category) => {
+          if (category.type !== CategoryType.BUY) {
+            return category;
+          }
 
-        const items =
-          showAll || allRegions
-            ? category.items
-            : category.items.filter((item) => usedLayout.methods.includes(item.id));
+          const items =
+            showAll || allRegions
+              ? category.items
+              : category.items.filter((item) => usedLayout.methods.includes(item.id));
 
-        return {
-          ...category,
-          items: items.sort((a, b) => {
-            const aIdx = usedLayout.methods.indexOf(a.id);
-            const bIdx = usedLayout.methods.indexOf(b.id);
-            if (aIdx === -1) {
-              return 1;
-            }
-            if (bIdx === -1) {
-              return -1;
-            }
-            return aIdx - bIdx;
-          }),
-        };
-      }),
+          return {
+            ...category,
+            items: items.sort((a, b) => {
+              const aIdx = usedLayout.methods.indexOf(a.id);
+              const bIdx = usedLayout.methods.indexOf(b.id);
+              if (aIdx === -1) {
+                return 1;
+              }
+              if (bIdx === -1) {
+                return -1;
+              }
+              return aIdx - bIdx;
+            }),
+          };
+        }),
     );
-  }, [layoutByCountry, defaultLayout, buy, sell, selectedCountry, showAll, allRegions]);
+  }, [
+    layoutByCountry,
+    defaultLayout,
+    buy,
+    sell,
+    selectedCountry,
+    params.filterMethods,
+    showAll,
+    allRegions,
+  ]);
 
   const handleShowAll = useCallback(() => {
     setShowAll(!showAll);
@@ -68,6 +85,8 @@ export const ExchangeModal = () => {
 
   const wallet = useWallet();
   const watchOnly = wallet && wallet.isWatchOnly;
+
+  const hideBuySellSwitch = params.hideBuySellSwitch ?? watchOnly;
 
   const [segmentIndex, setSegmentIndex] = useState(0);
 
@@ -83,7 +102,7 @@ export const ExchangeModal = () => {
           <CountryButton selectedCountry={selectedCountry} onPress={openChooseCountry} />
         }
         title={
-          watchOnly ? (
+          hideBuySellSwitch ? (
             categories && categories[0] && categories[0].title
           ) : (
             <SegmentedControl
@@ -105,9 +124,25 @@ export const ExchangeModal = () => {
               {categories.map((category, cIndex) => (
                 <React.Fragment key={cIndex}>
                   {cIndex > 0 ? <Spacer y={16} /> : null}
-                  {!(watchOnly && cIndex === 0) ? (
+                  {!(hideBuySellSwitch && cIndex === 0) ? (
                     <S.TitleContainer>
                       <Text type="h3">{category.title}</Text>
+                      {category.assets && (
+                        <S.AssetsContainer>
+                          {category.assets.slice(0, 3).map((asset, index) => (
+                            <S.Asset key={asset} style={{ zIndex: 3 - index }}>
+                              <S.AssetImage source={getCryptoAssetIconSource(asset)} />
+                            </S.Asset>
+                          ))}
+                          {category.assets.length > 3 ? (
+                            <S.AssetsCount>
+                              <Text type="body3" color="textSecondary">
+                                + {category.assets.length}
+                              </Text>
+                            </S.AssetsCount>
+                          ) : null}
+                        </S.AssetsContainer>
+                      )}
                     </S.TitleContainer>
                   ) : null}
                   <S.Contain>

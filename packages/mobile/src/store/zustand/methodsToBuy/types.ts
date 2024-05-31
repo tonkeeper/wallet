@@ -40,6 +40,7 @@ export enum CategoryType {
 export interface IExchangeCategory {
   type: CategoryType;
   title: string;
+  assets: string[];
   items: IMethod[];
 }
 

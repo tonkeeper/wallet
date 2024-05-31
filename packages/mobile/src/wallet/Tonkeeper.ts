@@ -12,7 +12,7 @@ import {
   WalletStyleConfig,
   WalletType,
 } from './WalletTypes';
-import { createTonApiInstance } from './utils';
+import { createSwapInstance, createTonApiInstance } from './utils';
 import { Vault } from '@tonkeeper/core';
 import { v4 as uuidv4 } from 'uuid';
 import { Mnemonic } from '@tonkeeper/core/src/utils/mnemonic';
@@ -28,6 +28,7 @@ import { InteractionManager } from 'react-native';
 import { Biometry } from './Biometry';
 import { Toast } from '@tonkeeper/uikit';
 import { config } from '$config';
+import { SwapAPI } from '@tonkeeper/core/src/SwapAPI';
 
 type TonkeeperOptions = {
   storage: Storage;
@@ -70,6 +71,11 @@ export class Tonkeeper {
     testnet: TonAPI;
   };
 
+  public swapapi: {
+    mainnet: SwapAPI;
+    testnet: SwapAPI;
+  };
+
   private accountsStream: {
     mainnet: AccountsStream;
     testnet: AccountsStream;
@@ -106,6 +112,11 @@ export class Tonkeeper {
     };
 
     this.tonPrice = new TonPriceManager(this.tonapi.mainnet, this.storage);
+
+    this.swapapi = {
+      mainnet: createSwapInstance(),
+      testnet: createSwapInstance(true),
+    };
 
     this.walletsStore.persist({
       storage: this.storage,

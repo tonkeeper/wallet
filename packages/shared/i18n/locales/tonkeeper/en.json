@@ -433,6 +433,8 @@
   "intro_title": "Welcome\nto ",
   "jetton_id": "Token ID: %{jettonAddress}",
   "jetton_id_copied": "Token ID copied",
+  "jetton_buy_tether": "Buy USD₮",
+  "jetton_migrate_tether": "Swap jUSDT to USD₮",
   "jetton_name": "%{name} Token",
   "jetton_open_explorer": "View details",
   "jetton_price": "Price:",

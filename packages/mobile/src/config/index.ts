@@ -88,7 +88,13 @@ export type AppConfigVars = {
   notcoin_burn_date: number;
   notcoin_burn: boolean;
 
+  web_swaps_url: string;
+
+  swaps_referral_address: string;
+
+  enable_jusdt_migration: boolean;
   usdt_jetton_master: string;
+  jusdt_jetton_master: string;
 
   gasless_enabled: boolean;
   v5_beta: boolean;
@@ -156,8 +162,18 @@ const defaultConfig: Partial<AppConfigVars> = {
     '0:e6923eb901bfe6d1a65a5bc2292b0e2462a220213c3f1d1b2d60491543a34860',
   notcoin_bot_url: 'https://t.me/notcoin_bot',
 
+  web_swaps_url: 'https://swap.tonkeeper.com',
+
+  swaps_referral_address:
+    '0:6c8eef549f003f4f421d009aede507e3f7535667b639e98fd09b55c8fc0e23cb',
+
   usdt_jetton_master:
     '0:b113a994b5024a16719f69139328eb759596c38a25f59028b146fecdc3621dfe',
+
+  jusdt_jetton_master:
+    '0:729c13b6df2c07cbf0a06ab63d34af454f3d320ec1bcd8fb5c6d24d0806a17c2',
+
+  enable_jusdt_migration: true,
 
   gasless_enabled: true,
   v5_beta: true,
