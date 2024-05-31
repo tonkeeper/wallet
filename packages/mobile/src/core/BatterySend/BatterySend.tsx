@@ -201,6 +201,7 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
     rechargeMethod.decimals,
     rechargeMethod.isTon,
     rechargeMethod.maxInputAmount,
+    rechargeMethod.min_bootstrap_value,
     rechargeMethod.symbol,
     recipient?.address,
     selectedJettonMaster,
@@ -367,7 +368,7 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
   const isGreaterThanBalance = new BigNumber(localeAmount).isGreaterThan(
     rechargeMethod.balance,
   );
-  
+
   return (
     <>
       <Screen>

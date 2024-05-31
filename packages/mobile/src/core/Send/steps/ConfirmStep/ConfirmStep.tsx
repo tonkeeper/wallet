@@ -25,6 +25,7 @@ import { useBalancesState, useWallet } from '@tonkeeper/shared/hooks';
 import { tk } from '$wallet';
 import { Steezy, WalletIcon, isAndroid } from '@tonkeeper/uikit';
 import { GaslessToggle } from '$core/Send/new/core/components/GaslessToggle';
+import { compareAddresses } from '$utils/address';
 
 const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const {
@@ -138,12 +139,23 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const feeCurrency = CryptoCurrencies.Ton;
 
   const calculatedValue = useMemo(() => {
-    if (amount.all && tokenType === TokenType.TON) {
+    if (
+      amount.all &&
+      (tokenType === TokenType.TON ||
+        compareAddresses(currency, customFeeCurrency?.jetton_master))
+    ) {
       return new BigNumber(parseLocaleNumber(amount.value)).minus(fee).toString();
     }
 
     return parseLocaleNumber(amount.value);
-  }, [amount.all, amount.value, fee, tokenType]);
+  }, [
+    amount.all,
+    amount.value,
+    currency,
+    customFeeCurrency?.jetton_master,
+    fee,
+    tokenType,
+  ]);
 
   const fiatValue = useFiatValue(currency as CryptoCurrency, calculatedValue, decimals);
 
