@@ -36,7 +36,7 @@ export async function buildTonLedgerTransferBoc(params: BuildTonTransferParams) 
   const transfer = await tk.wallet.signer.signLedgerTransaction({
     to: Address.parse(params.recipient),
     bounce: params.bounce,
-    amount: tonCoreToNano(params.sendAmount),
+    amount: BigInt(params.sendAmount),
     sendMode: params.sendMode ?? SendMode.IGNORE_ERRORS + SendMode.PAY_GAS_SEPARATELY,
     seqno: params.seqno,
     timeout: params.timeout ?? TransactionService.getTimeout(),
