@@ -210,7 +210,7 @@ export async function estimateJettonTransferFee(
       );
     } catch {}
 
-    if (isPreferGasless || params.forceGasless) {
+    if (isJettonSupportsGasless && (isPreferGasless || params.forceGasless)) {
       const gaslessBoc = await buildJettonSignerTransferBoc(
         {
           timeout,
