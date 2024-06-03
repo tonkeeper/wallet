@@ -21,11 +21,13 @@ export const RechargeMethods = memo(() => {
   const { enabled } = useJettonBalances();
   const balances = useExternalState(tk.wallet.balances.state);
 
+  const methodsToRecharge = methods.filter((method) => method.support_recharge);
+
   const filteredJettonBalances = useMemo(
     () =>
       enabled.filter(
         (jettonBalance) =>
-          methods.findIndex((method) =>
+          methodsToRecharge.findIndex((method) =>
             compareAddresses(method.jetton_master, jettonBalance.jettonAddress),
           ) !== -1,
       ),

@@ -65,6 +65,8 @@ export interface RechargeMethods {
     decimals: number;
     /** @example true */
     support_gasless: boolean;
+    /** @example true */
+    support_recharge: boolean;
   }[];
 }
 
@@ -247,6 +249,11 @@ export enum UnitsEnum {
 export enum GetBalanceParams1UnitsEnum {
   Usd = 'usd',
   Ton = 'ton',
+}
+
+export interface GetRechargeMethodsParams {
+  /** @default true */
+  include_recharge_only?: boolean;
 }
 
 export interface GetPurchasesParams {
@@ -598,10 +605,11 @@ export class BatteryGenerated<SecurityDataType extends unknown> {
    * @name GetRechargeMethods
    * @request GET:/recharge-methods
    */
-  getRechargeMethods = (params: RequestParams = {}) =>
+  getRechargeMethods = (query: GetRechargeMethodsParams, params: RequestParams = {}) =>
     this.http.request<RechargeMethods, Error>({
       path: `/recharge-methods`,
       method: 'GET',
+      query: query,
       format: 'json',
       ...params,
     });

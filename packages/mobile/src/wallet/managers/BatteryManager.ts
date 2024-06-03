@@ -90,7 +90,9 @@ export class BatteryManager {
   public async fetchRechargeMethods() {
     try {
       this.state.set({ isRechargeMethodsLoading: true });
-      const rechargeMethods = await this.batteryapi.getRechargeMethods();
+      const rechargeMethods = await this.batteryapi.getRechargeMethods({
+        include_recharge_only: true,
+      });
       this.state.set({
         rechargeMethods: rechargeMethods.methods,
         isRechargeMethodsLoading: false,
