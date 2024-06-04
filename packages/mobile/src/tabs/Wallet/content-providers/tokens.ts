@@ -56,12 +56,12 @@ export class TokensContentProvider extends ContentProviderPrototype<{
       !config.get('disable_show_unverified_token') &&
       data.verification === JettonVerification.NONE;
 
-    const renderPriority = Address.compare(
+    const isTether = Address.compare(
       data.jettonAddress,
       config.get('usdt_jetton_master'),
-    )
-      ? 998
-      : this.renderPriority;
+    );
+
+    const renderPriority = isTether ? 998 : this.renderPriority;
 
     return {
       key: data.jettonAddress,
@@ -69,6 +69,7 @@ export class TokensContentProvider extends ContentProviderPrototype<{
       title: data.metadata.symbol ?? '',
       onPress: () => openJetton(data.jettonAddress),
       fiatRate,
+      tag: isTether ? 'TON' : '',
       picture: data.metadata.image,
       value: formatter.format(data.balance),
       subtitleStyle: isUnverifiedToken && styles.unverifiedSubtitleStyle,

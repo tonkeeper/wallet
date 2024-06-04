@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { JettonProps } from './Jetton.interface';
 import * as S from './Jetton.style';
 import { PopupMenu, PopupMenuItem, Skeleton, Text } from '$uikit';
@@ -98,6 +98,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
     jetton.lock?.amount.toString() ?? '0',
   );
   const wallet = useWallet();
+  const [tetherButtonHeight, setTetherButtonHeight] = useState(0);
 
   const isWatchOnly = wallet && wallet.isWatchOnly;
   const fiatCurrency = useWalletCurrency();
@@ -416,6 +417,38 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
     route.params.jettonAddress,
   ]);
 
+  const shouldShowTetherButton =
+    compareAddresses(route.params.jettonAddress, config.get('usdt_jetton_master')) &&
+    !jettonActivityList.isLoading &&
+    jettonActivityList.sections.length === 0;
+
+  const jettonSubtitle = useMemo(() => {
+    if (compareAddresses(jetton.jettonAddress, config.get('usdt_jetton_master'))) {
+      return 'TON';
+    }
+    if (
+      !config.get('disable_show_unverified_token') &&
+      jetton.verification === JettonVerification.NONE
+    ) {
+      return (
+        <TouchableOpacity
+          onPress={openUnverifiedTokenDetailsModal}
+          hitSlop={unverifiedTokenHitSlop}
+          style={styles.subtitleContainer}
+        >
+          <Text variant="body2" color="accentOrange">
+            {t('approval.unverified_token')}
+          </Text>
+          <Spacer x={4} />
+          <View style={styles.iconContainer}>
+            <Icon name="ic-information-circle-12" color="accentOrange" />
+          </View>
+        </TouchableOpacity>
+      );
+    }
+    return null;
+  }, [jetton.jettonAddress, jetton.verification]);
+
   if (!jetton) {
     return null;
   }
@@ -423,24 +456,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
   return (
     <Screen>
       <Screen.Header
-        subtitle={
-          !config.get('disable_show_unverified_token') &&
-          jetton.verification === JettonVerification.NONE && (
-            <TouchableOpacity
-              onPress={openUnverifiedTokenDetailsModal}
-              hitSlop={unverifiedTokenHitSlop}
-              style={styles.subtitleContainer}
-            >
-              <Text variant="body2" color="accentOrange">
-                {t('approval.unverified_token')}
-              </Text>
-              <Spacer x={4} />
-              <View style={styles.iconContainer}>
-                <Icon name="ic-information-circle-12" color="accentOrange" />
-              </View>
-            </TouchableOpacity>
-          )
-        }
+        subtitle={jettonSubtitle}
         title={jetton.metadata?.symbol || Address.toShort(jetton.jettonAddress)}
         rightContent={
           <PopupMenu
@@ -461,6 +477,11 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
         }
       />
       <ActivityList
+        contentContainerStyle={
+          shouldShowTetherButton && {
+            paddingBottom: tetherButtonHeight + 16,
+          }
+        }
         ListLoaderComponent={<Skeleton.List />}
         ListHeaderComponent={renderHeader}
         onLoadMore={jettonActivityList.loadMore}
@@ -471,30 +492,33 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
         hasMore={jettonActivityList.hasMore}
         error={jettonActivityList.error}
       />
-      {compareAddresses(route.params.jettonAddress, config.get('usdt_jetton_master')) &&
-        jetton.balance === '0' && (
-          <View style={styles.buttonContainer}>
-            <LinearGradient
-              style={styles.buyButtonGradient.static}
-              colors={['transparent', theme.backgroundPage, theme.backgroundPage]}
-            />
-            <View style={styles.buyButtonContent}>
-              {shouldMigrateFromBridgedToken ? (
-                <Button
-                  onPress={handleMigrate}
-                  color="tether"
-                  title={t('jetton_migrate_tether')}
-                />
-              ) : (
-                <Button
-                  onPress={handleOpenExchange}
-                  color="tether"
-                  title={t('jetton_buy_tether')}
-                />
-              )}
-            </View>
+      {shouldShowTetherButton && (
+        <>
+          <LinearGradient
+            pointerEvents="none"
+            style={styles.buyButtonGradient.static}
+            colors={['transparent', theme.backgroundPage, theme.backgroundPage]}
+          />
+          <View
+            onLayout={(e) => setTetherButtonHeight(e.nativeEvent.layout.height)}
+            style={styles.buyButtonContent}
+          >
+            {shouldMigrateFromBridgedToken ? (
+              <Button
+                onPress={handleMigrate}
+                color="tether"
+                title={t('jetton_migrate_tether')}
+              />
+            ) : (
+              <Button
+                onPress={handleOpenExchange}
+                color="tether"
+                title={t('jetton_buy_tether')}
+              />
+            )}
           </View>
-        )}
+        </>
+      )}
     </Screen>
   );
 };
@@ -559,8 +583,11 @@ const styles = Steezy.create(({ colors, safeArea, corners }) => ({
     width: '100%',
   },
   buyButtonContent: {
-    bottom: safeArea.bottom,
-    padding: 16,
+    position: 'absolute',
+    bottom: 16,
+    left: 16,
+    right: 16,
+    paddingBottom: safeArea.bottom,
     zIndex: 10000,
   },
 }));

@@ -16,13 +16,13 @@ import { convertHexToRGBA, hNs } from '$utils';
 import { Text } from '../Text/Text';
 import { Icon, Steezy, isIOS } from '@tonkeeper/uikit';
 
-export const NavBarHelper: FC = () => {
+export const NavBarHelper: FC<{ isModal?: boolean }> = (props) => {
   const { top } = useSafeAreaInsets();
 
   return (
     <View
       style={{
-        height: hNs(NavBarHeight) + top,
+        height: hNs(NavBarHeight) + (props.isModal && isIOS ? 0 : top),
       }}
     />
   );

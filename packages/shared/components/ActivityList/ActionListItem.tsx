@@ -226,7 +226,7 @@ export const ActionListItem = memo<ActionListItemProps>((props) => {
       {!config.get('disable_show_unverified_token') &&
         isJettonTransferAction(action) &&
         action.payload.jetton.verification === JettonVerificationType.None && (
-          <Text type="body2" color="accentOrange" style={styles.warn.static}>
+          <Text type="body3" color="accentOrange" style={styles.warn.static}>
             {t('approval.unverified_token')}
           </Text>
         )}

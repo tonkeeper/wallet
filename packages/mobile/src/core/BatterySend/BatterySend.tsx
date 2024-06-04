@@ -8,6 +8,7 @@ import {
   List,
   Radio,
   Screen,
+  Spacer,
   Steezy,
   Toast,
   TouchableOpacity,
@@ -292,16 +293,12 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
 
         const domain = value.toLowerCase();
 
-        if (!TonWeb.Address.isValid(domain)) {
+        if (!TonWeb.Address.isValid(domain) && domain.indexOf('.') !== -1) {
           setDnsLoading(true);
           const abortController = new AbortController();
           dnsAbortController = abortController;
 
-          const zone = domain.indexOf('.') === -1 ? '.ton' : '';
-          const resolvedDomain = await getAddressByDomain(
-            domain + zone,
-            abortController.signal,
-          );
+          const resolvedDomain = await getAddressByDomain(domain, abortController.signal);
 
           if (resolvedDomain === 'aborted') {
             setDnsLoading(false);
@@ -401,6 +398,7 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
           keyboardShouldPersistTaps="handled"
           withBottomInset
         >
+          <Spacer y={8} />
           <View style={styles.contentContainer}>
             {!initialRecipientAddress ? (
               <AddressInput

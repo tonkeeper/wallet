@@ -220,12 +220,22 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
         nft.collection ? TokenApprovalType.Collection : TokenApprovalType.Token,
       );
 
+      if (
+        !tk.wallet.isTestnet &&
+        [TokenApprovalStatus.Approved, TokenApprovalStatus.Spam].includes(approvalStatus)
+      ) {
+        fetch(`${config.get('scamEndpoint')}/v1/report/${nft.address}`, {
+          method: 'POST',
+          body: JSON.stringify({
+            is_scam: approvalStatus === TokenApprovalStatus.Spam,
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }).catch((e) => console.warn(e));
+      }
+
       if (approvalStatus === TokenApprovalStatus.Spam) {
-        if (!tk.wallet.isTestnet) {
-          fetch(`${config.get('scamEndpoint')}/report/${nft.address}`, {
-            method: 'POST',
-          }).catch((e) => console.warn(e));
-        }
         Toast.success(
           t(`suspicious.status_update.spam.${nft.collection ? 'collection' : 'nft'}`),
         );

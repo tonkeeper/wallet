@@ -49,8 +49,8 @@ export const LightTheme = {
   buttonGreenForeground: '#FFFFFF',
 
   buttonTetherBackground: '#009393',
-  buttonTetherBackgroundDisabled: '#009393',
-  buttonTetherBackgroundHighlighted: '#009393',
+  buttonTetherBackgroundDisabled: '#006B6B',
+  buttonTetherBackgroundHighlighted: '#00ADAD',
 
   fieldBackground: 'rgba(129, 140, 153, 0.12)',
   fieldActiveBorder: '#007AFF',

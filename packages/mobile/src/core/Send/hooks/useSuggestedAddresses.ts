@@ -77,7 +77,10 @@ export const useSuggestedAddresses = () => {
 
         const rawAddress = Address.parse(recipientAddress).toRaw();
 
-        if (compareAddresses(tk.wallet.battery.state.data.fundReceiver, rawAddress)) {
+        if (
+          compareAddresses(tk.wallet.battery.state.data.fundReceiver, rawAddress) ||
+          compareAddresses(tk.wallet.battery.state.data.excessesAccount, rawAddress)
+        ) {
           return false;
         }
 
