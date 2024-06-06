@@ -4,4 +4,7 @@
     <locale android:name="tr"/>
     <locale android:name="ru"/>
     <locale android:name="zh-Hans-MO"/>
+    <locale android:name="es"/>
+    <locale android:name="uk"/>
+    <locale android:name="id"/>
 </locale-config>

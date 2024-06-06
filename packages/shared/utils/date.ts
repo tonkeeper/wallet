@@ -1,4 +1,4 @@
-import { enUS, ru, tr, zhCN } from 'date-fns/locale';
+import { enUS, ru, tr, zhCN, uz, uk, es, id } from 'date-fns/locale';
 import { i18n, t } from '../i18n';
 import {
   differenceInCalendarMonths,
@@ -8,7 +8,7 @@ import {
   differenceInCalendarYears,
 } from 'date-fns';
 
-const dateFnsLocales = { ru, en: enUS, tr, 'zh-Hans': zhCN };
+const dateFnsLocales = { ru, en: enUS, tr, 'zh-Hans': zhCN, uz, uk, id, es };
 
 const getFNSLocale = () => {
   return dateFnsLocales[i18n.locale] ?? enUS;

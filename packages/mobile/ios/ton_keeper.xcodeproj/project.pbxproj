@@ -131,6 +131,12 @@
 		39C1C20FA83478354251FB2A /* libPods-ton_keeper.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ton_keeper.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5008E610299F9D1400D4850B /* SFMono-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SFMono-Bold.otf"; path = "../assets/fonts/SFMono-Bold.otf"; sourceTree = "<group>"; };
 		5008E611299F9D1400D4850B /* SFMono-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "SFMono-Medium.otf"; path = "../assets/fonts/SFMono-Medium.otf"; sourceTree = "<group>"; };
+		5034B0C52C10AE4E0002EFBC /* uz */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uz; path = uz.lproj/PassCode.strings; sourceTree = "<group>"; };
+		5034B0C62C10AE4F0002EFBC /* uz */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = uz; path = uz.lproj/PassCode.stringsdict; sourceTree = "<group>"; };
+		5034B0C72C10AE570002EFBC /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/PassCode.strings; sourceTree = "<group>"; };
+		5034B0C82C10AE570002EFBC /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = uk; path = uk.lproj/PassCode.stringsdict; sourceTree = "<group>"; };
+		5034B0C92C10AE740002EFBC /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/PassCode.strings; sourceTree = "<group>"; };
+		5034B0CA2C10AE740002EFBC /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = es; path = es.lproj/PassCode.stringsdict; sourceTree = "<group>"; };
 		506008712B7F9EF10061C2CD /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		50AD04972AD96A5C00E0648C /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/PassCode.strings; sourceTree = "<group>"; };
 		50AD04982AD96A5D00E0648C /* tr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = tr; path = tr.lproj/PassCode.stringsdict; sourceTree = "<group>"; };
@@ -829,6 +835,9 @@
 				ru,
 				tr,
 				"zh-Hans",
+				uz,
+				uk,
+				es,
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
@@ -1056,7 +1065,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				$SRCROOT/$PROJECT_NAME/Resources/Generated/R.generated.swift,
+				"$SRCROOT/$PROJECT_NAME/Resources/Generated/R.generated.swift",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1208,6 +1217,9 @@
 				C438087A292BD26C00FF5669 /* ru */,
 				50AD04982AD96A5D00E0648C /* tr */,
 				50AD049A2AD96AFA00E0648C /* zh-Hans */,
+				5034B0C62C10AE4F0002EFBC /* uz */,
+				5034B0C82C10AE570002EFBC /* uk */,
+				5034B0CA2C10AE740002EFBC /* es */,
 			);
 			name = PassCode.stringsdict;
 			sourceTree = "<group>";
@@ -1219,6 +1231,9 @@
 				C4F5F2082927C88200D08D79 /* ru */,
 				50AD04972AD96A5C00E0648C /* tr */,
 				50AD04992AD96AFA00E0648C /* zh-Hans */,
+				5034B0C52C10AE4E0002EFBC /* uz */,
+				5034B0C72C10AE570002EFBC /* uk */,
+				5034B0C92C10AE740002EFBC /* es */,
 			);
 			name = PassCode.strings;
 			sourceTree = "<group>";
