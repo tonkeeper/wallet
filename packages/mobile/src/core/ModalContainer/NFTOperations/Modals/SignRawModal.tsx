@@ -116,7 +116,7 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
         timeout,
         messages: TransactionService.parseSignRawMessages(
           params.messages,
-          isBattery ? tk.wallet.battery.excessesAccount : undefined,
+          isBattery ? await tk.wallet.battery.getExcessesAccount() : undefined,
         ),
         seqno: await getWalletSeqno(wallet),
         sendMode: 3,

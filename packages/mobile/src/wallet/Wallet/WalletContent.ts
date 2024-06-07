@@ -27,6 +27,7 @@ import { JettonVerification } from '../models/JettonBalanceModel';
 import { CardsManager } from '$wallet/managers/CardsManager';
 import { JettonQuantity } from '@tonkeeper/core/src/TonAPI';
 import { SignerManager } from '$wallet/managers/SignerManager';
+import { AccountStatus } from '@ton/core';
 
 export interface WalletStatusState {
   isReloading: boolean;
@@ -113,6 +114,7 @@ export class WalletContent extends WalletBase {
       this.batteryapi,
       this.storage,
       this.isTestnet,
+      this.config.version,
     );
     this.cards = new CardsManager(
       this.persistPath,
@@ -168,31 +170,38 @@ export class WalletContent extends WalletBase {
     this.cards.rehydrate();
   }
 
+  protected async loadDependsOnAccountStatus(status: AccountStatus) {
+    if (['uninit', 'nonexist'].includes(status)) {
+      return;
+    }
+    await Promise.all([this.staking.load(), this.subscriptions.load()]);
+  }
+
   protected async preload() {
     await Promise.all([
-      this.balances.load(),
+      this.balances
+        .load()
+        .then((balancesState) => this.loadDependsOnAccountStatus(balancesState.status)),
       this.nfts.load(),
       this.jettons.load(),
       this.tonInscriptions.load(),
-      this.staking.load(),
-      this.subscriptions.load(),
       this.battery.load(),
       this.activityList.load(),
-      this.cards.load(),
+      // this.cards.load(),
     ]);
   }
 
   public async reload() {
     await Promise.all([
-      this.balances.reload(),
+      this.balances
+        .reload()
+        .then((balancesState) => this.loadDependsOnAccountStatus(balancesState.status)),
       this.nfts.reload(),
       this.jettons.reload(),
       this.tonInscriptions.load(),
-      this.staking.reload(),
-      this.subscriptions.reload(),
-      this.battery.load(),
+      this.battery.reload(),
       this.activityList.reload(),
-      this.cards.load(),
+      // this.cards.load(),
     ]);
   }
 

@@ -5,6 +5,11 @@ import { State } from '@tonkeeper/core/src/utils/State';
 import { TonProofManager } from '$wallet/managers/TonProofManager';
 import { logger, NamespacedLogger } from '$logger';
 import { config } from '$config';
+import {
+  WalletContractFeature,
+  WalletContractFeatures,
+  WalletContractVersion,
+} from '$wallet/WalletTypes';
 
 export enum BatterySupportedTransaction {
   Swap = 'swap',
@@ -50,6 +55,7 @@ export class BatteryManager {
     private batteryapi: BatteryAPI,
     private storage: Storage,
     private isTestnet: boolean,
+    private contractVersion: WalletContractVersion,
   ) {
     this.state.persist({
       partialize: ({
@@ -75,6 +81,10 @@ export class BatteryManager {
     return this.state.data.excessesAccount;
   }
 
+  get fundReceiver() {
+    return this.state.data.fundReceiver;
+  }
+
   public async getExcessesAccount(): Promise<string> {
     if (!this.excessesAccount) {
       await this.loadBatteryConfig();
@@ -83,8 +93,12 @@ export class BatteryManager {
     return this.excessesAccount!;
   }
 
-  get fundReceiver() {
-    return this.state.data.fundReceiver;
+  public async getFundReceiver(): Promise<string> {
+    if (!this.fundReceiver) {
+      await this.loadBatteryConfig();
+    }
+
+    return this.fundReceiver!;
   }
 
   public async fetchRechargeMethods() {
@@ -358,12 +372,20 @@ export class BatteryManager {
     }
   }
 
+  public async loadRechargeMethods() {
+    if (!WalletContractFeatures[this.contractVersion][WalletContractFeature.GASLESS]) {
+      return;
+    }
+
+    await this.fetchRechargeMethods();
+  }
+
   public async load() {
-    return await Promise.all([
-      this.fetchBalance(),
-      this.loadBatteryConfig(),
-      this.fetchRechargeMethods(),
-    ]);
+    return await Promise.all([this.fetchBalance(), this.loadRechargeMethods()]);
+  }
+
+  public async reload() {
+    return await this.fetchBalance();
   }
 
   public async rehydrate() {

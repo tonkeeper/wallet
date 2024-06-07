@@ -1,4 +1,4 @@
-import { TonAPI } from '@tonkeeper/core/src/TonAPI';
+import { AccountStatus, TonAPI } from '@tonkeeper/core/src/TonAPI';
 import {
   TonRawAddress,
   WalletConfig,
@@ -19,6 +19,7 @@ export interface BalancesState {
   ton: string;
   tonLocked: string;
   tonRestricted: string;
+  status?: AccountStatus;
 }
 
 export class BalancesManager {
@@ -112,6 +113,7 @@ export class BalancesManager {
       this.state.set({
         isLoading: false,
         ton: AmountFormatter.fromNanoStatic(account.balance),
+        status: account.status,
       });
 
       return this.state.data;
@@ -128,6 +130,7 @@ export class BalancesManager {
     this.state.set({ isReloading: true });
     await this.load();
     this.state.set({ isReloading: false });
+    return this.state.data;
   }
 
   public async rehydrate() {

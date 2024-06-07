@@ -150,7 +150,7 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
           messages: [
             {
               amount: AmountFormatter.toNano(parsedAmount, rechargeMethod.decimals),
-              address: tk.wallet.battery.fundReceiver!,
+              address: await tk.wallet.battery.getFundReceiver(),
               payload: commentCell && commentCell.toBoc().toString('base64'),
             },
           ],
@@ -168,7 +168,7 @@ export const BatterySend: React.FC<BatterySendProps> = ({ route }) => {
 
     const jettonTransferPayload = ContractService.createJettonTransferBody({
       jettonAmount: Number(AmountFormatter.toNano(parsedAmount, rechargeMethod.decimals)),
-      receiverAddress: tk.wallet.battery.state.data.fundReceiver!,
+      receiverAddress: await tk.wallet.battery.getFundReceiver(),
       excessesAddress: tk.wallet.address.ton.raw,
       forwardBody: commentCell,
     });

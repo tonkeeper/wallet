@@ -39,12 +39,13 @@ export interface BuildJettonTransferParams {
   isEstimate: boolean;
 }
 
-export const gaslessInternal = (
+export const gaslessInternal = async (
   walletAddress: string,
   jettonTransferAmount: bigint,
   amount: bigint,
 ) => {
-  const batteryAddress = Address.parse(tk.wallet.battery.excessesAccount!);
+  const excessesAccount = await tk.wallet.battery.getExcessesAccount();
+  const batteryAddress = Address.parse(excessesAccount);
   return internal({
     to: Address.parse(walletAddress),
     bounce: true,
@@ -174,7 +175,7 @@ export async function estimateJettonTransferFee(
     try {
       emulateResponse = await emulateBocWithRelayer(
         boc,
-        compareAddresses(params.recipient, tk.wallet.battery.fundReceiver),
+        compareAddresses(params.recipient, await tk.wallet.battery.getFundReceiver()),
       );
     } catch {
       return estimateJettonTransferFee(
@@ -224,7 +225,7 @@ export async function estimateJettonTransferFee(
           excessesAccount: await tk.wallet.battery.getExcessesAccount(),
         },
         'internal',
-        [gaslessInternal(params.jetton.walletAddress, POINT_ONE_TON, BigInt(1))],
+        [await gaslessInternal(params.jetton.walletAddress, POINT_ONE_TON, BigInt(1))],
       );
 
       const estimatedCost = await tk.wallet.battery.estimateGaslessCost({
@@ -340,7 +341,13 @@ export async function sendGaslessJettonBoc(
       excessesAccount: await tk.wallet.battery.getExcessesAccount(),
     },
     'internal',
-    [gaslessInternal(params.jetton.walletAddress, POINT_ONE_TON, params.commission)],
+    [
+      await gaslessInternal(
+        params.jetton.walletAddress,
+        POINT_ONE_TON,
+        params.commission,
+      ),
+    ],
   );
 
   return sendBocToRelayer(boc);

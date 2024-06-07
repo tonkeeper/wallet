@@ -359,7 +359,7 @@ export const NFTSend: FC<Props> = (props) => {
       //     .toString('base64');
       // }
 
-      const excessesAccount = isBattery && tk.wallet.battery.excessesAccount;
+      const excessesAccount = isBattery && (await tk.wallet.battery.getExcessesAccount());
 
       const signer = await tk.wallet.signer.getSigner();
 

@@ -454,7 +454,7 @@ export class TonWallet {
     }
 
     const excessesAccount = sendWithBattery
-      ? tk.wallet.battery.excessesAccount
+      ? await tk.wallet.battery.getExcessesAccount()
       : tk.wallet.address.ton.raw;
 
     const timeout = await getTimeoutFromLiteserverSafely();
