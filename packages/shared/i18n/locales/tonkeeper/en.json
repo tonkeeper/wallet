@@ -1209,11 +1209,11 @@
     },
     "signer": {
       "title": "Pair with Signer",
-      "subtitle": "A higher level of control and security"
+      "subtitle": "Completely offline, air-gapped, all TON features"
     },
     "ledger": {
       "title": "Pair with Ledger",
-      "subtitle": "A higher level of security with hardware wallet"
+      "subtitle": "Hardware module, Bluetooth, limited TON features"
     }
   },
   "add_watch_only": {

@@ -678,17 +678,17 @@ export function useDeeplinkingResolvers() {
   });
 
   deeplinking.add('/publish', async ({ query }) => {
-    if (!query.boc) {
+    if (!query.sign) {
       return;
     }
 
-    tk.wallet.signer.setSignerResult(query.boc);
+    tk.wallet.signer.setSignerResult(query.sign);
   });
 
   deeplinking.add('/signer/link', async ({ query, origin }) => {
     try {
       const network = query.network ?? 'ton';
-      const publicKey = Buffer.from(query.pk, 'base64').toString('hex');
+      const publicKey = query.pk;
       const name = query.name;
 
       if (network !== 'ton') {

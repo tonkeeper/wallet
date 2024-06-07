@@ -127,7 +127,7 @@ export const AddWalletModal = memo<AddWalletModalProps>(({ isTonConnect, isImpor
                     });
                   }}
                   leftContentStyle={styles.iconContainer}
-                  leftContent={<Icon name="ic-globe-outline-28" color="accentBlue" />}
+                  leftContent={<Icon name="ic-signer-28" color="accentBlue" />}
                   title={t('add_wallet_modal.signer.title')}
                   subtitle={t('add_wallet_modal.signer.subtitle')}
                   subtitleNumberOfLines={3}

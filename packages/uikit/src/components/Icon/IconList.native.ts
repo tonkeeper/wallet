@@ -123,6 +123,7 @@ export const IconList = {
   'ic-settings-28': require('../../../assets/icons/png/ic-settings-28.png'),
   'ic-shield-28': require('../../../assets/icons/png/ic-shield-28.png'),
   'ic-shopping-bag-28': require('../../../assets/icons/png/ic-shopping-bag-28.png'),
+  'ic-signer-28': require('../../../assets/icons/png/ic-signer-28.png'),
   'ic-speed-28': require('../../../assets/icons/png/ic-speed-28.png'),
   'ic-staking-28': require('../../../assets/icons/png/ic-staking-28.png'),
   'ic-staking-outline-28': require('../../../assets/icons/png/ic-staking-outline-28.png'),

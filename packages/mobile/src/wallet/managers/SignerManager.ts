@@ -27,7 +27,7 @@ export class SignerError extends Error {}
 
 export class SignerManager {
   private signerPromise: {
-    resolve: (base64Signature: string) => void;
+    resolve: (hexSignature: string) => void;
     reject: () => void;
   } | null = null;
 
@@ -88,7 +88,7 @@ export class SignerManager {
   }
 
   private async signWithSignerDeeplink(message: Cell): Promise<Buffer> {
-    const base64Signature = await new Promise<string>(async (resolve, reject) => {
+    const hexSignature = await new Promise<string>(async (resolve, reject) => {
       this.signerPromise = { resolve, reject };
 
       try {
@@ -123,11 +123,11 @@ export class SignerManager {
       }
     });
 
-    return Buffer.from(base64Signature, 'base64');
+    return Buffer.from(hexSignature, 'hex');
   }
 
   private async signWithSigner(message: Cell): Promise<Buffer> {
-    const base64Signature = await new Promise<string>((resolve, reject) => {
+    const hexSignature = await new Promise<string>((resolve, reject) => {
       this.signerPromise = { resolve, reject };
 
       navigation.push('/signer-confirm', {
@@ -141,7 +141,7 @@ export class SignerManager {
       });
     });
 
-    return Buffer.from(base64Signature, 'base64');
+    return Buffer.from(hexSignature, 'hex');
   }
 
   public async signLedgerTransaction(transaction: LedgerTransaction): Promise<Cell> {
@@ -165,11 +165,11 @@ export class SignerManager {
   }
 
   private createSignerDeeplink(message: Cell, addReturn?: boolean) {
-    const body = message.toBoc({ idx: false }).toString('base64');
+    const body = message.toBoc({ idx: false }).toString('hex');
 
     const returnParam = addReturn ? '&return=tonkeeper://publish' : '';
 
-    return `tonsign://?pk=${
+    return `tonsign://v1/?pk=${
       this.config.pubkey
     }&v=${this.config.version.toLowerCase()}&body=${body}${returnParam}`;
   }
@@ -178,9 +178,9 @@ export class SignerManager {
     return this.signerPromise === null;
   }
 
-  public setSignerResult(base64Signature: string) {
+  public setSignerResult(hexSignature: string) {
     if (this.signerPromise) {
-      this.signerPromise.resolve(base64Signature);
+      this.signerPromise.resolve(hexSignature);
 
       this.signerPromise = null;
     }

@@ -203,14 +203,16 @@ export const PairSignerScreen: FC = () => {
         </S.OverlayContainer>
         <Screen.Header
           rightContent={
-            <View style={styles.headerButtonContainer}>
-              <Button
-                size="header"
-                color="secondary"
-                title={t('pairSigner.about')}
-                onPress={openAbout}
-              />
-            </View>
+            config.get('signer_about_url') ? (
+              <View style={styles.headerButtonContainer}>
+                <Button
+                  size="header"
+                  color="secondary"
+                  title={t('pairSigner.about')}
+                  onPress={openAbout}
+                />
+              </View>
+            ) : null
           }
           trasnparent
         />

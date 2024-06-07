@@ -153,7 +153,6 @@ const defaultConfig: Partial<AppConfigVars> = {
   devmode_enabled: false,
 
   signer_store_url: 'https://play.google.com/store/apps/details?id=com.tonapps.signer',
-  signer_about_url: 'https://tonkeeper.com',
 
   tonkeeper_pro_url: 'https://tonkeeper.com/pro',
   notcoin_jetton_master:
