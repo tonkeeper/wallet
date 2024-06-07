@@ -1,9 +1,10 @@
 import { DependencyPrototype } from './utils/prototype';
 import { PricesState } from '$wallet/managers/TonPriceManager';
-import { FiatRate } from '../utils/types';
+import { FiatRate, Trend } from '../utils/types';
 import { formatter } from '@tonkeeper/shared/formatter';
 import BigNumber from 'bignumber.js';
 import { State } from '@tonkeeper/core';
+import { getTrendByDiff } from './utils/trendByDiff';
 
 export class TonPriceDependency extends DependencyPrototype<
   PricesState,
@@ -35,10 +36,7 @@ export class TonPriceDependency extends DependencyPrototype<
           currency: rate.currency,
         }),
       },
-      trend:
-        rate.ton.diff_24h.startsWith('+') || rate.ton.diff_24h === '0'
-          ? 'positive'
-          : 'negative',
+      trend: getTrendByDiff(rate.ton.diff_24h),
       total: {
         in_ton: balance,
         formatted: formatter.format(new BigNumber(balance).multipliedBy(rate.ton.fiat), {

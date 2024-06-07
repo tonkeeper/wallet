@@ -1316,7 +1316,7 @@
     "caption": "Wallet keys will be erased from this device.",
     "delete_title": "Delete Wallet Data",
     "delete_caption": "Wallet keys and all personal data will be erased from this device.",
-    "agreement": "I have a backup copy of recovery phrase",
+    "agreement": "I have a backup copy of recovery phrase for",
     "backup_button": "Back up",
     "logout_button": "Sign Out",
     "delete_button": "Delete Wallet Data"

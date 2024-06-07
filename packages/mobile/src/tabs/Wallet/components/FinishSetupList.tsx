@@ -1,7 +1,8 @@
 import {
   Button,
   Haptics,
-  Icon, IconColors,
+  Icon,
+  IconColors,
   IconNames,
   List,
   Spacer,
@@ -15,10 +16,11 @@ import { useBiometrySettings, useWallet, useWalletSetup } from '@tonkeeper/share
 import { useNavigation } from '@tonkeeper/router';
 import { useNotificationsSwitch } from '$hooks/useNotificationsSwitch';
 import { LayoutAnimation, Linking } from 'react-native';
-import {convertHexToRGBA, getBiometryIcon, getBiometryName} from '$utils';
+import { convertHexToRGBA, getBiometryIcon, getBiometryName } from '$utils';
 import { config } from '$config';
 import { tk } from '$wallet';
-import {useTheme} from "$hooks/useTheme";
+import { useTheme } from '$hooks/useTheme';
+import { getNewsUrl } from '@tonkeeper/shared/utils/getNewsUrl';
 
 enum SetupItemType {
   Backup = 'Backup',
@@ -115,11 +117,7 @@ export const FinishSetupList = memo(() => {
         switch: null,
         onPress: () => {
           tk.wallet.toggleTgJoined();
-          Linking.openURL(
-            i18n.locale === 'ru'
-              ? config.get('telegram_ru')
-              : config.get('telegram_global'),
-          ).catch((e) => console.log(e));
+          Linking.openURL(getNewsUrl()).catch((e) => console.log(e));
         },
       });
     }

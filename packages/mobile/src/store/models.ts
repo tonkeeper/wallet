@@ -286,6 +286,7 @@ export interface JettonBalanceModel {
   jettonAddress: string;
   walletAddress: string;
   verification: JettonVerification;
+  uninit_jetton_wallet?: boolean;
 }
 
 export interface FavoriteModel {

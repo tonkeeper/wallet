@@ -1,18 +1,19 @@
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { TonThemeColor } from '$styled';
-import { Spacer, Text } from '$uikit';
+import { Text } from '$uikit';
+import { Trend } from '../content-providers/utils/types';
 
 interface ListItemRateProps {
   percent?: string;
   price: string;
-  trend: string;
+  trend: Trend;
 }
 
-const trend2color: { [key: string]: TonThemeColor } = {
-  negative: 'accentNegative',
-  positive: 'accentPositive',
-  unknown: 'textSecondary',
+const trend2color: { [key in Trend]: TonThemeColor } = {
+  [Trend.Negative]: 'accentNegative',
+  [Trend.Positive]: 'accentPositive',
+  [Trend.Neutral]: 'textTertiary',
 };
 
 export const ListItemRate = memo<ListItemRateProps>((props) => (

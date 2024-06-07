@@ -141,6 +141,7 @@ export class JettonsManager {
 
           jettonBalances.push(
             new JettonBalanceModel({
+              uninit_jetton_wallet: true,
               wallet_address: {
                 address: walletAddress,
                 is_scam: false,

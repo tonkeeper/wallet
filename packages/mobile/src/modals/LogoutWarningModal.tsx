@@ -6,17 +6,18 @@ import {
   Text,
   TouchableOpacity,
   View,
+  WalletIcon,
 } from '@tonkeeper/uikit';
-import { FC, memo, useCallback, useState } from 'react';
+import React, { FC, memo, useCallback, useState } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import { Checkbox } from '$uikit';
 import { useDispatch } from 'react-redux';
 import { walletActions } from '$store/wallet';
 import { useNavigation } from '@tonkeeper/router';
-import { useParams } from '@tonkeeper/router/src/imperative';
 import { trackEvent } from '$utils/stats';
 import { openDeleteAccountDone } from '$navigation';
 import { InteractionManager } from 'react-native';
+import { tk } from '$wallet';
 
 const BUTTON_HIT_SLOP = {
   top: 12,
@@ -61,12 +62,12 @@ export const LogoutWarningModal: FC<Props> = memo((props) => {
       <Modal.Header />
       <Modal.Content safeArea>
         <View style={styles.container}>
-          <Text type="h2" textAlign="center">
+          <Text style={styles.spacing.static} type="h2" textAlign="center">
             {isDelete ? t('logout_modal.delete_title') : t('logout_modal.title')}
           </Text>
           <Spacer y={4} />
           <Text
-            style={styles.desk.static}
+            style={styles.spacing.static}
             type="body1"
             color="textSecondary"
             textAlign="center"
@@ -78,7 +79,15 @@ export const LogoutWarningModal: FC<Props> = memo((props) => {
             <Spacer x={12} />
             <View style={styles.agreementContainer}>
               <TouchableOpacity onPress={() => setChecked((s) => !s)}>
-                <Text>{t('logout_modal.agreement')}</Text>
+                <Text>
+                  <Text>{t('logout_modal.agreement')}</Text>{' '}
+                  <WalletIcon
+                    emojiStyle={styles.emoji.static}
+                    size={16}
+                    value={tk.wallet.config.emoji}
+                  />{' '}
+                  <Text>{tk.wallet.config.name}</Text>
+                </Text>
               </TouchableOpacity>
               <Spacer y={8} />
               <TouchableOpacity hitSlop={BUTTON_HIT_SLOP} onPress={handleBackup}>
@@ -121,7 +130,7 @@ const styles = Steezy.create(({ colors }) => ({
     flex: 1,
     alignItems: 'flex-start',
   },
-  desk: {
+  spacing: {
     paddingHorizontal: 16,
   },
   dot: {
@@ -131,5 +140,13 @@ const styles = Steezy.create(({ colors }) => ({
     borderRadius: 2.8 / 2,
     marginTop: 9.8,
     marginRight: 9.5,
+  },
+  agreementWithTitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  emoji: {
+    fontSize: 16,
   },
 }));

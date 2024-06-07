@@ -20,6 +20,7 @@ export type AppConfigVars = {
   accountExplorer: string;
   telegram_ru: string;
   telegram_global: string;
+  telegram_farsi: string;
   subscriptionsHost: string;
   cachedMediaEndpoint: string;
   cachedMediaKey: string;
@@ -29,7 +30,6 @@ export type AppConfigVars = {
   directSupportUrl: string;
   faqUrlRu: string;
   faqUrl: string;
-  tonkeeperNewsUrl: string;
   stakingInfoUrl: string;
   tonCommunityUrl: string;
   tonCommunityChatUrl: string;
@@ -145,6 +145,7 @@ const defaultConfig: Partial<AppConfigVars> = {
 
   telegram_global: 'https://t.me/tonkeeper_news',
   telegram_ru: 'https://t.me/tonkeeper_ru',
+  telegram_farsi: 'https://t.me/tonkeeper_farsi',
 
   disable_show_unverified_token: false,
   disable_tonstakers: false,

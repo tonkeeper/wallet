@@ -419,8 +419,7 @@ export const Jetton: React.FC<JettonProps> = ({ route }) => {
 
   const shouldShowTetherButton =
     compareAddresses(route.params.jettonAddress, config.get('usdt_jetton_master')) &&
-    !jettonActivityList.isLoading &&
-    jettonActivityList.sections.length === 0;
+    jetton.uninit_jetton_wallet;
 
   const jettonSubtitle = useMemo(() => {
     if (compareAddresses(jetton.jettonAddress, config.get('usdt_jetton_master'))) {

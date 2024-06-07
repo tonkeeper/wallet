@@ -7,7 +7,7 @@ import { TapGestureHandler } from 'react-native-gesture-handler';
 
 import * as S from './Settings.style';
 import { Icon, PopupSelect, Spacer, Tag, Text } from '$uikit';
-import { Icon as NewIcon, Screen, List } from '@tonkeeper/uikit';
+import { Icon as NewIcon, Screen, List, WalletIcon } from '@tonkeeper/uikit';
 import { useShouldShowTokensButton } from '$hooks/useShouldShowTokensButton';
 import { useNavigation } from '@tonkeeper/router';
 import {
@@ -47,6 +47,7 @@ import { useSubscriptions } from '@tonkeeper/shared/hooks/useSubscriptions';
 import { nativeLocaleNames } from '@tonkeeper/shared/i18n/translations';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { reset } from '$navigation/imperative';
+import { getNewsUrl } from '@tonkeeper/shared/utils/getNewsUrl';
 
 export const Settings: FC = () => {
   const animationRef = useRef<AnimatedLottieView>(null);
@@ -115,7 +116,7 @@ export const Settings: FC = () => {
   }, []);
 
   const handleNews = useCallback(() => {
-    Linking.openURL(config.get('tonkeeperNewsUrl')).catch((err) => console.log(err));
+    Linking.openURL(getNewsUrl()).catch((err) => console.log(err));
   }, []);
 
   const handleSupport = useCallback(() => {
@@ -594,7 +595,17 @@ export const Settings: FC = () => {
                   </CellSectionItem>
                 ) : (
                   <CellSectionItem onPress={handleResetWallet} icon="ic-door-28">
-                    {t('settings_reset')}
+                    <View style={styles.logoutTitleContainer.static}>
+                      <Text variant="label1">{t('access_confirmation_logout')}</Text>
+                      <WalletIcon
+                        emojiStyle={styles.emoji.static}
+                        size={20}
+                        value={tk.wallet.config.emoji}
+                      />
+                      <Text style={styles.flex.static} numberOfLines={1} variant="label1">
+                        {tk.wallet.config.name}
+                      </Text>
+                    </View>
                   </CellSectionItem>
                 )}
               </List>
@@ -657,5 +668,17 @@ const styles = Steezy.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  logoutTitleContainer: {
+    gap: 4,
+    alignItems: 'center',
+    flexDirection: 'row',
+    paddingRight: 8,
+  },
+  flex: {
+    flex: 1,
+  },
+  emoji: {
+    fontSize: 20,
   },
 });

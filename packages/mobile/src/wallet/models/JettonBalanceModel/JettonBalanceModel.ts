@@ -3,6 +3,8 @@ import { JettonBalance, JettonVerificationType } from '@tonkeeper/core/src/TonAP
 import { JettonMetadata, JettonVerification } from './types';
 
 export class JettonBalanceModel {
+  // indicates that user has no interaction with jetton yet
+  uninit_jetton_wallet?: boolean;
   metadata: JettonMetadata;
   balance: string;
   jettonAddress: string;
@@ -10,7 +12,8 @@ export class JettonBalanceModel {
   verification: JettonVerification;
   lock?: { amount: string; till: number };
 
-  constructor(jettonBalance: JettonBalance) {
+  constructor(jettonBalance: JettonBalance & { uninit_jetton_wallet?: boolean }) {
+    this.uninit_jetton_wallet = jettonBalance.uninit_jetton_wallet;
     this.metadata = jettonBalance.jetton;
     this.balance = AmountFormatter.fromNanoStatic(
       jettonBalance.balance,

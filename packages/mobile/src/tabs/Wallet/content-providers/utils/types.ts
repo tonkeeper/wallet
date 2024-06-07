@@ -2,6 +2,12 @@ import { ListItemProps } from '@tonkeeper/uikit/src/components/List/ListItem';
 import { ReactNode } from 'react';
 import { TonIconProps } from '@tonkeeper/uikit';
 
+export enum Trend {
+  Positive = 'positive',
+  Negative = 'negative',
+  Neutral = 'neutral',
+}
+
 export type FiatRate = {
   total: {
     formatted: string;
@@ -9,7 +15,7 @@ export type FiatRate = {
     raw: string;
   };
   percent?: string;
-  trend: string;
+  trend: Trend;
   price: {
     formatted: string;
     raw: string;
