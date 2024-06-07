@@ -8,7 +8,6 @@ import { Icon, Text } from '$uikit';
 import { Linking } from 'react-native';
 import { t } from '@tonkeeper/shared/i18n';
 import { openExchangeMethodModal } from '$core/ModalContainer/ExchangeMethod/ExchangeMethod';
-import { getCryptoAssetIconSource } from '@tonkeeper/uikit/assets/cryptoAssets';
 import { Pressable, Steezy } from '@tonkeeper/uikit';
 
 export const ExchangeItem: FC<ExchangeItemProps> = ({

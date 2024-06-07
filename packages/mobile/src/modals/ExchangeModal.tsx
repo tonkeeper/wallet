@@ -40,9 +40,8 @@ export const ExchangeModal = (params: ExchangeModalParams) => {
 
     return [buy, sell].map((tab) =>
       tab
-        .filter((cat) => !params.filterMethods || params.filterMethods.includes(cat.type))
         .map((category) => {
-          if (category.type !== CategoryType.BUY) {
+          if (category.type === CategoryType.Swap) {
             return category;
           }
 
@@ -65,7 +64,12 @@ export const ExchangeModal = (params: ExchangeModalParams) => {
               return aIdx - bIdx;
             }),
           };
-        }),
+        })
+        .filter(
+          (cat) =>
+            cat.items.length > 0 &&
+            (!params.filterMethods || params.filterMethods.includes(cat.type)),
+        ),
     );
   }, [
     layoutByCountry,

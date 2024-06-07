@@ -6,6 +6,7 @@ const ADA = require('./ADA.png');
 const BNB = require('./BNB.png');
 const SOL = require('./SOL.png');
 const TON = require('./TON.png');
+const NOT = require('./NOT.png');
 
 export const getCryptoAssetIconSource = (asset: string) => {
   switch (asset) {
@@ -25,6 +26,8 @@ export const getCryptoAssetIconSource = (asset: string) => {
       return SOL;
     case 'TON':
       return TON;
+    case 'NOT':
+      return NOT;
     default:
       return null;
   }
