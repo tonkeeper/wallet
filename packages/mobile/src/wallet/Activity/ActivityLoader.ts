@@ -7,6 +7,7 @@ import {
 } from '../models/ActivityModel';
 import { TonRawAddress } from '../WalletTypes';
 import { TronAPI } from '@tonkeeper/core';
+import uniqBy from 'lodash/uniqBy';
 
 type LoadParams<TCursor, TData> = {
   filter?: (events: TData[]) => TData[];
@@ -34,11 +35,15 @@ export class ActivityLoader {
     });
 
     const events = params.filter ? params.filter(data.events) : data.events;
+
+    // Required because of TON API bug with multiple pending events
+    const uniqueEventsByEventId = uniqBy(events, 'event_id');
+
     const actions = ActivityModel.createActions(
       {
         ownerAddress: this.tonRawAddress,
         source: ActionSource.Ton,
-        events,
+        events: uniqueEventsByEventId,
       },
       (action) => this.tonActions.set(action.action_id, action),
     );
