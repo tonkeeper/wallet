@@ -46,11 +46,16 @@ export function PopupMenuComponent(props: PopupMenuProps) {
   const childrenRef = useRef<View>(null);
   const offsetTop = useRef(0);
 
+  const filteredItems = useMemo(
+    () => items.filter((item) => typeof item === 'object'),
+    [items],
+  );
+
   const popupHeight = useMemo(() => {
     const maxHeight = deviceHeight - offsetTop.current - 32;
-    const height = ns(47.5 * items.length) + 0.5;
+    const height = ns(47.5 * filteredItems.length) + 0.5;
     return Math.min(height, maxHeight);
-  }, [items.length]);
+  }, [filteredItems.length]);
 
   const popupAnimation = usePopupAnimation({
     anchor: 'top-right',
@@ -90,12 +95,12 @@ export function PopupMenuComponent(props: PopupMenuProps) {
   }, [children, handleOpen]);
 
   const itemsPrepared = useMemo(() => {
-    return items.map((item) =>
+    return filteredItems.map((item) =>
       React.cloneElement(item, {
         onCloseMenu: () => handleClose(),
       }),
     );
-  }, [items, handleClose]);
+  }, [filteredItems, handleClose]);
 
   return (
     <>

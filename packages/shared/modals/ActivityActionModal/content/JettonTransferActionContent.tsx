@@ -61,7 +61,7 @@ export const JettonTransferActionContent = memo<JettonTransferContentProps>((pro
           hideName={isScam}
         />
         <ExtraListItem extra={action.event.extra} />
-        {!!action.payload.comment && (
+        {!!action.payload.comment && !action.event.is_scam && (
           <List.Item
             titleType="secondary"
             title={t('transactionDetails.comment')}
@@ -70,7 +70,7 @@ export const JettonTransferActionContent = memo<JettonTransferContentProps>((pro
             valueMultiline
           />
         )}
-        {action.payload?.encrypted_comment && (
+        {action.payload?.encrypted_comment && !action.event.is_scam && (
           <EncryptedComment
             layout={EncryptedCommentLayout.LIST_ITEM}
             encryptedComment={action.payload.encrypted_comment}

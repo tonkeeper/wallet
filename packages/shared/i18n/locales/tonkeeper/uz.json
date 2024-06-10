@@ -583,10 +583,14 @@
     "title": "Til",
     "languagesList": {
       "system": "Tizim",
-      "ru": "Rus tili",
+      "ru": "Ruscha",
       "en": "Inglizcha",
       "tr": "Turkcha",
-      "zh-Hans": "Xitoy tili"
+      "zh-Hans": "Xitoycha",
+      "uz": "Oʻzbekcha",
+      "id": "Indonezcha",
+      "uk": "Ukraincha",
+      "es": "Ispancha"
     }
   },
   "later": "Keyinroq",

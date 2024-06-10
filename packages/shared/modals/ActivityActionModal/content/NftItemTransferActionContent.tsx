@@ -38,7 +38,7 @@ export const NftItemTransferActionContent = memo<NftItemTransferActionContenttPr
             sender={action.payload.sender}
           />
           <ExtraListItem extra={action.event.extra} />
-          {action.payload?.encrypted_comment && (
+          {action.payload?.encrypted_comment && !action.event.is_scam && (
             <EncryptedComment
               layout={EncryptedCommentLayout.LIST_ITEM}
               encryptedComment={action.payload.encrypted_comment}
@@ -46,7 +46,7 @@ export const NftItemTransferActionContent = memo<NftItemTransferActionContenttPr
               sender={action.payload.sender!}
             />
           )}
-          {!!action.payload.comment && (
+          {!!action.payload.comment && !action.event.is_scam && (
             <List.Item
               titleType="secondary"
               title={t('transactionDetails.comment')}

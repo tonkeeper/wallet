@@ -584,9 +584,13 @@
     "languagesList": {
       "system": "Sistem",
       "ru": "Rusia",
-      "en": "Bahasa Inggris",
+      "en": "Inggris",
       "tr": "Turki",
-      "zh-Hans": "Tionghoa"
+      "zh-Hans": "Cina",
+      "uz": "Uzbek",
+      "id": "Indonesia",
+      "uk": "Ukraina",
+      "es": "Spanyol"
     }
   },
   "later": "Nanti",

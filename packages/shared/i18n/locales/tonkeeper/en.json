@@ -711,7 +711,11 @@
       "ru": "Russian",
       "en": "English",
       "tr": "Turkish",
-      "zh-Hans": "Chinese"
+      "zh-Hans": "Chinese",
+      "uz": "Uzbek",
+      "id": "Indonesian",
+      "uk": "Ukrainian",
+      "es": "Spanish"
     }
   },
   "settings_network_alert_title": "Select network",

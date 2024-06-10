@@ -276,13 +276,15 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
                 text={t(`nft_actions.hide.${nft.collection ? 'collection' : 'nft'}`)}
                 icon={<Icon name="ic-eye-disable-16" color="accentBlue" />}
               />,
-              <PopupMenuItem
-                waitForAnimationEnd
-                shouldCloseMenu
-                onPress={handleNewApproveStatus(TokenApprovalStatus.Spam)}
-                text={t('nft_actions.hide_and_report')}
-                icon={<Icon name="ic-block-16" color="accentBlue" />}
-              />,
+              !isTrusted && (
+                <PopupMenuItem
+                  waitForAnimationEnd
+                  shouldCloseMenu
+                  onPress={handleNewApproveStatus(TokenApprovalStatus.Spam)}
+                  text={t('nft_actions.hide_and_report')}
+                  icon={<Icon name="ic-block-16" color="accentBlue" />}
+                />
+              ),
               <PopupMenuItem
                 waitForAnimationEnd
                 shouldCloseMenu

@@ -45,7 +45,9 @@ export const JettonSwapActionContent = memo<JettonSwapActionContentProps>((props
         Address.parse(payload.jetton_master_in.address).toFriendly(),
       );
       if (tokenPrice.fiat) {
-        const parsedAmount = parseFloat(formatter.fromNano(payload.amount_in, 9));
+        const parsedAmount = parseFloat(
+          formatter.fromNano(payload.amount_in, payload.jetton_master_in.decimals ?? 9),
+        );
         return format(tokenPrice.fiat * parsedAmount, {
           currency: fiatCurrency,
           decimals: 9,
