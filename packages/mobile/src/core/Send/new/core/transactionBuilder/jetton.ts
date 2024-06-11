@@ -26,6 +26,7 @@ import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
 import { WalletContractFeature, WalletContractFeatures } from '$wallet/WalletTypes';
 import { config } from '$config';
 import { MessageConsequences } from '@tonkeeper/core/src/TonAPI';
+import { Toast } from '@tonkeeper/uikit';
 
 export interface BuildJettonTransferParams {
   jettonWalletAddress: string;
@@ -148,148 +149,160 @@ export async function estimateJettonTransferFee(
   _seqno?: number,
   _timeout?: number,
 ) {
-  const seqno = _seqno ?? (await getWalletSeqno());
-  const timeout = _timeout ?? (await getTimeoutFromLiteserverSafely());
-  const balance = toNano(tk.wallet.balances.state.data.ton);
+  try {
+    const seqno = _seqno ?? (await getWalletSeqno());
+    const timeout = _timeout ?? (await getTimeoutFromLiteserverSafely());
+    const balance = toNano(tk.wallet.balances.state.data.ton);
 
-  const isPreferGasless = params.preferGasless ?? true;
+    const isPreferGasless = params.preferGasless ?? true;
 
-  const boc = await buildJettonTransferBoc(
-    SignerType.Signer,
-    {
-      timeout,
-      seqno,
-      recipient: params.recipient,
-      isEstimate: true,
-      jettonTransferAmount: params.jettonTransferAmount ?? ONE_TON,
-      jettonAmount: params.sendAmountNano,
-      jettonWalletAddress: params.jetton.walletAddress,
-      payload: params.payload,
-    },
-    params.shouldAttemptWithRelayer ? 'internal' : 'external',
-  );
-
-  let emulateResponse: { emulateResult: MessageConsequences; battery: boolean };
-
-  if (params.shouldAttemptWithRelayer) {
-    try {
-      emulateResponse = await emulateBocWithRelayer(
-        boc,
-        compareAddresses(params.recipient, await tk.wallet.battery.getFundReceiver()),
-      );
-    } catch {
-      return estimateJettonTransferFee(
-        { ...params, shouldAttemptWithRelayer: false },
-        seqno,
+    const boc = await buildJettonTransferBoc(
+      SignerType.Signer,
+      {
         timeout,
-      );
-    }
-  } else {
-    emulateResponse = await emulateBoc(
-      boc,
-      [setBalanceForEmulation(toNano('2'))], // Emulate with higher balance to calculate fair amount to send
-      false,
+        seqno,
+        recipient: params.recipient,
+        isEstimate: true,
+        jettonTransferAmount: params.jettonTransferAmount ?? ONE_TON,
+        jettonAmount: params.sendAmountNano,
+        jettonWalletAddress: params.jetton.walletAddress,
+        payload: params.payload,
+      },
+      params.shouldAttemptWithRelayer ? 'internal' : 'external',
     );
-  }
 
-  const isWalletSupportsGasless =
-    WalletContractFeatures[tk.wallet.config.version][WalletContractFeature.GASLESS];
+    let emulateResponse: { emulateResult: MessageConsequences; battery: boolean };
 
-  let isJettonSupportsGasless = false;
-  if (
-    !emulateResponse.battery &&
-    isWalletSupportsGasless &&
-    config.get('gasless_enabled')
-  ) {
-    try {
-      const rechargeMethods = await tk.wallet.battery.getRechargeMethods();
-
-      isJettonSupportsGasless = rechargeMethods.some(
-        (method) =>
-          method.support_gasless &&
-          compareAddresses(method.jetton_master, params.jetton.jettonAddress),
-      );
-    } catch {}
-
-    if (isJettonSupportsGasless && (isPreferGasless || params.forceGasless)) {
-      const gaslessBoc = await buildJettonSignerTransferBoc(
-        {
-          timeout,
+    if (params.shouldAttemptWithRelayer) {
+      try {
+        emulateResponse = await emulateBocWithRelayer(
+          boc,
+          compareAddresses(params.recipient, await tk.wallet.battery.getFundReceiver()),
+        );
+      } catch {
+        return estimateJettonTransferFee(
+          { ...params, shouldAttemptWithRelayer: false },
           seqno,
-          recipient: params.recipient,
-          isEstimate: true,
-          jettonTransferAmount: POINT_ONE_TON,
-          jettonAmount: params.isSendAll ? BigInt(1) : params.sendAmountNano,
-          jettonWalletAddress: params.jetton.walletAddress,
-          payload: params.payload,
-          excessesAccount: await tk.wallet.battery.getExcessesAccount(),
-        },
-        'internal',
-        [await gaslessInternal(params.jetton.walletAddress, POINT_ONE_TON, BigInt(1))],
-      );
-
-      const estimatedCost = await tk.wallet.battery.estimateGaslessCost({
-        jettonMaster: params.jetton.jettonAddress,
-        payload: gaslessBoc,
-        battery: false,
-      });
-
-      if (
-        estimatedCost?.commission &&
-        (params.isSendAll ||
-          new BigNumber(
-            toNano(params.jetton.balance, params.jetton.metadata.decimals ?? 9),
-          ).isGreaterThanOrEqualTo(
-            new BigNumber(estimatedCost?.commission).plus(
-              params.sendAmountNano.toString(),
-            ),
-          ))
-      ) {
-        return {
-          fee: estimatedCost.commission,
-          customFeeCurrency: {
-            jetton_master: params.jetton.jettonAddress,
-            decimals: params.jetton.metadata.decimals,
-            symbol: params.jetton.metadata.symbol,
-          },
-          battery: false,
-          gasless: true,
-          isForcedGasless: params.forceGasless,
-          supportsGasless: isJettonSupportsGasless,
-        };
+          timeout,
+        );
       }
-      isJettonSupportsGasless = false;
+    } else {
+      emulateResponse = await emulateBoc(
+        boc,
+        [setBalanceForEmulation(toNano('2'))], // Emulate with higher balance to calculate fair amount to send
+        false,
+      );
     }
-  }
 
-  const feeToCalculate = new BigNumber(emulateResponse.emulateResult.event.extra)
-    .multipliedBy(-1)
-    .isNegative()
-    ? new BigNumber(BASE_FORWARD_AMOUNT.toString())
-    : new BigNumber(emulateResponse.emulateResult.event.extra)
-        .multipliedBy(-1)
-        .plus(BASE_FORWARD_AMOUNT.toString());
+    const isWalletSupportsGasless =
+      WalletContractFeatures[tk.wallet.config.version][WalletContractFeature.GASLESS];
 
-  if (!emulateResponse.battery && feeToCalculate.gt(balance)) {
-    if (isJettonSupportsGasless && !params.preferGasless && !params.forceGasless) {
-      // Retry emulation with forced gasless
-      return estimateJettonTransferFee({ ...params, forceGasless: true }, seqno, timeout);
+    let isJettonSupportsGasless = false;
+    if (
+      !emulateResponse.battery &&
+      isWalletSupportsGasless &&
+      config.get('gasless_enabled')
+    ) {
+      try {
+        const rechargeMethods = await tk.wallet.battery.getRechargeMethods();
+
+        isJettonSupportsGasless = rechargeMethods.some(
+          (method) =>
+            method.support_gasless &&
+            compareAddresses(method.jetton_master, params.jetton.jettonAddress),
+        );
+      } catch {}
+
+      if (isJettonSupportsGasless && (isPreferGasless || params.forceGasless)) {
+        const gaslessBoc = await buildJettonSignerTransferBoc(
+          {
+            timeout,
+            seqno,
+            recipient: params.recipient,
+            isEstimate: true,
+            jettonTransferAmount: POINT_ONE_TON,
+            jettonAmount: params.isSendAll ? BigInt(1) : params.sendAmountNano,
+            jettonWalletAddress: params.jetton.walletAddress,
+            payload: params.payload,
+            excessesAccount: await tk.wallet.battery.getExcessesAccount(),
+          },
+          'internal',
+          [await gaslessInternal(params.jetton.walletAddress, POINT_ONE_TON, BigInt(1))],
+        );
+
+        const estimatedCost = await tk.wallet.battery.estimateGaslessCost({
+          jettonMaster: params.jetton.jettonAddress,
+          payload: gaslessBoc,
+          battery: false,
+        });
+
+        if (
+          estimatedCost?.commission &&
+          (params.isSendAll ||
+            new BigNumber(
+              toNano(params.jetton.balance, params.jetton.metadata.decimals ?? 9),
+            ).isGreaterThanOrEqualTo(
+              new BigNumber(estimatedCost?.commission).plus(
+                params.sendAmountNano.toString(),
+              ),
+            ))
+        ) {
+          return {
+            fee: estimatedCost.commission,
+            customFeeCurrency: {
+              jetton_master: params.jetton.jettonAddress,
+              decimals: params.jetton.metadata.decimals,
+              symbol: params.jetton.metadata.symbol,
+            },
+            battery: false,
+            gasless: true,
+            isForcedGasless: params.forceGasless,
+            supportsGasless: isJettonSupportsGasless,
+          };
+        }
+        isJettonSupportsGasless = false;
+      }
     }
-    openInsufficientFundsModal({
-      totalAmount: feeToCalculate.toString(),
-      balance: balance.toString(),
-    });
-    throw new CanceledActionError();
-  }
 
-  return {
-    fee: new BigNumber(emulateResponse.emulateResult.event.extra)
+    const feeToCalculate = new BigNumber(emulateResponse.emulateResult.event.extra)
       .multipliedBy(-1)
-      .toString(),
-    battery: emulateResponse.battery,
-    gasless: false,
-    supportsGasless: isJettonSupportsGasless,
-  };
+      .isNegative()
+      ? new BigNumber(BASE_FORWARD_AMOUNT.toString())
+      : new BigNumber(emulateResponse.emulateResult.event.extra)
+          .multipliedBy(-1)
+          .plus(BASE_FORWARD_AMOUNT.toString());
+
+    if (!emulateResponse.battery && feeToCalculate.gt(balance)) {
+      if (isJettonSupportsGasless && !params.preferGasless && !params.forceGasless) {
+        // Retry emulation with forced gasless
+        return estimateJettonTransferFee(
+          { ...params, forceGasless: true },
+          seqno,
+          timeout,
+        );
+      }
+      openInsufficientFundsModal({
+        totalAmount: feeToCalculate.toString(),
+        balance: balance.toString(),
+      });
+      throw new CanceledActionError();
+    }
+
+    return {
+      fee: new BigNumber(emulateResponse.emulateResult.event.extra)
+        .multipliedBy(-1)
+        .toString(),
+      battery: emulateResponse.battery,
+      gasless: false,
+      supportsGasless: isJettonSupportsGasless,
+    };
+  } catch {
+    Toast.fail('Failed to estimate fee');
+    return {
+      fee: undefined,
+      battery: false,
+    };
+  }
 }
 
 export async function sendJettonBoc(params: JettonTransferParams) {

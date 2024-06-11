@@ -13,6 +13,7 @@ import { toNano as tonCoreToNano } from '@ton/core/dist/utils/convert';
 import { toNano } from '$utils';
 import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
 import { openInsufficientFundsModal } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
+import { Toast } from '@tonkeeper/uikit';
 
 export interface BuildTonTransferParams {
   bounce: boolean;
@@ -93,42 +94,50 @@ export interface TonTransferParams {
 }
 
 export async function estimateTonTransferFee(params: TonTransferParams) {
-  const seqno = await getWalletSeqno();
-  const timeout = await getTimeoutFromLiteserverSafely();
+  try {
+    const seqno = await getWalletSeqno();
+    const timeout = await getTimeoutFromLiteserverSafely();
 
-  const boc = await buildTonTransferBoc(SignerType.Signer, {
-    isEstimate: true,
-    timeout,
-    seqno,
-    recipient: params.recipient,
-    payload: params.payload,
-    sendAmount: params.sendAmountNano.toString(),
-    bounce: AddressFormatter.isBounceable(params.recipient),
-    sendMode: params.isSendAll
-      ? SendMode.CARRY_ALL_REMAINING_BALANCE + SendMode.IGNORE_ERRORS
-      : SendMode.IGNORE_ERRORS + SendMode.PAY_GAS_SEPARATELY,
-  });
+    const boc = await buildTonTransferBoc(SignerType.Signer, {
+      isEstimate: true,
+      timeout,
+      seqno,
+      recipient: params.recipient,
+      payload: params.payload,
+      sendAmount: params.sendAmountNano.toString(),
+      bounce: AddressFormatter.isBounceable(params.recipient),
+      sendMode: params.isSendAll
+        ? SendMode.CARRY_ALL_REMAINING_BALANCE + SendMode.IGNORE_ERRORS
+        : SendMode.IGNORE_ERRORS + SendMode.PAY_GAS_SEPARATELY,
+    });
 
-  const { emulateResult, battery } = await emulateBoc(boc, undefined, false);
+    const { emulateResult, battery } = await emulateBoc(boc, undefined, false);
 
-  const fee = new BigNumber(emulateResult.event.extra).multipliedBy(-1);
+    const fee = new BigNumber(emulateResult.event.extra).multipliedBy(-1);
 
-  if (!params.isSendAll && !fee.isNegative()) {
-    const totalAmount = fee.plus(params.sendAmountNano.toString());
-    const balance = toNano(tk.wallet.balances.state.data.ton);
-    if (totalAmount.gt(balance)) {
-      openInsufficientFundsModal({
-        totalAmount: totalAmount.toString(),
-        balance: balance.toString(),
-      });
-      throw new CanceledActionError();
+    if (!params.isSendAll && !fee.isNegative()) {
+      const totalAmount = fee.plus(params.sendAmountNano.toString());
+      const balance = toNano(tk.wallet.balances.state.data.ton);
+      if (totalAmount.gt(balance)) {
+        openInsufficientFundsModal({
+          totalAmount: totalAmount.toString(),
+          balance: balance.toString(),
+        });
+        throw new CanceledActionError();
+      }
     }
-  }
 
-  return {
-    fee: fee.toString(),
-    battery,
-  };
+    return {
+      fee: fee.toString(),
+      battery,
+    };
+  } catch {
+    Toast.fail('Failed to estimate fee');
+    return {
+      fee: undefined,
+      battery: false,
+    };
+  }
 }
 
 export async function sendTonBoc(params: TonTransferParams) {
