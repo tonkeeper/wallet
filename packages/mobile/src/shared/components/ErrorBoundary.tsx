@@ -6,7 +6,7 @@ type ErrorBoundaryState = {
   isError: boolean;
   retry: number;
   message: string;
-}
+};
 
 export class ErrorBoundary extends React.Component<{}, ErrorBoundaryState> {
   constructor(props: {}) {
@@ -21,21 +21,16 @@ export class ErrorBoundary extends React.Component<{}, ErrorBoundaryState> {
   }
 
   private refresh = () => {
-    this.setState({ 
+    this.setState({
       retry: this.state.retry + 1,
-      isError: false, 
+      isError: false,
       message: '',
     });
-  }
+  };
 
   render() {
     if (this.state.isError) {
-      return (
-        <ErrorScreen 
-          message={this.state.message}
-          refresh={this.refresh} 
-        />
-      );
+      return <ErrorScreen message={this.state.message} refresh={this.refresh} />;
     }
 
     return (

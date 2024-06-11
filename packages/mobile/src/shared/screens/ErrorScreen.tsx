@@ -15,43 +15,40 @@ interface ErrorScreenProps {
 export const ErrorScreen: React.FC<ErrorScreenProps> = (props) => {
   const safeArea = useSafeAreaInsets();
 
-  const handleCopyLog = React.useCallback((value?: string) => () => {
+  const handleCopyLog = React.useCallback(
+    (value?: string) => () => {
       if (value) {
         Clipboard.setString(value);
         Toast.success(t('copied'));
       }
     },
-    [t]
+    [],
   );
 
   return (
     <Screen>
       <View style={[styles.container, { paddingBottom: safeArea.bottom + ns(16) }]}>
         <View style={styles.titleСontainer}>
-          <Text variant="h2">
-            {t('error_occurred')}
-          </Text>
+          <Text variant="h2">{t('error_occurred')}</Text>
         </View>
-        <Button onPress={handleCopyLog(props.message)}>
-          {t('copy_error_log')}
-        </Button>
+        <Button onPress={handleCopyLog(props.message)}>{t('copy_error_log')}</Button>
         <DevSeparator />
         <Button onPress={props.refresh} mode="secondary">
           {t('refresh_app')}
-        </Button>   
+        </Button>
       </View>
     </Screen>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, 
+    flex: 1,
     padding: ns(16),
   },
   titleСontainer: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
-  }
+    alignItems: 'center',
+  },
 });
