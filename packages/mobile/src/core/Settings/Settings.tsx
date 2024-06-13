@@ -594,7 +594,11 @@ export const Settings: FC = () => {
                     {t('stop_watch')}
                   </CellSectionItem>
                 ) : (
-                  <CellSectionItem onPress={handleResetWallet} icon="ic-door-28">
+                  <CellSectionItem
+                    unwrapChildren
+                    onPress={handleResetWallet}
+                    icon="ic-door-28"
+                  >
                     <View style={styles.logoutTitleContainer.static}>
                       <Text variant="label1">{t('access_confirmation_logout')}</Text>
                       <WalletIcon
