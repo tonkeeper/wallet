@@ -53,7 +53,7 @@ export const CellSectionItem = forwardRef<any, PropsWithChildren<CellProps>>(
             <S.SectionItemTitleWrap>
               {content ? (
                 content
-              ) : unwrapChildren ? (
+              ) : !unwrapChildren ? (
                 <Text style={{ flex: 1 }} variant="label1">
                   {children}
                 </Text>
