@@ -221,8 +221,11 @@ export const NFT: React.FC<NFTProps> = ({ oldNftItem, route }) => {
       );
 
       if (
-        !tk.wallet.isTestnet &&
-        [TokenApprovalStatus.Approved, TokenApprovalStatus.Spam].includes(approvalStatus)
+        (!tk.wallet.isTestnet &&
+          approvalStatus === TokenApprovalStatus.Spam &&
+          nft.trust !== TrustType.Blacklist) ||
+        (approvalStatus === TokenApprovalStatus.Approved &&
+          nft.trust !== TrustType.Whitelist)
       ) {
         fetch(`${config.get('scamEndpoint')}/v1/report/${nft.address}`, {
           method: 'POST',

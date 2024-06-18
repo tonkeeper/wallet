@@ -441,6 +441,9 @@ export function useDeeplinkingResolvers() {
             isSendAll: false,
             payload: comment ? makeCommentCell(comment) : undefined,
           });
+          if (!estimate.fee) {
+            return;
+          }
           const amount = Ton.fromNano(query.amount.toString());
           const options = {
             currency,

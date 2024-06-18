@@ -197,12 +197,13 @@ export async function estimateJettonTransferFee(
     const isWalletSupportsGasless =
       WalletContractFeatures[tk.wallet.config.version][WalletContractFeature.GASLESS];
 
-    let isJettonSupportsGasless = false;
+    let supportsGasless = false;
     if (
       !emulateResponse.battery &&
       isWalletSupportsGasless &&
       config.get('gasless_enabled')
     ) {
+      let isJettonSupportsGasless = false;
       try {
         const rechargeMethods = await tk.wallet.battery.getRechargeMethods();
 
@@ -213,7 +214,9 @@ export async function estimateJettonTransferFee(
         );
       } catch {}
 
-      if (isJettonSupportsGasless && (isPreferGasless || params.forceGasless)) {
+      supportsGasless = !!tk.wallet.tonProof.tonProofToken && isJettonSupportsGasless;
+
+      if (supportsGasless && (isPreferGasless || params.forceGasless)) {
         const gaslessBoc = await buildJettonSignerTransferBoc(
           {
             timeout,
@@ -257,10 +260,10 @@ export async function estimateJettonTransferFee(
             battery: false,
             gasless: true,
             isForcedGasless: params.forceGasless,
-            supportsGasless: isJettonSupportsGasless,
+            supportsGasless,
           };
         }
-        isJettonSupportsGasless = false;
+        supportsGasless = false;
       }
     }
 
@@ -273,7 +276,7 @@ export async function estimateJettonTransferFee(
           .plus(BASE_FORWARD_AMOUNT.toString());
 
     if (!emulateResponse.battery && feeToCalculate.gt(balance)) {
-      if (isJettonSupportsGasless && !params.preferGasless && !params.forceGasless) {
+      if (supportsGasless && !params.preferGasless && !params.forceGasless) {
         // Retry emulation with forced gasless
         return estimateJettonTransferFee(
           { ...params, forceGasless: true },
@@ -294,7 +297,7 @@ export async function estimateJettonTransferFee(
         .toString(),
       battery: emulateResponse.battery,
       gasless: false,
-      supportsGasless: isJettonSupportsGasless,
+      supportsGasless,
     };
   } catch {
     Toast.fail('Failed to estimate fee');

@@ -610,7 +610,7 @@ export class Tonkeeper {
       wallet.tonProof.obtainProof(keyPair).then(() => wallet.battery.load());
     }
 
-    wallet.saveLastBackupTimestamp();
+    wallet.saveLastBackupTimestamp(this.wallet.setup.data.lastBackupAt);
 
     return wallet.identifier;
   }

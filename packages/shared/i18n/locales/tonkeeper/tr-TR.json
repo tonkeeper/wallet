@@ -197,7 +197,12 @@
   "battery": {
     "description": {
       "empty": "Tonkeeper aracılığıyla takas yapın, token ve NFT gönderin.",
-      "other": "%{cnt} kadar işlem yapabilirsiniz.",
+      "other": {
+        "few": "%{count} charges",
+        "many": "%{count} charges",
+        "one": "%{count} charge",
+        "other": "%{count} charges"
+      },
       "less_10": "10'dan az işlem için yeterli piliniz var."
     },
     "ok": "TAMAM",

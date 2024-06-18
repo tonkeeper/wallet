@@ -70,8 +70,8 @@ export class Wallet extends WalletContent {
     this.listenAppState();
   }
 
-  public saveLastBackupTimestamp() {
-    this.setup.set({ lastBackupAt: Date.now() });
+  public saveLastBackupTimestamp(lastBackupAt: number | null = Date.now()) {
+    this.setup.set({ lastBackupAt });
   }
 
   public dismissSetup() {

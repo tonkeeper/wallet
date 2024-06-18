@@ -1,13 +1,9 @@
 import { detectLocale, SupportedLocales, translations } from './translations';
 import { pluralizeForRussian } from './pluralization';
-import { I18nManager } from 'react-native';
 import { I18n } from 'i18n-js';
 import { useSelectedLanguageStore } from '@tonkeeper/mobile/src/store/zustand/selectedLanguage/useSelectedLanguageStore';
 
 const getI18n = () => {
-  I18nManager.forceRTL(false);
-  I18nManager.allowRTL(false);
-
   const i18n = new I18n(translations);
   const selectedLocale = useSelectedLanguageStore.getState().selectedLanguage;
   i18n.locale =

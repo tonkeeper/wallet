@@ -33,7 +33,7 @@ export const SwitchWalletModal: FC<Props> = memo((props) => {
   const selectableWallets = useMemo(
     () =>
       props.onSelect
-        ? allWallets.filter((wallet) => !wallet.isWatchOnly || !wallet.isExternal)
+        ? allWallets.filter((wallet) => !wallet.isWatchOnly && !wallet.isExternal)
         : allWallets,
     [allWallets, props.onSelect],
   );
