@@ -41,6 +41,7 @@ import { AppStackParamList } from '$navigation/AppStack';
 import { AppStackRouteNames } from '$navigation';
 import { convertHexToRGBA } from '$utils';
 import { useThemeName } from '$hooks/useThemeName';
+import { VERSION_NAME_REGEX } from '$wallet/constants';
 
 const COLORS_LIST = Object.values(WalletColor);
 
@@ -65,7 +66,7 @@ export const CustomizeWallet: FC<Props> = memo((props) => {
     identifiers.length > 1
       ? wallet.isLedger
         ? wallet.config.ledger!.deviceModel
-        : wallet.config.name.slice(0, -5)
+        : wallet.config.name.replace(VERSION_NAME_REGEX, '').trim()
       : wallet.config.name,
   );
   const [selectedColor, setSelectedColor] = useState(wallet.config.color);

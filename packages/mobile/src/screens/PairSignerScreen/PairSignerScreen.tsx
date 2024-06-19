@@ -29,7 +29,7 @@ import { ScannerMask } from '$core/ScanQR/ScannerMask';
 import { t } from '@tonkeeper/shared/i18n';
 import SystemNavigationBar from 'react-native-system-navigation-bar';
 
-const SIGNER_SCHEME = 'tonsign://';
+const SIGNER_SCHEME = 'tonsign://v1/';
 
 const CameraTheme: Theme = {
   ...DarkTheme,

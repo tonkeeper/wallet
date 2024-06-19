@@ -7,13 +7,14 @@ import { UnlockedVault } from '$blockchain';
 import { sign } from '@ton/crypto';
 import { SheetActions, navigation } from '@tonkeeper/router';
 import { getCurrentRouteName } from '$navigation/imperative';
-import { Signer } from '@tonkeeper/core';
+import { Signer, delay } from '@tonkeeper/core';
 import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
 import { AppState, Linking } from 'react-native';
 import { FC } from 'react';
 import { TonTransport } from '@ton-community/ton-ledger';
 import { t } from '@tonkeeper/shared/i18n';
 import { getLastEnteredPasscode } from '$store/wallet/sagas';
+import { isAndroid } from '@tonkeeper/uikit';
 
 let ledgerConfirmModalRef: FC<any> | null = null;
 
@@ -178,7 +179,11 @@ export class SignerManager {
     return this.signerPromise === null;
   }
 
-  public setSignerResult(hexSignature: string) {
+  public async setSignerResult(hexSignature: string) {
+    if (isAndroid) {
+      await delay(1000);
+    }
+
     if (this.signerPromise) {
       this.signerPromise.resolve(hexSignature);
 

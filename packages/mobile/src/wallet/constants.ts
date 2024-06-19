@@ -29,3 +29,5 @@ export const mapContractVersionToName = (
       return 'v4R2';
   }
 };
+
+export const VERSION_NAME_REGEX = /(lockup-0\.1|v3R1|v3R2|v4R1|W5|v4R2)/;
