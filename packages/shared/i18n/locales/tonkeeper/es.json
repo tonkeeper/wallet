@@ -281,6 +281,10 @@
         "title": "Introduce el código promocional",
         "subtitle": "Eres afortunado"
       }
+    },
+    "refund": {
+      "title": "Historial de Cargos",
+      "subtitle": "Recargas y reembolsos"
     }
   },
   "biometry": {

@@ -281,6 +281,10 @@
         "title": "Masukkan kode promo",
         "subtitle": "Anda beruntung"
       }
+    },
+    "refund": {
+      "title": "Riwayat Biaya",
+      "subtitle": "Pengisian Ulang dan Pengembalian Dana"
     }
   },
   "biometry": {

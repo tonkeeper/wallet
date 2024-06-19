@@ -25,7 +25,8 @@ import { RefillBatterySettingsWidget } from './RefillBatterySettingsWidget';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Tag } from '@tonkeeper/mobile/src/uikit';
-import {NavBarHeight} from "@tonkeeper/mobile/src/shared/constants";
+import { NavBarHeight } from '@tonkeeper/mobile/src/shared/constants';
+import { RefillBatteryRefunds } from './RefillBatteryRefunds';
 
 export interface RefillBatteryProps {
   navigateToTransactions: () => void;
@@ -45,7 +46,10 @@ export const RefillBattery = memo<RefillBatteryProps>((props) => {
   return (
     <Animated.ScrollView
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingBottom: bottomInsets + 16, paddingTop: NavBarHeight }}
+      contentContainerStyle={{
+        paddingBottom: bottomInsets + 16,
+        paddingTop: NavBarHeight,
+      }}
     >
       <View style={styles.contentContainer}>
         <View style={styles.animatedBatteryContainer}>
@@ -93,13 +97,14 @@ export const RefillBattery = memo<RefillBatteryProps>((props) => {
       <View style={styles.indent}>
         {!isInAppPurchasesDisabled ? <RefillBatteryIAP /> : null}
         {!isCryptoRechargeDisabled ? <RechargeMethods /> : null}
+        <RefillBatteryRefunds />
         <RestorePurchases />
       </View>
     </Animated.ScrollView>
   );
 });
 
-export const styles = Steezy.create({
+const styles = Steezy.create({
   contentContainer: {
     alignItems: 'center',
     paddingHorizontal: 32,

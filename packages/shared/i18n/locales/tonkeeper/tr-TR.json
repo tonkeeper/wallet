@@ -286,6 +286,10 @@
         "title": "Promosyon Kodunu Girin",
         "subtitle": "Şanslısınız"
       }
+    },
+    "refund": {
+      "title": "Ücret Geçmişi",
+      "subtitle": "Yüklemeler ve Geri Ödemeler"
     }
   },
   "biometry": {

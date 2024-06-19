@@ -51,7 +51,7 @@ const EncryptedCommentComponent: React.FC<EncryptedCommentProps> = (props) => {
   );
 
   const encryptedCommentLength = props.encryptedComment
-    ? props.encryptedComment.cipher_text.length / 2 - 64
+    ? Math.max(props.encryptedComment.cipher_text.length / 2 - 64, 5)
     : 0;
 
   const decryptComment = useCallback(

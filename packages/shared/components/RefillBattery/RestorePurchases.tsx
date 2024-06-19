@@ -1,18 +1,11 @@
 import React, { memo, useCallback } from 'react';
-import { Steezy, Text, Toast, TouchableOpacity } from '@tonkeeper/uikit';
+import { Steezy, Text, Toast } from '@tonkeeper/uikit';
 import { t } from '../../i18n';
 import { getPendingPurchasesIOS, finishTransaction } from 'react-native-iap';
 import { Platform } from 'react-native';
 import { tk } from '@tonkeeper/mobile/src/wallet';
-import { openDAppBrowser } from '@tonkeeper/mobile/src/navigation';
-import { config } from '@tonkeeper/mobile/src/config';
-import { useExternalState } from '../../hooks/useExternalState';
 
 export const RestorePurchases = memo(() => {
-  const reservedBalance = useExternalState(
-    tk.wallet.battery.state,
-    (state) => state.reservedBalance,
-  );
   const handleRestorePurchases = useCallback(async () => {
     try {
       const purchases = await getPendingPurchasesIOS();
@@ -52,52 +45,19 @@ export const RestorePurchases = memo(() => {
     }
   }, []);
 
-  const openRefundsDApp = useCallback(() => {
-    openDAppBrowser(
-      config.get('batteryRefundEndpoint'),
-      `token=${encodeURIComponent(tk.wallet.tonProof.tonProofToken)}` +
-        `&testnet=${tk.wallet.isTestnet}`,
-      true,
-    );
-  }, []);
-
   return (
-    <>
+    <Text style={styles.text.static} type="body2" textAlign="center" color="textTertiary">
+      {t('battery.packages.disclaimer')}{' '}
       <Text
-        style={styles.text.static}
+        onPress={handleRestorePurchases}
         type="body2"
         textAlign="center"
-        color="textTertiary"
+        color="textSecondary"
       >
-        {t('battery.packages.disclaimer')}{' '}
-        <Text
-          onPress={handleRestorePurchases}
-          type="body2"
-          textAlign="center"
-          color="textSecondary"
-        >
-          {t('battery.packages.restore')}
-        </Text>
-        .
+        {t('battery.packages.restore')}
       </Text>
-
-        <Text
-          style={styles.text.static}
-          type="body2"
-          textAlign="center"
-          color="textTertiary"
-        >
-          <Text
-            onPress={openRefundsDApp}
-            type="body2"
-            textAlign="center"
-            color="textSecondary"
-          >
-            {t('battery.packages.refund')}
-          </Text>
-          .
-        </Text>
-    </>
+      .
+    </Text>
   );
 });
 

@@ -195,6 +195,10 @@
         "subtitle": "You're lucky"
       }
     },
+    "refund": {
+      "title": "Charge History",
+      "subtitle": "Recharges and refunds"
+    },
     "promocode": {
       "button": "Recharge by Promo Code",
       "title": "Promo Code",

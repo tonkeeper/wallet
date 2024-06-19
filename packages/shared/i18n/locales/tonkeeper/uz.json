@@ -281,6 +281,10 @@
         "title": "Promo-kodni kiriting",
         "subtitle": "Siz omadlisiz"
       }
+    },
+    "refund": {
+      "title": "To'lovlar Tarixi",
+      "subtitle": "To'ldirishlar va qaytarishlar"
     }
   },
   "biometry": {

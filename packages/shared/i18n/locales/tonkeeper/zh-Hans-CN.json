@@ -281,6 +281,10 @@
         "title": "输入促销代码",
         "subtitle": "你很幸运"
       }
+    },
+    "refund": {
+      "title": "收费历史",
+      "subtitle": "充值和退款"
     }
   },
   "biometry": {
