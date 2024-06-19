@@ -159,7 +159,9 @@ export const ExchangeModal = (params: ExchangeModalParams) => {
                       />
                     ))}
                   </S.Contain>
-                  {otherWaysAvailable && category.type === 'buy' && !allRegions ? (
+                  {otherWaysAvailable &&
+                  ['buy', 'sell'].includes(category.type) &&
+                  !allRegions ? (
                     <View style={styles.otherWaysContainer}>
                       <Button
                         key={showAll ? 'hide' : 'show'}
