@@ -4,7 +4,6 @@ import { Loader, Spacer, View } from '$uikit';
 import * as S from '../core/Exchange/Exchange.style';
 import { ExchangeItem } from '../core/Exchange/ExchangeItem/ExchangeItem';
 import { t } from '@tonkeeper/shared/i18n';
-import { LayoutAnimation } from 'react-native';
 import { Button, Modal, SegmentedControl, Text } from '@tonkeeper/uikit';
 import { Steezy } from '$styles';
 import { useMethodsToBuyStore } from '$store/zustand/methodsToBuy/useMethodsToBuyStore';
@@ -84,7 +83,6 @@ export const ExchangeModal = (params: ExchangeModalParams) => {
 
   const handleShowAll = useCallback(() => {
     setShowAll(!showAll);
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
   }, [showAll]);
 
   const wallet = useWallet();
