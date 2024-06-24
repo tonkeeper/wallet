@@ -129,7 +129,12 @@ export async function estimateTonTransferFee(params: TonTransferParams) {
 
     if (!params.isSendAll && !fee.isNegative()) {
       const totalAmount = fee.plus(params.sendAmountNano.toString());
-      const balance = toNano(tk.wallet.balances.state.data.ton);
+      const balance = toNano(
+        new BigNumber(tk.wallet.balances.state.data.ton)
+          .plus(tk.wallet.balances.state.data.tonRestricted)
+          .plus(tk.wallet.balances.state.data.tonLocked)
+          .toString(),
+      );
       if (totalAmount.gt(balance)) {
         openInsufficientFundsModal({
           totalAmount: totalAmount.toString(),
