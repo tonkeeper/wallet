@@ -99,7 +99,7 @@ export class StakingManager {
     });
   }
 
-  public async load(silent?: boolean, updateIfBalanceSame = true) {
+  public async load(silent?: boolean, updateIfBalanceSame = true, poolsOnly = false) {
     const { status } = this.state.data;
 
     if (status !== StakingApiStatus.Idle) {
@@ -122,7 +122,7 @@ export class StakingManager {
           available_for: this.tonRawAddress,
           include_unverified: false,
         }),
-        this.tonapi.staking.getAccountNominatorsPools(this.tonRawAddress),
+        !poolsOnly && this.tonapi.staking.getAccountNominatorsPools(this.tonRawAddress),
       ]);
 
       let pools = this.state.data.pools;
@@ -246,7 +246,10 @@ export class StakingManager {
         };
       }
 
-      if (nominatorsResponse.status === 'fulfilled') {
+      if (
+        nominatorsResponse.status === 'fulfilled' &&
+        nominatorsResponse.value !== false
+      ) {
         const stakingInfo = nominatorsResponse.value.pools.reduce<StakingInfo>(
           (acc, cur) => ({ ...acc, [cur.pool]: cur }),
           {},

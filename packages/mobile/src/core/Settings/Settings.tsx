@@ -20,7 +20,6 @@ import {
   openNotifications,
   openSecurity,
   openSelectLanguage,
-  openSubscriptions,
   openRefillBatteryModal,
 } from '$navigation';
 import { walletActions } from '$store/wallet';
@@ -66,9 +65,6 @@ export const Settings: FC = () => {
 
   const fiatCurrency = useWalletCurrency();
   const dispatch = useDispatch();
-  const hasSubscriptions = useSubscriptions(
-    (state) => Object.values(state.subscriptions).length > 0,
-  );
   const wallet = useWallet();
   const shouldShowTokensButton = useShouldShowTokensButton();
 
@@ -164,10 +160,6 @@ export const Settings: FC = () => {
       },
     ]);
   }, [dispatch]);
-
-  const handleSubscriptions = useCallback(() => {
-    openSubscriptions();
-  }, []);
 
   const handleNotifications = useCallback(() => {
     openNotifications();
@@ -335,19 +327,6 @@ export const Settings: FC = () => {
                 }
                 title={t('settings_jettons_list')}
                 onPress={handleManageTokens}
-              />
-            )}
-            {!!wallet && !wallet.isWatchOnly && hasSubscriptions && (
-              <List.Item
-                value={
-                  <Icon
-                    style={styles.icon.static}
-                    color="accentPrimary"
-                    name={'ic-ticket-28'}
-                  />
-                }
-                title={t('settings_subscriptions')}
-                onPress={handleSubscriptions}
               />
             )}
             {!!wallet && wallet.notifications.isAvailable && !wallet.isTestnet && (
