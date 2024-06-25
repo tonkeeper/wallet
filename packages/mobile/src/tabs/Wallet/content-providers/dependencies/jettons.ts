@@ -1,11 +1,12 @@
 import { DependencyPrototype } from './utils/prototype';
 
 import { JettonsState } from '$wallet/managers/JettonsManager';
-import { FiatRate } from '../utils/types';
+import { FiatRate, Trend } from '../utils/types';
 import { Address } from '@tonkeeper/core';
 import { formatter } from '$utils/formatter';
 import BigNumber from 'bignumber.js';
 import { Wallet } from '$wallet/Wallet';
+import { getTrendByDiff } from './utils/trendByDiff';
 
 export class JettonBalancesDependency extends DependencyPrototype<
   JettonsState,
@@ -37,8 +38,7 @@ export class JettonBalancesDependency extends DependencyPrototype<
           currency,
         }),
       },
-      trend:
-        rate.diff_24h.startsWith('+') || rate.diff_24h === '0' ? 'positive' : 'negative',
+      trend: getTrendByDiff(rate.diff_24h),
       total: {
         in_ton: new BigNumber(jettonBalance).multipliedBy(rate.ton).toString(),
         formatted: formatter.format(

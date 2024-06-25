@@ -14,16 +14,32 @@ import { Loader } from './Loader';
 import { Text } from './Text';
 import { ns } from '../utils';
 import { IconNames, Icon, IconColors } from './Icon';
+import { convertHexToRGBA } from '@tonkeeper/mobile/src/utils';
 
-export type ButtonColors = 'green' | 'primary' | 'secondary' | 'tertiary';
-export type ButtonSizes = 'large' | 'medium' | 'small' | 'header' | 'icon';
+export type ButtonColors =
+  | 'green'
+  | 'greenTransparent'
+  | 'primary'
+  | 'secondary'
+  | 'tertiary'
+  | 'orange'
+  | 'tether';
+
+export type ButtonSizes =
+  | 'large'
+  | 'medium'
+  | 'small'
+  | 'header'
+  | 'icon'
+  | 'withSubtitle';
 
 export interface ButtonProps {
   size?: ButtonSizes;
   color?: ButtonColors;
   title?: string;
-  children?: React.ReactNode;
-  leftContent?: React.ReactNode;
+  subtitle?: string | ReactNode;
+  children?: ReactNode;
+  leftContent?: ReactNode;
   onPress?: () => void;
   disabled?: boolean;
   loading?: boolean;
@@ -34,6 +50,7 @@ export interface ButtonProps {
   indent?: boolean;
   stretch?: boolean;
   style?: StyleProp<ViewStyle>;
+  buttonStyle?: StyleProp<ViewStyle>;
 }
 
 export const Button = memo<ButtonProps>((props) => {
@@ -41,6 +58,7 @@ export const Button = memo<ButtonProps>((props) => {
     size = 'large',
     color = 'primary',
     title,
+    subtitle,
     onPress,
     disabled,
     loading,
@@ -53,6 +71,7 @@ export const Button = memo<ButtonProps>((props) => {
     indentTop,
     indent,
     style,
+    buttonStyle: buttonPropsStyle,
   } = props;
 
   const router = useRouter();
@@ -68,7 +87,8 @@ export const Button = memo<ButtonProps>((props) => {
 
   const containerStyle = useMemo(() => {
     const indentTopStyle = getIndentTopStyle(indentTop);
-    const stretchStyle = !stretch && size !== 'large' && styles.fitByContent;
+    const stretchStyle =
+      !stretch && !['large', 'withSubtitle'].includes(size) && styles.fitByContent;
     const indentBottomStyle = indentBottom && styles.indentBottom;
 
     return [indentTopStyle, indent && styles.indent, stretchStyle, indentBottomStyle];
@@ -82,9 +102,9 @@ export const Button = memo<ButtonProps>((props) => {
       } else if (disabled) {
         backgroundColor = colorStyle.disable;
       }
-      return [buttonSizeStyle, { backgroundColor }];
+      return [buttonSizeStyle, { backgroundColor }, buttonPropsStyle];
     },
-    [buttonSizeStyle, colorStyle, disabled],
+    [buttonSizeStyle, buttonPropsStyle, colorStyle, disabled],
   );
 
   const handlePress = useCallback(() => {
@@ -102,7 +122,7 @@ export const Button = memo<ButtonProps>((props) => {
           <Loader
             size="medium"
             color={
-              ['primary', 'green'].includes(color)
+              ['primary', 'green', 'greenTransparent'].includes(color)
                 ? 'buttonPrimaryForeground'
                 : 'textPrimary'
             }
@@ -113,19 +133,31 @@ export const Button = memo<ButtonProps>((props) => {
           <View style={styles.content}>
             {!!leftContent && <View style={styles.leftContent}>{leftContent}</View>}
             {size !== 'icon' ? (
-              <Text
-                numberOfLines={1}
-                ellipsizeMode="tail"
-                style={titleStyle}
-                type={textType}
-                color={
-                  ['primary', 'green'].includes(color)
-                    ? 'buttonPrimaryForeground'
-                    : 'textPrimary'
-                }
-              >
-                {title}
-              </Text>
+              <View style={styles.textContainer}>
+                <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  style={titleStyle}
+                  type={textType}
+                  color={
+                    ['primary', 'green', 'greenTransparent'].includes(color)
+                      ? 'buttonPrimaryForeground'
+                      : 'textPrimary'
+                  }
+                >
+                  {title}
+                </Text>
+                {subtitle ? (
+                  <Text
+                    numberOfLines={1}
+                    color="textSecondary"
+                    textAlign="center"
+                    type={'body2'}
+                  >
+                    {subtitle}
+                  </Text>
+                ) : null}
+              </View>
             ) : null}
           </View>
         )}
@@ -144,6 +176,13 @@ export const Button = memo<ButtonProps>((props) => {
 });
 
 const styles = StyleSheet.create({
+  buttonWithSubtitle: {
+    height: ns(68),
+    paddingHorizontal: ns(24),
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: ns(16),
+  },
   buttonLarge: {
     height: ns(56),
     paddingHorizontal: ns(24),
@@ -214,9 +253,13 @@ const styles = StyleSheet.create({
   leftContent: {
     marginRight: 8,
   },
+  textContainer: {
+    alignItems: 'center',
+  },
 });
 
 const buttonStyleBySize: { [key in ButtonSizes]: ViewStyle } = {
+  withSubtitle: styles.buttonWithSubtitle,
   large: styles.buttonLarge,
   medium: styles.buttonMedium,
   small: styles.buttonSmall,
@@ -225,6 +268,7 @@ const buttonStyleBySize: { [key in ButtonSizes]: ViewStyle } = {
 };
 
 const textTypesBySize: { [key in ButtonSizes]: TTextTypes } = {
+  withSubtitle: 'label1',
   large: 'label1',
   medium: 'label1',
   small: 'label2',
@@ -243,6 +287,11 @@ const getButtonColors = (theme: Theme) => ({
     disable: theme.buttonSecondaryBackgroundDisabled,
     background: theme.buttonSecondaryBackground,
   },
+  orange: {
+    highlighted: theme.buttonOrangeBackgroundHighlighted,
+    disable: theme.buttonOrangeBackgroundDisabled,
+    background: theme.buttonOrangeBackground,
+  },
   tertiary: {
     highlighted: theme.buttonTertiaryBackgroundHighlighted,
     disable: theme.buttonTertiaryBackgroundDisabled,
@@ -253,6 +302,16 @@ const getButtonColors = (theme: Theme) => ({
     disable: theme.buttonPrimaryBackgroundGreenDisabled,
     background: theme.buttonPrimaryBackgroundGreen,
   },
+  greenTransparent: {
+    highlighted: convertHexToRGBA(theme.buttonPrimaryBackgroundGreenHighlighted, 0.18),
+    disable: convertHexToRGBA(theme.buttonPrimaryBackgroundGreenDisabled, 0.06),
+    background: convertHexToRGBA(theme.buttonPrimaryBackgroundGreen, 0.12),
+  },
+  tether: {
+    highlighted: theme.buttonTetherBackgroundHighlighted,
+    disable: theme.buttonTetherBackgroundDisabled,
+    background: theme.buttonTetherBackground,
+  },
 });
 
 const iconColors: { [key: string]: IconColors } = {
@@ -260,6 +319,7 @@ const iconColors: { [key: string]: IconColors } = {
   secondary: 'iconTertiary',
   tertiary: 'iconTertiary',
   green: 'constantWhite',
+  greenTransparent: 'constantWhite',
 };
 
 const getIndentTopStyle = (indentTop?: number | boolean) => {

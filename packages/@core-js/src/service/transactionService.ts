@@ -10,9 +10,8 @@ import {
   loadStateInit,
 } from '@ton/core';
 import { Address as AddressFormatter } from '../formatters/Address';
-import { OpCodes, WalletContract } from './contractService';
+import { OpCodes, Signer, WalletContract } from './contractService';
 import { SignRawMessage } from '@tonkeeper/mobile/src/core/ModalContainer/NFTOperations/TxRequest.types';
-import { tk } from '@tonkeeper/mobile/src/wallet';
 
 export type AnyAddress = string | Address | AddressFormatter;
 
@@ -20,7 +19,6 @@ export interface TransferParams {
   seqno: number;
   timeout?: number;
   sendMode?: number;
-  secretKey: Buffer;
   messages: MessageRelaxed[];
 }
 
@@ -41,7 +39,7 @@ export class TransactionService {
     return Math.floor(Date.now() / 1e3) + TransactionService.TTL;
   }
 
-  private static externalMessage(contract: WalletContract, seqno: number, body: Cell) {
+  public static externalMessage(contract: WalletContract, seqno: number, body: Cell) {
     return beginCell()
       .storeWritable(
         storeMessage(
@@ -163,11 +161,17 @@ export class TransactionService {
     }
   }
 
-  static createTransfer(contract, transferParams: TransferParams) {
-    const transfer = contract.createTransfer({
+  static async createTransfer(
+    contract: WalletContract,
+    signer: Signer,
+    transferParams: TransferParams,
+    authType?: 'external' | 'internal',
+  ) {
+    const transfer = await contract.createTransferAndSignRequestAsync({
+      authType,
       timeout: transferParams.timeout ?? TransactionService.getTimeout(),
       seqno: transferParams.seqno,
-      secretKey: transferParams.secretKey,
+      signer,
       sendMode:
         transferParams.sendMode ?? SendMode.PAY_GAS_SEPARATELY + SendMode.IGNORE_ERRORS,
       messages: transferParams.messages,

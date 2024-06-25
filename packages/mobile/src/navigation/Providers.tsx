@@ -8,9 +8,7 @@ import { SkeletonProvider } from '$uikit/Skeleton';
 
 export const ProvidersWithoutNavigation = memo(({ children }) => (
   <SkeletonProvider>
-    <AttachScreenProvider>
-      <ErrorBoundary>{children}</ErrorBoundary>
-    </AttachScreenProvider>
+    <AttachScreenProvider>{children}</AttachScreenProvider>
   </SkeletonProvider>
 ));
 

@@ -1,23 +1,22 @@
 import React, { memo, useEffect, useMemo } from 'react';
 import { NFTOperationFooter, useNFTOperationState } from '../NFTOperationFooter';
 import { SignRawMessage, SignRawParams, TxBodyOptions } from '../TXRequest.types';
-import { useUnlockVault } from '../useUnlockVault';
 import { calculateMessageTransferAmount, delay } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import { t } from '@tonkeeper/shared/i18n';
 import { Toast } from '$store';
 import {
+  Icon,
+  isAndroid,
   List,
+  ListItemContent,
   Modal,
   Spacer,
   Steezy,
   Text,
+  TouchableOpacity,
   View,
   WalletIcon,
-  isAndroid,
-  Icon,
-  ListItemContent,
-  TouchableOpacity,
 } from '@tonkeeper/uikit';
 import { push } from '$navigation/imperative';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
@@ -28,17 +27,11 @@ import {
 import { TonConnectRemoteBridge } from '$tonconnect/TonConnectRemoteBridge';
 import { formatter } from '$utils/formatter';
 import { tk } from '$wallet';
-import { MessageConsequences } from '@tonkeeper/core/src/TonAPI';
-import {
-  Address,
-  ContractService,
-  contractVersionsMap,
-  TransactionService,
-} from '@tonkeeper/core';
+import { ActionStatusEnum, MessageConsequences } from '@tonkeeper/core/src/TonAPI';
+import { Address, TransactionService } from '@tonkeeper/core';
 import { ActionListItemByType } from '@tonkeeper/shared/components/ActivityList/ActionListItemByType';
 import { useGetTokenPrice } from '$hooks/useTokenPrice';
 import { formatValue, getActionTitle } from '@tonkeeper/shared/utils/signRaw';
-import { Buffer } from 'buffer';
 import { trackEvent } from '$utils/stats';
 import { Events, SendAnalyticsFrom } from '$store/models';
 import { getWalletSeqno, setBalanceForEmulation } from '@tonkeeper/shared/utils/wallet';
@@ -56,12 +49,14 @@ import { ModalStackRouteNames } from '$navigation';
 import { CanceledActionError } from '$core/Send/steps/ConfirmStep/ActionErrors';
 import {
   emulateBoc,
+  emulateBocWithRelayer,
   getTimeoutFromLiteserverSafely,
   sendBoc,
 } from '@tonkeeper/shared/utils/blockchain';
 import { openAboutRiskAmountModal } from '@tonkeeper/shared/modals/AboutRiskAmountModal';
-import { toNano } from '@ton/core';
+import { MessageRelaxed, toNano } from '@ton/core';
 import BigNumber from 'bignumber.js';
+import { Wallet } from '$wallet/Wallet';
 
 interface SignRawModalProps {
   consequences?: MessageConsequences;
@@ -93,7 +88,6 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
   }
 
   const { footerRef, onConfirm } = useNFTOperationState(options, wallet);
-  const unlockVault = useUnlockVault();
 
   const fiatCurrency = useWalletCurrency();
   const getTokenPrice = useGetTokenPrice();
@@ -108,29 +102,27 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
       await delay(200);
       throw new CanceledActionError();
     }
-    const vault = await unlockVault(wallet.identifier);
-    const privateKey = await vault.getTonPrivateKey();
 
     startLoading();
 
-    const contract = ContractService.getWalletContract(
-      contractVersionsMap[vault.getVersion() ?? 'v4R2'],
-      Buffer.from(vault.tonPublicKey),
-      vault.workchain,
-    );
-
     const timeout = await getTimeoutFromLiteserverSafely();
 
-    const boc = TransactionService.createTransfer(contract, {
-      timeout,
-      messages: TransactionService.parseSignRawMessages(
-        params.messages,
-        isBattery ? tk.wallet.battery.excessesAccount : undefined,
-      ),
-      seqno: await getWalletSeqno(wallet),
-      sendMode: 3,
-      secretKey: Buffer.from(privateKey),
-    });
+    const signer = await wallet.signer.getSigner();
+
+    const boc = await TransactionService.createTransfer(
+      wallet.contract,
+      signer,
+      {
+        timeout,
+        messages: TransactionService.parseSignRawMessages(
+          params.messages,
+          isBattery ? await tk.wallet.battery.getExcessesAccount() : undefined,
+        ),
+        seqno: await getWalletSeqno(wallet),
+        sendMode: 3,
+      },
+      isBattery ? 'internal' : 'external',
+    );
 
     await sendBoc(boc, isBattery);
 
@@ -250,6 +242,11 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
     }
   }, [consequences?.risk.nfts.length, fiatCurrency, totalRiskedAmount]);
 
+  const hasFailedSwap = actions.some(
+    (action) =>
+      action.status === ActionStatusEnum.Failed && action.type === ActionType.JettonSwap,
+  );
+
   return (
     <Modal>
       <Modal.Header
@@ -321,7 +318,8 @@ export const SignRawModal = memo<SignRawModalProps>((props) => {
       </Modal.ScrollView>
       <Modal.Footer>
         <NFTOperationFooter
-          withSlider
+          disabled={hasFailedSwap}
+          withSlider={!wallet.isExternal}
           onPressConfirm={handleConfirm}
           redirectToActivity={redirectToActivity}
           ref={footerRef}
@@ -363,6 +361,43 @@ function isValidMessage(message: SignRawMessage): boolean {
   return Address.isValid(message.address) && new BigNumber(message.amount).gt('0');
 }
 
+export async function emulateSignRaw(
+  wallet: Wallet,
+  messages: SignRawMessage[],
+  withRelayer?: boolean,
+  forceRelayer?: boolean,
+  _seqno?: number,
+  _timeout?: number,
+) {
+  const signer = await wallet.signer.getSigner(true);
+  const timeout = _timeout ?? (await getTimeoutFromLiteserverSafely());
+  const seqno = _seqno ?? (await getWalletSeqno(wallet));
+  const boc = await TransactionService.createTransfer(
+    wallet.contract,
+    signer,
+    {
+      timeout,
+      seqno,
+      messages: TransactionService.parseSignRawMessages(messages),
+    },
+    withRelayer ? 'internal' : 'external',
+  );
+  if (withRelayer || forceRelayer) {
+    try {
+      return await emulateBocWithRelayer(boc, forceRelayer);
+    } catch {
+      return emulateSignRaw(wallet, messages, false, false);
+    }
+  } else {
+    const totalAmount = calculateMessageTransferAmount(messages);
+    return await emulateBoc(boc, [
+      setBalanceForEmulation(
+        new BigNumber(totalAmount).plus(toNano('2').toString()).toString(),
+      ),
+    ]);
+  }
+}
+
 export const openSignRawModal = async (
   params: SignRawParams,
   options: TxBodyOptions,
@@ -389,37 +424,20 @@ export const openSignRawModal = async (
       await TonConnectRemoteBridge.closeOtherTransactions();
     }
 
-    const contract = ContractService.getWalletContract(
-      contractVersionsMap[wallet.config.version],
-      Buffer.from(wallet.pubkey, 'hex'),
-      wallet.config.workchain,
-    );
-
     let consequences: MessageConsequences | null = null;
     let isBattery = false;
     try {
-      const timeout = await getTimeoutFromLiteserverSafely();
-      const boc = TransactionService.createTransfer(contract, {
-        timeout,
-        messages: TransactionService.parseSignRawMessages(params.messages),
-        seqno: await getWalletSeqno(wallet),
-        secretKey: Buffer.alloc(64),
-      });
-
-      const totalAmount = calculateMessageTransferAmount(params.messages);
-      const { emulateResult, battery } = await emulateBoc(
-        boc,
-        [
-          setBalanceForEmulation(
-            new BigNumber(totalAmount).plus(toNano('2').toString()).toString(),
-          ),
-        ], // Emulate with higher balance to calculate fair amount to send
+      const { emulateResult, battery } = await emulateSignRaw(
+        wallet,
+        params.messages,
         options.experimentalWithBattery,
+        options.forceRelayerUse,
       );
       consequences = emulateResult;
       isBattery = battery;
 
       if (!isBattery) {
+        const totalAmount = calculateMessageTransferAmount(params.messages);
         const checkResult = await checkIsInsufficient(totalAmount, wallet);
         if (checkResult.insufficient) {
           Toast.hide();

@@ -1,5 +1,6 @@
 import { CryptoCurrency, FiatCurrency } from '$shared/constants';
 import { AccountEvent } from '@tonkeeper/core/src/legacy';
+import { TrustType } from '@tonkeeper/core/src/TonAPI';
 
 export type TransactionType =
   | 'receive'
@@ -218,9 +219,9 @@ export interface CollectionModel {
 
 export interface NFTModel<MetaData = {}> {
   dns?: string;
+  trust: TrustType;
   verified?: boolean;
   currency: CryptoCurrency;
-  isApproved: boolean;
   internalId: string;
   provider: string;
   address: string;
@@ -285,6 +286,7 @@ export interface JettonBalanceModel {
   jettonAddress: string;
   walletAddress: string;
   verification: JettonVerification;
+  uninit_jetton_wallet?: boolean;
 }
 
 export interface FavoriteModel {

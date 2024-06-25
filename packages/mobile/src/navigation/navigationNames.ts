@@ -13,6 +13,7 @@ export enum AppStackRouteNames {
   ScanQR = 'ScanQR',
   RequireWalletModal = 'RequireWalletModal',
   NFTSend = 'NFTSend',
+  BatterySend = 'BatterySend',
   Subscription = 'Subscription',
   BuyFiat = 'BuyFiat',
   ModalContainer = 'ModalContainer',
@@ -28,6 +29,7 @@ export enum AppStackRouteNames {
   Swap = 'Swap',
   ReceiveInscription = 'ReceiveInscription',
   CustomizeWallet = 'CustomizeWallet',
+  W5StoriesScreen = 'W5StoriesScreen',
 }
 
 export enum MainStackRouteNames {
@@ -45,6 +47,7 @@ export enum MainStackRouteNames {
   DeleteAccountDone = 'DeleteAccountDone',
   DevStack = 'DevStack',
   Jetton = 'Jetton',
+  Vouchers = 'Vouchers',
   ManageTokens = 'ManageTokens',
   AddressUpdateInfo = 'AddressUpdateInfo',
   Inscription = 'Inscription',

@@ -139,7 +139,7 @@ export const ScanQR: FC<ScanQRProps> = ({ route }) => {
 
     return (
       <S.Wrap>
-        {isIOS ? <StatusBar barStyle="light-content" /> : null}
+        <StatusBar barStyle="light-content" />
         <S.CloseButtonWrap onPress={handleBack}>
           <S.CloseButton>
             {isIOS && <S.BlurNode />}

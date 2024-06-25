@@ -2,6 +2,8 @@ import { TonAPI } from '@tonkeeper/core/src/TonAPI';
 import {
   WalletAddress,
   WalletConfig,
+  WalletContractFeature,
+  WalletContractFeatures,
   WalletContractVersion,
   WalletNetwork,
   WalletType,
@@ -13,7 +15,13 @@ import {
   createTronApiInstance,
 } from '../utils';
 import { BatteryAPI } from '@tonkeeper/core/src/BatteryAPI';
-import { Storage, TronAPI } from '@tonkeeper/core';
+import {
+  ContractService,
+  Storage,
+  TronAPI,
+  WalletContract,
+  contractVersionsMap,
+} from '@tonkeeper/core';
 import { TronService } from '@tonkeeper/core/src/TronService';
 import { NamespacedLogger, logger } from '$logger';
 
@@ -26,10 +34,12 @@ export class WalletBase {
   public tronService: TronService;
 
   public tonapi: TonAPI;
-  protected batteryapi: BatteryAPI;
+  public batteryapi: BatteryAPI;
   protected tronapi: TronAPI;
 
   protected logger: NamespacedLogger;
+
+  public contract: WalletContract;
 
   constructor(
     public config: WalletConfig,
@@ -39,6 +49,17 @@ export class WalletBase {
     this.identifier = config.identifier;
     this.persistPath = this.identifier;
     this.pubkey = config.pubkey;
+
+    this.contract = ContractService.getWalletContract(
+      contractVersionsMap[config.version],
+      Buffer.from(this.pubkey, 'hex'),
+      config.workchain,
+      this.network,
+      {
+        lockupPubKey: config.configPubKey,
+        allowedDestinations: config.allowedDestinations,
+      },
+    );
 
     const tonAddress = Address.parse(this.tonAllAddresses[config.version].raw, {
       bounceable: false,
@@ -64,25 +85,60 @@ export class WalletBase {
     this.config = config;
   }
 
-  public isV4() {
-    return this.config.version === WalletContractVersion.v4R2;
+  public get version() {
+    return this.config.version;
+  }
+
+  public get isV4() {
+    return this.version === WalletContractVersion.v4R2;
+  }
+
+  public get isW5() {
+    return this.version === WalletContractVersion.v5R1;
   }
 
   public get isLockup() {
-    return this.config.version === WalletContractVersion.LockupV1;
+    return this.version === WalletContractVersion.LockupV1;
+  }
+
+  public get network() {
+    return this.config.network;
   }
 
   public get isTestnet() {
-    return this.config.network === WalletNetwork.testnet;
+    return this.network === WalletNetwork.testnet;
+  }
+
+  public get isMnemonic() {
+    return this.config.type === WalletType.Regular;
   }
 
   public get isWatchOnly() {
     return this.config.type === WalletType.WatchOnly;
   }
 
+  public get isLedger() {
+    return this.config.type === WalletType.Ledger;
+  }
+
+  public isSupportedByContract(feature: WalletContractFeature) {
+    return WalletContractFeatures[this.config.version][feature];
+  }
+
+  public get isSigner() {
+    return (
+      this.config.type === WalletType.Signer ||
+      this.config.type === WalletType.SignerDeeplink
+    );
+  }
+
+  public get isExternal() {
+    return this.isSigner || this.isLedger;
+  }
+
   public getLockupConfig() {
     return {
-      wallet_type: this.config.version,
+      wallet_type: this.version,
       workchain: this.config.workchain,
       config_pubkey: this.config.configPubKey,
       allowed_destinations: this.config.allowedDestinations,

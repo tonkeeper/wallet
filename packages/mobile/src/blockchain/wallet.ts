@@ -1,13 +1,11 @@
 import BigNumber from 'bignumber.js';
 import { getUnixTime } from 'date-fns';
 
-import { store } from '$store';
 import { UnlockedVault, Vault } from './vault';
 import {
   Address as AddressFormatter,
   BASE_FORWARD_AMOUNT,
   ContractService,
-  contractVersionsMap,
   isActiveAccount,
   ONE_TON,
   TransactionService,
@@ -25,19 +23,28 @@ import {
 } from '@tonkeeper/core/src/legacy';
 
 import { tk } from '$wallet';
-import { Address, Cell, internal } from '@ton/core';
 import {
-  NetworkOverloadedError,
+  Address,
+  Cell,
+  beginCell,
+  toNano as tonCoreToNano,
+  internal,
+  SendMode,
+  comment,
+  storeStateInit,
+} from '@ton/core';
+import {
+  IndexerLatencyError,
   emulateBoc,
   sendBoc,
   getTimeoutFromLiteserverSafely,
 } from '@tonkeeper/shared/utils/blockchain';
 import { OperationEnum, TonAPI, TypeEnum } from '@tonkeeper/core/src/TonAPI';
-import { setBalanceForEmulation } from '@tonkeeper/shared/utils/wallet';
+import { getWalletSeqno, setBalanceForEmulation } from '@tonkeeper/shared/utils/wallet';
 import { WalletNetwork } from '$wallet/WalletTypes';
 import { createTonApiInstance } from '$wallet/utils';
 import { config } from '$config';
-import { toNano } from '$utils';
+import { Base64, toNano } from '$utils';
 import { BatterySupportedTransaction } from '$wallet/managers/BatteryManager';
 import { compareAddresses } from '$utils/address';
 
@@ -52,10 +59,9 @@ interface JettonTransferParams {
   recipient: Account;
   amountNano: string;
   payload: Cell | string;
-  vault: Vault;
-  secretKey?: Buffer;
   excessesAccount?: string | null;
   jettonTransferAmount?: bigint;
+  estimateFee?: boolean;
 }
 
 interface TonTransferParams {
@@ -64,10 +70,8 @@ interface TonTransferParams {
   amount: string;
   payload?: Cell | string;
   sendMode?: number;
-  vault: Vault;
-  walletVersion?: string | null;
-  secretKey?: Buffer;
   bounce: boolean;
+  estimateFee?: boolean;
 }
 
 export class Wallet {
@@ -84,28 +88,9 @@ export class Wallet {
     this.vault = vault;
     this.ton = ton;
 
-    this.getReadableAddress();
-
     this.tonapi = createTonApiInstance(
       tk.wallet.config.network === WalletNetwork.testnet,
     );
-  }
-
-  public async getReadableAddress() {
-    if (this.vault) {
-      const rawAddress = await this.vault.getRawTonAddress();
-      const tkWallet = tk.wallets.get(this.name)!;
-      const friendlyAddress = await this.vault.getTonAddress(
-        tkWallet.config.network === WalletNetwork.testnet,
-      );
-      const version = this.vault.getVersion()!;
-
-      this.address = {
-        rawAddress: rawAddress.toString(false),
-        friendlyAddress,
-        version,
-      };
-    }
   }
 
   async clean() {
@@ -154,10 +139,6 @@ export class TonWallet {
     return new TonWallet(vault);
   }
 
-  getTonWeb() {
-    return this.tonweb;
-  }
-
   get isTestnet(): boolean {
     return tk.wallet.isTestnet;
   }
@@ -170,55 +151,12 @@ export class TonWallet {
     return this.vault.workchain;
   }
 
-  isV4() {
-    return this.vault.getVersion() === 'v4R2';
-  }
-
   isLockup() {
     const version = this.vault.getVersion();
     return version && version.substr(0, 6) === 'lockup';
   }
 
-  async getAddress() {
-    return this.vault.getTonAddress(this.isTestnet);
-  }
-
-  async createStateInitBase64() {
-    const { stateInit } = await this.vault.tonWallet.createStateInit();
-    return TonWeb.utils.bytesToBase64(await stateInit.toBoc(false));
-  }
-
-  async getAddressByWalletVersion(version: string) {
-    return this.vault.getTonAddressByWalletVersion(this.tonweb, version, this.isTestnet);
-  }
-
-  /*
-    All addresses, from newest to oldest
-   */
-  async getAllAddresses() {
-    const versions = ['v4R2', 'v4R1', 'v3R2', 'v3R1'];
-    const addresses = {};
-    for (let version of versions) {
-      addresses[version] = await this.getAddressByWalletVersion(version);
-    }
-    return addresses;
-  }
-
-  async getSeqno(address: string): Promise<number> {
-    try {
-      const seqno = (await this.tonapi.wallet.getAccountSeqno(address)).seqno;
-
-      return seqno;
-    } catch (err) {
-      if (err.response.status === 400) {
-        return 0;
-      }
-      throw err;
-    }
-  }
-
   async createSubscription(
-    unlockedVault: UnlockedVault | Vault,
     beneficiaryAddress: string,
     amountNano: string,
     interval: number,
@@ -227,12 +165,12 @@ export class TonWallet {
   ) {
     let myinfo: Account;
     try {
-      myinfo = await this.getWalletInfo(await this.getAddress());
+      myinfo = await this.getWalletInfo(tk.wallet.address.ton.raw);
     } catch (e) {
       throw new Error(t('send_get_wallet_info_error'));
     }
 
-    const walletAddress = await unlockedVault.tonWallet.getAddress();
+    const walletAddress = new TonWeb.Address(tk.wallet.address.ton.raw);
 
     const startAt = getUnixTime(new Date());
     const subscription = new TonWeb.SubscriptionContract(this.tonweb.provider, {
@@ -248,21 +186,6 @@ export class TonWallet {
 
     const subscriptionAddress = await subscription.getAddress();
 
-    const addr = AddressFormatter.parse(walletAddress).toRaw();
-    const seqno = await this.getSeqno(addr);
-
-    const params: any = {
-      seqno: seqno || 0,
-      pluginWc: 0,
-      amount: amountNano,
-      stateInit: (await subscription.createStateInit()).stateInit,
-      body: subscription.createBody(),
-    };
-    if (!testOnly) {
-      params.secretKey = await (unlockedVault as UnlockedVault).getTonPrivateKey();
-    }
-
-    const tx = unlockedVault.tonWallet.methods.deployAndInstallPlugin(params);
     let feeNano: BigNumber;
     if (['empty', 'uninit'].includes(myinfo.status)) {
       feeNano = new BigNumber(Ton.toNano('0.1').toString());
@@ -276,8 +199,32 @@ export class TonWallet {
       };
     }
 
-    const queryMsg = await tx.getQuery();
-    const boc = TonWeb.utils.bytesToBase64(await queryMsg.toBoc(false));
+    const signer = await tk.wallet.signer.getSigner();
+
+    const stateInit = beginCell()
+      .store(storeStateInit(tk.wallet.contract.init!))
+      .endCell();
+
+    const bodyBoc = Base64.encodeBytes(subscription.createBody().toBoc(false));
+    const body = Cell.fromBase64(bodyBoc);
+
+    const boc = await TransactionService.createTransfer(tk.wallet.contract, signer, {
+      seqno: await getWalletSeqno(),
+      messages: [
+        internal({
+          to: Address.parse(subscriptionAddress.toString(false)),
+          bounce: true,
+          value: amountNano,
+          body: beginCell()
+            .storeUint(1, 8)
+            .storeInt(0, 8)
+            .storeCoins(Number(amountNano))
+            .storeRef(stateInit)
+            .storeRef(body)
+            .endCell(),
+        }),
+      ],
+    });
 
     return {
       subscriptionAddress: subscriptionAddress.toString(false),
@@ -288,33 +235,41 @@ export class TonWallet {
     };
   }
 
-  async getCancelSubscriptionBoc(
-    unlockedVault: UnlockedVault,
-    subscriptionAddress: string,
-  ) {
+  async getCancelSubscriptionBoc(subscriptionAddress: string) {
     const isInstalled = this.isSubscriptionActive(subscriptionAddress);
+
     if (!isInstalled) {
       return;
     }
 
-    let walletAddress = await this.getAddress();
     let myinfo: Account;
     try {
-      myinfo = await this.getWalletInfo(walletAddress);
+      myinfo = await this.getWalletInfo(tk.wallet.address.ton.raw);
     } catch (e) {
       throw new Error(t('send_get_wallet_info_error'));
     }
 
-    const seqno = await this.getSeqno(walletAddress);
-    const tx = await unlockedVault.tonWallet.methods.removePlugin({
-      secretKey: await unlockedVault.getTonPrivateKey(),
-      amount: Ton.toNano('0.007'),
-      seqno,
-      pluginAddress: subscriptionAddress,
-    });
+    const pluginAddress = Address.parse(subscriptionAddress);
 
-    const query = await tx.getQuery();
-    const boc = TonWeb.utils.bytesToBase64(await query.toBoc(false));
+    const signer = await tk.wallet.signer.getSigner();
+
+    const boc = await TransactionService.createTransfer(tk.wallet.contract, signer, {
+      seqno: await getWalletSeqno(),
+      messages: [
+        internal({
+          to: pluginAddress,
+          bounce: true,
+          value: Ton.toNano('0.007'),
+          body: beginCell()
+            .storeUint(3, 8)
+            .storeInt(pluginAddress.workChain, 8)
+            .storeBuffer(pluginAddress.hash)
+            .storeCoins(Ton.toNano('0.007'))
+            .storeUint(0, 64)
+            .endCell(),
+        }),
+      ],
+    });
 
     const [fee] = await this.calcFee(boc);
     if (fee.isGreaterThan(myinfo.balance)) {
@@ -359,35 +314,51 @@ export class TonWallet {
     return ['empty', 'uninit', 'nonexist'].includes(info?.status ?? '');
   }
 
-  createJettonTransfer({
+  async createJettonTransfer({
     timeout,
     seqno,
     jettonWalletAddress,
     recipient,
     amountNano,
     payload = '',
-    vault,
-    secretKey = Buffer.alloc(64),
     excessesAccount = null,
     jettonTransferAmount = ONE_TON,
+    estimateFee,
   }: JettonTransferParams) {
-    const version = vault.getVersion();
-    const lockupConfig = vault.getLockupConfig();
-    const contract = ContractService.getWalletContract(
-      contractVersionsMap[version ?? 'v4R2'],
-      Buffer.from(vault.tonPublicKey),
-      vault.workchain,
-      {
-        allowedDestinations: lockupConfig?.allowed_destinations,
-      },
-    );
-
     const jettonAmount = BigInt(amountNano);
 
-    return TransactionService.createTransfer(contract, {
+    if (tk.wallet.isLedger && !estimateFee) {
+      const transfer = await tk.wallet.signer.signLedgerTransaction({
+        to: Address.parse(jettonWalletAddress),
+        bounce: true,
+        amount: jettonTransferAmount,
+        sendMode: SendMode.PAY_GAS_SEPARATELY + SendMode.IGNORE_ERRORS,
+        seqno,
+        timeout: timeout ?? TransactionService.getTimeout(),
+        payload: {
+          type: 'jetton-transfer',
+          queryId: ContractService.getWalletQueryId(),
+          amount: jettonAmount,
+          destination: Address.parse(recipient.address),
+          responseDestination: Address.parse(
+            excessesAccount ?? tk.wallet.address.ton.raw,
+          ),
+          forwardAmount: BigInt(1),
+          forwardPayload: typeof payload === 'string' ? comment(payload) : payload,
+          customPayload: null,
+        },
+      });
+
+      return TransactionService.externalMessage(tk.wallet.contract, seqno, transfer)
+        .toBoc()
+        .toString('base64');
+    }
+
+    const signer = await tk.wallet.signer.getSigner(estimateFee);
+
+    return TransactionService.createTransfer(tk.wallet.contract, signer, {
       timeout,
       seqno,
-      secretKey,
       messages: [
         internal({
           to: Address.parse(jettonWalletAddress),
@@ -405,34 +376,33 @@ export class TonWallet {
   }
 
   async estimateJettonFee(
+    jettonMaster: string,
     jettonWalletAddress: string,
     address: string,
     amountNano: string,
-    vault: Vault,
     payload: Cell | string = '',
   ) {
     let recipient: Account;
     let seqno: number;
     try {
-      const fromAddress = await this.getAddress();
       recipient = await this.getWalletInfo(address);
-      seqno = await this.getSeqno(fromAddress);
+      seqno = await getWalletSeqno();
     } catch (e) {
       throw new Error(t('send_get_wallet_info_error'));
     }
 
     const timeout = await getTimeoutFromLiteserverSafely();
 
-    const boc = this.createJettonTransfer({
+    const boc = await this.createJettonTransfer({
       timeout,
       seqno,
       jettonWalletAddress,
       recipient,
       amountNano,
       payload,
-      vault,
       excessesAccount: null,
       jettonTransferAmount: ONE_TON,
+      estimateFee: true,
     });
 
     let [feeNano, isBattery] = await this.calcFee(
@@ -451,7 +421,6 @@ export class TonWallet {
     jettonWalletAddress: string,
     address: string,
     amountNano: string,
-    unlockedVault: UnlockedVault,
     payload: Cell | string = '',
     sendWithBattery: boolean,
     forwardAmount: string,
@@ -460,15 +429,12 @@ export class TonWallet {
     let recipient: Account;
     let seqno: number;
     try {
-      const fromAddress = await this.getAddress();
-      sender = await this.getWalletInfo(fromAddress);
+      sender = await this.getWalletInfo(tk.wallet.address.ton.raw);
       recipient = await this.getWalletInfo(address);
-      seqno = await this.getSeqno(fromAddress);
+      seqno = await getWalletSeqno();
     } catch (e) {
       throw new Error(t('send_get_wallet_info_error'));
     }
-
-    const secretKey = await unlockedVault.getTonPrivateKey();
 
     await tk.wallet.jettons.load();
 
@@ -488,20 +454,18 @@ export class TonWallet {
     }
 
     const excessesAccount = sendWithBattery
-      ? tk.wallet.battery.excessesAccount
+      ? await tk.wallet.battery.getExcessesAccount()
       : tk.wallet.address.ton.raw;
 
     const timeout = await getTimeoutFromLiteserverSafely();
 
-    const boc = this.createJettonTransfer({
+    const boc = await this.createJettonTransfer({
       timeout,
       seqno,
       jettonWalletAddress,
       recipient,
       amountNano,
       payload,
-      vault: unlockedVault,
-      secretKey: Buffer.from(secretKey),
       excessesAccount,
       jettonTransferAmount: BigInt(forwardAmount),
     });
@@ -541,7 +505,7 @@ export class TonWallet {
     try {
       await sendBoc(boc, isBattery);
     } catch (e) {
-      if (e instanceof NetworkOverloadedError) {
+      if (e instanceof IndexerLatencyError) {
         throw e;
       }
       throw new Error(t('send_publish_tx_error'));
@@ -559,29 +523,38 @@ export class TonWallet {
     amount,
     payload = '',
     sendMode = 3,
-    vault,
     bounce,
-    walletVersion = null,
-    secretKey = Buffer.alloc(64),
+    estimateFee,
   }: TonTransferParams) {
-    const version = vault.getVersion();
-    const lockupConfig = vault.getLockupConfig();
-    const contract = ContractService.getWalletContract(
-      contractVersionsMap[walletVersion ?? version ?? 'v4R2'],
-      Buffer.from(vault.tonPublicKey),
-      vault.workchain,
-      {
-        lockupPubKey: lockupConfig?.config_pubkey,
-        allowedDestinations: lockupConfig?.allowed_destinations,
-      },
-    );
-
     const timeout = await getTimeoutFromLiteserverSafely();
 
-    return TransactionService.createTransfer(contract, {
+    if (tk.wallet.isLedger && !estimateFee) {
+      const transfer = await tk.wallet.signer.signLedgerTransaction({
+        to: Address.parse(recipient.address),
+        bounce,
+        amount: tonCoreToNano(amount),
+        sendMode,
+        seqno,
+        timeout,
+        payload:
+          typeof payload === 'string' && payload !== ''
+            ? {
+                type: 'comment',
+                text: payload,
+              }
+            : undefined,
+      });
+
+      return TransactionService.externalMessage(tk.wallet.contract, seqno, transfer)
+        .toBoc()
+        .toString('base64');
+    }
+
+    const signer = await tk.wallet.signer.getSigner(estimateFee);
+
+    return TransactionService.createTransfer(tk.wallet.contract, signer, {
       timeout,
       seqno,
-      secretKey,
       sendMode,
       messages: [
         internal({
@@ -599,7 +572,6 @@ export class TonWallet {
     type: TypeEnum,
     address: string,
     amount: string,
-    vault: Vault,
     payload: string = '',
   ) {
     const opTemplate = await this.tonapi.experimental.getInscriptionOpTemplate({
@@ -614,7 +586,6 @@ export class TonWallet {
     return this.estimateFee(
       opTemplate.destination,
       inscriptionTransferAmount,
-      vault,
       opTemplate.comment,
       3,
     );
@@ -623,19 +594,14 @@ export class TonWallet {
   async estimateFee(
     address: string,
     amount: string,
-    vault: Vault,
     payload: Cell | string = '',
     sendMode = 3,
-    walletVersion: string | null = null,
   ) {
     let recipientInfo: Account;
     let seqno: number;
     try {
-      const fromAddress = walletVersion
-        ? await this.getAddressByWalletVersion(walletVersion)
-        : await this.getAddress();
       recipientInfo = await this.getWalletInfo(address);
-      seqno = await this.getSeqno(fromAddress);
+      seqno = await getWalletSeqno();
     } catch (e) {
       throw new Error(t('send_get_wallet_info_error'));
     }
@@ -646,17 +612,20 @@ export class TonWallet {
       amount,
       payload,
       sendMode,
-      vault,
-      walletVersion,
       bounce: isActiveAccount(recipientInfo.status)
         ? AddressFormatter.isBounceable(address)
         : false,
+      estimateFee: true,
     });
     const [feeNano, isBattery] = await this.calcFee(boc);
     return [Ton.fromNano(feeNano.toString()), isBattery];
   }
 
   async deploy(unlockedVault: UnlockedVault) {
+    if (!this.isLockup) {
+      throw new Error('Wallet is not lockup');
+    }
+
     const wallet = unlockedVault.tonWallet;
     const secretKey = await unlockedVault.getTonPrivateKey();
 
@@ -668,7 +637,6 @@ export class TonWallet {
     type: TypeEnum,
     address: string,
     amount: string,
-    vault: UnlockedVault,
     payload: string = '',
   ) {
     const opTemplate = await this.tonapi.experimental.getInscriptionOpTemplate({
@@ -683,7 +651,6 @@ export class TonWallet {
     return this.transfer(
       opTemplate.destination,
       inscriptionTransferAmount,
-      vault,
       opTemplate.comment,
       3,
     );
@@ -692,25 +659,18 @@ export class TonWallet {
   async transfer(
     address: string,
     amount: string,
-    unlockedVault: UnlockedVault,
     payload: Cell | string = '',
     sendMode = 3,
-    walletVersion: string | null = null,
   ) {
-    const secretKey = await unlockedVault.getTonPrivateKey();
-
     // We need to check our seqno which is null if uninitialized.
     // Do not use wallet.methods.seqno().call() - it returns some garbage (85143).
     let fromInfo: Account;
     let recipientInfo: Account;
     let seqno: number;
     try {
-      const fromAddress = walletVersion
-        ? await this.getAddressByWalletVersion(walletVersion)
-        : await this.getAddress();
-      fromInfo = await this.getWalletInfo(fromAddress);
+      fromInfo = await this.getWalletInfo(tk.wallet.address.ton.raw);
       recipientInfo = await this.getWalletInfo(address);
-      seqno = await this.getSeqno(fromAddress);
+      seqno = await getWalletSeqno();
     } catch (e) {
       throw new Error(t('send_get_wallet_info_error'));
     }
@@ -723,9 +683,6 @@ export class TonWallet {
       amount,
       payload,
       sendMode,
-      vault: unlockedVault,
-      walletVersion,
-      secretKey: Buffer.from(secretKey),
       // We should keep bounce flag from user input. We should check contract status till Jan 1, 2024 according to internal Address reform roadmap
       bounce: isActiveAccount(recipientInfo.status)
         ? AddressFormatter.isBounceable(address)
@@ -755,7 +712,7 @@ export class TonWallet {
     try {
       await sendBoc(boc, false);
     } catch (e) {
-      if (e instanceof NetworkOverloadedError) {
+      if (e instanceof IndexerLatencyError) {
         throw e;
       }
       throw new Error(t('send_publish_tx_error'));
@@ -769,10 +726,6 @@ export class TonWallet {
 
   async getWalletInfo(address: string) {
     return await this.accountsApi.getAccount({ accountId: address });
-  }
-
-  async getTonPublicKey() {
-    return this.vault.tonPublicKey;
   }
 
   async getPublicKeyByAddress(address: string): Promise<Buffer> {
@@ -799,21 +752,6 @@ export class TonWallet {
     } catch (e) {
       if (e?.response?.status === 404) {
         return [Ton.fromNano('0'), 0, 0];
-      }
-
-      throw e;
-    }
-  }
-
-  async getBalance(): Promise<string> {
-    try {
-      const account = await this.vault.getTonAddress(this.isTestnet);
-      const balance = (await this.blockchainApi.getRawAccount({ accountId: account }))
-        .balance;
-      return Ton.fromNano(balance);
-    } catch (e) {
-      if (e?.response?.status === 404) {
-        return Ton.fromNano(0);
       }
 
       throw e;

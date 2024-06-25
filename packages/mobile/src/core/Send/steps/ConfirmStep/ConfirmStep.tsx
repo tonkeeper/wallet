@@ -20,12 +20,12 @@ import { SkeletonLine } from '$uikit/Skeleton/SkeletonLine';
 import { t } from '@tonkeeper/shared/i18n';
 import { openInactiveInfo } from '$core/ModalContainer/InfoAboutInactive/InfoAboutInactive';
 import { Address } from '@tonkeeper/core';
-import { useBatteryState } from '@tonkeeper/shared/query/hooks/useBatteryState';
-import { BatteryState } from '@tonkeeper/shared/utils/battery';
 import { TokenType } from '$core/Send/Send.interface';
 import { useBalancesState, useWallet } from '@tonkeeper/shared/hooks';
 import { tk } from '$wallet';
 import { Steezy, WalletIcon, isAndroid } from '@tonkeeper/uikit';
+import { GaslessToggle } from '$core/Send/new/core/components/GaslessToggle';
+import { compareAddresses } from '$utils/address';
 
 const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const {
@@ -40,6 +40,10 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     active,
     isInactive,
     isBattery,
+    isGasless,
+    isForcedGasless,
+    supportsGasless,
+    customFeeCurrency,
     amount,
     comment,
     isCommentEncrypted,
@@ -55,7 +59,6 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
 
   const balances = useBalancesState();
   const wallet = useWallet();
-  const batteryState = useBatteryState();
 
   const { Logo, liquidJettonPool } = useCurrencyToSend(currency, tokenType);
 
@@ -136,17 +139,32 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
   const feeCurrency = CryptoCurrencies.Ton;
 
   const calculatedValue = useMemo(() => {
-    if (amount.all && tokenType === TokenType.TON) {
+    if (
+      amount.all &&
+      (tokenType === TokenType.TON ||
+        compareAddresses(currency, customFeeCurrency?.jetton_master))
+    ) {
       return new BigNumber(parseLocaleNumber(amount.value)).minus(fee).toString();
     }
 
     return parseLocaleNumber(amount.value);
-  }, [amount.all, amount.value, fee, tokenType]);
+  }, [
+    amount.all,
+    amount.value,
+    currency,
+    customFeeCurrency?.jetton_master,
+    fee,
+    tokenType,
+  ]);
 
   const fiatValue = useFiatValue(currency as CryptoCurrency, calculatedValue, decimals);
 
   const fiatFee = useFiatValue(
-    currency === 'usdt' ? 'USDT' : CryptoCurrencies.Ton,
+    customFeeCurrency
+      ? customFeeCurrency.jetton_master
+      : currency === 'usdt'
+      ? 'USDT'
+      : CryptoCurrencies.Ton,
     fee || '0',
     6,
     currency === 'usdt' ? 6 : Decimals[CryptoCurrencies.Ton],
@@ -158,11 +176,12 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
     }
 
     return `≈ ${formatter.format(fee, {
-      decimals: currency === 'usdt' ? 6 : Decimals[feeCurrency],
-      currency: feeCurrency.toUpperCase(),
+      decimals: 3,
+      currency: customFeeCurrency ? customFeeCurrency.symbol : feeCurrency.toUpperCase(),
       currencySeparator: 'wide',
+      forceRespectDecimalPlaces: true,
     })}`;
-  }, [currency, fee, feeCurrency]);
+  }, [customFeeCurrency, fee, feeCurrency]);
 
   const amountValue = useMemo(() => {
     const value = formatter.format(calculatedValue, {
@@ -293,10 +312,12 @@ const ConfirmStepComponent: FC<ConfirmStepProps> = (props) => {
                 )}
               </S.ItemRow>
               <S.ItemRow>
-                {batteryState !== BatteryState.Empty && isBattery ? (
+                {isBattery ? (
                   <S.ItemSubLabel>
                     {t('send_screen_steps.comfirm.will_be_paid_with_battery')}
                   </S.ItemSubLabel>
+                ) : supportsGasless && !isForcedGasless ? (
+                  <GaslessToggle currencyTitle={currencyTitle} isGasless={isGasless} />
                 ) : (
                   <S.ItemSubLabel />
                 )}

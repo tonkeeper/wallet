@@ -19,12 +19,14 @@ import {
 import { RefillBatteryIAP } from './RefillBatteryIAP';
 import { t } from '@tonkeeper/shared/i18n';
 import { config } from '@tonkeeper/mobile/src/config';
-import { RechargeByPromoButton } from './RechargeByPromoButton';
+import { RechargeMethods } from './RechargeMethods';
 import { RestorePurchases } from './RestorePurchases';
 import { RefillBatterySettingsWidget } from './RefillBatterySettingsWidget';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Tag } from '@tonkeeper/mobile/src/uikit';
+import { NavBarHeight } from '@tonkeeper/mobile/src/shared/constants';
+import { RefillBatteryRefunds } from './RefillBatteryRefunds';
 
 export interface RefillBatteryProps {
   navigateToTransactions: () => void;
@@ -39,12 +41,15 @@ export const RefillBattery = memo<RefillBatteryProps>((props) => {
   const bottomInsets = useSafeAreaInsets().bottom;
 
   const isInAppPurchasesDisabled = config.get('disable_battery_iap_module');
-  const isPromoDisabled = config.get('disable_battery_promo_module');
+  const isCryptoRechargeDisabled = config.get('disable_battery_crypto_recharge_module');
 
   return (
     <Animated.ScrollView
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingBottom: bottomInsets + 16 }}
+      contentContainerStyle={{
+        paddingBottom: bottomInsets + 16,
+        paddingTop: NavBarHeight,
+      }}
     >
       <View style={styles.contentContainer}>
         <View style={styles.animatedBatteryContainer}>
@@ -91,19 +96,15 @@ export const RefillBattery = memo<RefillBatteryProps>((props) => {
       )}
       <View style={styles.indent}>
         {!isInAppPurchasesDisabled ? <RefillBatteryIAP /> : null}
-        {!isPromoDisabled ? (
-          <>
-            <RechargeByPromoButton />
-            <Spacer y={16} />
-          </>
-        ) : null}
+        {!isCryptoRechargeDisabled ? <RechargeMethods /> : null}
+        <RefillBatteryRefunds />
         <RestorePurchases />
       </View>
     </Animated.ScrollView>
   );
 });
 
-export const styles = Steezy.create({
+const styles = Steezy.create({
   contentContainer: {
     alignItems: 'center',
     paddingHorizontal: 32,

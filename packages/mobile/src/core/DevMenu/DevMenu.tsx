@@ -122,11 +122,13 @@ export const DevMenu: FC = () => {
             }
           />
           <List.Item
-            title={`Version ${DeviceInfo.getVersion()} (${DeviceInfo.getBuildNumber()})`}
+            title="Version"
+            value={`${DeviceInfo.getVersion()} (${DeviceInfo.getBuildNumber()})`}
             onPress={copyText(
               `${DeviceInfo.getVersion()} (${DeviceInfo.getBuildNumber()})`,
             )}
           />
+          <List.Item title="Wallet contract" value={tk.wallet.version} />
           <List.Item onPress={handleLogs} title="Logs" />
           <List.Item title="App config" onPress={() => nav.navigate('/dev/config')} />
           {__DEV__ && (

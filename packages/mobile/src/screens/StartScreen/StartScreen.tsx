@@ -6,11 +6,10 @@ import {
   Spacer,
   Button,
   deviceHeight,
-  useTheme,
   ThemeName,
 } from '@tonkeeper/uikit';
 import { Image, useWindowDimensions } from 'react-native';
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useEffect } from 'react';
 import { t } from '@tonkeeper/shared/i18n';
 import { MainStackRouteNames } from '$navigation';
 import { useDispatch } from 'react-redux';
@@ -20,6 +19,7 @@ import { network } from '@tonkeeper/core';
 import { config } from '$config';
 import DeviceInfo from 'react-native-device-info';
 import { useThemeName } from '$hooks/useThemeName';
+import { mainActions } from '$store/main';
 
 const COVER_BLUE_SOURCE = require('./cover-blue.png');
 const COVER_LIGHT_SOURCE = require('./cover-light.png');
@@ -65,10 +65,18 @@ export const StartScreen = memo(() => {
 
   const handleImportPress = useCallback(() => {
     unsubscribeNotifications();
-    nav.navigate(MainStackRouteNames.ImportWalletStack);
+    nav.openModal('/add-wallet', { isImport: true });
   }, [nav, unsubscribeNotifications]);
 
   const themeName = useThemeName();
+
+  // TODO: rewrite
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      dispatch(mainActions.mainStackInited());
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [dispatch]);
 
   return (
     <Screen alternateBackground>

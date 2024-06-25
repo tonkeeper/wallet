@@ -1,16 +1,15 @@
 import React, { FC, useCallback, useMemo, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import Rate, { AndroidMarket } from 'react-native-rate';
-import { Alert, Linking, Platform, View } from 'react-native';
+import { Alert, InteractionManager, Linking, Platform, View } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import { TapGestureHandler } from 'react-native-gesture-handler';
 
 import * as S from './Settings.style';
-import { Icon, PopupSelect, Spacer, Text } from '$uikit';
-import { Icon as NewIcon, Screen } from '@tonkeeper/uikit';
+import { Icon, PopupSelect, Spacer, Tag, Text } from '$uikit';
+import { Icon as NewIcon, Screen, List, WalletIcon } from '@tonkeeper/uikit';
 import { useShouldShowTokensButton } from '$hooks/useShouldShowTokensButton';
 import { useNavigation } from '@tonkeeper/router';
-import { List } from '@tonkeeper/uikit';
 import {
   AppStackRouteNames,
   MainStackRouteNames,
@@ -21,7 +20,6 @@ import {
   openNotifications,
   openSecurity,
   openSelectLanguage,
-  openSubscriptions,
   openRefillBatteryModal,
 } from '$navigation';
 import { walletActions } from '$store/wallet';
@@ -47,6 +45,8 @@ import { WalletListItem } from '@tonkeeper/shared/components';
 import { useSubscriptions } from '@tonkeeper/shared/hooks/useSubscriptions';
 import { nativeLocaleNames } from '@tonkeeper/shared/i18n/translations';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { reset } from '$navigation/imperative';
+import { getNewsUrl } from '@tonkeeper/shared/utils/getNewsUrl';
 
 export const Settings: FC = () => {
   const animationRef = useRef<AnimatedLottieView>(null);
@@ -65,16 +65,16 @@ export const Settings: FC = () => {
 
   const fiatCurrency = useWalletCurrency();
   const dispatch = useDispatch();
-  const hasSubscriptions = useSubscriptions(
-    (state) => Object.values(state.subscriptions).length > 0,
-  );
   const wallet = useWallet();
   const shouldShowTokensButton = useShouldShowTokensButton();
 
   const { lastBackupAt } = useWalletSetup();
 
   const isBatteryVisible =
-    !!wallet && !wallet.isWatchOnly && !config.get('disable_battery');
+    !!wallet &&
+    !wallet.isWatchOnly &&
+    !wallet.isExternal &&
+    !config.get('disable_battery');
 
   const searchEngine = useBrowserStore((state) => state.searchEngine);
   const setSearchEngine = useBrowserStore((state) => state.actions.setSearchEngine);
@@ -112,16 +112,38 @@ export const Settings: FC = () => {
   }, []);
 
   const handleNews = useCallback(() => {
-    Linking.openURL(config.get('tonkeeperNewsUrl')).catch((err) => console.log(err));
+    Linking.openURL(getNewsUrl()).catch((err) => console.log(err));
   }, []);
 
   const handleSupport = useCallback(() => {
     Linking.openURL(config.get('directSupportUrl')).catch((err) => console.log(err));
   }, []);
 
+  const handleFAQ = useCallback(() => {
+    Linking.openURL(
+      i18n.locale === 'ru' ? config.get('faqUrlRu') : config.get('faqUrl'),
+    ).catch((err) => console.log(err));
+  }, []);
+
   const handleResetWallet = useCallback(() => {
-    nav.navigate('/logout-warning');
-  }, [nav]);
+    if (wallet.isExternal) {
+      Alert.alert(t('settings_delete_signer_account'), undefined, [
+        {
+          text: t('cancel'),
+          style: 'cancel',
+        },
+        {
+          text: t('settings_delete_watch_account_button'),
+          style: 'destructive',
+          onPress: () => {
+            dispatch(walletActions.cleanWallet());
+          },
+        },
+      ]);
+    } else {
+      nav.navigate('/logout-warning');
+    }
+  }, [dispatch, nav, wallet.isExternal]);
 
   const handleStopWatchWallet = useCallback(() => {
     Alert.alert(t('settings_delete_watch_account'), undefined, [
@@ -138,10 +160,6 @@ export const Settings: FC = () => {
       },
     ]);
   }, [dispatch]);
-
-  const handleSubscriptions = useCallback(() => {
-    openSubscriptions();
-  }, []);
 
   const handleNotifications = useCallback(() => {
     openNotifications();
@@ -231,6 +249,28 @@ export const Settings: FC = () => {
     return hasDiamods && !flags.disable_apperance;
   }, [hasDiamods, flags.disable_apperance]);
 
+  const openW5Stories = useCallback(() => {
+    nav.navigate(AppStackRouteNames.W5StoriesScreen, {
+      onPressButton: wallet.isW5
+        ? undefined
+        : () => {
+            InteractionManager.runAfterInteractions(async () => {
+              try {
+                await tk.addWalletV5();
+
+                reset(MainStackRouteNames.Tabs);
+
+                setTimeout(() => {
+                  nav.openModal('/switch-wallet', {
+                    withW5Flash: true,
+                  });
+                }, 300);
+              } catch {}
+            });
+          },
+    });
+  }, [nav]);
+
   return (
     <S.Wrap>
       <Screen>
@@ -256,7 +296,7 @@ export const Settings: FC = () => {
             </>
           ) : null}
           <List>
-            {!!wallet && !wallet.isWatchOnly && (
+            {!!wallet && !wallet.isWatchOnly && !wallet.isExternal && (
               <List.Item
                 value={
                   <Icon
@@ -287,19 +327,6 @@ export const Settings: FC = () => {
                 }
                 title={t('settings_jettons_list')}
                 onPress={handleManageTokens}
-              />
-            )}
-            {!!wallet && !wallet.isWatchOnly && hasSubscriptions && (
-              <List.Item
-                value={
-                  <Icon
-                    style={styles.icon.static}
-                    color="accentPrimary"
-                    name={'ic-ticket-28'}
-                  />
-                }
-                title={t('settings_subscriptions')}
-                onPress={handleSubscriptions}
               />
             )}
             {!!wallet && wallet.notifications.isAvailable && !wallet.isTestnet && (
@@ -338,10 +365,31 @@ export const Settings: FC = () => {
                     name={'ic-battery-28'}
                   />
                 }
-                title={t('battery.settings', {
-                  betaLabel: config.get('battery_beta') ? '(Beta)' : '',
-                })}
+                title={
+                  <View style={styles.row.static}>
+                    <Text variant="label1">{t('battery.settings')}</Text>
+                    {config.get('battery_beta') ? <Tag>Beta</Tag> : null}
+                  </View>
+                }
                 onPress={handleBattery}
+              />
+            )}
+            {wallet.isMnemonic && (!tk.hasW5WithCurrentPubkey || wallet.isW5) && (
+              <List.Item
+                value={
+                  <NewIcon
+                    style={styles.icon.static}
+                    color="accentBlue"
+                    name={'ic-wallet-28'}
+                  />
+                }
+                title={
+                  <View style={styles.row.static}>
+                    <Text variant="label1">{t('upgrade_to_w5.settings')}</Text>
+                    {config.get('v5_beta') ? <Tag>Beta</Tag> : null}
+                  </View>
+                }
+                onPress={openW5Stories}
               />
             )}
             {!config.get('disable_holders_cards') && !!wallet && !wallet.isWatchOnly && (
@@ -432,6 +480,17 @@ export const Settings: FC = () => {
           </List>
           <Spacer y={16} />
           <List>
+            <List.Item
+              onPress={handleFAQ}
+              value={
+                <NewIcon
+                  style={styles.icon.static}
+                  color="accentBlue"
+                  name={'ic-question-28'}
+                />
+              }
+              title={t('settings_faq')}
+            />
             {!flags.disable_support_button ? (
               <List.Item
                 onPress={handleSupport}
@@ -480,7 +539,7 @@ export const Settings: FC = () => {
               }
               title={t('settings_rate')}
             />
-            {!!wallet && !wallet.isWatchOnly && (
+            {!!wallet && !wallet.isWatchOnly && !wallet.isExternal && (
               <List.Item
                 onPress={handleDeleteAccount}
                 value={
@@ -514,8 +573,22 @@ export const Settings: FC = () => {
                     {t('stop_watch')}
                   </CellSectionItem>
                 ) : (
-                  <CellSectionItem onPress={handleResetWallet} icon="ic-door-28">
-                    {t('settings_reset')}
+                  <CellSectionItem
+                    unwrapChildren
+                    onPress={handleResetWallet}
+                    icon="ic-door-28"
+                  >
+                    <View style={styles.logoutTitleContainer.static}>
+                      <Text variant="label1">{t('access_confirmation_logout')}</Text>
+                      <WalletIcon
+                        emojiStyle={styles.emoji.static}
+                        size={20}
+                        value={tk.wallet.config.emoji}
+                      />
+                      <Text style={styles.flex.static} numberOfLines={1} variant="label1">
+                        {tk.wallet.config.name}
+                      </Text>
+                    </View>
                   </CellSectionItem>
                 )}
               </List>
@@ -574,5 +647,21 @@ const styles = Steezy.create({
     paddingTop: 9.5,
     paddingBottom: 6.5,
     marginLeft: 8,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  logoutTitleContainer: {
+    gap: 4,
+    alignItems: 'center',
+    flexDirection: 'row',
+    paddingRight: 8,
+  },
+  flex: {
+    flex: 1,
+  },
+  emoji: {
+    fontSize: 20,
   },
 });

@@ -35,6 +35,7 @@ export type ConfirmSendCoinsAction = PayloadAction<{
   isSendAll?: boolean;
   decimals?: number;
   jettonWalletAddress?: string;
+  jettonMaster?: string;
   currencyAdditionalParams?: CurrencyAdditionalParams;
 }>;
 export type SendCoinsAction = PayloadAction<{
@@ -44,6 +45,7 @@ export type SendCoinsAction = PayloadAction<{
   address: string;
   comment: string;
   isCommentEncrypted?: boolean;
+  encryptedCommentPrivateKey?: Uint8Array | null;
   tokenType?: TokenType;
   jettonWalletAddress?: string;
   isSendAll?: boolean;

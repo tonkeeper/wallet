@@ -1,5 +1,5 @@
 import { getChainName } from '$shared/dynamicConfig';
-import { getFixedLastSlashUrl } from '$utils';
+import { getFixedLastSlashUrl, isValidUrl } from '$utils';
 import { IConnectedApp, IConnectedAppConnection, IConnectedAppsStore } from './types';
 import { tk } from '$wallet';
 import { Address } from '@tonkeeper/core';
@@ -14,8 +14,8 @@ export const getConnectedAppByUrl = (
 
   const fixedUrl = getFixedLastSlashUrl(url);
 
-  const connectedApp = apps.find((app) =>
-    fixedUrl.startsWith(getFixedLastSlashUrl(app.url)),
+  const connectedApp = apps.find(
+    (app) => isValidUrl(app.url) && fixedUrl.startsWith(getFixedLastSlashUrl(app.url)),
   );
 
   return connectedApp ?? null;

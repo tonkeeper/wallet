@@ -2,10 +2,19 @@ import {
   ImportWalletStackParamList,
   ImportWalletStackRouteNames,
 } from '$navigation/ImportWalletStack/types';
-import { Checkbox } from '$uikit';
+import { Checkbox, Tag } from '$uikit';
 import { WalletContractVersion } from '$wallet/WalletTypes';
 import { t } from '@tonkeeper/shared/i18n';
-import { Button, List, Screen, Spacer, Steezy, Text, isAndroid } from '@tonkeeper/uikit';
+import {
+  Button,
+  List,
+  Screen,
+  Spacer,
+  Steezy,
+  Text,
+  View,
+  isAndroid,
+} from '@tonkeeper/uikit';
 import { FC, useCallback, useState } from 'react';
 import { RouteProp } from '@react-navigation/native';
 import { Address } from '@tonkeeper/shared/Address';
@@ -16,7 +25,7 @@ import { DEFAULT_WALLET_VERSION } from '$wallet/constants';
 export const ChooseWallets: FC<{
   route: RouteProp<ImportWalletStackParamList, ImportWalletStackRouteNames.ChooseWallets>;
 }> = (props) => {
-  const { mnemonic, lockupConfig, isTestnet, walletsInfo, isMigration } =
+  const { mnemonic, lockupConfig, isTestnet, walletsInfo, isMigration, onDone } =
     props.route.params;
 
   const doImportWallet = useImportWallet();
@@ -43,18 +52,30 @@ export const ChooseWallets: FC<{
     }
     try {
       setLoading(true);
-      await doImportWallet(
-        mnemonic,
-        lockupConfig,
-        selectedVersions,
-        isTestnet,
-        isMigration,
-      );
+      if (onDone) {
+        await onDone(selectedVersions);
+      } else {
+        await doImportWallet(
+          mnemonic,
+          lockupConfig,
+          selectedVersions,
+          isTestnet,
+          isMigration,
+        );
+      }
     } catch {
     } finally {
       setLoading(false);
     }
-  }, [doImportWallet, isMigration, isTestnet, lockupConfig, mnemonic, selectedVersions]);
+  }, [
+    doImportWallet,
+    isMigration,
+    isTestnet,
+    lockupConfig,
+    mnemonic,
+    onDone,
+    selectedVersions,
+  ]);
 
   const tokensText = `, ${t('choose_wallets.tokens')}`;
 
@@ -76,10 +97,19 @@ export const ChooseWallets: FC<{
           {walletsInfo.map((walletInfo) => (
             <List.Item
               key={walletInfo.version}
-              title={Address.parse(walletInfo.address, {
-                bounceable: false,
-                testOnly: isTestnet,
-              }).toShort()}
+              title={
+                <View style={styles.titleContainer}>
+                  <Text type="label1">
+                    {Address.parse(walletInfo.address, {
+                      bounceable: false,
+                      testOnly: isTestnet,
+                    }).toShort()}
+                  </Text>
+                  {walletInfo.version === WalletContractVersion.v5R1 ? (
+                    <Tag type="positive">W5 Beta</Tag>
+                  ) : null}
+                </View>
+              }
               subtitle={`${walletInfo.version} · ${formatter.formatNano(
                 walletInfo.balance,
               )} TON${walletInfo.tokens ? tokensText : ''}`}
@@ -111,5 +141,9 @@ export const ChooseWallets: FC<{
 const styles = Steezy.create(() => ({
   contentContainer: {
     paddingHorizontal: 32,
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 }));

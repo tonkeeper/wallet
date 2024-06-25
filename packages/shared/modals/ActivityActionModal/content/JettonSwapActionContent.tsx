@@ -16,6 +16,7 @@ import {
   ActionItem,
   ActionType,
 } from '@tonkeeper/mobile/src/wallet/models/ActivityModel';
+import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
 
 interface JettonSwapActionContentProps {
   action: ActionItem<ActionType.JettonSwap>;
@@ -44,7 +45,9 @@ export const JettonSwapActionContent = memo<JettonSwapActionContentProps>((props
         Address.parse(payload.jetton_master_in.address).toFriendly(),
       );
       if (tokenPrice.fiat) {
-        const parsedAmount = parseFloat(formatter.fromNano(payload.amount_in, 9));
+        const parsedAmount = parseFloat(
+          formatter.fromNano(payload.amount_in, payload.jetton_master_in.decimals ?? 9),
+        );
         return format(tokenPrice.fiat * parsedAmount, {
           currency: fiatCurrency,
           decimals: 9,
@@ -115,6 +118,10 @@ export const JettonSwapActionContent = memo<JettonSwapActionContentProps>((props
 
   return (
     <ActionModalContent
+      failReason={
+        action.status === ActionStatusEnum.Failed &&
+        t('transactions.failed_with_reason.swap_refund_no_liq')
+      }
       label={t('activityActionModal.swapped')}
       amountFiat={amountInFiat}
       action={action}

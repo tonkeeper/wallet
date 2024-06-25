@@ -8,4 +8,5 @@ export interface CellProps {
   indicator?: ReactElement;
   inlineContent?: ReactElement | JSX.Element | null;
   content?: React.ReactNode;
+  unwrapChildren?: boolean;
 }

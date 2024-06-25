@@ -8,6 +8,7 @@ import RNRestart from 'react-native-restart';
 const initialState: Omit<IDevFeaturesToggleStore, 'actions'> = {
   devFeatures: {
     [DevFeature.UseHttpProtocol]: false,
+    [DevFeature.W5StoriesShown]: false,
   },
   devLanguage: null,
 };
@@ -35,7 +36,7 @@ export const useDevFeaturesToggle = create(
       },
     }),
     {
-      name: 'devFeaturesToggle',
+      name: 'devFeaturesToggle2',
       storage: createJSONStorage(() => AsyncStorage),
       onRehydrateStorage: () => {
         return (state) => {

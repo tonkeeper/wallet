@@ -41,21 +41,26 @@ export const PopupMenuItem = Memo(
 );
 
 export function PopupMenuComponent(props: PopupMenuProps) {
-  const { children, items } = props;
+  const { children, items, width = 160 } = props;
   const [visible, setVisible] = useState(false);
   const childrenRef = useRef<View>(null);
   const offsetTop = useRef(0);
 
+  const filteredItems = useMemo(
+    () => items.filter((item) => typeof item === 'object'),
+    [items],
+  );
+
   const popupHeight = useMemo(() => {
     const maxHeight = deviceHeight - offsetTop.current - 32;
-    const height = ns(47.5 * items.length) + 0.5;
+    const height = ns(47.5 * filteredItems.length) + 0.5;
     return Math.min(height, maxHeight);
-  }, [items.length]);
+  }, [filteredItems.length]);
 
   const popupAnimation = usePopupAnimation({
     anchor: 'top-right',
     height: popupHeight,
-    width: ns(160),
+    width: ns(width),
   });
 
   const measure = useCallback((onDone: () => void) => {
@@ -90,12 +95,12 @@ export function PopupMenuComponent(props: PopupMenuProps) {
   }, [children, handleOpen]);
 
   const itemsPrepared = useMemo(() => {
-    return items.map((item) =>
+    return filteredItems.map((item) =>
       React.cloneElement(item, {
         onCloseMenu: () => handleClose(),
       }),
     );
-  }, [items, handleClose]);
+  }, [filteredItems, handleClose]);
 
   return (
     <>
@@ -109,7 +114,7 @@ export function PopupMenuComponent(props: PopupMenuProps) {
 
       <Modal animationType="none" transparent visible={visible}>
         <S.Overlay onPress={handleClose} />
-        <S.Wrap style={[{ top: offsetTop.current }, popupAnimation.style]}>
+        <S.Wrap width={width} style={[{ top: offsetTop.current }, popupAnimation.style]}>
           <S.Content>
             {itemsPrepared.map((item, index, arr) => (
               <View key={index}>

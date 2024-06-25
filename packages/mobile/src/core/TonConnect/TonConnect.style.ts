@@ -88,8 +88,8 @@ export const TitleWrapper = styled.View`
   margin-bottom: ${ns(4)}px;
 `;
 
-export const Center = styled.View<{ isTonConnectV2: boolean }>`
-  height: ${({ isTonConnectV2 }) => ns(isTonConnectV2 ? 56 + 16 + 40 : 56)}px;
+export const Center = styled.View`
+  height: ${ns(56 + 16 + 40)}px;
   justify-content: center;
   align-items: center;
 `;
@@ -103,8 +103,8 @@ export const LottieIcon = styled(LottieView)`
   margin-bottom: ${ns(-1.8)}px;
 `;
 
-export const Footer = styled.View<{ isTonConnectV2: boolean }>`
-  height: ${({ isTonConnectV2 }) => ns(isTonConnectV2 ? 56 + 16 + 40 : 56)}px;
+export const Footer = styled.View`
+  height: ${ns(56 + 16 + 40)}px;
   position: relative;
 `;
 

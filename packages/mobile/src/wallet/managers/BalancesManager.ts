@@ -1,17 +1,10 @@
-import { TonAPI } from '@tonkeeper/core/src/TonAPI';
-import {
-  TonRawAddress,
-  WalletConfig,
-  WalletContractVersion,
-  WalletNetwork,
-} from '../WalletTypes';
+import { AccountStatus, TonAPI } from '@tonkeeper/core/src/TonAPI';
+import { TonRawAddress, WalletConfig, WalletContractVersion } from '../WalletTypes';
 import { Storage } from '@tonkeeper/core/src/declarations/Storage';
 import { AmountFormatter } from '@tonkeeper/core/src/utils/AmountFormatter';
 import { State } from '@tonkeeper/core/src/utils/State';
-import TonWeb from 'tonweb';
-import { config } from '$config';
 import BigNumber from 'bignumber.js';
-import { LockupWalletV1 } from 'tonweb/dist/types/contract/lockup/lockup-wallet-v1';
+import { fromNano } from '@ton/core';
 
 export interface BalancesState {
   isReloading: boolean;
@@ -19,6 +12,7 @@ export interface BalancesState {
   ton: string;
   tonLocked: string;
   tonRestricted: string;
+  status?: AccountStatus;
 }
 
 export class BalancesManager {
@@ -54,37 +48,29 @@ export class BalancesManager {
     return this.walletConfig.version === WalletContractVersion.LockupV1;
   }
 
+  // [ton_balance, ton_restricted, ton_locked]
   public async getLockupBalances() {
     try {
-      const isTestnet = this.walletConfig.network === WalletNetwork.testnet;
+      if (this.walletConfig.version !== WalletContractVersion.LockupV1) {
+        return ['0', '0', '0'];
+      }
 
-      const tonweb = new TonWeb(
-        new TonWeb.HttpProvider(config.get('tonEndpoint', isTestnet), {
-          apiKey: config.get('tonEndpointAPIKey', isTestnet),
-        }),
-      );
-
-      const tonPublicKey = Uint8Array.from(Buffer.from(this.walletConfig.pubkey, 'hex'));
-
-      const tonWallet: LockupWalletV1 = new tonweb.lockupWallet.all[
-        this.walletConfig.version
-      ](tonweb.provider, {
-        publicKey: tonPublicKey,
-        wc: this.walletConfig.workchain ?? 0,
-        config: {
-          wallet_type: this.walletConfig.version,
-          config_public_key: this.walletConfig.configPubKey,
-          allowed_destinations: this.walletConfig.allowedDestinations,
-        },
+      const data = await this.tonapi.blockchain.execGetMethodForBlockchainAccount({
+        accountId: this.tonRawAddress,
+        methodName: 'get_balances',
       });
 
-      const balances = await tonWallet.getBalances();
-      const result = balances.map((item: number) =>
-        AmountFormatter.fromNanoStatic(item.toString()),
-      );
-      result[0] = new BigNumber(result[0]).minus(result[1]).minus(result[2]).toString();
+      const { ton_balance, total_restricted_value, total_locked_value } = data.decoded;
 
-      return result;
+      // TODO: should return balances in nanocoins
+      return [
+        new BigNumber(ton_balance)
+          .minus(total_restricted_value)
+          .minus(total_locked_value)
+          .toString(),
+        total_restricted_value,
+        total_locked_value,
+      ].map(fromNano);
     } catch (e) {
       if (e?.response?.status === 404) {
         return ['0', '0', '0'];
@@ -99,7 +85,7 @@ export class BalancesManager {
       this.state.set({ isLoading: true });
 
       if (this.isLockup) {
-        const [ton, tonLocked, tonRestricted] = await this.getLockupBalances();
+        const [ton, tonRestricted, tonLocked] = await this.getLockupBalances();
 
         this.state.set({ isLoading: false, ton, tonLocked, tonRestricted });
         return this.state.data;
@@ -110,6 +96,7 @@ export class BalancesManager {
       this.state.set({
         isLoading: false,
         ton: AmountFormatter.fromNanoStatic(account.balance),
+        status: account.status,
       });
 
       return this.state.data;
@@ -126,6 +113,7 @@ export class BalancesManager {
     this.state.set({ isReloading: true });
     await this.load();
     this.state.set({ isReloading: false });
+    return this.state.data;
   }
 
   public async rehydrate() {

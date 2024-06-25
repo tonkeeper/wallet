@@ -88,9 +88,18 @@ export type NftSingleDeployParams = {
 
 export interface SignRawMessage {
   address: string;
-  amount: string; // (decimal string): number of nanocoins to send.
-  payload?: string; // (string base64, optional): raw one-cell BoC encoded in Base64.
-  stateInit?: string; // (string base64, optional): raw once-cell BoC encoded in Base64.
+  /*
+      number of nanocoins to send. decimal string
+  */
+  amount: string;
+  /*
+    raw one-cell BoC encoded in Base64. String base64, optional
+  */
+  payload?: string;
+  /*
+    raw once-cell BoC encoded in Base64. string base64, optional
+  */
+  stateInit?: string;
 }
 
 export type SignRawParams = {
@@ -136,6 +145,7 @@ export type TxResponseOptions = {
 
 export type TxRequestBody<TParams = TxParams> = {
   experimentalWithBattery?: boolean;
+  forceRelayerUse?: boolean;
   type: TxTypes;
   expires_sec?: number;
   response_options?: TxResponseOptions;

@@ -1,7 +1,7 @@
 import { LottieList, LottieNames } from './LottieList.native';
 import { memo, useEffect, useRef } from 'react';
 import LottieView from 'lottie-react-native';
-import { View } from 'react-native';
+import { StyleProp, View, ViewStyle } from 'react-native';
 
 interface LottieProps {
   autoSize?: boolean;
@@ -10,6 +10,7 @@ interface LottieProps {
   name: LottieNames;
   size?: number;
   loop?: boolean;
+  style?: StyleProp<ViewStyle>;
 }
 
 export const Lottie = memo<LottieProps>((props) => {
@@ -20,6 +21,7 @@ export const Lottie = memo<LottieProps>((props) => {
     startDelay = 400,
     size,
     name,
+    style,
   } = props;
   const iconRef = useRef<LottieView>(null);
 
@@ -38,7 +40,7 @@ export const Lottie = memo<LottieProps>((props) => {
   if (lottie) {
     return (
       <LottieView
-        style={lottieSizeStyle}
+        style={[lottieSizeStyle, style]}
         autoSize={autoSize}
         autoPlay={autoPlay}
         source={lottie}

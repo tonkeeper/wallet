@@ -11,7 +11,7 @@
     "pull_locales": "cd packages && cd shared && yarn pull_locales",
     "postinstall": "patch-package",
     "pods": "cd packages && cd mobile && yarn pods",
-    "icons": "cd packages && cd mobile && yarn icons",
+    "icons": "cd packages && cd uikit && yarn icons",
     "codegen": "cd packages/@core-js && yarn codegen",
     "start:mobile": "cd packages && cd mobile && yarn start",
     "start:web": "cd packages && cd web && yarn start",

@@ -1,29 +1,32 @@
 import axios from 'axios';
 import { Ton } from '$libs/Ton';
 import { useDispatch } from 'react-redux';
-import { DeeplinkingResolver, useDeeplinking } from '$libs/deeplinking';
+import { DeeplinkOrigin, DeeplinkingResolver, useDeeplinking } from '$libs/deeplinking';
 import { CryptoCurrencies } from '$shared/constants';
-import { walletActions } from '$store/wallet';
 import { Base64, delay, fromNano, toNano } from '$utils';
 import { debugLog } from '$utils/debugLog';
-import { store, Toast } from '$store';
+import { Toast } from '$store';
 import {
   SignRawMessage,
   TxRequest,
 } from '$core/ModalContainer/NFTOperations/TXRequest.types';
-import { openBuyFiat, openSend, resetToWalletTab } from '../helper';
+import {
+  openBuyFiat,
+  openSend,
+  openSetupNotifications,
+  openSetupWalletDone,
+  resetToWalletTab,
+} from '../helper';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 
 import { t } from '@tonkeeper/shared/i18n';
 import { getTimeSec } from '$utils/getTimeSec';
-import { TonLoginClient } from '@tonapps/tonlogin-client';
 import { useNavigation } from '@tonkeeper/router';
 import { openSignRawModal } from '$core/ModalContainer/NFTOperations/Modals/SignRawModal';
 import { isSignRawParams } from '$utils/isSignRawParams';
 import { AppStackRouteNames, MainStackRouteNames } from '$navigation/navigationNames';
 import { TonConnectRemoteBridge } from '$tonconnect/TonConnectRemoteBridge';
 import { openAddressMismatchModal } from '$core/ModalContainer/AddressMismatch/AddressMismatch';
-import { openTonConnect } from '$core/TonConnect/TonConnectModal';
 import { useCallback, useRef } from 'react';
 import { openInsufficientFundsModal } from '$core/ModalContainer/InsufficientFunds/InsufficientFunds';
 import BigNumber from 'bignumber.js';
@@ -39,10 +42,13 @@ import { config } from '$config';
 import { TokenType } from '$core/Send/Send.interface';
 import { ActionSource } from '$wallet/models/ActivityModel';
 import { StakingTransactionType } from '$core/StakingSend/types';
-
-const getWallet = () => {
-  return store.getState().wallet.wallet;
-};
+import { ImportWalletInfo, WalletContractVersion } from '$wallet/WalletTypes';
+import { ImportWalletStackRouteNames } from '$navigation/ImportWalletStack/types';
+import { estimateInscriptionTransferFee } from '$core/Send/new/core/transactionBuilder/inscription';
+import { comment as makeCommentCell } from '@ton/core';
+import { estimateJettonTransferFee } from '$core/Send/new/core/transactionBuilder/jetton';
+import { estimateTonTransferFee } from '$core/Send/new/core/transactionBuilder/ton';
+import { BatterySupportedTransaction } from '$wallet/managers/BatteryManager';
 
 const getExpiresSec = () => {
   return getTimeSec() + 10 * 60;
@@ -63,15 +69,19 @@ export function useDeeplinkingResolvers() {
   ]);
 
   deeplinking.addMiddleware(async (next, { prefix, pathname }) => {
-    if (!getWallet() || !tk.wallet) {
+    const isSignerPairing = pathname.startsWith('/signer/link');
+
+    if (isSignerPairing) {
+      next();
+
+      return;
+    }
+
+    if (!tk.wallet) {
       return openRequireWalletModal();
     }
 
-    const isTonConnect =
-      prefix === 'tc://' ||
-      pathname.startsWith('/ton-connect') ||
-      // legacy tonconnect
-      pathname.startsWith('/ton-login');
+    const isTonConnect = prefix === 'tc://' || pathname.startsWith('/ton-connect');
 
     const isActionDeeplink = pathname.startsWith('/action');
 
@@ -128,7 +138,7 @@ export function useDeeplinkingResolvers() {
   });
 
   deeplinking.add('/subscribe/:invoiceId', ({ params }) => {
-    if (!tk.wallet.isV4()) {
+    if (!tk.wallet.isV4) {
       Toast.fail(t('old_wallet_error'));
     } else {
       openCreateSubscription(params.invoiceId);
@@ -136,7 +146,7 @@ export function useDeeplinkingResolvers() {
   });
 
   deeplinking.add('/buy-ton', () => {
-    if (!getWallet()) {
+    if (!tk.wallet) {
       return openRequireWalletModal();
     } else {
       nav.openModal('Exchange');
@@ -150,7 +160,7 @@ export function useDeeplinkingResolvers() {
   });
 
   deeplinking.add('/exchange', async () => {
-    if (!getWallet()) {
+    if (!tk.wallet) {
       return openRequireWalletModal();
     } else {
       nav.openModal('Exchange');
@@ -159,7 +169,7 @@ export function useDeeplinkingResolvers() {
 
   deeplinking.add('/exchange/:id', async ({ params }) => {
     const methodId = params.id;
-    if (!getWallet()) {
+    if (!tk.wallet) {
       return openRequireWalletModal();
     } else {
       Toast.loading();
@@ -199,7 +209,7 @@ export function useDeeplinkingResolvers() {
   });
 
   deeplinking.add('/swap', ({ query }) => {
-    if (!getWallet()) {
+    if (!tk.wallet) {
       return openRequireWalletModal();
     } else {
       nav.openModal('Swap', { ft: query.ft, tt: query.tt });
@@ -246,31 +256,32 @@ export function useDeeplinkingResolvers() {
       }
 
       if (amount) {
-        dispatch(
-          walletActions.confirmSendCoins({
+        try {
+          const estimate = await estimateInscriptionTransferFee({
+            recipient: address,
+            sendAmountNano: BigInt(amount),
+            inscription,
+            payload: comment ? makeCommentCell(comment) : undefined,
+          });
+          const options = {
             currency: inscription.ticker,
-            amount: fromNano(amount, inscription.decimals),
             address,
             comment,
-            tokenType: TokenType.Inscription,
             currencyAdditionalParams: { type: inscription.type },
-            onNext: (details) => {
-              const options = {
-                currency: inscription.ticker,
-                address,
-                comment,
-                currencyAdditionalParams: { type: inscription.type },
-                amount: fromNano(amount, inscription.decimals),
-                tokenType: TokenType.Inscription,
-                fee: details.fee,
-                isInactive: details.isInactive,
-                methodId: resolveParams.methodId,
-                redirectToActivity: resolveParams.redirectToActivity,
-              };
-              openSend(options);
-            },
-          }),
-        );
+            amount: fromNano(amount, inscription.decimals),
+            tokenType: TokenType.Inscription,
+            fee: fromNano(estimate.fee, 9),
+            isInactive: false,
+            methodId: resolveParams.methodId,
+            redirectToActivity: resolveParams.redirectToActivity,
+          };
+          openSend(options);
+        } catch (e) {
+          if (e.message) {
+            Toast.fail(e.message);
+          }
+          return;
+        }
       } else {
         openSend({
           currency: inscription.ticker,
@@ -373,7 +384,10 @@ export function useDeeplinkingResolvers() {
           ).lt(query.amount)
         ) {
           openInsufficientFundsModal({
-            balance: jettonBalance.balance ?? 0,
+            balance: toNano(
+              jettonBalance.balance ?? 0,
+              jettonBalance.metadata.decimals ?? 9,
+            ),
             totalAmount: query.amount,
             decimals,
             currency: jettonBalance.metadata.symbol,
@@ -381,64 +395,79 @@ export function useDeeplinkingResolvers() {
           return;
         }
 
-        dispatch(
-          walletActions.confirmSendCoins({
-            decimals,
-            currency,
-            amount,
+        try {
+          const estimate = await estimateJettonTransferFee({
+            recipient: address,
+            sendAmountNano: BigInt(query.amount),
+            shouldAttemptWithRelayer:
+              tk.wallet.battery.state.data.supportedTransactions[
+                BatterySupportedTransaction.Jetton
+              ],
+            jetton: jettonBalance,
+            payload: comment ? makeCommentCell(comment) : undefined,
+          });
+          const options = {
+            currency: query.jetton,
+            isBattery: estimate.battery,
+            isGasless: estimate.gasless,
+            isForcedGasless: estimate.isForcedGasless,
+            supportsGasless: estimate.supportsGasless,
+            customFeeCurrency: estimate.customFeeCurrency,
             address,
             comment,
-            jettonWalletAddress: jettonBalance.walletAddress,
+            amount,
+            fee: fromNano(
+              estimate.fee,
+              estimate.gasless ? jettonBalance.metadata.decimals : 9,
+            ),
+            isInactive: false,
             tokenType: TokenType.Jetton,
-            onInsufficientFunds: openInsufficientFundsModal,
-            onNext: (details) => {
-              const options = {
-                currency: query.jetton,
-                isBattery: details.isBattery,
-                address,
-                comment,
-                amount,
-                fee: details.fee,
-                isInactive: details.isInactive,
-                tokenType: TokenType.Jetton,
-                expiryTimestamp,
-                redirectToActivity: resolveParams.redirectToActivity,
-              };
+            expiryTimestamp,
+            redirectToActivity: resolveParams.redirectToActivity,
+          };
 
-              openSend(options);
-            },
-          }),
-        );
+          openSend(options);
+        } catch (e) {
+          if (e.message) {
+            Toast.fail(e.message);
+          }
+          return;
+        }
       } else {
-        const amount = Ton.fromNano(query.amount.toString());
-        dispatch(
-          walletActions.confirmSendCoins({
+        try {
+          const estimate = await estimateTonTransferFee({
+            recipient: address,
+            sendAmountNano: BigInt(query.amount.toString()),
+            isSendAll: false,
+            payload: comment ? makeCommentCell(comment) : undefined,
+          });
+          if (!estimate.fee) {
+            return;
+          }
+          const amount = Ton.fromNano(query.amount.toString());
+          const options = {
             currency,
-            amount,
             address,
             comment,
-            onInsufficientFunds: openInsufficientFundsModal,
-            onNext: (details) => {
-              const options = {
-                currency,
-                address,
-                comment,
-                amount,
-                tokenType: TokenType.TON,
-                fee: details.fee,
-                isInactive: details.isInactive,
-                methodId: resolveParams.methodId,
-                expiryTimestamp,
-                redirectToActivity: resolveParams.redirectToActivity,
-              };
-              if (options.methodId) {
-                nav.openModal('NewConfirmSending', options);
-              } else {
-                openSend(options);
-              }
-            },
-          }),
-        );
+            amount,
+            tokenType: TokenType.TON,
+            fee: fromNano(estimate.fee, 9),
+            isInactive: false,
+            methodId: resolveParams.methodId,
+            expiryTimestamp,
+            redirectToActivity: resolveParams.redirectToActivity,
+          };
+          if (options.methodId) {
+            nav.openModal('NewConfirmSending', options);
+          } else {
+            openSend(options);
+          }
+        } catch (e) {
+          if (e.message) {
+            Toast.fail(e.message);
+          }
+          return;
+        }
       }
     } else if (query.jetton) {
       if (!Address.isValid(query.jetton)) {
@@ -460,7 +489,7 @@ export function useDeeplinkingResolvers() {
       const excessesAccount =
         !config.get('disable_battery_send') &&
         tk.wallet.battery.state.data.balance !== '0'
-          ? tk.wallet.battery.excessesAccount
+          ? await tk.wallet.battery.getExcessesAccount()
           : null;
 
       await openSignRawModal(
@@ -508,7 +537,7 @@ export function useDeeplinkingResolvers() {
     txRequest: TxRequest,
     resolveParams: Record<string, any>,
   ) => {
-    const wallet = getWallet();
+    const wallet = tk.wallet;
     if (txRequest?.version !== '0') {
       throw new Error('Wrong txrequest protocol');
     }
@@ -526,7 +555,7 @@ export function useDeeplinkingResolvers() {
     if (
       txBody.params.source &&
       Address.isValid(txBody.params.source) &&
-      !Address.compare(txBody.params.source, await wallet.ton.getAddress())
+      !Address.compare(txBody.params.source, wallet.address.ton.raw)
     ) {
       Toast.hide();
       const foundWallet = tk.getWalletByAddress(txBody.params.source);
@@ -632,39 +661,6 @@ export function useDeeplinkingResolvers() {
     }
   });
 
-  deeplinking.add('/ton-login/*', async ({ params, resolveParams }) => {
-    try {
-      Toast.loading();
-
-      const { data } = await axios.get(`https://${params.path}`);
-
-      const splittedHost = params.path.split('/');
-      const hostname = splittedHost[0] ?? '';
-
-      const tonconnect = new TonLoginClient(data);
-      const request = tonconnect.getRequestBody();
-
-      Toast.hide();
-      openTonConnect({
-        protocolVersion: 1,
-        tonconnect,
-        hostname,
-        request,
-        ...resolveParams,
-      });
-    } catch (err) {
-      Toast.hide();
-      let message = err?.message;
-      if (axios.isAxiosError(err)) {
-        const data = err.response?.data as Record<string, any> | undefined;
-        message = data?.error ?? t('error_network');
-      }
-
-      debugLog('[TonLogin]:', err);
-      Toast.fail(message);
-    }
-  });
-
   deeplinking.add('/ton-connect/*', tonConnectResolver);
 
   deeplinking.add('/confirm-withdrawal/:address', ({ params }) => {
@@ -682,5 +678,76 @@ export function useDeeplinkingResolvers() {
 
   deeplinking.add('/staking', () => {
     nav.push(MainStackRouteNames.Staking);
+  });
+
+  deeplinking.add('/publish', async ({ query }) => {
+    if (!query.sign) {
+      return;
+    }
+
+    tk.wallet.signer.setSignerResult(query.sign);
+  });
+
+  deeplinking.add('/signer/link', async ({ query, origin }) => {
+    try {
+      const network = query.network ?? 'ton';
+      const publicKey = query.pk;
+      const name = query.name;
+
+      if (network !== 'ton') {
+        Toast.fail('Unsupported network');
+        return;
+      }
+
+      let walletsInfo: ImportWalletInfo[] | null = null;
+
+      try {
+        walletsInfo = await tk.getWalletsInfo(publicKey, false);
+      } catch {}
+
+      const shouldChooseWallets = walletsInfo && walletsInfo.length > 1;
+
+      const addWallet = async (selectedVersions?: WalletContractVersion[]) => {
+        try {
+          const identifiers = await tk.addSignerWallet(
+            publicKey,
+            name,
+            selectedVersions,
+            origin === DeeplinkOrigin.DEEPLINK,
+          );
+
+          const isNotificationsDenied = await tk.wallet.notifications.getIsDenied();
+
+          if (isNotificationsDenied) {
+            openSetupWalletDone(identifiers);
+          } else {
+            openSetupNotifications(identifiers);
+          }
+        } catch (e) {
+          console.log('error', e);
+          Toast.fail(t('error_occurred'));
+        }
+      };
+
+      if (shouldChooseWallets) {
+        nav.navigate(MainStackRouteNames.ImportWalletStack, {
+          screen: ImportWalletStackRouteNames.ChooseWallets,
+          params: {
+            walletsInfo,
+            mnemonic: '',
+            lockupConfig: null,
+            isTestnet: false,
+            onDone: addWallet,
+          },
+        });
+
+        return;
+      }
+
+      await addWallet();
+    } catch (e) {
+      console.log('error', e);
+      Toast.fail(t('error_occurred'));
+    }
   });
 }

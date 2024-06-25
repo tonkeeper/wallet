@@ -26,7 +26,8 @@ import { TonProofManager } from '../managers/TonProofManager';
 import { JettonVerification } from '../models/JettonBalanceModel';
 import { CardsManager } from '$wallet/managers/CardsManager';
 import { JettonQuantity } from '@tonkeeper/core/src/TonAPI';
-import { WalletContentReceiver } from '../../tabs/Wallet/content-providers/utils/receiver';
+import { SignerManager } from '$wallet/managers/SignerManager';
+import { AccountStatus } from '@ton/core';
 
 export interface WalletStatusState {
   isReloading: boolean;
@@ -50,6 +51,7 @@ export class WalletContent extends WalletBase {
   public tonActivityList: TonActivityList;
   public jettonActivityList: JettonActivityList;
   public cards: CardsManager;
+  public signer: SignerManager;
 
   constructor(
     public config: WalletConfig,
@@ -63,18 +65,12 @@ export class WalletContent extends WalletBase {
 
     this.activityLoader = new ActivityLoader(tonRawAddress, this.tonapi, this.tronapi);
 
-    this.tonProof = new TonProofManager(this.identifier, this.tonapi);
+    this.tonProof = new TonProofManager(this.identifier, this.network, this.tonapi);
     this.tokenApproval = new TokenApprovalManager(this.persistPath, this.storage);
     this.balances = new BalancesManager(
       this.persistPath,
       tonRawAddress,
       this.config,
-      this.tonapi,
-      this.storage,
-    );
-    this.nfts = new NftsManager(
-      this.persistPath,
-      tonRawAddress,
       this.tonapi,
       this.storage,
     );
@@ -85,6 +81,13 @@ export class WalletContent extends WalletBase {
       this.tokenApproval,
       this.tonapi,
       this.storage,
+    );
+    this.nfts = new NftsManager(
+      this.persistPath,
+      tonRawAddress,
+      this.tonapi,
+      this.storage,
+      this.jettons,
     );
     this.tonInscriptions = new TonInscriptions(
       this.persistPath,
@@ -100,6 +103,7 @@ export class WalletContent extends WalletBase {
       this.storage,
     );
     this.subscriptions = new SubscriptionsManager(
+      this.config.version,
       this.persistPath,
       tonRawAddress,
       this.storage,
@@ -110,6 +114,7 @@ export class WalletContent extends WalletBase {
       this.batteryapi,
       this.storage,
       this.isTestnet,
+      this.config.version,
     );
     this.cards = new CardsManager(
       this.persistPath,
@@ -139,6 +144,7 @@ export class WalletContent extends WalletBase {
       this.activityLoader,
       this.storage,
     );
+    this.signer = new SignerManager(tonRawAddress, this.tonapi, this.config);
   }
 
   protected async rehydrate() {
@@ -164,33 +170,36 @@ export class WalletContent extends WalletBase {
     this.cards.rehydrate();
   }
 
+  protected async loadDependsOnAccountStatus(status: AccountStatus) {
+    const isInactiveWallet = ['uninit', 'nonexist'].includes(status);
+    await this.staking.load(false, true, isInactiveWallet);
+  }
+
   protected async preload() {
     await Promise.all([
-      this.balances.load(),
+      this.balances
+        .load()
+        .then((balancesState) => this.loadDependsOnAccountStatus(balancesState.status)),
       this.nfts.load(),
       this.jettons.load(),
       this.tonInscriptions.load(),
-      this.staking.load(),
-      this.subscriptions.load(),
       this.battery.load(),
-      this.battery.loadBatteryConfig(),
       this.activityList.load(),
-      this.cards.load(),
+      // this.cards.load(),
     ]);
   }
 
   public async reload() {
     await Promise.all([
-      this.balances.reload(),
+      this.balances
+        .reload()
+        .then((balancesState) => this.loadDependsOnAccountStatus(balancesState.status)),
       this.nfts.reload(),
       this.jettons.reload(),
       this.tonInscriptions.load(),
-      this.staking.reload(),
-      this.subscriptions.reload(),
-      this.battery.load(),
-      this.battery.loadBatteryConfig(),
+      this.battery.reload(),
       this.activityList.reload(),
-      this.cards.load(),
+      // this.cards.load(),
     ]);
   }
 

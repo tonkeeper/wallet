@@ -25,6 +25,11 @@ export const LightTheme = {
   iconTertiary: '#95A0AD',
   iconPrimaryAlternate: '#FFFFFF',
 
+  buttonOrangeBackground: '#F5A73B',
+  buttonOrangeForeground: '#FFFFFF',
+  buttonOrangeBackgroundHighlighted: '#F5AF4E',
+  buttonOrangeBackgroundDisabled: '#C2842F',
+
   buttonPrimaryBackground: '#007AFF',
   buttonPrimaryForeground: '#FFFFFF',
   buttonSecondaryBackground: 'rgba(129, 140, 153, 0.16)',
@@ -42,6 +47,10 @@ export const LightTheme = {
   buttonPrimaryBackgroundGreenDisabled: '#2B9962',
   buttonPrimaryBackgroundGreenHighlighted: '#17C26D',
   buttonGreenForeground: '#FFFFFF',
+
+  buttonTetherBackground: '#009393',
+  buttonTetherBackgroundDisabled: '#006B6B',
+  buttonTetherBackgroundHighlighted: '#00ADAD',
 
   fieldBackground: 'rgba(129, 140, 153, 0.12)',
   fieldActiveBorder: '#007AFF',

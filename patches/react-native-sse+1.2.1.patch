@@ -1,0 +1,25 @@
+diff --git a/node_modules/react-native-sse/index.d.ts b/node_modules/react-native-sse/index.d.ts
+index eb77c42..7c5f056 100644
+--- a/node_modules/react-native-sse/index.d.ts
++++ b/node_modules/react-native-sse/index.d.ts
+@@ -48,6 +48,7 @@ export interface EventSourceOptions {
+   headers?: Record<string, any>;
+   body?: any;
+   debug?: boolean;
++  lastEventId?: string | null;
+   pollingInterval?: number;
+   lineEndingCharacter?: string;
+ }
+diff --git a/node_modules/react-native-sse/src/EventSource.js b/node_modules/react-native-sse/src/EventSource.js
+index 6a7b146..22d0196 100644
+--- a/node_modules/react-native-sse/src/EventSource.js
++++ b/node_modules/react-native-sse/src/EventSource.js
+@@ -17,7 +17,7 @@ class EventSource {
+   CR = '\r';
+ 
+   constructor(url, options = {}) {
+-    this.lastEventId = null;
++    this.lastEventId = options.lastEventId ?? null;
+     this.status = this.CONNECTING;
+ 
+     this.eventHandlers = {

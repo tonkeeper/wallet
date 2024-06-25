@@ -18,6 +18,9 @@ export type AppConfigVars = {
   tonNFTsMarketplaceEndpoint: string;
   tonapiMainnetHost: string;
   accountExplorer: string;
+  telegram_ru: string;
+  telegram_global: string;
+  telegram_farsi: string;
   subscriptionsHost: string;
   cachedMediaEndpoint: string;
   cachedMediaKey: string;
@@ -25,7 +28,8 @@ export type AppConfigVars = {
   NFTOnExplorerUrl: string;
   flags: Record<string, boolean>;
   directSupportUrl: string;
-  tonkeeperNewsUrl: string;
+  faqUrlRu: string;
+  faqUrl: string;
   stakingInfoUrl: string;
   tonCommunityUrl: string;
   tonCommunityChatUrl: string;
@@ -46,11 +50,15 @@ export type AppConfigVars = {
 
   batteryHost: string;
   batteryTestnetHost: string;
+  batteryRefundEndpoint: string;
   batteryMeanFees: string;
   batteryReservedAmount: string;
+  batteryMaxInputAmount: string;
   batteryMeanPrice_swap: string;
   batteryMeanPrice_jetton: string;
   batteryMeanPrice_nft: string;
+
+  scamEndpoint: string;
 
   holdersAppEndpoint: string;
   holdersService: string;
@@ -62,10 +70,34 @@ export type AppConfigVars = {
   disable_battery_send: boolean;
   disable_show_unverified_token: boolean;
   disable_battery_promo_module: boolean;
+  disable_battery_crypto_recharge_module: boolean;
+  disable_signer: boolean;
   disable_tonstakers: boolean;
   disable_holders_cards: boolean;
   exclude_jetton_chart_periods: boolean;
   devmode_enabled: boolean;
+
+  signer_store_url: string;
+  signer_about_url: string;
+
+  tonkeeper_pro_url: string;
+  notcoin_jetton_master: string;
+  notcoin_nft_collection: string;
+  notcoin_bot_url: string;
+  notcoin_burn_addresses: string[];
+  notcoin_burn_date: number;
+  notcoin_burn: boolean;
+
+  web_swaps_url: string;
+
+  swaps_referral_address: string;
+
+  enable_jusdt_migration: boolean;
+  usdt_jetton_master: string;
+  jusdt_jetton_master: string;
+
+  gasless_enabled: boolean;
+  v5_beta: boolean;
 };
 
 const defaultConfig: Partial<AppConfigVars> = {
@@ -89,10 +121,15 @@ const defaultConfig: Partial<AppConfigVars> = {
   tronapiHost: 'https://tron.tonkeeper.com',
   tronapiTestnetHost: 'https://testnet-tron.tonkeeper.com',
 
+  faqUrl: 'https://tonkeeper.helpscoutdocs.com',
+  faqUrlRu: 'https://tonkeeperru.helpscoutdocs.com',
+
   batteryHost: 'https://battery.tonkeeper.com',
   batteryTestnetHost: 'https://testnet-battery.tonkeeper.com',
+  batteryRefundEndpoint: 'https://battery-refund-app.vercel.app',
   batteryMeanFees: '0.0055',
   batteryReservedAmount: '0.3',
+  batteryMaxInputAmount: '3',
   batteryMeanPrice_swap: '0.22',
   batteryMeanPrice_jetton: '0.06',
   batteryMeanPrice_nft: '0.03',
@@ -101,12 +138,45 @@ const defaultConfig: Partial<AppConfigVars> = {
   disable_battery_send: false,
   disable_battery_iap_module: Platform.OS === 'android', // Enable for iOS, disable for Android
   disable_battery_promo_module: true,
+  disable_battery_crypto_recharge_module: false,
+  disable_signer: true,
+
+  scamEndpoint: 'https://scam.tonkeeper.com',
+
+  telegram_global: 'https://t.me/tonkeeper_news',
+  telegram_ru: 'https://t.me/tonkeeper_ru',
+  telegram_farsi: 'https://t.me/tonkeeper_farsi',
 
   disable_show_unverified_token: false,
   disable_tonstakers: false,
   disable_holders_cards: true,
   exclude_jetton_chart_periods: true,
   devmode_enabled: false,
+
+  signer_store_url: 'https://play.google.com/store/apps/details?id=com.tonapps.signer',
+
+  tonkeeper_pro_url: 'https://tonkeeper.com/pro',
+  notcoin_jetton_master:
+    '0:2f956143c461769579baef2e32cc2d7bc18283f40d20bb03e432cd603ac33ffc',
+  notcoin_nft_collection:
+    '0:e6923eb901bfe6d1a65a5bc2292b0e2462a220213c3f1d1b2d60491543a34860',
+  notcoin_bot_url: 'https://t.me/notcoin_bot',
+
+  web_swaps_url: 'https://swap.tonkeeper.com',
+
+  swaps_referral_address:
+    '0:6c8eef549f003f4f421d009aede507e3f7535667b639e98fd09b55c8fc0e23cb',
+
+  usdt_jetton_master:
+    '0:b113a994b5024a16719f69139328eb759596c38a25f59028b146fecdc3621dfe',
+
+  jusdt_jetton_master:
+    '0:729c13b6df2c07cbf0a06ab63d34af454f3d320ec1bcd8fb5c6d24d0806a17c2',
+
+  enable_jusdt_migration: true,
+
+  gasless_enabled: true,
+  v5_beta: true,
 };
 
 export const config = new AppConfig<AppConfigVars>({

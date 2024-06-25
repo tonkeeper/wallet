@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions } from 'react-native';
+import { Dimensions, useWindowDimensions } from 'react-native';
 import { Steezy } from '../../styles';
 import { Text } from '../Text';
 import { TouchableOpacity } from '../TouchableOpacity';
@@ -13,7 +13,6 @@ export interface ActionButtonProps {
   inRow?: number;
 }
 
-const containerWidth = Dimensions.get('window').width - 32;
 export const ActionButton = ({
   title,
   icon,
@@ -21,6 +20,7 @@ export const ActionButton = ({
   disabled,
   inRow = 3,
 }: ActionButtonProps) => {
+  const containerWidth = useWindowDimensions().width - 32;
   const width = containerWidth / inRow;
   return (
     <TouchableOpacity
@@ -34,7 +34,7 @@ export const ActionButton = ({
       ]}
     >
       <Icon name={icon} />
-      <Text color="textSecondary" type={'label3'}>
+      <Text color="textSecondary" textAlign="center" type={'label3'}>
         {title}
       </Text>
     </TouchableOpacity>

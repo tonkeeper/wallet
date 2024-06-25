@@ -19,8 +19,9 @@ import {
 import { tk } from '$wallet';
 import { TabsStackRouteNames } from '$navigation';
 import { Wallet } from '$wallet/Wallet';
-import { NetworkOverloadedError } from '@tonkeeper/shared/utils/blockchain';
+import { IndexerLatencyError } from '@tonkeeper/shared/utils/blockchain';
 import { SlideButton, Steezy } from '@tonkeeper/uikit';
+import { SignerError } from '$wallet/managers/SignerManager';
 
 enum States {
   INITIAL,
@@ -97,7 +98,7 @@ export const useActionFooter = (wallet?: Wallet) => {
         (wallet ?? tk.wallet).activityList.reload();
       });
     } catch (error) {
-      if (error instanceof NetworkOverloadedError) {
+      if (error instanceof IndexerLatencyError) {
         ref.current?.setError(error.message);
         await delay(3500);
         ref.current?.setState(States.INITIAL);
@@ -110,6 +111,10 @@ export const useActionFooter = (wallet?: Wallet) => {
       } else if (error instanceof UnlockVaultError) {
         Toast.fail(error?.message);
       } else if (error instanceof NFTOperationError) {
+        if (error?.message) {
+          ref.current?.setError(error.message);
+        }
+      } else if (error instanceof SignerError) {
         if (error?.message) {
           ref.current?.setError(error.message);
         }

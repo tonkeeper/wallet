@@ -6,17 +6,25 @@ import { useScrollToTop } from '@react-navigation/native';
 import { ns, useMergeRefs } from '../../utils';
 import Animated from 'react-native-reanimated';
 import { useScreenScroll } from './hooks';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface ScreenScrollView extends ScrollViewProps {
   hideBottomSeparator?: boolean;
   indent?: boolean;
+  withBottomInset?: boolean;
 }
 
 export type ScreenScrollViewRef = Animated.ScrollView;
 
 export const ScreenScrollView = memo(
   forwardRef<ScreenScrollViewRef, ScreenScrollView>((props, ref) => {
-    const { indent, hideBottomSeparator, contentContainerStyle, ...other } = props;
+    const {
+      withBottomInset,
+      indent,
+      hideBottomSeparator,
+      contentContainerStyle,
+      ...other
+    } = props;
     const {
       detectContentSize,
       detectLayoutSize,
@@ -28,6 +36,7 @@ export const ScreenScrollView = memo(
     } = useScreenScroll();
     const tabBarHeight = useBottomTabBarHeight();
     const setRef = useMergeRefs(scrollRef, ref);
+    const bottomInset = useSafeAreaInsets().bottom;
 
     useScrollToTop(scrollRef as any);
 
@@ -35,12 +44,13 @@ export const ScreenScrollView = memo(
       headerEjectionPoint.value = 0;
       return () => {
         scrollY.value = 0;
-      }
+      };
     }, []);
 
     const contentStyle = useMemo(() => {
       return [
         { paddingBottom: tabBarHeight },
+        withBottomInset && { paddingBottom: bottomInset + 16 },
         indent && styles.indent,
         contentContainerStyle,
       ];
@@ -58,7 +68,7 @@ export const ScreenScrollView = memo(
           ref={setRef}
           {...other}
         >
-          <Animated.View style={headerOffsetStyle} />
+          <Animated.View style={[headerOffsetStyle]} />
           {props.children}
         </Animated.ScrollView>
         {!hideBottomSeparator && <ScreenBottomSeparator />}

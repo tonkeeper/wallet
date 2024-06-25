@@ -25,6 +25,11 @@ export const DarkTheme = {
   iconTertiary: '#4E4E52',
   iconPrimaryAlternate: '#000000',
 
+  buttonOrangeBackground: '#F5A73B',
+  buttonOrangeForeground: '#FFFFFF',
+  buttonOrangeBackgroundHighlighted: '#F5AF4E',
+  buttonOrangeBackgroundDisabled: '#C2842F',
+
   buttonPrimaryBackground: '#45AEF5',
   buttonPrimaryForeground: '#FFFFFF',
   buttonSecondaryBackground: '#1B1B1F',
@@ -42,6 +47,10 @@ export const DarkTheme = {
   buttonPrimaryBackgroundGreenDisabled: '#2B9962',
   buttonPrimaryBackgroundGreenHighlighted: '#49CC8B',
   buttonGreenForeground: '#FFFFFF',
+
+  buttonTetherBackground: '#009393',
+  buttonTetherBackgroundDisabled: '#006B6B',
+  buttonTetherBackgroundHighlighted: '#00ADAD',
 
   fieldBackground: '#17171A',
   fieldActiveBorder: '#45AEF5',

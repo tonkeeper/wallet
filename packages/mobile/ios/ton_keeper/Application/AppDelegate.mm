@@ -1,5 +1,6 @@
 #import "AppDelegate.h"
 
+#import <React/RCTI18nUtil.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTLinkingManager.h>
 #import <Firebase.h>
@@ -13,6 +14,9 @@
   [FIRApp configure];
 
   self.moduleName = @"ton_keeper";
+
+  [[RCTI18nUtil sharedInstance] allowRTL:NO];
+  [[RCTI18nUtil sharedInstance] forceRTL:NO];
 
   // UIView *rootView = [self.reactDelegate createRootViewWithBridge:bridge moduleName:@"ton_keeper" initialProperties:nil];
   // rootView.backgroundColor = [UIColor whiteColor];

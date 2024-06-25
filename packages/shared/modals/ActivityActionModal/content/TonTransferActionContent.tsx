@@ -27,7 +27,7 @@ export const TonTransferActionContent = (props: TonTransferActionContentProps) =
           bounceable={action.initialActionType === ActionType.SmartContractExec}
         />
         <ExtraListItem extra={action.event.extra} />
-        {action.payload?.encrypted_comment && (
+        {action.payload?.encrypted_comment && !action.event.is_scam && (
           <EncryptedComment
             layout={EncryptedCommentLayout.LIST_ITEM}
             encryptedComment={action.payload.encrypted_comment}
@@ -35,7 +35,7 @@ export const TonTransferActionContent = (props: TonTransferActionContentProps) =
             sender={action.payload.sender}
           />
         )}
-        {!!action.payload.comment && (
+        {!!action.payload.comment && !action.event.is_scam && (
           <List.Item
             titleType="secondary"
             title={t('transactionDetails.comment')}

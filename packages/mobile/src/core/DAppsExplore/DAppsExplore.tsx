@@ -17,9 +17,18 @@ import {
   FeaturedApps,
   ConnectedApps,
   AppsCategory,
+  NotcoinBotIcon,
 } from './components';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Screen, SegmentedControl, Spacer, Steezy, View } from '@tonkeeper/uikit';
+import {
+  Button,
+  List,
+  Screen,
+  SegmentedControl,
+  Spacer,
+  Steezy,
+  View,
+} from '@tonkeeper/uikit';
 import { shallow } from 'zustand/shallow';
 import { BrowserStackParamList } from '$navigation/BrowserStack/BrowserStack.interface';
 import { t } from '@tonkeeper/shared/i18n';
@@ -27,6 +36,10 @@ import { ScrollPositionContext } from '$uikit';
 import { useFocusEffect, useTabPress } from '@tonkeeper/router';
 import { useSelectedCountry } from '$store/zustand/methodsToBuy/useSelectedCountry';
 import { CountryButton } from '@tonkeeper/shared/components';
+import { Linking } from 'react-native';
+import { config } from '$config';
+import { useJettons, useNftsState } from '@tonkeeper/shared/hooks';
+import { Address } from '@tonkeeper/core';
 
 export type DAppsExploreProps = NativeStackScreenProps<
   BrowserStackParamList,
@@ -88,6 +101,30 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = () => {
     openDAppsSearch();
   }, []);
 
+  const { jettonBalances } = useJettons();
+  const accountNfts = useNftsState((s) => s.accountNfts);
+
+  const [hasNotcoin, hasNotcoinVoucher] = useMemo(() => {
+    const hasJetton = jettonBalances.some((balance) =>
+      Address.compare(balance.jettonAddress, config.get('notcoin_jetton_master')),
+    );
+    const hasVoucher = Object.values(accountNfts).some(
+      (nft) =>
+        nft.collection &&
+        Address.compare(nft.collection.address, config.get('notcoin_nft_collection')),
+    );
+
+    return [hasJetton, hasVoucher];
+  }, [accountNfts, jettonBalances]);
+
+  const showNotcoin = hasNotcoin || hasNotcoinVoucher;
+
+  const openNotcoinBot = useCallback(async () => {
+    try {
+      await Linking.openURL(config.get('notcoin_bot_url'));
+    } catch {}
+  }, []);
+
   const [segmentIndex, setSegmentIndex] = useState(0);
 
   const showConnected = segmentIndex === 1;
@@ -139,6 +176,27 @@ const DAppsExploreComponent: FC<DAppsExploreProps> = () => {
           ) : (
             <>
               <FeaturedApps items={filteredFeaturedApps} />
+              {showNotcoin ? (
+                <>
+                  <Spacer y={8} />
+                  <List style={styles.notcoinList}>
+                    <List.Item
+                      leftContent={<NotcoinBotIcon style={styles.notcoinIcon} />}
+                      onPress={openNotcoinBot}
+                      title={t('notcoin.name')}
+                      subtitle={t('notcoin.slogan')}
+                      rightContent={
+                        <Button
+                          title={t('notcoin.open')}
+                          size="small"
+                          color="tertiary"
+                          onPress={openNotcoinBot}
+                        />
+                      }
+                    />
+                  </List>
+                </>
+              ) : null}
               {filteredCategories.map((category) => (
                 <AppsCategory key={category.id} category={category} />
               ))}
@@ -187,5 +245,13 @@ const styles = Steezy.create(({ colors }) => ({
     backgroundColor: colors.backgroundPageAlternate,
     padding: 16,
     position: 'relative',
+  },
+  notcoinList: {
+    marginBottom: 0,
+  },
+  notcoinIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
   },
 }));

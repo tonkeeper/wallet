@@ -12,16 +12,23 @@ import {
   WalletStyleConfig,
   WalletType,
 } from './WalletTypes';
-import { createTonApiInstance } from './utils';
+import { createSwapInstance, createTonApiInstance } from './utils';
 import { Vault } from '@tonkeeper/core';
 import { v4 as uuidv4 } from 'uuid';
 import { Mnemonic } from '@tonkeeper/core/src/utils/mnemonic';
-import { DEFAULT_WALLET_STYLE_CONFIG, DEFAULT_WALLET_VERSION } from './constants';
+import {
+  DEFAULT_WALLET_STYLE_CONFIG,
+  DEFAULT_WALLET_VERSION,
+  mapContractVersionToName,
+} from './constants';
 import { Buffer } from 'buffer';
 import nacl from 'tweetnacl';
 import { AccountsStream } from './streaming';
 import { InteractionManager } from 'react-native';
 import { Biometry } from './Biometry';
+import { Toast } from '@tonkeeper/uikit';
+import { config } from '$config';
+import { SwapAPI } from '@tonkeeper/core/src/SwapAPI';
 
 type TonkeeperOptions = {
   storage: Storage;
@@ -64,6 +71,11 @@ export class Tonkeeper {
     testnet: TonAPI;
   };
 
+  public swapapi: {
+    mainnet: SwapAPI;
+    testnet: SwapAPI;
+  };
+
   private accountsStream: {
     mainnet: AccountsStream;
     testnet: AccountsStream;
@@ -101,9 +113,19 @@ export class Tonkeeper {
 
     this.tonPrice = new TonPriceManager(this.tonapi.mainnet, this.storage);
 
+    this.swapapi = {
+      mainnet: createSwapInstance(),
+      testnet: createSwapInstance(true),
+    };
+
     this.walletsStore.persist({
       storage: this.storage,
       key: 'walletsStore',
+      version: 1,
+      onUpdate: (_, prevData) => ({
+        ...prevData,
+        wallets: prevData?.wallets.filter((wallet) => wallet.version) ?? [],
+      }),
     });
 
     this.migrationStore.persist({
@@ -123,11 +145,13 @@ export class Tonkeeper {
   }
 
   public get walletForUnlock() {
-    if (this.wallet && !this.wallet.isWatchOnly) {
+    if (this.wallet && !this.wallet.isWatchOnly && !this.wallet.isExternal) {
       return this.wallet;
     }
 
-    return Array.from(this.wallets.values()).find((wallet) => !wallet.isWatchOnly)!;
+    return Array.from(this.wallets.values()).find(
+      (wallet) => !wallet.isWatchOnly && !wallet.isExternal,
+    )!;
   }
 
   public get biometryEnabled() {
@@ -160,7 +184,8 @@ export class Tonkeeper {
 
       await Promise.all(
         this.walletsStore.data.wallets.map((walletConfig) =>
-          this.createWalletInstance(walletConfig),
+          // It's safer to throw one instance instead of all in case of error
+          this.createWalletInstance(walletConfig).catch((e) => Toast.fail(e.message)),
         ),
       );
 
@@ -171,6 +196,7 @@ export class Tonkeeper {
       this.emitChangeWallet();
     } catch (err) {
       console.log('TK:init', err);
+      Toast.fail(err.message);
     }
   }
 
@@ -222,6 +248,27 @@ export class Tonkeeper {
       : DEFAULT_WALLET_STYLE_CONFIG.name;
   }
 
+  private getLedgerWalletNames(name: string, walletsInfo: any[]) {
+    const regex = new RegExp(`${name} (\\d+)`);
+    let lastNumber = [...this.wallets.values()].reduce((maxNumber, wallet) => {
+      const match = wallet.config.name.match(regex);
+      return match ? Math.max(maxNumber, Number(match[1])) : maxNumber;
+    }, 0);
+
+    if (
+      lastNumber === 0 &&
+      [...this.wallets.values()].map((wallet) => wallet.config.name).includes(name)
+    ) {
+      lastNumber = 1;
+    }
+
+    if (walletsInfo.length === 1 && lastNumber === 0) {
+      return [`${name}`];
+    }
+
+    return walletsInfo.map((_, index) => `${name} ${lastNumber + index + 1}`);
+  }
+
   public async createWallet(passcode: string) {
     const mnemonic = (await Mnemonic.generateMnemonic(24)).join(' ');
     return await this.importWallet(mnemonic, passcode, [DEFAULT_WALLET_VERSION], {
@@ -252,7 +299,7 @@ export class Tonkeeper {
         ...walletConfig,
         name:
           versions.length > 1
-            ? `${this.getNewWalletName()} ${version}`
+            ? `${this.getNewWalletName()} ${mapContractVersionToName(version)}`
             : this.getNewWalletName(),
         version,
         type: WalletType.Regular,
@@ -283,11 +330,42 @@ export class Tonkeeper {
     return walletsInstances.map((item) => item.identifier);
   }
 
-  public async getWalletsInfo(mnemonic: string, isTestnet: boolean) {
-    const keyPair = await Mnemonic.mnemonicToKeyPair(mnemonic.split(' '));
+  public async getLedgerWalletsInfo(
+    accounts: { index: number; pubkey: string; address: string }[],
+    deviceId: string,
+  ) {
+    const version = WalletContractVersion.v4R2;
 
-    const pubkey = Buffer.from(keyPair.publicKey).toString('hex');
+    const addedDeviceAccountIndexes = this.walletsStore.data.wallets
+      .filter((wallet) => deviceId === wallet.ledger?.deviceId)
+      .map((wallet) => wallet.ledger!.accountIndex);
 
+    const accountsBalances = await Promise.all(
+      accounts.map((account) => this.tonapi.mainnet.accounts.getAccount(account.address)),
+    );
+
+    const accountsJettons = await Promise.all(
+      accounts.map((account) =>
+        this.tonapi.mainnet.accounts.getAccountJettonsBalances({
+          accountId: account.address,
+        }),
+      ),
+    );
+
+    return accounts.map(
+      (account, index): ImportWalletInfo => ({
+        pubkey: account.pubkey,
+        version,
+        address: account.address,
+        balance: accountsBalances[index].balance,
+        tokens: accountsJettons[index].balances.length > 0,
+        accountIndex: account.index,
+        isAdded: addedDeviceAccountIndexes.includes(account.index),
+      }),
+    );
+  }
+
+  public async getWalletsInfo(pubkey: string, isTestnet: boolean, isMnemonic = false) {
     const tonapi = isTestnet ? this.tonapi.testnet : this.tonapi.mainnet;
 
     const [{ accounts }, addresses] = await Promise.all([
@@ -313,6 +391,7 @@ export class Tonkeeper {
     const wallets = accounts
       .map(
         (account, index): ImportWalletInfo => ({
+          pubkey,
           version: versionByAddress[account.address],
           address: account.address,
           balance: account.balance,
@@ -323,6 +402,7 @@ export class Tonkeeper {
 
     if (!wallets.some((wallet) => wallet.version === DEFAULT_WALLET_VERSION)) {
       wallets.push({
+        pubkey,
         version: DEFAULT_WALLET_VERSION,
         address: addresses[DEFAULT_WALLET_VERSION].raw,
         balance: 0,
@@ -337,6 +417,14 @@ export class Tonkeeper {
       const indexB = versions.indexOf(b.version);
       return indexA - indexB;
     });
+  }
+
+  public async getWalletsInfoByMnemonic(mnemonic: string, isTestnet: boolean) {
+    const keyPair = await Mnemonic.mnemonicToKeyPair(mnemonic.split(' '));
+
+    const pubkey = Buffer.from(keyPair.publicKey).toString('hex');
+
+    return await this.getWalletsInfo(pubkey, isTestnet, true);
   }
 
   public async addWatchOnlyWallet(address: string, name?: string) {
@@ -360,6 +448,10 @@ export class Tonkeeper {
 
     const version = versionByAddress[rawAddress] as WalletContractVersion;
 
+    if (!version) {
+      throw new Error('Unknown contract');
+    }
+
     const config: WalletConfig = {
       ...DEFAULT_WALLET_STYLE_CONFIG,
       name: name ?? this.getNewWalletName(),
@@ -378,6 +470,149 @@ export class Tonkeeper {
     await this.setWallet(wallet);
 
     return [wallet.identifier];
+  }
+
+  public async addLedgerWallets(
+    walletsInfo: ImportWalletInfo[],
+    deviceId: string,
+    deviceModel: string,
+  ) {
+    const walletNames = this.getLedgerWalletNames(deviceModel, walletsInfo);
+
+    const ledgerWallets: WalletConfig[] = walletsInfo.map((walletInfo, index) => {
+      const workchain = Number(walletInfo.address.split(':')[0]);
+
+      const identifier = uuidv4();
+
+      return {
+        ...DEFAULT_WALLET_STYLE_CONFIG,
+        name: walletNames[index],
+        identifier,
+        network: WalletNetwork.mainnet,
+        type: WalletType.Ledger,
+        pubkey: walletInfo.pubkey,
+        workchain,
+        version: walletInfo.version,
+        ledger: {
+          deviceId,
+          deviceModel,
+          accountIndex: walletInfo.accountIndex!,
+        },
+      };
+    });
+
+    await this.walletsStore.setAsync(({ wallets }) => ({
+      wallets: [...wallets, ...ledgerWallets],
+    }));
+    const walletsInstances = await Promise.all(
+      ledgerWallets.map((wallet) => this.createWalletInstance(wallet)),
+    );
+
+    await this.setWallet(walletsInstances[0]);
+
+    return walletsInstances.map((item) => item.identifier);
+  }
+
+  public async addSignerWallet(
+    pubkey: string,
+    name?: string,
+    versions: WalletContractVersion[] = [DEFAULT_WALLET_VERSION],
+    isSignerDeeplink = false,
+  ) {
+    const addresses = await Address.fromPubkey(pubkey, false);
+
+    if (!addresses) {
+      throw new Error("Can't parse pubkey");
+    }
+
+    const newWallets: WalletConfig[] = [];
+
+    for (const version of versions) {
+      const rawAddress = addresses[version].raw;
+
+      const workchain = Number(rawAddress.split(':')[0]);
+
+      const identifier = uuidv4();
+
+      const walletName = name ?? this.getNewWalletName();
+
+      newWallets.push({
+        ...DEFAULT_WALLET_STYLE_CONFIG,
+        name:
+          versions.length > 1
+            ? `${walletName} ${mapContractVersionToName(version)}`
+            : walletName,
+        identifier,
+        network: WalletNetwork.mainnet,
+        type: isSignerDeeplink ? WalletType.SignerDeeplink : WalletType.Signer,
+        pubkey,
+        workchain,
+        version,
+      });
+    }
+
+    const versionsOrder = Object.values(WalletContractVersion);
+
+    const sortedWallets = newWallets.sort((a, b) => {
+      const indexA = versionsOrder.indexOf(a.version);
+      const indexB = versionsOrder.indexOf(b.version);
+      return indexA - indexB;
+    });
+
+    await this.walletsStore.setAsync(({ wallets }) => ({
+      wallets: [...wallets, ...sortedWallets],
+    }));
+    const walletsInstances = await Promise.all(
+      sortedWallets.map((wallet) => this.createWalletInstance(wallet)),
+    );
+
+    await this.setWallet(walletsInstances[0]);
+
+    return walletsInstances.map((item) => item.identifier);
+  }
+
+  public async addWalletV5() {
+    if (!this.wallet) {
+      throw new Error('No active wallet');
+    }
+
+    const version = WalletContractVersion.v5R1;
+
+    const identifier = uuidv4();
+
+    let keyPair: nacl.SignKeyPair | null = null;
+
+    if (this.wallet.isMnemonic) {
+      const {
+        mnemonic,
+        passcode,
+        keyPair: walletKeyPair,
+      } = await this.wallet.signer.getMnemonic();
+
+      keyPair = walletKeyPair;
+
+      await this.vault.import(identifier, mnemonic, passcode);
+    }
+
+    const config: WalletConfig = {
+      ...this.wallet.config,
+      name: this.wallet.config.name.replace(/\s*v\d+R\d+/g, ''),
+      identifier,
+      version,
+    };
+
+    await this.walletsStore.setAsync(({ wallets }) => ({
+      wallets: [...wallets, config],
+    }));
+    const wallet = await this.createWalletInstance(config);
+
+    if (keyPair) {
+      wallet.tonProof.obtainProof(keyPair).then(() => wallet.battery.load());
+    }
+
+    wallet.saveLastBackupTimestamp(this.wallet.setup.data.lastBackupAt);
+
+    return wallet.identifier;
   }
 
   public async removeWallet(identifier: string) {
@@ -436,7 +671,7 @@ export class Tonkeeper {
 
     const wallet = new Wallet(
       walletConfig,
-      addresses!,
+      addresses,
       this.storage,
       this.tonPrice,
       accountStream,
@@ -467,13 +702,14 @@ export class Tonkeeper {
       const updatedWallets = this.walletsStore.data.wallets.map(
         (wallet): WalletConfig => {
           if (identifiers.includes(wallet.identifier)) {
+            const multipleName = this.wallet.isLedger
+              ? `${config.name} ${wallet.name.match(/\d+$/)?.[0]}`
+              : `${config.name} ${mapContractVersionToName(wallet.version)}`;
+
             return {
               ...wallet,
               ...config,
-              name:
-                identifiers.length > 1
-                  ? `${config.name} ${wallet.version}`
-                  : config.name ?? wallet.name,
+              name: identifiers.length > 1 ? multipleName : config.name ?? wallet.name,
             };
           }
           return wallet;
@@ -568,5 +804,18 @@ export class Tonkeeper {
 
   public async disableLock() {
     await this.walletsStore.setAsync({ lockScreenEnabled: false });
+  }
+
+  public get hasW5WithCurrentPubkey() {
+    if (!this.wallet) {
+      return false;
+    }
+
+    return Array.from(this.wallets.values()).some(
+      (wallet) =>
+        wallet.isW5 &&
+        wallet.pubkey === this.wallet.pubkey &&
+        wallet.network === this.wallet.network,
+    );
   }
 }

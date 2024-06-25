@@ -68,6 +68,17 @@ export const DevConfigScreen = memo(() => {
               })
             }
           />
+          <List.Item
+            title="Enable Signer"
+            onPress={handleBooleanSwitch('disable_signer')}
+            rightContent={
+              <Switch
+                trackColor={{ true: theme.accentBlue }}
+                value={!config.get('disable_signer')}
+                onChange={handleBooleanSwitch('disable_signer')}
+              />
+            }
+          />
         </List>
       </Screen.ScrollView>
     </Screen>

@@ -1,11 +1,12 @@
-import { Image } from 'react-native';
+import { Image, StatusBar } from 'react-native';
 import { BlurView } from 'expo-blur';
 
 import styled, { css } from '$styled';
 import { deviceWidth, ns } from '$utils';
 import { IsTablet, Opacity, TabletMaxWidth } from '$shared/constants';
+import { isAndroid } from '@tonkeeper/uikit';
 
-const BorderHorizontalWidth = ns(48);
+const BorderHorizontalWidth = ns(56);
 const RectSize =
   (IsTablet ? TabletMaxWidth / 1.5 : deviceWidth) - BorderHorizontalWidth * 2;
 
@@ -176,6 +177,7 @@ export const CloseButtonWrap = styled.TouchableOpacity.attrs({
   height: ${ns(64)}px;
   position: absolute;
   left: 0;
+  top: ${isAndroid ? StatusBar.currentHeight : 0}px;
   z-index: 3;
   align-items: center;
   justify-content: center;

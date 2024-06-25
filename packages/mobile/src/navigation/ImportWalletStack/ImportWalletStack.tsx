@@ -4,7 +4,7 @@ import { memo, useEffect } from 'react';
 import { ImportWalletStackParamList, ImportWalletStackRouteNames } from './types';
 import { CreatePin, ImportWallet } from '$core';
 import { SetupNotifications } from '$core/SetupNotifications/SetupNotifications';
-import { ChooseWallets } from '../../screens';
+import { ChooseLedgerWallets, ChooseWallets, PairSignerScreen } from '../../screens';
 import { useDispatch } from 'react-redux';
 import { walletActions } from '$store/wallet';
 
@@ -38,8 +38,16 @@ export const ImportWalletStack = memo(() => {
         component={ImportWallet}
       />
       <Stack.Screen
+        name={ImportWalletStackRouteNames.PairSignerScreen}
+        component={PairSignerScreen}
+      />
+      <Stack.Screen
         name={ImportWalletStackRouteNames.ChooseWallets}
         component={ChooseWallets}
+      />
+      <Stack.Screen
+        name={ImportWalletStackRouteNames.ChooseLedgerWallets}
+        component={ChooseLedgerWallets}
       />
       <Stack.Screen
         name={ImportWalletStackRouteNames.CreatePasscode}

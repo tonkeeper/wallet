@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 import { Screen, View, List, ListSeparator, RefreshControl } from '@tonkeeper/uikit';
 import { Steezy } from '$styles';
 import { ListItemRate } from './ListItemRate';
@@ -6,6 +6,7 @@ import { TonIcon } from '@tonkeeper/uikit';
 import { HideableAmount } from '$core/HideableAmount/HideableAmount';
 import { Text } from '@tonkeeper/uikit';
 import { CellItemToRender } from '../content-providers/utils/types';
+import { FlatList } from 'react-native';
 
 const RenderItem = ({ item }: { item: CellItemToRender }) => {
   const renderLeftContent = () => {
@@ -91,6 +92,7 @@ const RenderItem = ({ item }: { item: CellItemToRender }) => {
 };
 
 interface WalletContentListProps {
+  identifier: string;
   walletContent: CellItemToRender[];
   handleRefresh: () => void;
   isRefreshing: boolean;
@@ -108,8 +110,15 @@ function ItemSeparatorComponent() {
 }
 
 export const WalletContentList = memo<WalletContentListProps>((props) => {
+  const listRef = React.useRef<FlatList>(null);
+
+  useEffect(() => {
+    listRef.current?.scrollToOffset({ animated: false, offset: 0 });
+  }, [props.identifier]);
+
   return (
     <Screen.FlashList
+      ref={listRef}
       ItemSeparatorComponent={ItemSeparatorComponent}
       ListHeaderComponent={props.ListHeaderComponent}
       ListFooterComponent={props.ListFooterComponent}

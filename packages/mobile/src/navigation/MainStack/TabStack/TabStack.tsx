@@ -55,7 +55,7 @@ export const TabStack: FC = () => {
 
   const wallet = useWallet();
 
-  const isWatchOnly = wallet && wallet.isWatchOnly;
+  const hideBrowser = wallet && (wallet.isWatchOnly || wallet.isExternal);
 
   return (
     <Tab.Navigator
@@ -127,7 +127,7 @@ export const TabStack: FC = () => {
           ),
         }}
       />
-      {!isWatchOnly ? (
+      {!hideBrowser ? (
         <Tab.Screen
           component={BrowserStack}
           name={TabsStackRouteNames.BrowserStack}

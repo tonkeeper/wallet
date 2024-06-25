@@ -8,6 +8,7 @@ import { Address } from '@tonkeeper/core';
 import { tk } from '$wallet';
 import { useWallet } from '@tonkeeper/shared/hooks';
 import { ActionItem, ActionType } from '$wallet/models/ActivityModel';
+import { compareAddresses } from '$utils/address';
 
 export const DOMAIN_ADDRESS_NOT_FOUND = 'DOMAIN_ADDRESS_NOT_FOUND';
 
@@ -75,6 +76,13 @@ export const useSuggestedAddresses = () => {
           ) !== -1;
 
         const rawAddress = Address.parse(recipientAddress).toRaw();
+
+        if (
+          compareAddresses(tk.wallet.battery.state.data.fundReceiver, rawAddress) ||
+          compareAddresses(tk.wallet.battery.state.data.excessesAccount, rawAddress)
+        ) {
+          return false;
+        }
 
         if (
           hiddenRecentAddresses.some((addr) => Address.compare(addr, rawAddress)) ||

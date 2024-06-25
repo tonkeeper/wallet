@@ -97,6 +97,8 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Tonkeeper uses bluetooth to connect your hardware Ledger Nano X</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Tonkeeper uses camera to scan QR codes</string>
 	<key>NSFaceIDUsageDescription</key>

@@ -1,5 +1,5 @@
 import { AnyAddress, tonAddress } from './transactionService';
-import { beginCell, Cell, comment } from '@ton/core';
+import { beginCell, Cell, comment, Contract, storeStateInit } from '@ton/core';
 import {
   WalletContractV4R1,
   LockupContractV1,
@@ -7,11 +7,16 @@ import {
 } from '../legacy';
 import { WalletContractV3R1, WalletContractV3R2, WalletContractV4 } from '@ton/ton';
 import nacl from 'tweetnacl';
+import { WalletContractV5 } from '@ton/ton/dist/wallets/WalletContractV5';
+import { WalletNetwork } from '@tonkeeper/mobile/src/wallet/WalletTypes';
+
+export type Signer = (message: Cell) => Promise<Buffer>;
 
 export enum OpCodes {
   JETTON_TRANSFER = 0xf8a7ea5,
   NFT_TRANSFER = 0x5fcc3d14,
   STONFI_SWAP = 0x25938561,
+  TK_RELAYER_FEE = 0x878da6e3,
 }
 
 export enum WalletVersion {
@@ -20,9 +25,20 @@ export enum WalletVersion {
   v4R1 = 2,
   v4R2 = 3,
   LockupV1 = 4,
+  v5R1 = 5,
 }
 
+export const mappedFromLegacyWalletVersion = {
+  'lockup-0.1': WalletVersion.LockupV1,
+  v3R1: WalletVersion.v3R1,
+  v3R2: WalletVersion.v3R2,
+  v4R1: WalletVersion.v4R1,
+  v4R2: WalletVersion.v4R2,
+  v5R1: WalletVersion.v5R1,
+};
+
 export const contractVersionsMap = {
+  v5R1: WalletVersion.v5R1,
   v4R2: WalletVersion.v4R2,
   v4R1: WalletVersion.v4R1,
   v3R2: WalletVersion.v3R2,
@@ -35,7 +51,8 @@ export type WalletContract =
   | WalletContractV3R1
   | WalletContractV3R2
   | WalletContractV4R1
-  | WalletContractV4;
+  | WalletContractV4
+  | WalletContractV5;
 
 export interface CreateNftTransferBodyParams {
   forwardAmount?: number | bigint;
@@ -45,7 +62,7 @@ export interface CreateNftTransferBodyParams {
   newOwnerAddress: AnyAddress;
   forwardBody?: Cell | string;
   /* Query id. Defaults to Tonkeeper signature query id with 32 random bits */
-  queryId?: number;
+  queryId?: number | bigint;
 }
 
 export interface CreateJettonTransferBodyParams {
@@ -56,7 +73,15 @@ export interface CreateJettonTransferBodyParams {
   jettonAmount: number | bigint;
   forwardBody?: Cell | string;
   /* Query id. Defaults to Tonkeeper signature query id with 32 random bits */
-  queryId?: number;
+  queryId?: number | bigint;
+}
+
+export interface CreateStonfiSwapBodyParams {
+  assetToSwap: AnyAddress;
+  // TODO: should be nullable
+  referralAddress: AnyAddress;
+  userWalletAddress: AnyAddress;
+  minAskAmount: number | bigint;
 }
 
 export class ContractService {
@@ -64,6 +89,7 @@ export class ContractService {
     version: WalletVersion,
     publicKey: Buffer,
     workchain: number,
+    network: WalletNetwork,
     additionalParams?: LockupContractV1AdditionalParams,
   ) {
     switch (version) {
@@ -75,6 +101,14 @@ export class ContractService {
         return WalletContractV4R1.create({ workchain, publicKey });
       case WalletVersion.v4R2:
         return WalletContractV4.create({ workchain, publicKey });
+      case WalletVersion.v5R1:
+        return WalletContractV5.create({
+          walletId: {
+            workChain: workchain,
+            networkGlobalId: network,
+          },
+          publicKey,
+        });
       case WalletVersion.LockupV1:
         return LockupContractV1.create({ workchain, publicKey, additionalParams });
     }
@@ -86,6 +120,13 @@ export class ContractService {
       Buffer.from(tonkeeperSignature, 'hex'),
       nacl.randomBytes(4),
     ]);
+    return BigInt('0x' + value.toString('hex'));
+  }
+
+  public static getMigrationQueryId() {
+    // crc32('jusdt_migration')
+    const signature = (0x93b5fcdf).toString(16);
+    const value = Buffer.concat([Buffer.from(signature, 'hex'), nacl.randomBytes(4)]);
     return BigInt('0x' + value.toString('hex'));
   }
 
@@ -124,5 +165,24 @@ export class ContractService {
       .storeCoins(createJettonTransferBodyParams.forwardAmount ?? 1n)
       .storeMaybeRef(this.prepareForwardBody(createJettonTransferBodyParams.forwardBody))
       .endCell();
+  }
+
+  static createStonfiSwapBody(createStonfiSwapBodyParams: CreateStonfiSwapBodyParams) {
+    return beginCell()
+      .storeUint(OpCodes.STONFI_SWAP, 32)
+      .storeAddress(tonAddress(createStonfiSwapBodyParams.assetToSwap))
+      .storeCoins(createStonfiSwapBodyParams.minAskAmount)
+      .storeAddress(tonAddress(createStonfiSwapBodyParams.userWalletAddress))
+      .storeBit(true)
+      .storeAddress(tonAddress(createStonfiSwapBodyParams.referralAddress))
+      .endCell();
+  }
+
+  static getStateInit(contract: Contract) {
+    return beginCell()
+      .store(storeStateInit(contract.init!))
+      .endCell()
+      .toBoc({ idx: false })
+      .toString('base64');
   }
 }

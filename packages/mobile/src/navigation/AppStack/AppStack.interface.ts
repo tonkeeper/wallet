@@ -4,6 +4,7 @@ import { CryptoCurrency } from '$shared/constants';
 import { SendAnalyticsFrom, SubscriptionModel } from '$store/models';
 import { NFTKeyPair } from '$store/nfts/interface';
 import { CurrencyAdditionalParams, TokenType } from '$core/Send/Send.interface';
+import {CustomFeeCurrency} from "$core/Send/new/core/useSendCore";
 
 export type AppStackParamList = {
   [AppStackRouteNames.MainStack]: {};
@@ -25,6 +26,10 @@ export type AppStackParamList = {
     fee?: string;
     isInactive?: boolean;
     withGoBack?: boolean;
+    isForcedGasless?: boolean;
+    isGasless?: boolean;
+    supportsGasless?: boolean;
+    customFeeCurrency?: CustomFeeCurrency;
     from?: SendAnalyticsFrom;
     expiryTimestamp?: number | null;
     redirectToActivity?: boolean;
@@ -62,5 +67,9 @@ export type AppStackParamList = {
   };
   [AppStackRouteNames.CustomizeWallet]: {
     identifiers?: string[];
+  };
+  [AppStackRouteNames.BatterySend]: {
+    recipient?: string;
+    jettonMaster?: string;
   };
 };

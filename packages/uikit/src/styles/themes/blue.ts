@@ -25,6 +25,11 @@ export const BlueTheme = {
   iconTertiary: '#556170',
   iconPrimaryAlternate: '#10161F',
 
+  buttonOrangeBackground: '#F5A73B',
+  buttonOrangeForeground: '#FFFFFF',
+  buttonOrangeBackgroundHighlighted: '#F5AF4E',
+  buttonOrangeBackgroundDisabled: '#C2842F',
+
   buttonPrimaryBackground: '#45AEF5',
   buttonPrimaryForeground: '#FFFFFF',
   buttonSecondaryBackground: '#1D2633',
@@ -42,6 +47,10 @@ export const BlueTheme = {
   buttonPrimaryBackgroundGreenDisabled: '#2B9962',
   buttonPrimaryBackgroundGreenHighlighted: '#49CC8B',
   buttonGreenForeground: '#FFFFFF',
+
+  buttonTetherBackground: '#009393',
+  buttonTetherBackgroundDisabled: '#006B6B',
+  buttonTetherBackgroundHighlighted: '#00ADAD',
 
   fieldBackground: '#1D2633',
   fieldActiveBorder: '#45AEF5',

@@ -12,11 +12,13 @@ export interface WalletStatusState {
   isReloading: boolean;
   isLoading: boolean;
   updatedAt: number;
+  isW5BlockHidden: boolean;
 }
 
 export interface WalletSetupState {
   lastBackupAt: number | null;
   setupDismissed: boolean;
+  hasOpenedTelegramChannel: boolean;
 }
 
 export class Wallet extends WalletContent {
@@ -24,11 +26,13 @@ export class Wallet extends WalletContent {
     isReloading: false,
     isLoading: false,
     updatedAt: Date.now(),
+    isW5BlockHidden: false,
   };
 
   static readonly INITIAL_SETUP_STATE: WalletSetupState = {
     lastBackupAt: null,
     setupDismissed: false,
+    hasOpenedTelegramChannel: false,
   };
 
   private stopListenTransactions: Function | null = null;
@@ -58,18 +62,28 @@ export class Wallet extends WalletContent {
     this.setup.persist({
       storage: this.storage,
       key: `${this.persistPath}/setup`,
+      version: 1,
+      onUpdate: (lastVersion, prevData) => ({ ...prevData, setupDismissed: false }),
     });
 
     this.listenTransactions();
     this.listenAppState();
   }
 
-  public saveLastBackupTimestamp() {
-    this.setup.set({ lastBackupAt: Date.now() });
+  public saveLastBackupTimestamp(lastBackupAt: number | null = Date.now()) {
+    this.setup.set({ lastBackupAt });
   }
 
   public dismissSetup() {
     this.setup.set({ setupDismissed: true });
+  }
+
+  public toggleTgJoined() {
+    this.setup.set({ hasOpenedTelegramChannel: true });
+  }
+
+  public hideW5Block() {
+    this.status.set({ isW5BlockHidden: true });
   }
 
   public async rehydrate() {

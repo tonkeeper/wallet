@@ -3,7 +3,7 @@ import { Address, AmountFormatter } from '@tonkeeper/core';
 import { ActionStatusEnum } from '@tonkeeper/core/src/TonAPI';
 import { formatTransactionTime } from '../../../utils/date';
 import { View, StyleSheet } from 'react-native';
-import { Text } from '@tonkeeper/uikit';
+import { Spacer, Text } from '@tonkeeper/uikit';
 import { memo, useMemo } from 'react';
 import { t } from '../../../i18n';
 import { useHideableFormatter } from '@tonkeeper/mobile/src/core/HideableAmount/useHideableFormatter';
@@ -15,6 +15,8 @@ export const JettonSwapActionListItem = memo<JettonSwapActionListItemProps>((pro
   const { action } = props;
   const { payload } = action;
   const { formatNano } = useHideableFormatter();
+
+  const isSwapFailed = action.status === ActionStatusEnum.Failed;
 
   const subtitle = payload.user_wallet.name
     ? payload.user_wallet.name
@@ -73,17 +75,22 @@ export const JettonSwapActionListItem = memo<JettonSwapActionListItemProps>((pro
     >
       <View style={styles.content}>
         <View style={styles.flex}>
-          {action.status === ActionStatusEnum.Failed && (
-            <Text type="body2" color="accentOrange">
-              {t('transactions.failed')}
-            </Text>
+          {isSwapFailed && (
+            <>
+              <Spacer y={8} />
+              <Text type="body3" color="accentOrange">
+                {t('transactions.failed_with_reason.swap_refund_no_liq')}
+              </Text>
+            </>
           )}
         </View>
-        <View>
-          <Text style={styles.timeText} type="body2" color="textSecondary">
-            {formatTransactionTime(new Date(action.event.timestamp * 1000))}
-          </Text>
-        </View>
+        {!isSwapFailed && (
+          <View>
+            <Text style={styles.timeText} type="body2" color="textSecondary">
+              {formatTransactionTime(new Date(action.event.timestamp * 1000))}
+            </Text>
+          </View>
+        )}
       </View>
     </ActionListItem>
   );

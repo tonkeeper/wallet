@@ -15,8 +15,8 @@ export type ScreenScrollListProps = FlatListProps<any> & {
   safeArea?: boolean;
 };
 
-export const ScreenScrollList = memo<ScreenScrollListProps>(
-  forwardRef((props, ref) => {
+export const ScreenScrollList = memo(
+  forwardRef<FlatList, ScreenScrollListProps>((props, ref) => {
     const {
       contentContainerStyle,
       safeArea,

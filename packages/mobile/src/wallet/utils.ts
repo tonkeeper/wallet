@@ -3,6 +3,9 @@ import { BatteryAPI } from '@tonkeeper/core/src/BatteryAPI';
 import { TonAPI } from '@tonkeeper/core/src/TonAPI';
 import { config } from '$config';
 import { i18n } from '@tonkeeper/shared/i18n';
+import { WalletContractVersion } from './WalletTypes';
+import { DEFAULT_WALLET_VERSION } from './constants';
+import { SwapAPI } from '@tonkeeper/core/src/SwapAPI';
 
 export const createTonApiInstance = (isTestnet = false) => {
   return new TonAPI({
@@ -37,6 +40,18 @@ export const createTronApiInstance = (isTestnet = false) => {
       }
 
       return config.get('tronapiHost');
+    },
+  });
+};
+
+export const createSwapInstance = (isTestnet = false) => {
+  return new SwapAPI({
+    baseUrl: () => {
+      if (isTestnet) {
+        return config.get('web_swaps_url', true);
+      }
+
+      return config.get('web_swaps_url');
     },
   });
 };

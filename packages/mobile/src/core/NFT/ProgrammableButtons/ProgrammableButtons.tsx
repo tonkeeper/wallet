@@ -7,13 +7,10 @@ import { Button } from '@tonkeeper/uikit';
 import { openDAppBrowser } from '$navigation';
 import { Alert } from 'react-native';
 import { t } from '@tonkeeper/shared/i18n';
-import TonWeb from 'tonweb';
 import { createTonProof } from '$utils/proof';
-import { useSelector } from 'react-redux';
-import { walletWalletSelector } from '$store/wallet';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
 import { getDomainFromURL } from '$utils';
-import { Address } from '@tonkeeper/core';
+import { Address, ContractService } from '@tonkeeper/core';
 import { tk } from '$wallet';
 
 export interface ProgrammableButton {
@@ -30,7 +27,6 @@ export interface ProgrammableButtonsProps {
 }
 
 const ProgrammableButtonsComponent = (props: ProgrammableButtonsProps) => {
-  const wallet = useSelector(walletWalletSelector);
   const unlockVault = useUnlockVault();
 
   const buttons = useMemo(() => {
@@ -46,15 +42,9 @@ const ProgrammableButtonsComponent = (props: ProgrammableButtonsProps) => {
       try {
         const nftAddress = Address.parse(props.nftAddress).toRaw();
         const vault = await unlockVault();
-        const address = await vault.getTonAddress(tk.wallet.isTestnet);
-        let walletStateInit = '';
-        if (wallet) {
-          const tonWallet = wallet.vault.tonWallet;
-          const { stateInit } = await tonWallet.createStateInit();
-          walletStateInit = TonWeb.utils.bytesToBase64(await stateInit.toBoc(false));
-        }
         const privateKey = await vault.getTonPrivateKey();
-        const publicKey = vault.tonPublicKey;
+        const address = tk.wallet.address.ton.raw;
+        const walletStateInit = ContractService.getStateInit(tk.wallet.contract);
         const domain = getDomainFromURL(uri);
         const proof = await createTonProof({
           address,
@@ -73,7 +63,7 @@ const ProgrammableButtonsComponent = (props: ProgrammableButtonsProps) => {
         url.searchParams.append('nftAddress', nftAddress);
         url.searchParams.append('timestamp', proof.proof.timestamp.toString());
         url.searchParams.append('domain', domain);
-        url.searchParams.append('publicKey', TonWeb.utils.bytesToHex(publicKey));
+        url.searchParams.append('publicKey', tk.wallet.pubkey);
         url.searchParams.append('signature', signatureHex);
         url.searchParams.append('stateInit', proof.proof.stateInit);
 
@@ -82,7 +72,7 @@ const ProgrammableButtonsComponent = (props: ProgrammableButtonsProps) => {
         console.log(e);
       }
     },
-    [props.nftAddress, unlockVault, wallet],
+    [props.nftAddress, unlockVault],
   );
 
   const handleOpenLink = useCallback(
@@ -109,6 +99,10 @@ const ProgrammableButtonsComponent = (props: ProgrammableButtonsProps) => {
     },
     [openExternalLink, props.isApproved],
   );
+
+  if (!props.isApproved) {
+    return null;
+  }
 
   return (
     <View style={styles.container}>

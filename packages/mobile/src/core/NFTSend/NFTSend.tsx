@@ -20,7 +20,6 @@ import { ConfirmStep } from '$core/NFTSend/steps/ConfirmStep/ConfirmStep';
 import {
   BASE_FORWARD_AMOUNT,
   ContractService,
-  contractVersionsMap,
   encryptMessageComment,
   ONE_TON,
   TransactionService,
@@ -37,8 +36,10 @@ import axios from 'axios';
 import { useUnlockVault } from '$core/ModalContainer/NFTOperations/useUnlockVault';
 import {
   emulateBoc,
+  emulateBocWithRelayer,
   getTimeoutFromLiteserverSafely,
   sendBoc,
+  sendBocToRelayer,
 } from '@tonkeeper/shared/utils/blockchain';
 import {
   checkIsInsufficient,
@@ -53,6 +54,7 @@ import { useIsEnabledForBattery, useWallet } from '@tonkeeper/shared/hooks';
 import { tk } from '$wallet';
 import { config } from '$config';
 import { BatterySupportedTransaction } from '$wallet/managers/BatteryManager';
+import { WalletContractFeature } from '$wallet/WalletTypes';
 
 interface Props {
   route: RouteProp<AppStackParamList, AppStackRouteNames.NFTSend>;
@@ -114,89 +116,105 @@ export const NFTSend: FC<Props> = (props) => {
   const [isSending, setSending] = useState(false);
   const [isBattery, setIsBattery] = useState(false);
   const [isCommentEncrypted, setCommentEncrypted] = useState(false);
+  const [encryptedCommentPrivateKey, setEncryptedCommentPrivateKey] =
+    useState<Uint8Array | null>(null);
 
   const isBackDisabled = isSending || isPreparing;
 
   const unlockVault = useUnlockVault();
 
-  const prepareConfirmSending = useCallback(async () => {
-    try {
-      setPreparing(true);
+  const prepareConfirmSending = useCallback(
+    async (
+      shouldAttemptWithRelayer = isNFTSendEnabledWithRelayer,
+      _seqno?: number,
+      _timeout?: number,
+    ) => {
+      try {
+        setPreparing(true);
 
-      let commentValue: Cell | string = comment;
-      if (isCommentEncrypted) {
-        const tempKeyPair = nacl.sign.keyPair();
-        commentValue = await encryptMessageComment(
-          comment,
-          tempKeyPair.publicKey,
-          tempKeyPair.publicKey,
-          tempKeyPair.secretKey,
-          wallet.address.ton.raw,
+        let commentValue: Cell | string = comment;
+        if (isCommentEncrypted) {
+          const tempKeyPair = nacl.sign.keyPair();
+          commentValue = await encryptMessageComment(
+            comment,
+            tempKeyPair.publicKey,
+            tempKeyPair.publicKey,
+            tempKeyPair.secretKey,
+            wallet.address.ton.raw,
+          );
+        }
+
+        const seqno = _seqno ?? (await getWalletSeqno());
+        const timeout = _timeout ?? (await getTimeoutFromLiteserverSafely());
+
+        const signer = await tk.wallet.signer.getSigner(true);
+
+        const boc = await TransactionService.createTransfer(
+          wallet.contract,
+          signer,
+          {
+            timeout,
+            messages: [
+              internal({
+                to: nftAddress,
+                value: ONE_TON,
+                body: ContractService.createNftTransferBody({
+                  newOwnerAddress: recipient!.address,
+                  excessesAddress: wallet.address.ton.raw,
+                  forwardBody: commentValue,
+                }),
+                bounce: true,
+              }),
+            ],
+            seqno,
+          },
+          shouldAttemptWithRelayer ? 'internal' : 'external',
         );
+
+        let emulateResponse: { emulateResult: MessageConsequences; battery: boolean };
+        if (shouldAttemptWithRelayer) {
+          try {
+            emulateResponse = await emulateBocWithRelayer(boc);
+          } catch (e) {
+            return await prepareConfirmSending(false, seqno, timeout);
+          }
+        } else {
+          emulateResponse = await emulateBoc(
+            boc,
+            [setBalanceForEmulation(toNano('2'))], // Emulate with higher balance to calculate fair amount to send
+            false,
+          );
+        }
+
+        setConsequences(emulateResponse.emulateResult);
+        setIsBattery(emulateResponse.battery);
+
+        Keyboard.dismiss();
+        await delay(100);
+
+        stepViewRef.current?.go(NFTSendSteps.CONFIRM);
+      } catch (e) {
+        Toast.fail(
+          axios.isAxiosError(e) && e.message === 'Network Error'
+            ? t('error_network')
+            : t('error_occurred'),
+        );
+
+        console.log(e);
+      } finally {
+        setPreparing(false);
       }
-
-      const nftTransferMessages = [
-        internal({
-          to: nftAddress,
-          value: ONE_TON,
-          body: ContractService.createNftTransferBody({
-            newOwnerAddress: recipient!.address,
-            excessesAddress: wallet.address.ton.raw,
-            forwardBody: commentValue,
-          }),
-          bounce: true,
-        }),
-      ];
-
-      const contract = ContractService.getWalletContract(
-        contractVersionsMap[wallet.config.version ?? 'v4R2'],
-        Buffer.from(wallet.pubkey, 'hex'),
-        wallet.config.workchain,
-      );
-
-      const timeout = await getTimeoutFromLiteserverSafely();
-      const boc = TransactionService.createTransfer(contract, {
-        timeout,
-        messages: nftTransferMessages,
-        seqno: await getWalletSeqno(),
-        secretKey: Buffer.alloc(64),
-      });
-
-      const response = await emulateBoc(
-        boc,
-        [setBalanceForEmulation(toNano('2'))], // Emulate with higher balance to calculate fair amount to send
-        isNFTSendEnabledWithRelayer,
-      );
-
-      setConsequences(response.emulateResult);
-      setIsBattery(response.battery);
-
-      Keyboard.dismiss();
-      await delay(100);
-
-      stepViewRef.current?.go(NFTSendSteps.CONFIRM);
-    } catch (e) {
-      Toast.fail(
-        axios.isAxiosError(e) && e.message === 'Network Error'
-          ? t('error_network')
-          : t('error_occurred'),
-      );
-
-      console.log(e);
-    } finally {
-      setPreparing(false);
-    }
-  }, [
-    comment,
-    isCommentEncrypted,
-    isNFTSendEnabledWithRelayer,
-    nftAddress,
-    recipient,
-    wallet.address.ton.raw,
-    wallet.config.version,
-    wallet.config.workchain,
-    wallet.pubkey,
-  ]);
+    },
+    [
+      comment,
+      isCommentEncrypted,
+      isNFTSendEnabledWithRelayer,
+      nftAddress,
+      recipient,
+      wallet.address.ton.raw,
+      wallet.contract,
+    ],
+  );
 
   const accountsApi = useInstance(() => {
     const tonApiConfiguration = new Configuration({
@@ -241,6 +259,23 @@ export const NFTSend: FC<Props> = (props) => {
     } catch {}
   }, [accountsApi, recipient]);
 
+  const handleSetCommentEncrypted = useCallback(
+    async (value: boolean) => {
+      try {
+        if (value && !encryptedCommentPrivateKey) {
+          const unlockedVault = await unlockVault(tk.wallet.identifier);
+
+          const privateKey = await unlockedVault.getTonPrivateKey();
+
+          setEncryptedCommentPrivateKey(privateKey);
+        }
+
+        setCommentEncrypted(value);
+      } catch {}
+    },
+    [encryptedCommentPrivateKey, unlockVault],
+  );
+
   useLayoutEffect(() => {
     fetchRecipientAccountInfo();
   }, [fetchRecipientAccountInfo]);
@@ -255,6 +290,10 @@ export const NFTSend: FC<Props> = (props) => {
     try {
       setSending(true);
 
+      const seqno = await getWalletSeqno();
+
+      const timeout = await getTimeoutFromLiteserverSafely();
+
       const pendingTransactions = await tk.wallet.battery.getStatus();
       if (pendingTransactions.length) {
         Toast.fail(t('transfer_pending_by_battery_error'));
@@ -262,21 +301,17 @@ export const NFTSend: FC<Props> = (props) => {
         throw new CanceledActionError();
       }
 
-      const vault = await unlockVault();
-      const privateKey = await vault.getTonPrivateKey();
-
       let commentValue: Cell | string = comment;
-      if (isCommentEncrypted && comment.length) {
-        const secretKey = await vault.getTonPrivateKey();
+      if (isCommentEncrypted && comment.length && encryptedCommentPrivateKey) {
         const recipientPubKey = (
           await tk.wallet.tonapi.accounts.getAccountPublicKey(recipient!.address)
         ).public_key;
 
         commentValue = await encryptMessageComment(
           comment,
-          vault.tonPublicKey,
+          Buffer.from(wallet.pubkey, 'hex'),
           Buffer.from(recipientPubKey!, 'hex'),
-          secretKey,
+          encryptedCommentPrivateKey,
           wallet.address.ton.raw,
         );
       }
@@ -297,35 +332,66 @@ export const NFTSend: FC<Props> = (props) => {
         throw new CanceledActionError();
       }
 
-      const excessesAccount = isBattery && tk.wallet.battery.excessesAccount;
+      let boc: string;
 
-      const nftTransferMessages = [
-        internal({
-          to: nftAddress,
-          value: totalAmount,
-          body: ContractService.createNftTransferBody({
-            newOwnerAddress: recipient!.address,
-            excessesAddress: excessesAccount || wallet.address.ton.raw,
-            forwardBody: commentValue,
-          }),
-          bounce: true,
-        }),
-      ];
+      // TODO: doesn't work on Ledger now
+      // if (wallet.isLedger) {
+      //   const transfer = await wallet.signer.signLedgerTransaction({
+      //     to: Address.parse(nftAddress),
+      //     bounce: true,
+      //     amount: totalAmount,
+      //     seqno,
+      //     timeout,
+      //     sendMode: SendMode.PAY_GAS_SEPARATELY + SendMode.IGNORE_ERRORS,
+      //     payload: {
+      //       type: 'nft-transfer',
+      //       queryId: ContractService.getWalletQueryId(),
+      //       newOwner: Address.parse(recipient!.address),
+      //       responseDestination: Address.parse(wallet.address.ton.raw),
+      //       forwardAmount: BigInt(1),
+      //       forwardPayload: comment.length > 0 ? commentCell(comment) : null,
+      //       customPayload: null,
+      //     },
+      //   });
 
-      const contract = ContractService.getWalletContract(
-        contractVersionsMap[wallet.config.version ?? 'v4R2'],
-        Buffer.from(wallet.pubkey, 'hex'),
-        vault.workchain,
+      //   boc = TransactionService.externalMessage(wallet.contract, seqno, transfer)
+      //     .toBoc()
+      //     .toString('base64');
+      // }
+
+      const excessesAccount = isBattery && (await tk.wallet.battery.getExcessesAccount());
+
+      const signer = await tk.wallet.signer.getSigner();
+
+      boc = await TransactionService.createTransfer(
+        wallet.contract,
+        signer,
+        {
+          timeout,
+          messages: [
+            internal({
+              to: nftAddress,
+              value: totalAmount,
+              body: ContractService.createNftTransferBody({
+                newOwnerAddress: recipient!.address,
+                excessesAddress: excessesAccount || wallet.address.ton.raw,
+                forwardBody: commentValue,
+              }),
+              bounce: true,
+            }),
+          ],
+          seqno,
+          sendMode: 3,
+        },
+        isBattery ? 'internal' : 'external',
       );
 
-      const timeout = await getTimeoutFromLiteserverSafely();
-      const boc = TransactionService.createTransfer(contract, {
-        timeout,
-        messages: nftTransferMessages,
-        seqno: await getWalletSeqno(),
-        sendMode: 3,
-        secretKey: Buffer.from(privateKey),
-      });
+      if (
+        isBattery &&
+        tk.wallet.isSupportedByContract(WalletContractFeature.SIGNED_INTERNALS)
+      ) {
+        return await sendBocToRelayer(boc);
+      }
 
       await sendBoc(boc, isBattery);
     } catch (e) {
@@ -336,12 +402,12 @@ export const NFTSend: FC<Props> = (props) => {
   }, [
     comment,
     consequences?.event.extra,
+    encryptedCommentPrivateKey,
     isBattery,
     isCommentEncrypted,
     nftAddress,
     recipient,
     total.isRefund,
-    unlockVault,
     wallet,
   ]);
 
@@ -373,6 +439,7 @@ export const NFTSend: FC<Props> = (props) => {
           {(stepProps) => (
             <AddressStep
               recipient={recipient}
+              enableEncryption={!tk.wallet.isExternal}
               decimals={9}
               stepsScrollTop={stepsScrollTop}
               setRecipient={setRecipient}
@@ -380,7 +447,7 @@ export const NFTSend: FC<Props> = (props) => {
               recipientAccountInfo={recipientAccountInfo}
               comment={comment}
               isCommentEncrypted={isCommentEncrypted}
-              setCommentEncrypted={setCommentEncrypted}
+              setCommentEncrypted={handleSetCommentEncrypted}
               setComment={setComment}
               onContinue={prepareConfirmSending}
               {...stepProps}

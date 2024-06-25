@@ -1,5 +1,5 @@
 import React, { memo, useCallback } from 'react';
-import { Steezy, Text, Toast, TouchableOpacity } from '@tonkeeper/uikit';
+import { Steezy, Text, Toast } from '@tonkeeper/uikit';
 import { t } from '../../i18n';
 import { getPendingPurchasesIOS, finishTransaction } from 'react-native-iap';
 import { Platform } from 'react-native';

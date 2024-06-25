@@ -17,12 +17,17 @@ export const mappedTonBalanceTitle = {
   [TonBalanceType.Restricted]: 'Restricted Toncoin',
 };
 
+export const mappedRenderPriority = {
+  [TonBalanceType.Liquid]: 1001,
+  [TonBalanceType.Locked]: 1000,
+  [TonBalanceType.Restricted]: 999,
+};
+
 export class TONContentProvider extends ContentProviderPrototype<{
   tonPrice: TonPriceDependency;
   tonBalances: TonBalancesDependency;
 }> {
   name = Providers.TON;
-  renderPriority = 999;
 
   constructor(tonPrice: TonPriceDependency, tonBalances: TonBalancesDependency) {
     super({ tonPrice, tonBalances });
@@ -35,7 +40,7 @@ export class TONContentProvider extends ContentProviderPrototype<{
   makeCellItemFromData(data: TonBalance): CellItemToRender {
     return {
       key: data.type,
-      renderPriority: this.renderPriority,
+      renderPriority: mappedRenderPriority[data.type],
       tonIcon: true,
       fiatRate: this.deps.tonPrice.getFiatRate(data.balance),
       onPress: () => openWallet(CryptoCurrencies.Ton),

@@ -20,15 +20,61 @@ export enum WalletType {
   Regular = 'Regular',
   Lockup = 'Lockup',
   WatchOnly = 'WatchOnly',
+  Signer = 'Signer',
+  SignerDeeplink = 'SignerDeeplink',
+  Ledger = 'Ledger',
 }
 
 export enum WalletContractVersion {
+  v5R1 = 'v5R1',
   v4R2 = 'v4R2',
   v4R1 = 'v4R1',
   v3R2 = 'v3R2',
   v3R1 = 'v3R1',
   LockupV1 = 'lockup-0.1',
 }
+
+export enum WalletContractFeature {
+  GASLESS,
+  SIGNED_INTERNALS,
+  PLUGINS,
+}
+
+export const WalletContractFeatures: Record<
+  WalletContractVersion,
+  Record<WalletContractFeature, boolean>
+> = {
+  [WalletContractVersion.v5R1]: {
+    [WalletContractFeature.GASLESS]: true,
+    [WalletContractFeature.SIGNED_INTERNALS]: true,
+    [WalletContractFeature.PLUGINS]: true,
+  },
+  [WalletContractVersion.v4R2]: {
+    [WalletContractFeature.GASLESS]: false,
+    [WalletContractFeature.SIGNED_INTERNALS]: false,
+    [WalletContractFeature.PLUGINS]: true,
+  },
+  [WalletContractVersion.v4R1]: {
+    [WalletContractFeature.GASLESS]: false,
+    [WalletContractFeature.SIGNED_INTERNALS]: false,
+    [WalletContractFeature.PLUGINS]: false,
+  },
+  [WalletContractVersion.v3R2]: {
+    [WalletContractFeature.GASLESS]: false,
+    [WalletContractFeature.SIGNED_INTERNALS]: false,
+    [WalletContractFeature.PLUGINS]: false,
+  },
+  [WalletContractVersion.v3R1]: {
+    [WalletContractFeature.GASLESS]: false,
+    [WalletContractFeature.SIGNED_INTERNALS]: false,
+    [WalletContractFeature.PLUGINS]: false,
+  },
+  [WalletContractVersion.LockupV1]: {
+    [WalletContractFeature.GASLESS]: false,
+    [WalletContractFeature.SIGNED_INTERNALS]: false,
+    [WalletContractFeature.PLUGINS]: false,
+  },
+};
 
 export type TronAddresses = {
   proxy: string;
@@ -75,13 +121,21 @@ export interface WalletConfig extends WalletStyleConfig {
   /** lockup */
   allowedDestinations?: string;
   configPubKey?: string;
+  ledger?: {
+    deviceId: string;
+    deviceModel: string;
+    accountIndex: number;
+  };
 }
 
 export interface ImportWalletInfo {
+  pubkey: string;
   version: WalletContractVersion;
   address: string;
   balance: number;
   tokens: boolean;
+  accountIndex?: number;
+  isAdded?: boolean;
 }
 
 export type WithWalletIdentifier<T> = T & { walletIdentifier: string };

@@ -16,13 +16,13 @@ import { convertHexToRGBA, hNs } from '$utils';
 import { Text } from '../Text/Text';
 import { Icon, Steezy, isIOS } from '@tonkeeper/uikit';
 
-export const NavBarHelper: FC = () => {
+export const NavBarHelper: FC<{ isModal?: boolean }> = (props) => {
   const { top } = useSafeAreaInsets();
 
   return (
     <View
       style={{
-        height: hNs(NavBarHeight) + top,
+        height: hNs(NavBarHeight) + (props.isModal && isIOS ? 0 : top),
       }}
     />
   );
@@ -155,8 +155,8 @@ export const NavBar: FC<NavBarProps> = (props) => {
       {isTransparent && (
         <S.Gradient
           colors={[
-            theme.colors.backgroundPrimary,
-            convertHexToRGBA(theme.colors.backgroundPrimary, 0),
+            theme.colors.backgroundPage,
+            convertHexToRGBA(theme.colors.backgroundPage, 0),
           ]}
           locations={[0, 1]}
         />
@@ -185,7 +185,7 @@ export const NavBar: FC<NavBarProps> = (props) => {
               children
             )}
             <Animated.View style={subtitleAnimatedStyle}>
-              {subtitle ? (
+              {typeof subtitle === 'string' ? (
                 <Text
                   textAlign="center"
                   variant="body2"
@@ -197,6 +197,10 @@ export const NavBar: FC<NavBarProps> = (props) => {
                 >
                   {subtitle}
                 </Text>
+              ) : subtitle ? (
+                <View style={styles.subtitle.static} onLayout={handleSubtitleLayout}>
+                  {subtitle}
+                </View>
               ) : null}
             </Animated.View>
           </S.CenterContent>

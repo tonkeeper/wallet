@@ -75,13 +75,13 @@ async function scanDirectory(setup) {
 }
 
 async function findOutSetup(langIdentifyer) {
-  let prompt = `You will get an message with an language identifyer, eather in form of language name, or short code of it,
+  let prompt = `You will get an message with an language identifier, either in form of language name, or short code of it,
 I will ask you to response with an valid JSON of following structure:
 just json object with fields: code - short code of language, name - name of language, nativeName - native name of language, rtl - boolean if language is right to left.
 example:
-{"code": "en", "name": "English", "nativeName": "English", "rtl": false}`;
-  let response = JSON.parse(await query(prompt, langIdentifyer));
-  return response;
+{"code": "en", "name": "English", "nativeName": "English", "rtl": false}. You must response with ONLY json object, nothing else`;
+  const res = await query(prompt, langIdentifyer);
+  return JSON.parse(res);
 }
 
 function countKeysRecursive(obj, langCode) {
@@ -122,7 +122,7 @@ async function doTranslate(obj, setup, keyChain) {
   let prompt = `You are an translator bot. You are helping to translate JSON lang file for an javascript application to a ${setup.name} lanuage. You will get an message with an json object of following structure – each key is a lang identifyer (example: "en"), and value is the translation in that language. Using this info please translate same phrase to ${setup.name} language and return only translation string without quotes.
 Never reply with anything except translation. Never ask for help or anything else, make sure to return only translation.
 If you see any unordinary symbols like quotes or anything else – try to preserve the same symbols in the translation.
-You all languages from json you get for translation to generate most sutable language key in return. Do not add any new symbols like "\\n", wich wasnt presented in original string.  
+You all languages from json you get for translation to generate most sutable language key in return. Do not add any new symbols like "\\n", wich wasnt presented in original string.
 Try to generate translation not much longer or much shorter than it is in other languages.
 If language available in latin and cyrillic then the most popular one.
 Some hint for the translation – you are translating an language key stored in ${key} field.`;

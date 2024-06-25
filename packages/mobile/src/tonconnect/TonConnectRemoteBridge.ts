@@ -76,13 +76,7 @@ class TonConnectRemoteBridgeService {
 
     const lastEventId = await this.getLastEventId();
 
-    if (lastEventId) {
-      url += `&last_event_id=${lastEventId}`;
-    }
-
-    console.log('sse connect', url);
-
-    this.eventSource = new EventSource(url);
+    this.eventSource = new EventSource(url, { debug: __DEV__, lastEventId });
 
     this.eventSource.addEventListener(
       'message',
@@ -206,7 +200,7 @@ class TonConnectRemoteBridgeService {
 
       await this.send(response, sessionCrypto, from);
 
-      if (request.method !== 'disconnect') {
+      if (request.method !== 'disconnect' && !response.error) {
         this.redirectIfNeeded();
       }
     } catch (e) {

@@ -3,4 +3,5 @@ export enum Providers {
   Tokens = 'Tokens',
   Staking = 'Staking',
   Inscriptions = 'Inscriptions',
+  NotCoinVouchers = 'NotCoinVouchers',
 }

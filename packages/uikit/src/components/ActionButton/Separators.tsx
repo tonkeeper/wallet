@@ -1,12 +1,8 @@
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
-import { Dimensions } from 'react-native';
+import { Dimensions, useWindowDimensions } from 'react-native';
 import React from 'react';
 import { Steezy, useTheme } from '../../styles';
 import { View } from '../View';
-
-const svgWidth = Dimensions.get('window').width - 32;
-const lineWidth = svgWidth - 56 * 2;
-const verticalLinesXOffset = svgWidth / 3;
 
 export function Separators({ numOfActions }: { numOfActions?: number }) {
   switch (numOfActions) {
@@ -79,6 +75,10 @@ const Gradients = () => {
 };
 
 function SeparatorsTwoRows() {
+  const svgWidth = useWindowDimensions().width - 32;
+  const lineWidth = svgWidth - 56 * 2;
+  const verticalLinesXOffset = svgWidth / 3;
+
   const theme = useTheme();
   return (
     <Svg width={svgWidth} height="112" viewBox={`0 0 ${svgWidth} 112`} fill="none">
@@ -159,6 +159,8 @@ function SeparatorsTwoRows() {
 }
 
 function SeparatorsTwoActions() {
+  const svgWidth = useWindowDimensions().width - 32;
+
   const theme = useTheme();
   return (
     <Svg width={svgWidth} height="56" viewBox={`0 0 ${svgWidth} 56`} fill="none">
@@ -189,6 +191,9 @@ function SeparatorsTwoActions() {
 }
 
 function SeparatorsOneRow() {
+  const svgWidth = useWindowDimensions().width - 32;
+  const verticalLinesXOffset = svgWidth / 3;
+
   const theme = useTheme();
   return (
     <Svg width={svgWidth} height="56" viewBox={`0 0 ${svgWidth} 56`} fill="none">

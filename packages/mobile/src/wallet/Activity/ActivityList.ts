@@ -1,6 +1,12 @@
-import { ActivitySection, ActionItem, ActivityModel } from '../models/ActivityModel';
+import { config } from '$config';
+import {
+  ActivitySection,
+  ActionItem,
+  ActivityModel,
+  ActionType,
+} from '../models/ActivityModel';
 import { ActivityLoader } from './ActivityLoader';
-import { State, Storage, Logger } from '@tonkeeper/core';
+import { State, Storage, Logger, Address } from '@tonkeeper/core';
 
 type Cursors = {
   tron: number | null;
@@ -13,6 +19,8 @@ export type ActivityListState = {
   isReloading: boolean;
   isLoading: boolean;
   hasMore: boolean;
+  isNotCoinReceived: boolean;
+  notCoinActionId: string | null;
 };
 
 export class ActivityList {
@@ -28,6 +36,8 @@ export class ActivityList {
     hasMore: true,
     sections: [],
     error: null,
+    isNotCoinReceived: false,
+    notCoinActionId: null,
   });
 
   constructor(
@@ -38,11 +48,12 @@ export class ActivityList {
     this.state.persist({
       storage: this.storage,
       key: `${this.persistPath}/ActivityList`,
-      partialize: ({ sections }) => ({
+      partialize: ({ sections, isNotCoinReceived }) => ({
         sections: sections.map((section) => ({
           ...section,
           data: section.data.slice(0, 100),
         })),
+        isNotCoinReceived,
       }),
       rehydrated: ({ sections }) => {
         sections.forEach((section) => {
@@ -50,6 +61,10 @@ export class ActivityList {
         });
       },
     });
+  }
+
+  public setNotCoinReceived() {
+    this.state.set({ isNotCoinReceived: true });
   }
 
   public async load(cursors?: Cursors) {
@@ -94,6 +109,25 @@ export class ActivityList {
         hasMore: Boolean(ton.cursor),
         isLoading: false,
       });
+
+      if (!this.state.data.isNotCoinReceived) {
+        const notcoinAction = ton.actions.find((action) => {
+          return (
+            action.type === ActionType.JettonTransfer &&
+            action.payload.recipient &&
+            Address.compare(
+              action.payload.recipient.address,
+              this.activityLoader.tonRawAddress,
+            ) &&
+            Address.compare(
+              action.payload.jetton.address,
+              config.get('notcoin_jetton_master'),
+            )
+          );
+        });
+
+        this.state.set({ notCoinActionId: notcoinAction?.action_id });
+      }
     } catch (err) {
       const message = `[ActivityList]: ${Logger.getErrorMessage(err)}`;
       console.log(message);

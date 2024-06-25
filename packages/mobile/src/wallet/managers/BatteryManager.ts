@@ -1,10 +1,15 @@
-import { BatteryAPI, UnitsEnum } from '@tonkeeper/core/src/BatteryAPI';
+import { BatteryAPI, RechargeMethods, UnitsEnum } from '@tonkeeper/core/src/BatteryAPI';
 import { MessageConsequences } from '@tonkeeper/core/src/TonAPI';
 import { Storage } from '@tonkeeper/core/src/declarations/Storage';
 import { State } from '@tonkeeper/core/src/utils/State';
 import { TonProofManager } from '$wallet/managers/TonProofManager';
 import { logger, NamespacedLogger } from '$logger';
 import { config } from '$config';
+import {
+  WalletContractFeature,
+  WalletContractFeatures,
+  WalletContractVersion,
+} from '$wallet/WalletTypes';
 
 export enum BatterySupportedTransaction {
   Swap = 'swap',
@@ -13,19 +18,28 @@ export enum BatterySupportedTransaction {
 }
 
 export interface BatteryState {
+  rechargeMethods: RechargeMethods['methods'];
+  isRechargeMethodsLoading: boolean;
+
   isLoading: boolean;
   balance?: string;
   reservedBalance?: string;
   excessesAccount?: string;
+  preferGasless: boolean;
+  hasTouchedGaslessToggle: boolean;
   fundReceiver?: string;
   supportedTransactions: Record<BatterySupportedTransaction, boolean>;
 }
 
 export class BatteryManager {
   public state = new State<BatteryState>({
+    rechargeMethods: [],
+    isRechargeMethodsLoading: false,
     isLoading: false,
     balance: undefined,
     reservedBalance: '0',
+    preferGasless: false,
+    hasTouchedGaslessToggle: false,
     supportedTransactions: {
       [BatterySupportedTransaction.Swap]: true,
       [BatterySupportedTransaction.Jetton]: true,
@@ -41,12 +55,21 @@ export class BatteryManager {
     private batteryapi: BatteryAPI,
     private storage: Storage,
     private isTestnet: boolean,
+    private contractVersion: WalletContractVersion,
   ) {
     this.state.persist({
-      partialize: ({ balance, reservedBalance, supportedTransactions }) => ({
+      partialize: ({
         balance,
         reservedBalance,
         supportedTransactions,
+        preferGasless,
+        hasTouchedGaslessToggle,
+      }) => ({
+        balance,
+        reservedBalance,
+        supportedTransactions,
+        preferGasless,
+        hasTouchedGaslessToggle,
       }),
       storage: this.storage,
       key: `${this.persistPath}/battery`,
@@ -60,6 +83,47 @@ export class BatteryManager {
 
   get fundReceiver() {
     return this.state.data.fundReceiver;
+  }
+
+  public async getExcessesAccount(): Promise<string> {
+    if (!this.excessesAccount) {
+      await this.loadBatteryConfig();
+    }
+
+    return this.excessesAccount!;
+  }
+
+  public async getFundReceiver(): Promise<string> {
+    if (!this.fundReceiver) {
+      await this.loadBatteryConfig();
+    }
+
+    return this.fundReceiver!;
+  }
+
+  public async fetchRechargeMethods() {
+    try {
+      this.state.set({ isRechargeMethodsLoading: true });
+      const rechargeMethods = await this.batteryapi.getRechargeMethods({
+        include_recharge_only: false,
+      });
+      this.state.set({
+        rechargeMethods: rechargeMethods.methods,
+        isRechargeMethodsLoading: false,
+      });
+      return rechargeMethods.methods;
+    } catch (e) {
+      this.state.set({ rechargeMethods: [], isRechargeMethodsLoading: false });
+      return [];
+    }
+  }
+
+  public async getRechargeMethods() {
+    if (!this.state.data.rechargeMethods.length) {
+      await this.fetchRechargeMethods();
+    }
+
+    return this.state.data.rechargeMethods;
   }
 
   public async fetchBalance() {
@@ -106,6 +170,44 @@ export class BatteryManager {
     } catch (err) {
       this.logger.error(err);
     }
+  }
+
+  public async estimateGaslessCost({
+    jettonMaster,
+    payload,
+    battery,
+  }: {
+    jettonMaster: string;
+    payload: string;
+    battery?: boolean;
+  }) {
+    try {
+      if (!this.tonProof.tonProofToken) {
+        throw new Error('No proof token');
+      }
+      return await this.batteryapi.estimateCost.estimateGaslessCost(
+        jettonMaster,
+        {
+          battery,
+          payload,
+        },
+        {
+          headers: {
+            'X-TonConnect-Auth': this.tonProof.tonProofToken,
+          },
+        },
+      );
+    } catch (err) {
+      this.logger.error(err);
+    }
+  }
+
+  public togglePreferGasless() {
+    this.state.set((state) => ({
+      ...state,
+      preferGasless: !state.preferGasless,
+      hasTouchedGaslessToggle: true,
+    }));
   }
 
   public async applyPromo(promoCode: string) {
@@ -204,7 +306,7 @@ export class BatteryManager {
         },
       });
 
-      return data.pending_transactions;
+      return data.pending_transactions ?? [];
     } catch (err) {
       logger.error('getStatus error');
       return [];
@@ -253,6 +355,10 @@ export class BatteryManager {
         },
       );
 
+      if (res.status >= 400) {
+        throw new Error('Bat response');
+      }
+
       const data: MessageConsequences = await res.json();
 
       const withBattery =
@@ -261,13 +367,29 @@ export class BatteryManager {
 
       return { consequences: data, withBattery };
     } catch (err) {
-      console.log(err);
+      this.logger.error(err);
       throw new Error(err);
     }
   }
 
+  public async loadRechargeMethods() {
+    if (!WalletContractFeatures[this.contractVersion][WalletContractFeature.GASLESS]) {
+      return;
+    }
+
+    await this.fetchRechargeMethods();
+  }
+
   public async load() {
-    return this.fetchBalance();
+    return await Promise.all([
+      this.fetchBalance(),
+      this.loadBatteryConfig(),
+      this.loadRechargeMethods(),
+    ]);
+  }
+
+  public async reload() {
+    return await this.fetchBalance();
   }
 
   public async rehydrate() {

@@ -11,7 +11,7 @@ export enum BatteryState {
 const valuesForBatteryState = {
   [BatteryState.Medium]: '1',
   [BatteryState.AlmostEmpty]: '0.4',
-  [BatteryState.Empty]: '0.03',
+  [BatteryState.Empty]: '0',
 };
 
 export function getBatteryState(batteryBalance: string) {

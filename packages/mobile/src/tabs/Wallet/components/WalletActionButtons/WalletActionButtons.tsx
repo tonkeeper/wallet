@@ -5,7 +5,6 @@ import { trackEvent } from '$utils/stats';
 import { Events, SendAnalyticsFrom } from '$store/models';
 import { useWallet } from '@tonkeeper/shared/hooks';
 import { useNavigation } from '@tonkeeper/router';
-import { store } from '$store';
 import { MainStackRouteNames, openScanQR, openSend } from '$navigation';
 import { Address } from '@tonkeeper/core';
 import { CryptoCurrencies } from '$shared/constants';
@@ -18,8 +17,6 @@ export const WalletActionButtons = memo(() => {
   const nav = useNavigation();
   const deeplinking = useDeeplinking();
   const flags = useFlags(['disable_swap']);
-
-  const isWatchOnly = wallet.isWatchOnly;
 
   const handlePressSwap = useCallback(() => {
     if (wallet) {
@@ -60,17 +57,21 @@ export const WalletActionButtons = memo(() => {
   }, [nav]);
 
   const handlePressScanQR = React.useCallback(() => {
-    if (store.getState().wallet.wallet) {
-      openScanQR((address) => {
-        if (Address.isValid(address)) {
+    if (wallet) {
+      openScanQR((value) => {
+        if (Address.isValid(value)) {
           setTimeout(() => {
-            openSend({ currency: CryptoCurrencies.Ton, address });
+            openSend({ currency: CryptoCurrencies.Ton, address: value });
           }, 200);
 
           return true;
         }
 
-        const resolver = deeplinking.getResolver(address, {
+        if (value.startsWith('tonkeeper://signer/link')) {
+          return;
+        }
+
+        const resolver = deeplinking.getResolver(value, {
           delay: 200,
           origin: DeeplinkOrigin.QR_CODE,
         });
@@ -85,14 +86,14 @@ export const WalletActionButtons = memo(() => {
     } else {
       openRequireWalletModal();
     }
-  }, [deeplinking]);
+  }, [deeplinking, wallet]);
 
   return (
     <ActionButtons
       buttons={[
         {
           id: 'send',
-          disabled: isWatchOnly,
+          disabled: wallet.isWatchOnly,
           onPress: handlePressSend,
           icon: 'ic-arrow-up-outline-28',
           title: t('wallet.send_btn'),
@@ -108,11 +109,11 @@ export const WalletActionButtons = memo(() => {
           icon: 'ic-qr-viewfinder-outline-28',
           title: t('wallet.scan_btn'),
           onPress: handlePressScanQR,
-          disabled: isWatchOnly,
+          disabled: wallet.isWatchOnly,
         },
         {
           id: 'swap',
-          disabled: isWatchOnly,
+          disabled: wallet.isWatchOnly || wallet.isLedger,
           onPress: handlePressSwap,
           icon: 'ic-swap-horizontal-outline-28',
           title: t('wallet.swap_btn'),
@@ -128,7 +129,7 @@ export const WalletActionButtons = memo(() => {
         {
           id: 'staking',
           onPress: handlePressStaking,
-          disabled: isWatchOnly,
+          disabled: wallet.isWatchOnly || wallet.isLedger,
           icon: 'ic-staking-outline-28',
           title: t('wallet.stake_btn'),
           visible: !wallet.isTestnet,

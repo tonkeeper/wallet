@@ -1,13 +1,10 @@
 import React, { useCallback, useMemo } from 'react';
 import axios from 'axios';
-import queryString from 'query-string';
-import TonWeb from 'tonweb';
-import { Linking, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { useTheme } from '$hooks/useTheme';
 import { Button, List, Loader, Spacer, Text, TransitionOpacity } from '$uikit';
 import {
   convertHexToRGBA,
-  delay,
   getDomainFromURL,
   triggerNotificationSuccess,
   triggerSelection,
@@ -30,23 +27,27 @@ import { Toast } from '$store';
 import { push } from '$navigation/imperative';
 import { openRequireWalletModal } from '$core/ModalContainer/RequireWallet/RequireWallet';
 import { SheetActions, useNavigation } from '@tonkeeper/router';
-import { Address } from '@tonkeeper/core';
+import { Address, ContractService } from '@tonkeeper/core';
 import { replaceString } from '@tonkeeper/shared/utils/replaceString';
 import { tk } from '$wallet';
 import { WalletListItem } from '@tonkeeper/shared/components';
 import { useWallets } from '@tonkeeper/shared/hooks';
 
 export const TonConnectModal = (props: TonConnectModalProps) => {
+  const { isInternalBrowser, replyBuilder, requestPromise, manifest } = props;
+
   const animation = useTonConnectAnimation();
   const unlockVault = useUnlockVault();
   const theme = useTheme();
   const nav = useNavigation();
   const [selectedWalletIdentifier, setSelectedWalletIdentifier] = React.useState<string>(
-    tk.wallet.isWatchOnly ? tk.walletForUnlock.identifier : tk.wallet.identifier,
+    tk.wallet.isWatchOnly || tk.wallet.isExternal
+      ? tk.walletForUnlock.identifier
+      : tk.wallet.identifier,
   );
   const allWallets = useWallets();
   const selectableWallets = useMemo(
-    () => allWallets.filter((wallet) => !wallet.isWatchOnly),
+    () => allWallets.filter((wallet) => !wallet.isWatchOnly && !wallet.isExternal),
     [allWallets],
   );
   const wallet = useMemo(
@@ -58,8 +59,6 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
   const friendlyAddress = wallet.address.ton.friendly;
   const maskedAddress = Address.toShort(friendlyAddress);
 
-  const isInternalBrowser = props.protocolVersion !== 1 && props.isInternalBrowser;
-
   const showWalletSelector = selectableWallets.length > 1 && !isInternalBrowser;
 
   const handleSwitchNotifications = useCallback(() => {
@@ -69,135 +68,45 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
 
   const closeModal = useCallback(() => nav.goBack(), [nav]);
 
-  const isTonapi = props.protocolVersion === 1 ? props?.hostname === 'tonapi.io' : false;
+  const appIconUri = manifest.iconUrl;
+  const appName = manifest.name;
 
-  let appIconUri: string;
-  let appName: string;
-  if (props.protocolVersion === 1) {
-    appIconUri = props.request.image_url;
-    if (isTonapi && props.request.app_name) {
-      appName = props.request.app_name;
-    } else {
-      appName = props.hostname;
-    }
-  } else {
-    appIconUri = props.manifest.iconUrl;
-    appName = props.manifest.name;
-  }
-
-  const domain =
-    props.protocolVersion === 1 ? appName : getDomainFromURL(props.manifest.url);
-
-  const isTonConnectV2 = props.protocolVersion !== 1;
-
-  const sendToCallbackUrl = React.useCallback(
-    async (response: string) => {
-      if (props.protocolVersion !== 1) {
-        return;
-      }
-
-      const { request } = props;
-
-      if (request.callback_url) {
-        const callbackUrl = createCallbackLink({
-          toHash: request.return_serverless,
-          url: request.callback_url,
-          response,
-        });
-
-        const resp = await axios.get(callbackUrl);
-        if (resp.status !== 200) {
-          throw new Error('Failed to send response');
-        }
-      }
-    },
-    [props],
-  );
+  const domain = getDomainFromURL(manifest.url);
 
   const createResponse = React.useCallback(async () => {
     try {
       animation.startLoading();
 
       const vault = await unlockVault(wallet.identifier);
-
-      const address = await vault.getTonAddress(wallet.isTestnet);
       const privateKey = await vault.getTonPrivateKey();
-      const walletSeed = TonWeb.utils.bytesToBase64(privateKey);
+      const publicKey = Buffer.from(wallet.pubkey, 'hex');
 
-      if (props.protocolVersion === 1) {
-        const { tonconnect, request, hostname } = props;
-
-        const response = await tonconnect.createResponse({
-          service: hostname,
-          seed: walletSeed,
-          realm: 'web',
-          payload: {
-            tonAddress: () => ({ address }),
-            tonOwnership: ({ clientId }) => {
-              const pubkey = TonWeb.utils.bytesToBase64(vault.tonPublicKey);
-              const walletVersion = vault.getVersion() ?? '';
-              const walletId = vault.getWalletId();
-
-              const signature = tonconnect.createTonOwnershipSignature({
-                secretKey: privateKey,
-                walletVersion,
-                address,
-                clientId,
-              });
-
-              return {
-                wallet_version: walletVersion,
-                wallet_id: walletId,
-                signature,
-                address,
-                pubkey,
-              };
-            },
-          },
-        });
-
-        if (request.callback_url) {
-          await sendToCallbackUrl(response);
-        }
-      }
-
-      const withDelay = props.protocolVersion === 1 || !props.isInternalBrowser;
+      const address = wallet.address.ton.friendly;
 
       await animation.showSuccess(() => {
         triggerNotificationSuccess();
-      }, withDelay);
+      }, !isInternalBrowser);
 
-      if (props.protocolVersion !== 1) {
-        const { stateInit } = await vault.tonWallet.createStateInit();
-        const walletStateInit = TonWeb.utils.bytesToBase64(await stateInit.toBoc(false));
-        const publicKey = vault.tonPublicKey;
+      const stateInit = ContractService.getStateInit(wallet.contract);
 
-        const { replyBuilder, requestPromise } = props;
+      const replyItems = await replyBuilder.createReplyItems(
+        address,
+        privateKey,
+        publicKey,
+        stateInit,
+        wallet.isTestnet,
+      );
 
-        const replyItems = await replyBuilder.createReplyItems(
-          address,
-          privateKey,
-          publicKey,
-          walletStateInit,
-          wallet.isTestnet,
-        );
-
-        if (withNotifications && !wallet.tonProof.tonProofToken) {
-          await wallet.tonProof.obtainProof(await vault.getKeyPair());
-        }
-
-        requestPromise.resolve({
-          address,
-          replyItems,
-          notificationsEnabled: withNotifications,
-          walletIdentifier: wallet.identifier,
-        });
+      if (withNotifications && !wallet.tonProof.tonProofToken) {
+        await wallet.tonProof.obtainProof(await vault.getKeyPair());
       }
 
-      if (props.protocolVersion === 1 && props.request.return_url) {
-        animation.showReturnButton();
-        return;
-      }
+      requestPromise.resolve({
+        address,
+        replyItems,
+        notificationsEnabled: withNotifications,
+        walletIdentifier: wallet.identifier,
+      });
 
       closeModal();
     } catch (error) {
@@ -215,45 +124,13 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
   }, [
     animation,
     closeModal,
-    props,
-    sendToCallbackUrl,
+    isInternalBrowser,
+    replyBuilder,
+    requestPromise,
     unlockVault,
     wallet,
     withNotifications,
   ]);
-
-  const handleBackToService = React.useCallback(async () => {
-    if (props.protocolVersion !== 1) {
-      return;
-    }
-
-    const { tonconnect, request, openUrl } = props;
-
-    const response = tonconnect.getResponse();
-    if (request.return_url && response) {
-      const returnUrl = createCallbackLink({
-        toHash: request.return_serverless,
-        url: request.return_url,
-        response,
-      });
-      const url = returnUrl.startsWith('http') ? returnUrl : `https://${returnUrl}`;
-
-      if (openUrl) {
-        openUrl(url);
-        closeModal();
-        return;
-      }
-
-      try {
-        await Linking.openURL(url);
-
-        await delay(2000);
-        closeModal();
-      } catch (err) {
-        debugLog(err);
-      }
-    }
-  }, [closeModal, props]);
 
   const handleWalletPress = useCallback(() => {
     Haptics.selection();
@@ -265,9 +142,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
 
   useEffect(
     () => () => {
-      if (props.protocolVersion !== 1) {
-        props.requestPromise.reject();
-      }
+      requestPromise.reject();
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
@@ -343,7 +218,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
                     {' '}
                     {maskedAddress}{' '}
                   </Text>
-                  {tk.wallet.config.version}
+                  {tk.wallet.version}
                 </>
               ) : (
                 ':'
@@ -366,7 +241,7 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
               />
             </List>
           ) : null}
-          {isTonConnectV2 && showNotifications ? (
+          {showNotifications ? (
             <>
               <List indent={false}>
                 <List.ItemWithCheckbox
@@ -378,41 +253,30 @@ export const TonConnectModal = (props: TonConnectModalProps) => {
             </>
           ) : null}
           <Spacer y={16} />
-          <S.Footer isTonConnectV2={isTonConnectV2}>
+          <S.Footer>
             <TransitionOpacity
               style={styles.actionContainer}
               isVisible={animation.state === States.INITIAL}
               entranceAnimation={false}
             >
               <Button onPress={createResponse}>{t('ton_login_connect_button')}</Button>
-              {isTonConnectV2 ? (
-                <S.NoticeText>{t('ton_login_notice')}</S.NoticeText>
-              ) : null}
+              <S.NoticeText>{t('ton_login_notice')}</S.NoticeText>
             </TransitionOpacity>
 
             <TransitionOpacity
               style={styles.actionContainer}
               isVisible={animation.state === States.LOADING}
             >
-              <S.Center isTonConnectV2={isTonConnectV2}>
+              <S.Center>
                 <Loader size="medium" />
               </S.Center>
             </TransitionOpacity>
 
             <TransitionOpacity
               style={styles.actionContainer}
-              isVisible={animation.state === States.RETURN}
-            >
-              <Button onPress={handleBackToService} mode="secondary">
-                {t('ton_login_back_to_button', { name: appName })}
-              </Button>
-            </TransitionOpacity>
-
-            <TransitionOpacity
-              style={styles.actionContainer}
               isVisible={animation.state === States.SUCCESS}
             >
-              <S.Center isTonConnectV2={isTonConnectV2}>
+              <S.Center>
                 <Icon name="ic-checkmark-circle-32" color="accentGreen" />
                 <S.SuccessText>{t('ton_login_success')}</S.SuccessText>
               </S.Center>
@@ -444,20 +308,6 @@ const styles = StyleSheet.create({
     right: 0,
   },
 });
-
-type CreateAuthResponseLinkOptions = {
-  url: string;
-  response: string;
-  toHash?: boolean;
-};
-
-function createCallbackLink(options: CreateAuthResponseLinkOptions) {
-  return queryString.stringifyUrl({
-    ...(options.toHash && { fragmentIdentifier: 'tonlogin' }),
-    query: { tonlogin: options.response },
-    url: options.url,
-  });
-}
 
 export function openTonConnect(props: TonConnectModalProps) {
   if (tk.walletForUnlock) {

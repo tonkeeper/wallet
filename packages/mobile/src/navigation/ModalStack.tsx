@@ -32,14 +32,24 @@ import { NFTSend } from '$core/NFTSend/NFTSend';
 import { ReceiveInscriptionModal } from '@tonkeeper/shared/modals/ReceiveInscriptionModal';
 import { CustomizeWallet } from '$core/CustomizeWallet/CustomizeWallet';
 import { TokenDetails } from '../components/TokenDetails/TokenDetails';
-import { BackupWarningModal, ExchangeModal, LogoutWarningModal } from '$modals';
+import {
+  BackupWarningModal,
+  BurnVouchersModal,
+  ExchangeModal,
+  LogoutWarningModal,
+  PairLedgerModal,
+} from '$modals';
 import { ThemeProvider, useTheme } from '@tonkeeper/uikit';
 import { BlueTheme } from '@tonkeeper/uikit/src/styles/themes/blue';
 import SystemNavigationBar from 'react-native-system-navigation-bar';
+import { RechargeByPromoModal } from '@tonkeeper/shared/modals/ActivityActionModal/RechargeByPromoModal';
+import { BatterySend } from '$core/BatterySend';
+import { SignerConfirmScreen, W5StoriesScreen } from '../screens';
+import { SendNew } from '$core/Send/new/Send';
 
 const Stack = createModalStackNavigator(ProvidersWithNavigation);
 
-const SwapWithTheme = memo(() => {
+const SwapWithTheme = memo((props: any) => {
   const theme = useTheme();
 
   useEffect(() => {
@@ -60,7 +70,7 @@ const SwapWithTheme = memo(() => {
 
   return (
     <ThemeProvider theme={BlueTheme}>
-      <Swap />
+      <Swap {...props} />
     </ThemeProvider>
   );
 });
@@ -80,6 +90,13 @@ export const ModalStack = React.memo(() => (
       <Stack.Modal component={RefillBatteryModal} path="/refill-battery" />
       <Stack.Modal component={BackupWarningModal} path="/backup-warning" />
       <Stack.Modal component={LogoutWarningModal} path="/logout-warning" />
+      <Stack.Modal component={RechargeByPromoModal} path="/recharge-by-promo" />
+      <Stack.Modal component={PairLedgerModal} path="/pair-ledger" />
+      <Stack.Modal component={BurnVouchersModal} path="/burn-vouchers" />
+      <Stack.Modal
+        component={W5StoriesScreen}
+        path={AppStackRouteNames.W5StoriesScreen}
+      />
     </Stack.Group>
     <Stack.Group behavior="modal">
       <Stack.Modal component={ReceiveModal} path="ReceiveModal" />
@@ -94,17 +111,19 @@ export const ModalStack = React.memo(() => (
         path={AppStackRouteNames.RefillBattery}
       />
       {/* <Stack.Modal component={Receive} path={AppStackRouteNames.Receive} /> */}
-      <Stack.Modal component={Send} path={AppStackRouteNames.Send} />
+      <Stack.Modal component={SendNew} path={AppStackRouteNames.Send} />
       <Stack.Modal component={RenewAllDomainModal} path="RenewAllDomains" />
       <Stack.Modal component={ChooseCountry} path={AppStackRouteNames.ChooseCountry} />
       <Stack.Modal component={StakingSend} path={AppStackRouteNames.StakingSend} />
       <Stack.Modal component={NFTSend} path={AppStackRouteNames.NFTSend} />
+      <Stack.Modal component={BatterySend} path={AppStackRouteNames.BatterySend} />
       <Stack.Modal component={ScanQR} path={AppStackRouteNames.ScanQR} />
       <Stack.Modal component={SwapWithTheme} path={AppStackRouteNames.Swap} />
       <Stack.Modal
         component={CustomizeWallet}
         path={AppStackRouteNames.CustomizeWallet}
       />
+      <Stack.Modal component={SignerConfirmScreen} path="/signer-confirm" />
     </Stack.Group>
     <Stack.Group behavior="fullScreenModal">
       <Stack.Modal

@@ -1,4 +1,11 @@
-import { DefaultSectionT, SectionListData, StyleSheet, View } from 'react-native';
+import {
+  DefaultSectionT,
+  SectionListData,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from 'react-native';
 import { formatTransactionsGroupDate } from '../../utils/date';
 import { renderActionItem } from './ActionListItemByType';
 import { memo, useMemo } from 'react';
@@ -24,6 +31,7 @@ interface ActivityListProps {
   isReloading?: boolean;
   isLoading?: boolean;
   error?: null | string;
+  contentContainerStyle?: StyleProp<ViewStyle>;
   ListHeaderComponent?: ListComponentType;
   ListFooterComponent?: ListComponentType;
   ListLoaderComponent?: ListComponentType;
@@ -49,6 +57,7 @@ export const ActivityList = memo<ActivityListProps>((props) => {
     isReloading,
     onReload,
     isLoading,
+    contentContainerStyle,
     sections,
     error,
   } = props;
@@ -100,6 +109,7 @@ export const ActivityList = memo<ActivityListProps>((props) => {
 
   return (
     <Screen.SectionList
+      contentContainerStyle={contentContainerStyle}
       refreshControl={<RefreshControl onRefresh={onReload} refreshing={!!isReloading} />}
       keyExtractor={(item) => item.action_id}
       renderSectionHeader={renderSection}

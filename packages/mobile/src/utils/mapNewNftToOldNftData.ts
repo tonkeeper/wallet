@@ -26,7 +26,7 @@ export const mapNewNftToOldNftData = (
   return {
     ...nftItem,
     ownerAddressToDisplay: nftItem.sale ? walletFriendlyAddress : undefined,
-    isApproved: !!nftItem.approved_by?.length ?? false,
+    trust: nftItem.trust,
     internalId: `${CryptoCurrencies.Ton}_${address}`,
     currency: CryptoCurrencies.Ton,
     provider: 'TonProvider',

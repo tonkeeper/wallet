@@ -362,6 +362,7 @@
     "amount" : {
       "insufficient_balance" : "Fondi insufficienti",
       "less_than_min" : "Minimo %{minAmount} TON",
+      "less_than_min_with_symbol": "Minimo %{minAmount} %{symbol}",
       "max" : "MAX",
       "recipient_label" : "Invia A:",
       "remaining" : "Rimanente: %{amount}"

@@ -12,6 +12,7 @@ import { config } from '$config';
 import { JettonVerification } from '$store/models';
 import { t } from '@tonkeeper/shared/i18n';
 import { Steezy } from '$styles';
+import { Address } from '@tonkeeper/core';
 
 export class TokensContentProvider extends ContentProviderPrototype<{
   tonPrice: TonPriceDependency;
@@ -55,12 +56,20 @@ export class TokensContentProvider extends ContentProviderPrototype<{
       !config.get('disable_show_unverified_token') &&
       data.verification === JettonVerification.NONE;
 
+    const isTether = Address.compare(
+      data.jettonAddress,
+      config.get('usdt_jetton_master'),
+    );
+
+    const renderPriority = isTether ? 998 : this.renderPriority;
+
     return {
       key: data.jettonAddress,
-      renderPriority: isUnverifiedToken ? -1 : this.renderPriority,
+      renderPriority: isUnverifiedToken ? -1 : renderPriority,
       title: data.metadata.symbol ?? '',
       onPress: () => openJetton(data.jettonAddress),
       fiatRate,
+      tag: isTether ? 'TON' : '',
       picture: data.metadata.image,
       value: formatter.format(data.balance),
       subtitleStyle: isUnverifiedToken && styles.unverifiedSubtitleStyle,

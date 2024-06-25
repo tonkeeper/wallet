@@ -6,20 +6,19 @@ import { Base64, truncateDecimal } from '$utils';
 import { debugLog } from '$utils/debugLog';
 import React, { useEffect } from 'react';
 import { ActionFooter, useActionFooter } from './NFTOperations/NFTOperationFooter';
-import { useUnlockVault } from './NFTOperations/useUnlockVault';
 import * as S from './NFTOperations/NFTOperations.styles';
 import BigNumber from 'bignumber.js';
 import { Ton } from '$libs/Ton';
 import { TouchableOpacity } from 'react-native';
 
-import { store, Toast } from '$store';
-import { Wallet } from 'blockchain';
+import { Toast } from '$store';
 import { Modal } from '@tonkeeper/uikit';
 import { push } from '$navigation/imperative';
 import { SheetActions } from '@tonkeeper/router';
 import { openReplaceDomainAddress } from './NFTOperations/ReplaceDomainAddressModal';
-import { Address } from '@tonkeeper/core';
+import { Address, TransactionService } from '@tonkeeper/core';
 import { tk } from '$wallet';
+import { getWalletSeqno } from '@tonkeeper/shared/utils/wallet';
 
 const TonWeb = require('tonweb');
 
@@ -32,10 +31,6 @@ interface LinkingDomainModalProps {
 }
 
 export class LinkingDomainActions {
-  /**
-   * Wallet instance
-   */
-  private wallet: Wallet;
   /**
    * Transfer amount in nanocoins. Will be attached to transfer
    */
@@ -50,7 +45,6 @@ export class LinkingDomainActions {
   public walletAddress: string | undefined;
 
   constructor(domainAddress: string, walletAddress?: string) {
-    this.wallet = store.getState().wallet.wallet;
     this.domainAddress = domainAddress;
     this.walletAddress = walletAddress;
   }
@@ -60,7 +54,7 @@ export class LinkingDomainActions {
    */
   public async calculateFee() {
     try {
-      const boc = await this.createBoc();
+      const boc = await this.createBoc(true);
       const feeInfo = await tk.wallet.tonapi.wallet.emulateMessageToWallet({ boc });
       const feeNano = new BigNumber(feeInfo.event.extra).multipliedBy(-1);
 
@@ -78,10 +72,7 @@ export class LinkingDomainActions {
   /**
    * Creates boc with DNS-record
    */
-  public async createBoc(secretKey?: Uint8Array) {
-    const curWallet = this.wallet.vault.tonWallet;
-    const seqno = await this.wallet.ton.getSeqno(await this.wallet.ton.getAddress());
-
+  public async createBoc(isEstimate?: boolean) {
     const address = this.walletAddress && new TonWeb.Address(this.walletAddress);
 
     const payload = await TonWeb.dns.DnsItem.createChangeContentEntryBody({
@@ -89,17 +80,21 @@ export class LinkingDomainActions {
       value: address ? TonWeb.dns.createSmartContractAddressRecord(address) : null,
     });
 
-    const tx = curWallet.methods.transfer({
-      toAddress: this.domainAddress,
-      amount: this.transferAmount,
-      seqno: seqno,
-      payload,
-      sendMode: 3,
-      secretKey,
-    });
+    const payloadBoc = Base64.encodeBytes(await payload.toBoc(false));
 
-    const queryMsg = await tx.getQuery();
-    const boc = Base64.encodeBytes(await queryMsg.toBoc(false));
+    const signer = await tk.wallet.signer.getSigner(isEstimate);
+
+    const boc = await TransactionService.createTransfer(tk.wallet.contract, signer, {
+      messages: TransactionService.parseSignRawMessages([
+        {
+          address: this.domainAddress,
+          amount: this.transferAmount,
+          payload: payloadBoc,
+        },
+      ]),
+      sendMode: 3,
+      seqno: await getWalletSeqno(tk.wallet),
+    });
 
     return boc;
   }
@@ -127,15 +122,11 @@ export const LinkingDomainModal: React.FC<LinkingDomainModalProps> = ({
     linkingActions.updateWalletAddress(walletAddress);
   }, [walletAddress]);
 
-  const unlockVault = useUnlockVault();
   const handleConfirm = onConfirm(async ({ startLoading }) => {
-    const vault = await unlockVault();
-    const privateKey = await vault.getTonPrivateKey();
-
     startLoading();
     setIsDisabled(true);
 
-    const boc = await linkingActions.createBoc(privateKey);
+    const boc = await linkingActions.createBoc();
     await tk.wallet.tonapi.blockchain.sendBlockchainMessage({ boc }, { format: 'text' });
   });
 

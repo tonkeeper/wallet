@@ -92,6 +92,7 @@
     "blacklisted_token": "Blacklisted token",
     "decline": "Decline",
     "declined": "Hidden",
+    "spam": "Spam",
     "declined_at_collection": "Declined on %{date}",
     "declined_at_token": "Declined on %{date}",
     "details_collection": "Collection details",
@@ -105,6 +106,7 @@
     "move_to_declined": "Move to Declined",
     "move_to_declined_collection": "Hide collection from wallet",
     "move_to_declined_token": "Hide token from wallet",
+    "not_spam": "Not Spam",
     "name": "Name",
     "pending": "Pending",
     "show_all": "Show all",
@@ -123,7 +125,12 @@
   },
   "auth_failed": "Authentication failed",
   "balances_setup_wallet": "Set up wallet",
+  "gasless": {
+    "switch_label": "Tap to pay in %{currency}"
+  },
   "battery": {
+    "please_wait": "Battery will charge in a few minutes",
+    "max_input_amount": "Max input amount is %{amount}",
     "send_widget": {
       "battery": "Battery"
     },
@@ -152,7 +159,7 @@
     },
     "refilled": "Battery refilled",
     "screen_title": "Battery",
-    "settings": "Battery %{betaLabel}",
+    "settings": "Battery",
     "ok": "OK",
     "title": "Tonkeeper Battery",
     "description": {
@@ -163,6 +170,34 @@
         "one": "%{count} charge",
         "other": "%{count} charges"
       }
+    },
+    "recharge_by_crypto": {
+      "title": "Recharge",
+      "title_gift": "Gift",
+      "tokens": "Tokens",
+      "continue": "Continue",
+      "other": {
+        "title": "Other",
+        "subtitle": "Enter amount manually"
+      }
+    },
+    "other_ways": {
+      "by_crypto": {
+        "title": "Recharge with %{symbol}",
+        "subtitle": "Using %{methods}"
+      },
+      "gift": {
+        "title": "Battery Gift",
+        "subtitle": "Share with friends"
+      },
+      "promo": {
+        "title": "Enter Promo Code",
+        "subtitle": "You're lucky"
+      }
+    },
+    "refund": {
+      "title": "Charge History",
+      "subtitle": "Recharges and refunds"
     },
     "promocode": {
       "button": "Recharge by Promo Code",
@@ -185,6 +220,7 @@
       },
       "disclaimer": "One charge covers the average transaction fee. Some transactions may cost more.",
       "restore": "Restore Purchases",
+      "refund": "Charge history",
       "buy": "Buy",
       "ok": "OK",
       "refilled": "Your battery is charged"
@@ -362,7 +398,7 @@
   "edit_coins_title": "Add crypto",
   "error_network": "Network error",
   "error_occurred": "An error occurred",
-  "network_overloaded_error": "Network overloaded",
+  "indexer_latency_error": "Sending error, try again later",
   "exchange_method_dont_show_again": "Do not show again",
   "exchange_method_open_warning": "You are opening an external app not operated by Tonkeeper.",
   "exchange_modal": {
@@ -401,6 +437,8 @@
   "intro_title": "Welcome\nto ",
   "jetton_id": "Token ID: %{jettonAddress}",
   "jetton_id_copied": "Token ID copied",
+  "jetton_buy_tether": "Buy USD₮",
+  "jetton_migrate_tether": "Swap jUSDT to USD₮",
   "jetton_name": "%{name} Token",
   "jetton_open_explorer": "View details",
   "jetton_price": "Price:",
@@ -612,6 +650,7 @@
     "amount": {
       "insufficient_balance": "Insufficient balance",
       "less_than_min": "Minimum %{minAmount} TON",
+      "less_than_min_with_symbol": "Minimum %{minAmount} %{symbol}",
       "liquid_jetton_note": "Sending tsTON liquidity token",
       "max": "MAX",
       "recipient_label": "To:",
@@ -629,6 +668,7 @@
       "comment_label": "Comment",
       "comment_label_required": "Required comment",
       "comment_required_text": "You must include the note from the exchange for transfer. Without it your funds will be lost. ",
+      "comment_ascii_text": "Use only ASCII characters: digits, latin alphabet letters and punctuation marks.",
       "details_label": "Details",
       "details_max_balance_label": "Sending max. balance of %{currency}",
       "title": "Confirm action",
@@ -659,8 +699,8 @@
     "system": "System"
   },
   "settings_backup_seed": "Backup",
-  "settings_contact_support": "Contact us",
-  "settings_delete_account": "Delete account",
+  "settings_contact_support": "Contact Us",
+  "settings_delete_account": "Delete Account",
   "settings_jettons_list": "Tokens",
   "settings_legal_documents": "Legal",
   "language": {
@@ -675,11 +715,15 @@
       "ru": "Russian",
       "en": "English",
       "tr": "Turkish",
-      "zh-Hans": "Chinese"
+      "zh-Hans": "Chinese",
+      "uz": "Uzbek",
+      "id": "Indonesian",
+      "uk": "Ukrainian",
+      "es": "Spanish"
     }
   },
   "settings_network_alert_title": "Select network",
-  "settings_news": "Tonkeeper news",
+  "settings_news": "Tonkeeper News",
   "settings_notifications": "Notifications",
   "settings_primary_currency": "Currency",
   "settings_bank_card": "Bank card",
@@ -692,11 +736,13 @@
   "settings_reset_alert_caption_all": "This will erase keys to all wallets. Make sure you have backed up your recovery phrases.",
   "settings_reset_alert_title_all": "\uD83D\uDEA7 \uD83D\uDEA8\uD83D\uDEA8\uD83D\uDEA8 \uD83D\uDEA7\nSign Out of All Wallets?",
   "settings_delete_watch_account": "Delete Watch Account?",
+  "settings_delete_signer_account": "Delete Account?",
   "settings_delete_watch_account_button": "Delete",
   "settings_search_engine": "Search",
   "settings_security": "Security",
   "settings_subscriptions": "Subscriptions",
   "settings_support": "Support",
+  "settings_faq": "FAQ",
   "settings_title": "Settings",
   "settings_to_mainnet": "Switch to Mainnet",
   "settings_to_testnet": "Switch to Testnet",
@@ -920,6 +966,9 @@
     "contract_deploy": "Contract Deploy",
     "deposit": "Stake",
     "failed": "Failed",
+    "failed_with_reason": {
+      "swap_refund_no_liq": "Failed. Increase the slippage tolerance in the swap settings to avoid this error."
+    },
     "nft_purchase": "NFT Purchase",
     "smartcontract_exec": "Call contract",
     "spam": "Spam",
@@ -1090,6 +1139,47 @@
       "checkboxLabel": "Do not show again"
     }
   },
+  "nft_actions": {
+    "hide": {
+      "nft": "Hide NFT",
+      "collection": "Hide Collection"
+    },
+    "hide_and_report": "Hide and Report Spam",
+    "view_on_explorer": "View on Tonviewer"
+  },
+  "suspicious": {
+    "label": {
+      "short": "Unverified",
+      "full": "Unverified NFT"
+    },
+    "buttons": {
+      "report": "Report Spam",
+      "not_spam": "Not Spam"
+    },
+    "status_update": {
+      "spam": {
+        "nft": "NFT marked as Spam",
+        "collection": "Collection marked as Spam"
+      },
+      "hidden": {
+        "nft": "NFT hidden",
+        "collection": "Collection hidden"
+      }
+    }
+  },
+  "suspiciousNFTDetails": {
+    "title": "Unverified NFT",
+    "subtitle": "NFT may not be safe to use for one of the following reasons.",
+    "paragraphs": {
+      "p1": "Used for spam. Employed for sending unwanted and often irrelevant messages at scale.",
+      "p2": "Used for scam. NFT's name, description or image can lead users into deception.",
+      "p3": "We know little about the author and history of this NFT."
+    },
+    "buttons": {
+      "report": "Report Spam",
+      "not_spam": "Not Spam"
+    }
+  },
   "unverifiedTokenDetails": {
     "title": "Unverified Token",
     "description": "This token looks suspicious for one or several reasons.",
@@ -1106,6 +1196,9 @@
   "add_wallet_modal": {
     "title": "Add Wallet",
     "subtitle": "Create a new wallet or add an existing one.",
+    "import_title": "Import Wallet",
+    "import_subtitle": "Choose from the options below.",
+    "other_options": "Other options",
     "create": {
       "title": "New Wallet",
       "subtitle": "Create new wallet"
@@ -1121,6 +1214,14 @@
     "testnet": {
       "title": "Testnet Account",
       "subtitle": "Import wallet with a 24 secret recovery words to Testnet"
+    },
+    "signer": {
+      "title": "Pair with Signer",
+      "subtitle": "Completely offline, air-gapped, all TON features"
+    },
+    "ledger": {
+      "title": "Pair with Ledger",
+      "subtitle": "Hardware module, Bluetooth, limited TON features"
     }
   },
   "add_watch_only": {
@@ -1132,7 +1233,7 @@
   "stop_watch": "Delete Watch Account",
   "customize": "Customize",
   "customize_modal": {
-    "title": "Customize your Wallet",
+    "title": "Customize your wallet",
     "subtitle": "Wallet name and icon are stored locally on your device.",
     "wallet_name": "Wallet Name",
     "save": "Save"
@@ -1144,8 +1245,11 @@
   },
   "choose_wallets": {
     "title": "Choose Wallets",
-    "subtitle": "Choose wallets you want to add.",
-    "tokens": "tokens"
+    "subtitle": "Choose wallets to add.",
+    "tokens": "tokens",
+    "already_added": "Already added",
+    "w5_subtitle": "Lower blockchain fees, gasless transactions and multi-transfers.",
+    "w5_subtitle_link": "Learn more"
   },
   "old_wallet_error": "Use wallet with v4R2 version",
   "migration": {
@@ -1204,6 +1308,7 @@
     "done_button": "Done"
   },
   "finish_setup": {
+    "join_tg": "Join Tonkeeper channel",
     "header_title": "Finish setting up",
     "use_biometry": "Use %{name} to approve transaction",
     "enable_notifications": "Enable transaction notifications",
@@ -1219,7 +1324,7 @@
     "caption": "Wallet keys will be erased from this device.",
     "delete_title": "Delete Wallet Data",
     "delete_caption": "Wallet keys and all personal data will be erased from this device.",
-    "agreement": "I have a backup copy of recovery phrase",
+    "agreement": "I have a backup copy of recovery phrase for",
     "backup_button": "Back up",
     "logout_button": "Sign Out",
     "delete_button": "Delete Wallet Data"
@@ -1228,5 +1333,100 @@
     "description": "The total value of tokens that will be sent from your wallet. Refunds are not included in the total value.",
     "description_with_nft": "The total value of tokens, excluding the cost of NFTs, that will be sent from your wallet. Refunds are not included in the total value.",
     "ok_button": "OK"
+  },
+  "signerConfirm": {
+    "title": "Confirm Action",
+    "step": "Step %{value}",
+    "scan_qr": "Scan the QR code with Signer",
+    "confirm": "Confirm your transaction in Signer",
+    "scan_signed_qr": "Scan signed transaction QR code from Signer"
+  },
+  "pairSigner": {
+    "about": "About Signer",
+    "open_signer": "Open Signer on this device",
+    "title": "Scan QR code",
+    "subtitle": "Open Signer » Select the required key » Scan QR code"
+  },
+  "ledger": {
+    "confirm_title": "Confirm Action",
+    "connect_title": "Connect Ledger",
+    "connect": "Connect Ledger to your device via Bluetooth",
+    "open_ton_app": "Unlock it and open TON App",
+    "install_ton_app": "Install TON App",
+    "confirm_tx": "Confirm your transaction on Ledger",
+    "operation_not_supported": "The operation is not available for Ledger wallets. Select another wallet and try again."
+  },
+  "bluetooth": {
+    "powered_off_alert": {
+      "title": "Bluetooth is off",
+      "message": "Please turn on Bluetooth to use this feature",
+      "open_settings": "Open Settings",
+      "cancel": "Cancel"
+    },
+    "permissions_alert": {
+      "title": "Bluetooth Permissions",
+      "message": "Please enable Bluetooth permissions in your settings to use this feature",
+      "open_settings": "Open Settings",
+      "cancel": "Cancel"
+    }
+  },
+  "notcoin": {
+    "not_vouchers": "NOT vouchers",
+    "exchange": "Exchange\nvouchers to NOT",
+    "exchange_all": "Exchange all in\nTonkeeper Pro",
+    "exchange_title": "Exchange your vouchers to NOT",
+    "exchange_subtitle": "NOT will be available on your balance shortly after the exchange.",
+    "count": "Number of vouchers",
+    "count_max": "Maximum 4 per exchange",
+    "total_amount": "Total amount",
+    "all": "Exchange all in Tonkeeper Pro",
+    "exchange_to_not": "Exchange to NOT",
+    "verify_title": "Connect wallet to the Notcoin Bot to verify burning",
+    "verify_subtitle": "Verification may take a few hours.",
+    "open_bot": "Open Notcoin Bot",
+    "name": "Notcoin",
+    "slogan": "Probably nothing",
+    "open": "Open",
+    "burn_not_available": {
+      "hours": "Exchange will be available in %{count} hours",
+      "minutes": "Exchange will be available in %{count} minutes",
+      "seconds": "Exchange will be available in %{count} seconds"
+    }
+  },
+  "tonconnect_error": {
+    "bad_request": "Bad request",
+    "wrong_network": "Wrong network",
+    "wrong_from": "Wrong 'from' parameter"
+  },
+  "w5_stories": {
+    "0": {
+      "title": "Reduced Blockchain Fees",
+      "description": "W5 employs a more efficient transaction processing approach, which means up to 25% lower gas costs."
+    },
+    "1": {
+      "title": "Up to 255 Operations in One Transaction",
+      "description": "W5 increases the number of simultaneous operations from 4 to 255, which can save on fee costs."
+    },
+    "2": {
+      "title": "Gasless USDT Transfers",
+      "description": "Send USDT without having TON – transaction fees will be covered by a few cents of USDT automatically."
+    },
+    "3": {
+      "title": "Recovery Phrase Does Not Change",
+      "description": "Old accounts and W5 use the same recovery phrase – when restoring accounts on a new device, both old and new will appear automatically."
+    },
+    "4": {
+      "title": "W5 is Beta",
+      "description": "W5 standard is not final. Gasless transactions are offered as an experimental feature to test how it works. Do not move all your assets to the W5 wallet until final release.",
+      "button": "Add W5 Wallet"
+    }
+  },
+  "upgrade_to_w5": {
+    "settings": "Wallet W5",
+    "title": "Gasless Transfers",
+    "description": "Try the brand-new W5 wallet standard with support for gasless USDT payments and other cool features.",
+    "try_button": "Try W5 Wallet",
+    "about_button": "About W5 Wallet",
+    "hide_button": "Hide"
   }
 }

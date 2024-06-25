@@ -17,6 +17,8 @@ import { useWallet, useWalletCurrency } from '@tonkeeper/shared/hooks';
 import { config } from '$config';
 import { tk } from '$wallet';
 import { useTheme } from '@tonkeeper/uikit';
+import { ShouldStartLoadRequest } from 'react-native-webview/lib/WebViewTypes';
+import { Linking } from 'react-native';
 
 export const BuyFiat: FC<BuyFiatProps> = ({ route }) => {
   const currency = route.params.currency;
@@ -136,6 +138,35 @@ export const BuyFiat: FC<BuyFiatProps> = ({ route }) => {
     }
   }
 
+  const handleOpenExternalLink = useCallback(
+    (req: ShouldStartLoadRequest): boolean => {
+      const resolver = deeplinking.getResolver(req.url, {
+        delay: 200,
+        params: {
+          methodId: method.id,
+        },
+      });
+
+      if (resolver) {
+        setTimeout(() => {
+          resolver();
+        }, 200);
+        return false;
+      }
+
+      if (req.url.startsWith('http')) {
+        return true;
+      }
+
+      setTimeout(() => {
+        Linking.openURL(req.url);
+      }, 200);
+
+      return false;
+    },
+    [deeplinking, method.id],
+  );
+
   const handleLoad = useCallback(() => {
     setTimeout(() => {
       setLoading(false);
@@ -165,6 +196,7 @@ export const BuyFiat: FC<BuyFiatProps> = ({ route }) => {
         hideKeyboardAccessoryView
         thirdPartyCookiesEnabled={true}
         onNavigationStateChange={handleNavigationChange}
+        onShouldStartLoadWithRequest={handleOpenExternalLink}
         allowFileAccess
         forceDarkOn={theme.isDark && methodId !== 'onramp'}
         allowsInlineMediaPlayback

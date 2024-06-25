@@ -1,0 +1,21 @@
+diff --git a/node_modules/react-native-ble-plx/android/src/main/java/com/polidea/reactnativeble/BleClientManager.java b/node_modules/react-native-ble-plx/android/src/main/java/com/polidea/reactnativeble/BleClientManager.java
+index 48f946d..d97919d 100644
+--- a/node_modules/react-native-ble-plx/android/src/main/java/com/polidea/reactnativeble/BleClientManager.java
++++ b/node_modules/react-native-ble-plx/android/src/main/java/com/polidea/reactnativeble/BleClientManager.java
+@@ -925,6 +925,16 @@ public class BleClientManager extends ReactContextBaseJavaModule {
+         );
+     }
+ 
++    @ReactMethod
++    public void addListener(String eventName) {
++      // Keep: Required for RN built in Event Emitter Calls.  
++    }
++
++    @ReactMethod
++    public void removeListeners(int count) {
++      // Keep: Required for RN built in Event Emitter Calls.
++    }
++
+     private void sendEvent(@NonNull Event event, @Nullable Object params) {
+         getReactApplicationContext()
+                 .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)

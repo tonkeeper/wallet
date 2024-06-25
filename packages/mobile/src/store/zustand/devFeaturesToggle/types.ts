@@ -1,5 +1,6 @@
 export enum DevFeature {
   UseHttpProtocol = 'UseHttpProtocol',
+  W5StoriesShown = 'W5StoriesShown',
 }
 
 export interface IDevFeaturesToggleStore {

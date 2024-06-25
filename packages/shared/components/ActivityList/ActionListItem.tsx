@@ -48,6 +48,7 @@ export interface ActionListItemProps<TActionType extends ActionType = ActionType
   disablePressable?: boolean;
   disableNftPreview?: boolean;
   isSimplePreview?: boolean;
+  isScam?: boolean;
 }
 
 export const ActionListItem = memo<ActionListItemProps>((props) => {
@@ -60,13 +61,15 @@ export const ActionListItem = memo<ActionListItemProps>((props) => {
     ignoreFailed,
     disablePressable,
     isSimplePreview,
+    isScam: isScamProp,
   } = props;
   const { formatNano } = useHideableFormatter();
 
   const isScam =
-    action.event.is_scam ||
-    (isJettonTransferAction(action) &&
-      action.payload.jetton.verification === JettonVerificationType.Blacklist);
+    isScamProp ??
+    (action.event.is_scam ||
+      (isJettonTransferAction(action) &&
+        action.payload.jetton.verification === JettonVerificationType.Blacklist));
 
   const flags = useFlags(['address_style_nobounce']);
 
@@ -223,12 +226,12 @@ export const ActionListItem = memo<ActionListItemProps>((props) => {
       {!config.get('disable_show_unverified_token') &&
         isJettonTransferAction(action) &&
         action.payload.jetton.verification === JettonVerificationType.None && (
-          <Text type="body2" color="accentOrange" style={styles.warn.static}>
+          <Text type="body3" color="accentOrange" style={styles.warn.static}>
             {t('approval.unverified_token')}
           </Text>
         )}
       {isFailed && !ignoreFailed && (
-        <Text type="body2" color="accentOrange" style={styles.warn.static}>
+        <Text type="body3" color="accentOrange" style={styles.warn.static}>
           {t('transactions.failed')}
         </Text>
       )}

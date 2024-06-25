@@ -8,6 +8,8 @@ import { useExternalState } from '../../hooks/useExternalState';
 import { tk } from '@tonkeeper/mobile/src/wallet';
 import { BatterySupportedTransaction } from '@tonkeeper/mobile/src/wallet/managers/BatteryManager';
 import { Platform } from 'react-native';
+import { NavBarHeight } from '@tonkeeper/mobile/src/shared/constants';
+import { NavBarHelper } from '@tonkeeper/mobile/src/uikit';
 
 export interface SupportedTransaction {
   type: BatterySupportedTransaction;
@@ -55,48 +57,51 @@ export const BatterySupportedTransactions = memo<BatterySupportedTransactionsPro
     );
 
     return (
-      <View>
-        {props.editable && (
-          <View style={styles.textContainer}>
-            <Text textAlign="center" type="h2">
-              {t('battery.transactions.settings')}
-            </Text>
-            <Text textAlign="center" color="textSecondary" type="body2">
-              {t('battery.transactions.description')}
-            </Text>
-          </View>
-        )}
-        <List>
-          {supportedTransactions.map((transaction) => (
-            <List.Item
-              key={transaction.type}
-              disabled={!props.editable}
-              onPress={() =>
-                handleSwitchSupport(transaction.type)(
-                  !supportedTransactionsValues[transaction.type],
-                )
-              }
-              title={capitalizeFirstLetter(t(transaction.name))}
-              subtitle={t('battery.transactions.charges_per_action', {
-                count: calculateChargesAmount(
-                  config.get(`batteryMeanPrice_${transaction.type}`),
-                  config.get('batteryMeanFees'),
-                ),
-                transactionName: t(transaction.nameSingle),
-              })}
-              rightContent={
-                props.editable ? (
-                  <Switch
-                    disabled={Platform.OS === 'android'} // Temp fix. Should refactor screen with react-native-pager-view
-                    onChange={handleSwitchSupport(transaction.type)}
-                    value={supportedTransactionsValues[transaction.type]}
-                  />
-                ) : null
-              }
-            />
-          ))}
-        </List>
-      </View>
+      <>
+        <NavBarHelper isModal />
+        <View>
+          {props.editable && (
+            <View style={styles.textContainer}>
+              <Text textAlign="center" type="h2">
+                {t('battery.transactions.settings')}
+              </Text>
+              <Text textAlign="center" color="textSecondary" type="body2">
+                {t('battery.transactions.description')}
+              </Text>
+            </View>
+          )}
+          <List>
+            {supportedTransactions.map((transaction) => (
+              <List.Item
+                key={transaction.type}
+                disabled={!props.editable}
+                onPress={() =>
+                  handleSwitchSupport(transaction.type)(
+                    !supportedTransactionsValues[transaction.type],
+                  )
+                }
+                title={capitalizeFirstLetter(t(transaction.name))}
+                subtitle={t('battery.transactions.charges_per_action', {
+                  count: calculateChargesAmount(
+                    config.get(`batteryMeanPrice_${transaction.type}`),
+                    config.get('batteryMeanFees'),
+                  ),
+                  transactionName: t(transaction.nameSingle),
+                })}
+                rightContent={
+                  props.editable ? (
+                    <Switch
+                      disabled={Platform.OS === 'android'} // Temp fix. Should refactor screen with react-native-pager-view
+                      onChange={handleSwitchSupport(transaction.type)}
+                      value={supportedTransactionsValues[transaction.type]}
+                    />
+                  ) : null
+                }
+              />
+            ))}
+          </List>
+        </View>
+      </>
     );
   },
 );

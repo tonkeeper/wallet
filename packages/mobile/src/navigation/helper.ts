@@ -27,6 +27,9 @@ export interface OpenSendParams {
   comment?: string;
   withGoBack?: boolean;
   tokenType?: TokenType;
+  isForcedGasless?: boolean;
+  isGasless?: boolean;
+  supportsGasless?: boolean;
   amount?: string;
   fee?: string;
   isInactive?: boolean;
@@ -48,8 +51,12 @@ export function openDAppsSearch(
   navigate(AppStackRouteNames.DAppsSearch, { initialQuery, onOpenUrl });
 }
 
-export function openDAppBrowser(url: string) {
-  const params = { url };
+export function openDAppBrowser(
+  url: string,
+  persistentQueryParams?: string,
+  disableSearchBar?: boolean,
+) {
+  const params = { url, persistentQueryParams, disableSearchBar };
   if (getCurrentRoute()?.name === AppStackRouteNames.DAppsSearch) {
     replace(AppStackRouteNames.DAppBrowser, params);
   } else {
@@ -164,6 +171,10 @@ export function openJetton(jettonAddress: string) {
   navigate(MainStackRouteNames.Jetton, {
     jettonAddress,
   });
+}
+
+export function openVouchers() {
+  navigate(MainStackRouteNames.Vouchers);
 }
 
 export async function openChooseCountry() {

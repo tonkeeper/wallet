@@ -36,6 +36,7 @@ export const CellSectionItem = forwardRef<any, PropsWithChildren<CellProps>>(
       indicator,
       inlineContent,
       content,
+      unwrapChildren = false,
     } = props;
 
     return (
@@ -52,10 +53,12 @@ export const CellSectionItem = forwardRef<any, PropsWithChildren<CellProps>>(
             <S.SectionItemTitleWrap>
               {content ? (
                 content
-              ) : (
+              ) : !unwrapChildren ? (
                 <Text style={{ flex: 1 }} variant="label1">
                   {children}
                 </Text>
+              ) : (
+                children
               )}
               {inlineContent}
             </S.SectionItemTitleWrap>
