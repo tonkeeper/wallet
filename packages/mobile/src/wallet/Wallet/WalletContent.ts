@@ -171,10 +171,8 @@ export class WalletContent extends WalletBase {
   }
 
   protected async loadDependsOnAccountStatus(status: AccountStatus) {
-    if (['uninit', 'nonexist'].includes(status)) {
-      return;
-    }
-    await Promise.all([this.staking.load(), this.subscriptions.load()]);
+    const isInactiveWallet = ['uninit', 'nonexist'].includes(status);
+    await this.staking.load(false, true, isInactiveWallet);
   }
 
   protected async preload() {
