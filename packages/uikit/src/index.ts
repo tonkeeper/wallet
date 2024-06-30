@@ -35,6 +35,7 @@ export * from './components/SlideButton';
 export * from './components/Radio';
 export * from './components/HeaderSwitch';
 export * from './components/StoriesView';
+export * from './components/ShowMore';
 
 // Containers
 export { HeaderButtonHitSlop } from './containers/Screen/utils/constants';

@@ -1,7 +1,9 @@
 import { ListItemContent } from './ListItemContent';
 import { StyleSheet } from 'react-native';
-import { Text } from '@tonkeeper/uikit';
+import { useTheme } from '../../styles';
 import { memo } from 'react';
+import { ShowMore } from '../ShowMore';
+import { Text } from '../Text';
 
 interface ListItemContentTextProps {
   children?: React.ReactNode;
@@ -10,9 +12,16 @@ interface ListItemContentTextProps {
 
 export const ListItemContentText = memo<ListItemContentTextProps>((props) => {
   const { children, text } = props;
+  const theme = useTheme();
   return (
     <ListItemContent style={styles.content}>
-      {!!text ? <Text type="body2">{text}</Text> : children}
+      {!!text ? (
+        <Text numberOfLines={1} type="body2">
+          {text}
+        </Text>
+      ) : (
+        children
+      )}
     </ListItemContent>
   );
 });

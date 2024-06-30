@@ -1,6 +1,8 @@
 import React, { ReactNode } from 'react';
 
 export interface PopupMenuProps {
+  align?: 'flex-start' | 'flex-end';
+  topOffset?: number;
   children: React.ReactElement;
   items: ReactNode[];
   width?: number;

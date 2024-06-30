@@ -17,16 +17,18 @@ import {
   AnyActionItem,
 } from '@tonkeeper/mobile/src/wallet/models/ActivityModel';
 import { ActionListItemWithNft } from './ActionListItemWithNFT';
+import { useIsInLocalScam } from '../../hooks';
 
 export const ActionListItemByType = memo<ActionListItemProps>((props) => {
   const { action } = props;
   const { type, payload } = action;
+  const isInLocalScam = useIsInLocalScam(action.event.event_id);
 
   const pureProps = excludeUndefinedValues(props);
   switch (type) {
     case ActionType.TonTransfer:
       return (
-        <ActionListItem {...pureProps}>
+        <ActionListItem {...pureProps} isScam={isInLocalScam || pureProps.isScam}>
           {!!payload.comment && <ListItemContentText text={payload.comment.trim()} />}
           {!!payload.encrypted_comment && (
             <ListItemEncryptedComment
@@ -39,7 +41,7 @@ export const ActionListItemByType = memo<ActionListItemProps>((props) => {
       );
     case ActionType.JettonTransfer:
       return (
-        <ActionListItem {...pureProps}>
+        <ActionListItem {...pureProps} isScam={isInLocalScam || pureProps.isScam}>
           {!!payload.comment && <ListItemContentText text={payload.comment.trim()} />}
           {!!payload.encrypted_comment && (
             <ListItemEncryptedComment
@@ -52,7 +54,13 @@ export const ActionListItemByType = memo<ActionListItemProps>((props) => {
       );
     case ActionType.NftItemTransfer:
     case ActionType.NftPurchase:
-      return <ActionListItemWithNft {...pureProps} action={action} />;
+      return (
+        <ActionListItemWithNft
+          {...pureProps}
+          isScam={isInLocalScam || action.event.is_scam || pureProps.isScam}
+          action={action}
+        />
+      );
     case ActionType.SmartContractExec:
       return (
         <ActionListItem

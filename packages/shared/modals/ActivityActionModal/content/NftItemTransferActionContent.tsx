@@ -14,14 +14,16 @@ import { EncryptedComment, EncryptedCommentLayout } from '../../../components';
 
 interface NftItemTransferActionContenttProps {
   action: ActionItem<ActionType.NftItemTransfer>;
+  isInLocalScam?: boolean;
 }
 
 export const NftItemTransferActionContent = memo<NftItemTransferActionContenttProps>(
   (props) => {
-    const { action } = props;
+    const { action, isInLocalScam } = props;
 
     return (
       <ActionModalContent
+        isInLocalScam={isInLocalScam}
         action={action}
         header={
           action.status === ActionStatusEnum.Ok ? (
@@ -46,7 +48,7 @@ export const NftItemTransferActionContent = memo<NftItemTransferActionContenttPr
               sender={action.payload.sender!}
             />
           )}
-          {!!action.payload.comment && !action.event.is_scam && (
+          {!!action.payload.comment && !action.event.is_scam && !isInLocalScam && (
             <List.Item
               titleType="secondary"
               title={t('transactionDetails.comment')}

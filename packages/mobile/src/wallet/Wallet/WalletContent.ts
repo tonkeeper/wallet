@@ -28,6 +28,7 @@ import { CardsManager } from '$wallet/managers/CardsManager';
 import { JettonQuantity } from '@tonkeeper/core/src/TonAPI';
 import { SignerManager } from '$wallet/managers/SignerManager';
 import { AccountStatus } from '@ton/core';
+import { LocalScamManager } from '$wallet/managers/LocalScamManager';
 
 export interface WalletStatusState {
   isReloading: boolean;
@@ -52,6 +53,7 @@ export class WalletContent extends WalletBase {
   public jettonActivityList: JettonActivityList;
   public cards: CardsManager;
   public signer: SignerManager;
+  public localScam: LocalScamManager;
 
   constructor(
     public config: WalletConfig,
@@ -144,6 +146,12 @@ export class WalletContent extends WalletBase {
       this.activityLoader,
       this.storage,
     );
+    this.localScam = new LocalScamManager(
+      this.persistPath,
+      tonRawAddress,
+      this.tonProof,
+      this.storage,
+    );
     this.signer = new SignerManager(tonRawAddress, this.tonapi, this.config);
   }
 
@@ -168,6 +176,7 @@ export class WalletContent extends WalletBase {
     this.tonActivityList.rehydrate();
     this.jettonActivityList.rehydrate();
     this.cards.rehydrate();
+    this.localScam.rehydrate();
   }
 
   protected async loadDependsOnAccountStatus(status: AccountStatus) {

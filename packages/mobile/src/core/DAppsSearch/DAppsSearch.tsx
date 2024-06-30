@@ -1,8 +1,8 @@
 import { openDAppBrowser } from '$navigation';
 import { IsTablet, NavBarHeight } from '$shared/constants';
 import { Button, ScrollHandler, Text } from '$uikit';
-import { ns } from '$utils';
-import React, { FC, memo, useCallback, useState } from 'react';
+import { getDomainFromURL, ns } from '$utils';
+import React, { FC, memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { LayoutChangeEvent } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -15,6 +15,7 @@ import { SearchSuggestSource } from './types';
 import { goBack } from '$navigation/imperative';
 import { t } from '@tonkeeper/shared/i18n';
 import { trackEvent } from '$utils/stats';
+import { config } from '$config';
 
 export interface DAppsSearchProps {
   initialQuery?: string;
@@ -24,6 +25,7 @@ export interface DAppsSearchProps {
 const DAppsSearchComponent: FC<DAppsSearchProps> = (props) => {
   const { initialQuery, onOpenUrl } = props;
 
+  const [blacklisted, setBlacklisted] = useState<string[]>([]);
   const [query, setQuery] = useState(initialQuery || '');
 
   const { searchSuggests, getFirstSuggest } = useSearchSuggests(query);
@@ -45,8 +47,39 @@ const DAppsSearchComponent: FC<DAppsSearchProps> = (props) => {
     [onOpenUrl],
   );
 
+  useEffect(() => {
+    async function fetchBlacklisted() {
+      try {
+        const response = await fetch(
+          `${config.get('scamEndpoint')}/v1/tonconnect/blacklisted`,
+        );
+        const data = await response.json();
+        setBlacklisted(data.dapps.map((dapp) => dapp.url));
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+    fetchBlacklisted();
+  }, []);
+
+  const isBlacklisted = useMemo(() => {
+    const suggest = searchSuggests[0];
+    return (
+      suggest &&
+      blacklisted.some((url) => getDomainFromURL(url) === getDomainFromURL(suggest.url))
+    );
+  }, [blacklisted, searchSuggests]);
+
   const handleSearchBarSubmit = useCallback(() => {
-    const suggest = getFirstSuggest();
+    const suggest = searchSuggests[0];
+
+    if (
+      suggest &&
+      blacklisted.some((url) => getDomainFromURL(url) === getDomainFromURL(suggest.url))
+    ) {
+      console.log('blacklisted', suggest.url);
+      return;
+    }
 
     if (suggest) {
       if (
@@ -113,7 +146,7 @@ const DAppsSearchComponent: FC<DAppsSearchProps> = (props) => {
                 keyboardDismissMode="none"
                 keyboardShouldPersistTaps="always"
               >
-                {hasSuggests ? (
+                {hasSuggests && !isBlacklisted ? (
                   <>
                     <SearchSuggests items={searchSuggests} onPressSuggest={openUrl} />
                     <WebSearchSuggests

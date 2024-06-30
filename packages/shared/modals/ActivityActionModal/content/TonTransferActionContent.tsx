@@ -11,13 +11,18 @@ import {
 
 interface TonTransferActionContentProps {
   action: ActionItem<ActionType.TonTransfer>;
+  isInLocalScam?: boolean;
 }
 
 export const TonTransferActionContent = (props: TonTransferActionContentProps) => {
-  const { action } = props;
+  const { action, isInLocalScam } = props;
 
   return (
-    <ActionModalContent header={<TonIcon size="large" />} action={action}>
+    <ActionModalContent
+      isInLocalScam={isInLocalScam}
+      header={<TonIcon size="large" />}
+      action={action}
+    >
       <List>
         <AddressListItem
           recipient={action.payload.recipient}
@@ -27,7 +32,7 @@ export const TonTransferActionContent = (props: TonTransferActionContentProps) =
           bounceable={action.initialActionType === ActionType.SmartContractExec}
         />
         <ExtraListItem extra={action.event.extra} />
-        {action.payload?.encrypted_comment && !action.event.is_scam && (
+        {action.payload?.encrypted_comment && !action.event.is_scam && !isInLocalScam && (
           <EncryptedComment
             layout={EncryptedCommentLayout.LIST_ITEM}
             encryptedComment={action.payload.encrypted_comment}
@@ -35,7 +40,7 @@ export const TonTransferActionContent = (props: TonTransferActionContentProps) =
             sender={action.payload.sender}
           />
         )}
-        {!!action.payload.comment && !action.event.is_scam && (
+        {!!action.payload.comment && !action.event.is_scam && !isInLocalScam && (
           <List.Item
             titleType="secondary"
             title={t('transactionDetails.comment')}

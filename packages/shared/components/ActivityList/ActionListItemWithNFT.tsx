@@ -14,7 +14,7 @@ export interface ActionListItemWithNftProps
   extends ActionListItemProps<ActionType.NftPurchase | ActionType.NftItemTransfer> {}
 
 export const ActionListItemWithNft = memo<ActionListItemWithNftProps>((props) => {
-  const { action } = props;
+  const { action, isScam: isScamProp } = props;
   const { payload, type } = action;
 
   const nftAddress = type === ActionType.NftPurchase ? payload.nft.address : payload.nft;
@@ -31,10 +31,11 @@ export const ActionListItemWithNft = memo<ActionListItemWithNftProps>((props) =>
   const nftApprovalStatus = approvalStatuses[approvalIdentifier];
 
   const isScam =
-    nft &&
-    ((nft.trust === TrustType.Blacklist &&
-      nftApprovalStatus?.current !== TokenApprovalStatus.Approved) ||
-      nftApprovalStatus?.current === TokenApprovalStatus.Spam);
+    isScamProp ??
+    (nft &&
+      ((nft.trust === TrustType.Blacklist &&
+        nftApprovalStatus?.current !== TokenApprovalStatus.Approved) ||
+        nftApprovalStatus?.current === TokenApprovalStatus.Spam));
 
   switch (type) {
     case ActionType.NftItemTransfer:

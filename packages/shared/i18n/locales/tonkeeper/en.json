@@ -48,7 +48,7 @@
     "post_published_date": "Published: September 27, 2023",
     "post_dates": "\nOctober 5, 2023: all addresses switch to the UQ format in Tonkeeper.\n\nJanuary 1, 2024: Tonkeeper stops checking the contract status and uses the “bounceable” flag in the address. Coins sent to non-published contracts with an EQ address will bounce back to the sender.",
     "post_rest": "There are two address styles on the TON blockchain and until now only one was used for apps and wallets.\n\nThe EQ format is best for smart contracts that process incoming funds. If a smart contract isn’t published yet — i.e., the code isn’t on the blockchain — then the TONs sent to that address will bounce back to the sender. And this is a safety feature: if there is any error, TONs bounce back.\n\nThe UQ format is best for wallets. Coins never bounce because wallets are designed to simply store funds. Each wallet starts as a plain address without a code on the blockchain. So, it would make no sense for coins to bounce back.\n\nThis year we are switching wallets to the more suitable UQ format. And if you continue sending funds to an old EQ address someone gave you, there will be two options:\n",
-    "post_top": "By the end of this year the entire TON network will display wallet addresses differently. The new address will start with UQ instead of EQ. And the last four letters will change too. The old address will also work and direct to the same wallet. It doesn't effect the safety of funds stored in your wallet anyhow.",
+    "post_top": "By the end of this year the entire TON network will display wallet addresses differently. The new address will start with UQ instead of EQ. And the last four letters will change too. The old address will also work and direct to the same wallet. It doesn't affect the safety of funds stored in your wallet anyhow.",
     "second_option": "Less likely that the wallet has never been used for payments. And Tonkeeper won’t send coins to that address next year. You will have to ask the recipient for a new UQ address.",
     "title": "Address Update",
     "why_change": "Why change?",
@@ -932,6 +932,10 @@
   "transaction_contract_deploy_date": "%{date}",
   "transaction_copy_caution": "Be careful with external links. Never give your secret phrase to third-party resources — you can lose all your funds.\n\n- - -\n\n",
   "transactionDetails": {
+    "spamActions": {
+      "report": "Report Spam",
+      "notSpam": "Not Spam"
+    },
     "address": "Address",
     "bid_collection_name": "Issuer",
     "bid_name": "Name",
@@ -1148,6 +1152,11 @@
     "view_on_explorer": "View on Tonviewer"
   },
   "suspicious": {
+    "report_transaction": {
+      "title": "Attention",
+      "description": "Comment from this transaction will be sent with report in decrypted form.",
+      "button": "Report Spam Anyway"
+    },
     "label": {
       "short": "Unverified",
       "full": "Unverified NFT"
@@ -1158,6 +1167,7 @@
     },
     "status_update": {
       "spam": {
+        "transaction": "Transaction marked as Spam",
         "nft": "NFT marked as Spam",
         "collection": "Collection marked as Spam"
       },

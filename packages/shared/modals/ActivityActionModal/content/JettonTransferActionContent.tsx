@@ -22,21 +22,24 @@ import { openUnverifiedTokenDetailsModal } from '../../UnverifiedTokenDetailsMod
 
 interface JettonTransferContentProps {
   action: ActionItem<ActionType.JettonTransfer>;
+  isInLocalScam?: boolean;
 }
 
 const unverifiedTokenHitSlop = { top: 4, left: 4, bottom: 4, right: 4 };
 
 export const JettonTransferActionContent = memo<JettonTransferContentProps>((props) => {
-  const { action } = props;
+  const { action, isInLocalScam } = props;
 
   const source = { uri: action.payload.jetton?.image };
 
   const isScam =
+    isInLocalScam ||
     action.event.is_scam ||
     action.payload.jetton.verification === JettonVerificationType.Blacklist;
 
   return (
     <ActionModalContent
+      isInLocalScam={isInLocalScam}
       header={<FastImage style={styles.jettonImage} resizeMode="cover" source={source} />}
       subtitle={
         !config.get('disable_show_unverified_token') &&
@@ -61,7 +64,7 @@ export const JettonTransferActionContent = memo<JettonTransferContentProps>((pro
           hideName={isScam}
         />
         <ExtraListItem extra={action.event.extra} />
-        {!!action.payload.comment && !action.event.is_scam && (
+        {!!action.payload.comment && !action.event.is_scam && !isInLocalScam && (
           <List.Item
             titleType="secondary"
             title={t('transactionDetails.comment')}
@@ -70,7 +73,7 @@ export const JettonTransferActionContent = memo<JettonTransferContentProps>((pro
             valueMultiline
           />
         )}
-        {action.payload?.encrypted_comment && !action.event.is_scam && (
+        {action.payload?.encrypted_comment && !action.event.is_scam && !isInLocalScam && (
           <EncryptedComment
             layout={EncryptedCommentLayout.LIST_ITEM}
             encryptedComment={action.payload.encrypted_comment}

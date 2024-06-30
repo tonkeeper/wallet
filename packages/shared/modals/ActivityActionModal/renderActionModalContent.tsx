@@ -20,14 +20,18 @@ import {
   AnyActionItem,
 } from '@tonkeeper/mobile/src/wallet/models/ActivityModel';
 
-export function renderActionModalContent(action: AnyActionItem) {
+export function renderActionModalContent(action: AnyActionItem, isInLocalScam?: boolean) {
   switch (action.type) {
     case ActionType.TonTransfer:
-      return <TonTransferActionContent action={action} />;
+      return <TonTransferActionContent isInLocalScam={isInLocalScam} action={action} />;
     case ActionType.JettonTransfer:
-      return <JettonTransferActionContent action={action} />;
+      return (
+        <JettonTransferActionContent isInLocalScam={isInLocalScam} action={action} />
+      );
     case ActionType.NftItemTransfer:
-      return <NftItemTransferActionContent action={action} />;
+      return (
+        <NftItemTransferActionContent isInLocalScam={isInLocalScam} action={action} />
+      );
     case ActionType.NftPurchase:
       return <NftPurchaseActionContent action={action} />;
     case ActionType.SmartContractExec:

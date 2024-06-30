@@ -41,7 +41,7 @@ export const PopupMenuItem = Memo(
 );
 
 export function PopupMenuComponent(props: PopupMenuProps) {
-  const { children, items, width = 160 } = props;
+  const { children, items, topOffset = 0, align = 'flex-end', width = 160 } = props;
   const [visible, setVisible] = useState(false);
   const childrenRef = useRef<View>(null);
   const offsetTop = useRef(0);
@@ -58,17 +58,20 @@ export function PopupMenuComponent(props: PopupMenuProps) {
   }, [filteredItems.length]);
 
   const popupAnimation = usePopupAnimation({
-    anchor: 'top-right',
+    anchor: align === 'flex-end' ? 'top-right' : 'top-left',
     height: popupHeight,
     width: ns(width),
   });
 
-  const measure = useCallback((onDone: () => void) => {
-    childrenRef.current?.measureInWindow((x, y) => {
-      offsetTop.current = y;
-      onDone();
-    });
-  }, []);
+  const measure = useCallback(
+    (onDone: () => void) => {
+      childrenRef.current?.measureInWindow((x, y) => {
+        offsetTop.current = y + topOffset;
+        onDone();
+      });
+    },
+    [topOffset],
+  );
 
   useEffect(() => {
     if (visible) {
@@ -114,7 +117,11 @@ export function PopupMenuComponent(props: PopupMenuProps) {
 
       <Modal animationType="none" transparent visible={visible}>
         <S.Overlay onPress={handleClose} />
-        <S.Wrap width={width} style={[{ top: offsetTop.current }, popupAnimation.style]}>
+        <S.Wrap
+          alignSelf={align}
+          width={width}
+          style={[{ top: offsetTop.current }, popupAnimation.style]}
+        >
           <S.Content>
             {itemsPrepared.map((item, index, arr) => (
               <View key={index}>

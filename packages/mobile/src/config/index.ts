@@ -48,6 +48,8 @@ export type AppConfigVars = {
   tronapiHost: string;
   tronapiTestnetHost: string;
 
+  reportAmount: string;
+
   batteryHost: string;
   batteryTestnetHost: string;
   batteryRefundEndpoint: string;
@@ -120,6 +122,8 @@ const defaultConfig: Partial<AppConfigVars> = {
   holdersService: 'https://card-dev.whales-api.com',
   tronapiHost: 'https://tron.tonkeeper.com',
   tronapiTestnetHost: 'https://testnet-tron.tonkeeper.com',
+
+  reportAmount: '0.03',
 
   faqUrl: 'https://tonkeeper.helpscoutdocs.com',
   faqUrlRu: 'https://tonkeeperru.helpscoutdocs.com',

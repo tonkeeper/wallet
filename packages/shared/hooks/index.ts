@@ -13,3 +13,4 @@ export * from './useLockSettings';
 export * from './useWalletSetup';
 export * from './useIsEnabledForBattery';
 export * from './useDangerLevel';
+export * from './useIsInLocalScam';
